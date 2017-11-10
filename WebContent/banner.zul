@@ -1,0 +1,13 @@
+<div hflex="1" vflex="1" sclass="banner">
+	<hbox hflex="1" vflex="1" align="center">
+		<a href="http://www.zkoss.org/">
+			<image src="/imgs/gobiilogo.png" width="165px" />
+		</a>
+		<div width="400px">
+			<label value="Data TimeScope (will be replaced by a cool logo)" sclass="banner-head" />
+		</div>
+		<hbox hflex="1" vflex="1" pack="end" align="end">
+			Kpalis
+		</hbox>
+	</hbox>
+</div>

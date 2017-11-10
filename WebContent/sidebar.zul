@@ -1,0 +1,7 @@
+<grid hflex="1" vflex="1" sclass="sidebar" id="fnList" apply="org.gobiiproject.datatimescope.controller.SidebarController">
+	<columns>
+		<column width="36px"/>
+		<column/>
+	</columns>
+	<rows/>
+</grid>
