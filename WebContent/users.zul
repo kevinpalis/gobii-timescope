@@ -42,16 +42,16 @@
 				</row>
 				<row>
 					<cell sclass="row-title">Username :</cell>
-					<cell><textbox id="username" constraint="no empty: Please enter your username." width="300px"/></cell>
+					<cell><textbox id="userName" constraint="no empty: Please enter your username." width="300px"/></cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Password :</cell>
-					<cell><textbox id="password" constraint="no empty: Please enter your password." width="300px"/></cell>
+					<cell><textbox id="password" type="password" constraint="no empty: Please enter your password." width="300px"/></cell>
 				</row>
 				<row>
 					<cell sclass="row-title">User Type :</cell>
 					<cell>
-						<listbox mold="select" tabindex="8" width="300px">
+						<listbox id="role" mold="select" tabindex="8" width="300px">
                             <listitem label="User" value="3" />
                             <listitem label="Administrator" value="2" />
                             <listitem label="Super Administrator" value="1" />
