@@ -14,9 +14,9 @@ public class UserInfoServiceChapter3Impl implements UserInfoService,Serializable
 	
 	static protected List<User> userList = new ArrayList<User>();  
 	static{
-		userList.add(new User("anonymous","lastname", "TEST","password","a@your.com", 1));
-		userList.add(new User("anonymous2","lastname", "TEST2","password","b@your.com", 1));
-		userList.add(new User("anonymous3","lastname", "TEST3","password","c@your.com", 1));
+		userList.add(new User("anonymous","lastname", "anonymous","password","a@your.com", 1));
+		userList.add(new User("anonymous2","lastname", "anonymous2","password","b@your.com", 1));
+		userList.add(new User("anonymous3","lastname", "anonymous3","password","c@your.com", 1));
 	}
 	
 	/** synchronized is just because we use static userList in this demo to prevent concurrent access **/

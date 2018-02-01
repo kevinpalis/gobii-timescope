@@ -14,7 +14,7 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"> <!--apply="org.gobiiproject.datatimescope.controller.UserController" --> 
+<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto" apply="org.gobiiproject.datatimescope.controller.UserController"> 
 	
 	<caption src="/imgs/profile.png" sclass="fn-caption" label="User Account"/>
 	<vlayout>
@@ -52,9 +52,12 @@
 					<cell sclass="row-title">User Type :</cell>
 					<cell>
 						<listbox id="role" mold="select" tabindex="8" width="300px">
-                            <listitem label="User" value="3" />
+							<template name="model">
+								<listitem label="${each}" />
+							</template>
+                           <!--  <listitem label="User" value="3" />
                             <listitem label="Administrator" value="2" />
-                            <listitem label="Super Administrator" value="1" />
+                            <listitem label="Super Administrator" value="1" /> -->
                         </listbox>
 					</cell>
 				</row>
