@@ -119,17 +119,17 @@ public class UserController extends SelectorComposer<Component>{
 
 		String userName = "timescoper";
         String password = "helloworld";
-        String url = "jdbc:postgresql://localhost:5432/timescope_db1";
-        //try {
-		//	Class.forName("org.postgresql.Driver");
-		//} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-		//	e1.printStackTrace();
-		//}
+        String url = "jdbc:postgresql://localhost:5432/timescope_db2";
+        try {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e1) {
+			 //TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         try  {
             Connection conn = DriverManager.getConnection(url, userName, password);        
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            Result<Record> result = context.select().from(CV).fetch();
+            Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
             
             for (Record r : result) {
                 Integer id = r.getValue(CV.CV_ID);
