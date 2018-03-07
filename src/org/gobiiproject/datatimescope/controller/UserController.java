@@ -36,6 +36,14 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Textbox;
 
+//For convenience, always static import your generated tables and jOOQ functions to decrease verbosity:
+import static org.gobiiproject.datatimescope.db.generated.Tables.*;
+import org.jooq.impl.DSL;
+import org.jooq.*;
+
+import java.sql.*;
+
+
 public class UserController extends SelectorComposer<Component>{
 	private static final long serialVersionUID = 1L;
 
@@ -108,6 +116,32 @@ public class UserController extends SelectorComposer<Component>{
 	@Listen("onClick=#reloadProfile")
 	public void doReloadProfile(){
 		refreshProfileView();
+
+		String userName = "timescoper";
+        String password = "helloworld";
+        String url = "jdbc:postgresql://localhost:5432/timescope_db1";
+        //try {
+		//	Class.forName("org.postgresql.Driver");
+		//} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+		//	e1.printStackTrace();
+		//}
+        try  {
+            Connection conn = DriverManager.getConnection(url, userName, password);        
+            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+            Result<Record> result = context.select().from(CV).fetch();
+            
+            for (Record r : result) {
+                Integer id = r.getValue(CV.CV_ID);
+                String term = r.getValue(CV.TERM);
+
+                System.out.println("CV_id: " + id + " Term: " + term );
+            }
+        } 
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
 	private void refreshProfileView() {

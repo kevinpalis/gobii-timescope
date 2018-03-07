@@ -30,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Getallmarkersinmarkergroups extends TableImpl<GetallmarkersinmarkergroupsRecord> {
 
-    private static final long serialVersionUID = -1762191016;
+    private static final long serialVersionUID = 540556939;
 
     /**
      * The reference instance of <code>public.getallmarkersinmarkergroups</code>
@@ -44,6 +44,16 @@ public class Getallmarkersinmarkergroups extends TableImpl<Getallmarkersinmarker
     public Class<GetallmarkersinmarkergroupsRecord> getRecordType() {
         return GetallmarkersinmarkergroupsRecord.class;
     }
+
+    /**
+     * The column <code>public.getallmarkersinmarkergroups.marker_group_id</code>.
+     */
+    public final TableField<GetallmarkersinmarkergroupsRecord, Integer> MARKER_GROUP_ID = createField("marker_group_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.getallmarkersinmarkergroups.marker_group_id</code>.
+     */
+    public final TableField<GetallmarkersinmarkergroupsRecord, Integer> MARKER_GROUP_ID = createField("marker_group_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.getallmarkersinmarkergroups.marker_group_name</code>.
@@ -97,7 +107,7 @@ public class Getallmarkersinmarkergroups extends TableImpl<Getallmarkersinmarker
     }
 
     private Getallmarkersinmarkergroups(Name alias, Table<GetallmarkersinmarkergroupsRecord> aliased) {
-        this(alias, aliased, new Field[1]);
+        this(alias, aliased, new Field[2]);
     }
 
     private Getallmarkersinmarkergroups(Name alias, Table<GetallmarkersinmarkergroupsRecord> aliased, Field<?>[] parameters) {
@@ -147,18 +157,20 @@ public class Getallmarkersinmarkergroups extends TableImpl<Getallmarkersinmarker
     /**
      * Call this table-valued function
      */
-    public Getallmarkersinmarkergroups call(String _Namelist) {
+    public Getallmarkersinmarkergroups call(String _Idlist, String _Platformlist) {
         return new Getallmarkersinmarkergroups(DSL.name(getName()), null, new Field[] { 
-              DSL.val(_Namelist, org.jooq.impl.SQLDataType.CLOB)
+              DSL.val(_Idlist, org.jooq.impl.SQLDataType.CLOB)
+            , DSL.val(_Platformlist, org.jooq.impl.SQLDataType.CLOB)
         });
     }
 
     /**
      * Call this table-valued function
      */
-    public Getallmarkersinmarkergroups call(Field<String> _Namelist) {
+    public Getallmarkersinmarkergroups call(Field<String> _Idlist, Field<String> _Platformlist) {
         return new Getallmarkersinmarkergroups(DSL.name(getName()), null, new Field[] { 
-              _Namelist
+              _Idlist
+            , _Platformlist
         });
     }
 }

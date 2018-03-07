@@ -30,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RegexpSplitToTable extends TableImpl<RegexpSplitToTableRecord> {
 
-    private static final long serialVersionUID = 1313521628;
+    private static final long serialVersionUID = 2044096961;
 
     /**
      * The reference instance of <code>public.regexp_split_to_table</code>
@@ -72,7 +72,7 @@ public class RegexpSplitToTable extends TableImpl<RegexpSplitToTableRecord> {
     }
 
     private RegexpSplitToTable(Name alias, Table<RegexpSplitToTableRecord> aliased) {
-        this(alias, aliased, new Field[2]);
+        this(alias, aliased, new Field[3]);
     }
 
     private RegexpSplitToTable(Name alias, Table<RegexpSplitToTableRecord> aliased, Field<?>[] parameters) {
@@ -122,20 +122,22 @@ public class RegexpSplitToTable extends TableImpl<RegexpSplitToTableRecord> {
     /**
      * Call this table-valued function
      */
-    public RegexpSplitToTable call(Object __1, Object __2) {
+    public RegexpSplitToTable call(Object __1, Object __2, String __3) {
         return new RegexpSplitToTable(DSL.name(getName()), null, new Field[] { 
               DSL.val(__1, org.jooq.impl.DefaultDataType.getDefaultDataType("USER-DEFINED"))
             , DSL.val(__2, org.jooq.impl.DefaultDataType.getDefaultDataType("USER-DEFINED"))
+            , DSL.val(__3, org.jooq.impl.SQLDataType.CLOB)
         });
     }
 
     /**
      * Call this table-valued function
      */
-    public RegexpSplitToTable call(Field<Object> __1, Field<Object> __2) {
+    public RegexpSplitToTable call(Field<Object> __1, Field<Object> __2, Field<String> __3) {
         return new RegexpSplitToTable(DSL.name(getName()), null, new Field[] { 
               __1
             , __2
+            , __3
         });
     }
 }

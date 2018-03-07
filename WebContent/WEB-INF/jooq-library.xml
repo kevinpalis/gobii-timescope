@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.10.0.xsd">
-  <!-- Configure the database connection here -->
+  <!-- Configure the database connection here 
+  java -classpath jooq-3.10.4.jar:jooq-meta-3.10.4.jar:jooq-codegen-3.10.4.jar:postgresql-42.2.1.jar:. org.jooq.util.GenerationTool ../jooq-library.xml
+  -->
   <jdbc>
     <driver>org.postgresql.Driver</driver>
-    <url>jdbc:postgresql://localhost:5432/timescope_db1</url>
+    <url>jdbc:postgresql://localhost:5432/timescope_db2</url>
     <user>timescoper</user>
     <password>helloworld</password>
   </jdbc>

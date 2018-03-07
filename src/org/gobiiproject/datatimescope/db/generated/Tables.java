@@ -18,6 +18,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnarun;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnasample;
 import org.gobiiproject.datatimescope.db.generated.tables.Experiment;
+import org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz;
 import org.gobiiproject.datatimescope.db.generated.tables.Germplasm;
 import org.gobiiproject.datatimescope.db.generated.tables.Getallanalysisparameters;
 import org.gobiiproject.datatimescope.db.generated.tables.Getallchrlenbydataset;
@@ -267,6 +268,11 @@ between them.
     public static final Experiment EXPERIMENT = org.gobiiproject.datatimescope.db.generated.tables.Experiment.EXPERIMENT;
 
     /**
+     * The table <code>public.ft_linkage_group_2bsid4wz</code>.
+     */
+    public static final FtLinkageGroup_2bsid4wz FT_LINKAGE_GROUP_2BSID4WZ = org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz.FT_LINKAGE_GROUP_2BSID4WZ;
+
+    /**
      * The table <code>public.germplasm</code>.
      */
     public static final Germplasm GERMPLASM = org.gobiiproject.datatimescope.db.generated.tables.Germplasm.GERMPLASM;
@@ -513,22 +519,22 @@ between them.
     /**
      * Call <code>public.getallmarkersinmarkergroups</code>.
      */
-    public static Result<GetallmarkersinmarkergroupsRecord> GETALLMARKERSINMARKERGROUPS(Configuration configuration, String _Namelist) {
-        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist)).fetch();
+    public static Result<GetallmarkersinmarkergroupsRecord> GETALLMARKERSINMARKERGROUPS(Configuration configuration, String _Idlist, String _Platformlist) {
+        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist)).fetch();
     }
 
     /**
      * Get <code>public.getallmarkersinmarkergroups</code> as a table.
      */
-    public static Getallmarkersinmarkergroups GETALLMARKERSINMARKERGROUPS(String _Namelist) {
-        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist);
+    public static Getallmarkersinmarkergroups GETALLMARKERSINMARKERGROUPS(String _Idlist, String _Platformlist) {
+        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist);
     }
 
     /**
      * Get <code>public.getallmarkersinmarkergroups</code> as a table.
      */
-    public static Getallmarkersinmarkergroups GETALLMARKERSINMARKERGROUPS(Field<String> _Namelist) {
-        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist);
+    public static Getallmarkersinmarkergroups GETALLMARKERSINMARKERGROUPS(Field<String> _Idlist, Field<String> _Platformlist) {
+        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist);
     }
 
     /**
@@ -2168,24 +2174,24 @@ between them.
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static Result<RegexpSplitToTableRecord> REGEXP_SPLIT_TO_TABLE(Configuration configuration, Object __1, Object __2) {
-        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2)).fetch();
+    public static Result<RegexpSplitToTableRecord> REGEXP_SPLIT_TO_TABLE(Configuration configuration, Object __1, Object __2, String __3) {
+        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3)).fetch();
     }
 
     /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static RegexpSplitToTable REGEXP_SPLIT_TO_TABLE(Object __1, Object __2) {
-        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2);
+    public static RegexpSplitToTable REGEXP_SPLIT_TO_TABLE(Object __1, Object __2, String __3) {
+        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3);
     }
 
     /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static RegexpSplitToTable REGEXP_SPLIT_TO_TABLE(Field<Object> __1, Field<Object> __2) {
-        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2);
+    public static RegexpSplitToTable REGEXP_SPLIT_TO_TABLE(Field<Object> __1, Field<Object> __2, Field<String> __3) {
+        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3);
     }
 
     /**

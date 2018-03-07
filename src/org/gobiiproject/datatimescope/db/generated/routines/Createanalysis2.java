@@ -27,7 +27,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Createanalysis2 extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = 875412092;
+    private static final long serialVersionUID = -430695164;
 
     /**
      * The parameter <code>public.createanalysis.analysisname</code>.
@@ -80,6 +80,12 @@ public class Createanalysis2 extends AbstractRoutine<java.lang.Void> {
     public static final Parameter<Integer> REFERENCEID = createParameter("referenceid", org.jooq.impl.SQLDataType.INTEGER, false, false);
 
     /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public static final Parameter<Object> ANALYSISPARAMETERS = createParameter("analysisparameters", org.jooq.impl.DefaultDataType.getDefaultDataType("jsonb"), false, false);
+
+    /**
      * The parameter <code>public.createanalysis.analysistimeexecuted</code>.
      */
     public static final Parameter<Timestamp> ANALYSISTIMEEXECUTED = createParameter("analysistimeexecuted", org.jooq.impl.SQLDataType.TIMESTAMP, false, false);
@@ -130,6 +136,7 @@ public class Createanalysis2 extends AbstractRoutine<java.lang.Void> {
         addInParameter(ANALYSISSOURCEVERSION);
         addInParameter(ANALYSISSOURCEURI);
         addInParameter(REFERENCEID);
+        addInParameter(ANALYSISPARAMETERS);
         addInParameter(ANALYSISTIMEEXECUTED);
         addInParameter(ANALYSISSTATUS);
         addInParameter(CREATEDBY);
@@ -208,6 +215,13 @@ public class Createanalysis2 extends AbstractRoutine<java.lang.Void> {
      */
     public void setReferenceid(Integer value) {
         setValue(REFERENCEID, value);
+    }
+
+    /**
+     * Set the <code>analysisparameters</code> parameter IN value to the routine
+     */
+    public void setAnalysisparameters(Object value) {
+        setValue(ANALYSISPARAMETERS, value);
     }
 
     /**

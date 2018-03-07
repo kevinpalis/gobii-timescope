@@ -1028,10 +1028,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.createanalysis</code>
      */
-    @java.lang.Deprecated
-    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis1 p = new Createanalysis1();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -1043,7 +1042,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -1056,9 +1054,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.createanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis2 p = new Createanalysis2();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -1070,6 +1069,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -1289,11 +1289,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob1(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob1(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Createjob1 p = new Createjob1();
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -1305,11 +1305,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob2(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob2(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Createjob2 p = new Createjob2();
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -4289,10 +4289,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updateanalysis</code>
      */
-    @java.lang.Deprecated
-    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis2 p = new Updateanalysis2();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -4305,7 +4304,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -4317,9 +4315,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updateanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis3 p = new Updateanalysis3();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -4332,6 +4331,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -4757,12 +4757,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob1(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob1(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Updatejob1 p = new Updatejob1();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -4773,12 +4773,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob2(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob2(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Updatejob2 p = new Updatejob2();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -4886,18 +4886,16 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updatemarkergroup</code>
      */
-    @java.lang.Deprecated
-    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
+    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup1 p = new Updatemarkergroup1();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
-        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreatedate(createdate);
+        p.setCreateddate(createddate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);
@@ -4906,16 +4904,18 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updatemarkergroup</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
+    @java.lang.Deprecated
+    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup2 p = new Updatemarkergroup2();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
+        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreateddate(createddate);
+        p.setCreatedate(createdate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);
@@ -6033,22 +6033,22 @@ public class Routines {
     /**
      * Call <code>public.getallmarkersinmarkergroups</code>.
      */
-    public static Result<GetallmarkersinmarkergroupsRecord> getallmarkersinmarkergroups(Configuration configuration, String _Namelist) {
-        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist)).fetch();
+    public static Result<GetallmarkersinmarkergroupsRecord> getallmarkersinmarkergroups(Configuration configuration, String _Idlist, String _Platformlist) {
+        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist)).fetch();
     }
 
     /**
      * Get <code>public.getallmarkersinmarkergroups</code> as a table.
      */
-    public static Getallmarkersinmarkergroups getallmarkersinmarkergroups(String _Namelist) {
-        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist);
+    public static Getallmarkersinmarkergroups getallmarkersinmarkergroups(String _Idlist, String _Platformlist) {
+        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist);
     }
 
     /**
      * Get <code>public.getallmarkersinmarkergroups</code> as a table.
      */
-    public static Getallmarkersinmarkergroups getallmarkersinmarkergroups(Field<String> _Namelist) {
-        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Namelist);
+    public static Getallmarkersinmarkergroups getallmarkersinmarkergroups(Field<String> _Idlist, Field<String> _Platformlist) {
+        return org.gobiiproject.datatimescope.db.generated.tables.Getallmarkersinmarkergroups.GETALLMARKERSINMARKERGROUPS.call(_Idlist, _Platformlist);
     }
 
     /**
@@ -7318,23 +7318,23 @@ public class Routines {
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static Result<RegexpSplitToTableRecord> regexpSplitToTable(Configuration configuration, Object __1, Object __2) {
-        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2)).fetch();
+    public static Result<RegexpSplitToTableRecord> regexpSplitToTable(Configuration configuration, Object __1, Object __2, String __3) {
+        return DSL.using(configuration).selectFrom(org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3)).fetch();
     }
 
     /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static RegexpSplitToTable regexpSplitToTable(Object __1, Object __2) {
-        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2);
+    public static RegexpSplitToTable regexpSplitToTable(Object __1, Object __2, String __3) {
+        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3);
     }
 
     /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
-    public static RegexpSplitToTable regexpSplitToTable(Field<Object> __1, Field<Object> __2) {
-        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2);
+    public static RegexpSplitToTable regexpSplitToTable(Field<Object> __1, Field<Object> __2, Field<String> __3) {
+        return org.gobiiproject.datatimescope.db.generated.tables.RegexpSplitToTable.REGEXP_SPLIT_TO_TABLE.call(__1, __2, __3);
     }
 }
