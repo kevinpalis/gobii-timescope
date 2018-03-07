@@ -22,7 +22,8 @@
       <!-- The database type. The format here is:
            org.util.[database].[database]Database -->
       <name>org.jooq.util.postgres.PostgresDatabase</name>
-
+      <!-- Disabling table valued functions due to bug which mess up scaffolded code (https://github.com/jOOQ/jOOQ/issues/4055) -->
+      <tableValuedFunctions>false</tableValuedFunctions>
       <!-- The database schema (or in the absence of schema support, in your RDBMS this
            can be the owner, user, database name) to be generated -->
       <inputSchema>public</inputSchema>
