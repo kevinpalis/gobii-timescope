@@ -51,19 +51,10 @@ public class Getmatrixposofmarkers extends TableImpl<GetmatrixposofmarkersRecord
     public final TableField<GetmatrixposofmarkersRecord, Integer> DATASET_ID = createField("dataset_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.getmatrixposofmarkers.dataset_id</code>.
-     */
-    public final TableField<GetmatrixposofmarkersRecord, Integer> DATASET_ID = createField("dataset_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
      * The column <code>public.getmatrixposofmarkers.positions</code>.
      */
     public final TableField<GetmatrixposofmarkersRecord, String> POSITIONS = createField("positions", org.jooq.impl.SQLDataType.CLOB, this, "");
 
-    /**
-     * The column <code>public.getmatrixposofmarkers.positions</code>.
-     */
-    public final TableField<GetmatrixposofmarkersRecord, String> POSITIONS = createField("positions", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>public.getmatrixposofmarkers</code> table reference
