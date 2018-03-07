@@ -1,4 +1,4 @@
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<!-- <?link rel="stylesheet" type="text/css" href="/style.css"?>
 <zk>
 	<borderlayout hflex="1" vflex="1">
 		<north height="100px" border="none" >
@@ -12,6 +12,24 @@
 		</center>
 		<south height="60px" border="none">
 			<include src="/footer.zul"/>
+		</south>
+	</borderlayout>
+</zk> -->
+
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<zk>
+	<borderlayout hflex="1" vflex="1" apply="org.zkoss.essentials.chapter6.ajaxbased.BookmarkChangeController">
+		<north height="100px" border="none" >
+			<apply templateURI="/banner.zul"/>
+		</north>
+		<west width="260px" border="none" collapsible="true" splittable="true" minsize="300">
+			<apply templateURI="/chapter6/ajaxbased/sidebar.zul"/>
+		</west>
+		<center id="mainContent" autoscroll="true" border="none">
+			<apply templateURI="/chapter6/ajaxbased/mainContent.zul"/>
+		</center>
+		<south height="50px" border="none">
+			<apply templateURI="/footer.zul"/>
 		</south>
 	</borderlayout>
 </zk>
