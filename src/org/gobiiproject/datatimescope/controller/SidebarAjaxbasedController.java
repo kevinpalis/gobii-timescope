@@ -8,8 +8,9 @@ Copyright (C) 2012 Potix Corporation. All Rights Reserved.
 */
 package org.gobiiproject.datatimescope.controller;
 
-import org.zkoss.essentials.services.SidebarPage;
-import org.zkoss.essentials.services.SidebarPageConfig;
+import org.gobiiproject.datatimescope.configurator.SidebarPageConfigAjaxBasedImpl;
+import org.gobiiproject.datatimescope.services.SidebarPage;
+import org.gobiiproject.datatimescope.services.SidebarPageConfig;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
