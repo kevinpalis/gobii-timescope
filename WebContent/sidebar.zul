@@ -1,4 +1,4 @@
-<grid hflex="1" vflex="1" sclass="sidebar" id="fnList" apply="org.gobiiproject.datatimescope.controller.SidebarController">
+<grid hflex="1" vflex="1" sclass="sidebar" id="fnList" apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
 	<columns>
 		<column width="36px"/>
 		<column/>
