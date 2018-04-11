@@ -1,89 +1,89 @@
-<!-- 
-	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
-    firstname text COLLATE pg_catalog."default" NOT NULL,
-    lastname text COLLATE pg_catalog."default" NOT NULL,
-    username text COLLATE pg_catalog."default" NOT NULL,
-    password text COLLATE pg_catalog."default" NOT NULL,
-    email text COLLATE pg_catalog."default",
-    role integer DEFAULT 3,
-    CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
-    CONSTRAINT username_key UNIQUE (username)
-    
-    Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
- -->
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto" apply="org.gobiiproject.datatimescope.controller.UserController"> 
-	
-	<caption src="/imgs/profile.png" sclass="fn-caption" label="User Account"/>
-	<vlayout>
-		<grid width="800px">
-			<columns>
-				<column align="right" hflex="min"/>
-				<column/>
-			</columns>
-			<rows>
-				<row>
-					<cell sclass="row-title">Account :</cell>
-					<cell><label id="account"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">First Name :</cell>
-					<cell><textbox id="firstName" constraint="no empty: Please enter your firstname" width="300px"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">Last Name :</cell>
-					<cell><textbox id="lastName" constraint="no empty: Please enter your lastname" width="300px"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">Email :</cell>
-					<cell><textbox id="email" constraint="/.+@.+\.[a-z]+/: Please enter an e-mail address" width="300px"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">Username :</cell>
-					<cell><textbox id="userName" constraint="no empty: Please enter your username." width="300px"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">Password :</cell>
-					<cell><textbox id="password" type="password" constraint="no empty: Please enter your password." width="300px"/></cell>
-				</row>
-				<row>
-					<cell sclass="row-title">User Type :</cell>
-					<cell>
-						<listbox id="role" mold="select" tabindex="8" width="300px">
-							<template name="model">
-								<listitem label="${each}" />
-							</template>
-                           <!--  <listitem label="User" value="3" />
-                            <listitem label="Administrator" value="2" />
-                            <listitem label="Super Administrator" value="1" /> -->
-                        </listbox>
-					</cell>
-				</row>
-				
-				
-				
-				<!--row>
-					<cell sclass="row-title">Country :</cell>
-					<cell>
-						<listbox id="country" mold="select" width="200px">
-							<template name="model">
-								<listitem label="${each}" />
-							</template>
-						</listbox>
-					</cell>
-				</row-->
-				<!--row>
-					<cell sclass="row-title">Bio :</cell>
-					<cell><textbox id="bio" multiline="true" hflex="1" height="200px" /></cell>
-				</row-->
-			</rows>
-		</grid>
-		<div>You are editing <label id="nameLabel"/>'s profile.</div>
-		<hlayout>
-			<button id="saveProfile" label="Save"/>
-			<button id="reloadProfile" label="Reload"/>
-		</hlayout>
-	</vlayout>
+<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
+
+	<caption src="/imgs/profile.png" sclass="fn-caption"
+		label="User Info" />
+	<hlayout>
+		<vlayout vflex="true" hflex="1">
+			<grid sclass="grid-borderless" vflex="min">
+				<columns>
+					<column align="right" hflex="min" />
+					<column align="right" hflex="min" />
+				</columns>
+				<rows>
+					<row>
+						<cell sclass="row-title">Username :</cell>
+						<cell>
+							<label
+								value="@load(vm.userAccount.userName)" />
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">First Name :</cell>
+						<cell>
+							<label
+								value="@load(vm.userAccount.firstName)" />
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">Last Name :</cell>
+						<cell>
+							<label
+								value="@load(vm.userAccount.lastName)" />
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">Email :</cell>
+						<cell>
+							<label value="@load(vm.userAccount.email)" />
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">Password :</cell>
+						<cell>*******************</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">Role :</cell>
+						<cell>
+							<label
+								value="@load(vm.userAccount.roleName)" />
+						</cell>
+					</row>
+				</rows>
+			</grid>
+			<hbox hflex="true">
+				<button id="reloadProfile" label="Refresh" hflex="1" />
+				<button label="Edit Profile" hflex="1"
+					onClick="@command('editProfile')" />
+			</hbox>
+		</vlayout>
+		<groupbox mold="3d" hflex="3" closable="false">
+			<caption label="ALL USERS" />
+			<listbox checkmark="true" model="@load(vm.users)"
+				mold="paging" pageSize="8" onCheckSelectAll="">
+				<listhead>
+					<listheader hflex="min" />
+					<listheader hflex="1" label="Username" />
+					<listheader hflex="1" label="Last Name" />
+					<listheader hflex="1" label="First Name" />
+					<listheader hflex="1" label=" Email" />
+					<listheader hflex="1" label="Role" />
+				</listhead>
+				<template name="model">
+					<listitem>
+						<listcell />
+						<listcell label="@load(each.userName)" />
+						<listcell label="@load(each.lastName)" />
+						<listcell label="@load(each.firstName)" />
+						<listcell label="@load(each.email)" />
+						<listcell label="@load(each.roleName)" />
+					</listitem>
+				</template>
+			</listbox>
+		</groupbox>
+	</hlayout>
 </window>
