@@ -17,7 +17,7 @@
 <window id="editUserWindows" border="normal" hflex="1" vflex="1"
 	contentStyle="overflow:auto" closable="true"
 	apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.EditUserViewModel')">
 
 	<caption src="/imgs/profile.png" sclass="fn-caption"
 		label="@load('Edit User Information &quot;'.concat(vm.userAccount.userName).concat('&quot;'))" />

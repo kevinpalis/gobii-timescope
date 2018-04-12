@@ -26,12 +26,16 @@ public class User implements Serializable,Cloneable {
 	String password;
 	String roleName;
 	String email;
+	
 	Integer roleId;
-
+	
+	boolean selected;
+	
 	public User() {
+		this.selected = false;
 	}
 	
-	public User(String firstName, String lastName, String userName, String password, String email, Integer roleId) {
+	public User(String userName, String firstName, String lastName, String password, String email, Integer roleId) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.userName = userName;
@@ -39,6 +43,7 @@ public class User implements Serializable,Cloneable {
 		this.email = email;
 		this.roleId = roleId;
 		this.roleName = getRoleName();
+		this.selected = false;
 	}
 
 	public String getUserName() {
@@ -130,5 +135,13 @@ public class User implements Serializable,Cloneable {
 			//not possible
 		}
 		return null;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }
