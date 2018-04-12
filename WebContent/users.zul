@@ -8,11 +8,11 @@
 	<caption src="/imgs/profile.png" sclass="fn-caption"
 		label="User Info" />
 	<hlayout>
-		<vlayout vflex="true" hflex="1">
-			<grid sclass="grid-borderless" vflex="min">
+		<vlayout vflex="max" hflex="1">
+			<grid sclass="grid-borderless" vflex="min" hflex="1">
 				<columns>
-					<column align="right" hflex="min" />
-					<column align="right" hflex="min" />
+					<column align="left" />
+					<column align="right" />
 				</columns>
 				<rows>
 					<row>
@@ -55,13 +55,13 @@
 					</row>
 				</rows>
 			</grid>
-			<hbox hflex="true">
-				<button id="reloadProfile" label="Refresh" hflex="1" />
-				<button label="Edit Profile" hflex="1"
+			<div hflex="true" align="right">
+				<button id="reloadProfile" label="Refresh" />
+				<button label="Edit Profile" 
 					onClick="@command('editProfile')" />
-			</hbox>
+			</div>
 		</vlayout>
-		<groupbox mold="3d" hflex="3" vflex="true" closable="false">
+		<groupbox mold="3d" hflex="3" vflex="max" closable="false">
 			<caption label="ALL USERS" />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
