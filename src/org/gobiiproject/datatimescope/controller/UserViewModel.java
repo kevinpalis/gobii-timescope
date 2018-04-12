@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.entity.User;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
@@ -58,10 +60,13 @@ public class UserViewModel {
 
 		int numOfUsers = 20;
 		int i = 0;
-
+		int randomNum;
+		Random r = new Random();
+		
 		User newUser = new User();
 		while (i<numOfUsers){
-			newUser = new User("User"+ Integer.toString(i), "Dummy", "data", "Password1!", "em@il.com", 1);
+			randomNum = r.nextInt(3);
+			newUser = new User("User"+ Integer.toString(i), "Dummy", "data", "Password1!", "em@il.com", randomNum);
 			users.add(newUser);
 			i++;
 		}

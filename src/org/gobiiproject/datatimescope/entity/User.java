@@ -82,7 +82,7 @@ public class User implements Serializable,Cloneable {
 	public String getRoleName() {
 		ListModelList<String> roleModel = new ListModelList<String>(CommonInfoService.getRoleList());
 
-		String roleName = roleModel.get(1);
+		String roleName = roleModel.get(roleId);
 		
 		return roleName;
 	}

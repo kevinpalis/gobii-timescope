@@ -61,7 +61,7 @@
 					onClick="@command('editProfile')" />
 			</hbox>
 		</vlayout>
-		<groupbox mold="3d" hflex="3" vflex="min" closable="false">
+		<groupbox mold="3d" hflex="3" vflex="true" closable="false">
 			<caption label="ALL USERS" />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
@@ -71,20 +71,20 @@
 						<checkbox label="Select All"
 							onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 					</column>
-					<column hflex="1">
+					<column hflex="1"  sort="auto(userName)">
 						<label value="Username" />
 					</column>
-					<column hflex="1">
+					<column hflex="1" sort="auto(lastName)">
 						<label value="Last Name" />
 					</column>
-					<column hflex="1">
+					<column hflex="1" sort="auto(firstName)">
 						<label value="First Name" />
 					</column>
-					<column hflex="1">
+					<column hflex="1" sort="auto(email)">
 						<label value="Email" />
 					</column>
-					<column hflex="1">
-						<label value="Role" />
+					<column hflex="1" sort="auto(roleName)">
+						<label value="Role"/>
 					</column>
 					<column hflex="min"></column>
 				</columns>
