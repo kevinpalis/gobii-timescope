@@ -49,21 +49,15 @@ public class UserController extends SelectorComposer<Component>{
 
 	//wire components
 	@Wire
-	Label account;
+	Label firstName;
 	@Wire
-	Textbox firstName;
+	Label lastName;
 	@Wire
-	Textbox lastName;
+	Label userName;
 	@Wire
-	Textbox userName;
+	Label email;
 	@Wire
-	Textbox password;
-	@Wire
-	Textbox email;
-	@Wire
-	Listbox role;
-	@Wire
-	Label nameLabel;
+	Label role;
 	
 	//services
 	AuthenticationService authService = new AuthenticationServiceChapter3Impl();
@@ -74,48 +68,22 @@ public class UserController extends SelectorComposer<Component>{
 		super.doAfterCompose(comp);
 		
 		ListModelList<String> roleModel = new ListModelList<String>(CommonInfoService.getRoleList());
-		role.setModel(roleModel);
-		
-		refreshProfileView();
+		role.setValue(roleModel.get(1));
 	}
 	
-	
-	@Listen("onClick=#saveProfile")
-	public void doSaveProfile(){
+	@Listen("onClick = #editProfile")
+	public void doEditProfile(){
 		Clients.showNotification("@SaveProfile.");
 		UserCredential cre = authService.getUserCredential();
 		User user = userInfoService.findUser(cre.getAccount());
-		if(user==null){
-			//TODO handle un-authenticated access 
-			return;
-		}
-		
-		//apply component value to bean
-		user.setFirstName(firstName.getValue());
-		user.setLastName(lastName.getValue());
-		user.setUserName(userName.getValue());
-		if (password.getValue()!=null && !(password.getValue()).isEmpty()) {
-			user.setPassword(password.getValue());
-		}
-		user.setEmail(email.getValue());
-		
-		Set<String> selection = ((ListModelList)role.getModel()).getSelection();
-		if(!selection.isEmpty()){
-			user.setRole(Integer.parseInt(selection.iterator().next()));
-		}else{
-			user.setRole(null);
-		}
-		
-		nameLabel.setValue(firstName.getValue()+" "+lastName.getValue());
 		
 		userInfoService.updateUser(user);
 		
 		Clients.showNotification("Your profile was updated.");
 	}
 	
-	@Listen("onClick=#reloadProfile")
+	@Listen("onClick = #reloadProfile")
 	public void doReloadProfile(){
-		refreshProfileView();
 
 		String userName = "timescoper";
         String password = "helloworld";
@@ -144,23 +112,4 @@ public class UserController extends SelectorComposer<Component>{
         }
 	}
 
-	private void refreshProfileView() {
-		UserCredential cre = authService.getUserCredential();
-		User user = userInfoService.findUser(cre.getAccount());
-		if(user==null){
-			//TODO handle un-authenticated access 
-			return;
-		}
-		
-		//apply bean value to UI components
-		account.setValue(user.getUserName());
-		firstName.setValue(user.getFirstName());
-		lastName.setValue(user.getLastName());
-		userName.setValue(user.getUserName());
-		email.setValue(user.getEmail());
-		//TODO: Handle mapping of DB value (int) to the displayed role text (string).
-		((ListModelList)role.getModel()).addToSelection(user.getRole());
-
-		nameLabel.setValue(user.getFirstName()+" "+user.getLastName());
-	}
 }

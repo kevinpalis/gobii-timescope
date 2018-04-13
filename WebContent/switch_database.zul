@@ -1,0 +1,80 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window hflex="1" vflex="1" contentStyle="overflow:auto"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
+	closable="true">
+
+	<caption src="/imgs/profile.png" sclass="fn-caption"
+		label="Modify Database Connection" />
+	<vlayout>
+		<grid hflex="min" vflex="min">
+			<columns>
+				<column align="right" hflex="min" />
+				<column />
+			</columns>
+			<rows>
+				<row>
+					<cell sclass="row-title">Host:</cell>
+					<cell>
+						<textbox
+							constraint="/.+@.+\.[a-z]+/: You enterd an invalid host format"
+							width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">Port :</cell>
+					<cell>
+						<textbox
+							constraint="no empty: Please enter a database port"
+							width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="dbName">Database Name :</cell>
+					<cell>
+						<textbox
+							constraint="no empty: Please enter a database name"
+							width="300px" />
+					</cell>
+				</row>
+
+				<row>
+					<cell sclass="row-title">Username :</cell>
+					<cell>
+						<textbox
+							constraint="no empty: Please enter your username." width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">Password :</cell>
+					<cell>
+						<textbox id="password" type="password"
+							constraint="no empty: Please enter your password." width="300px" />
+					</cell>
+				</row>
+			</rows>
+		</grid>
+		<div align = "center">
+			<hlayout>
+				<button id="saveProfile" label="Save" hflex="1"/>
+				<button id="reloadProfile" label="Reload" hflex="1"/>
+			</hlayout>
+		</div>
+	</vlayout>
+</window>

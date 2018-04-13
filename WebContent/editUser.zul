@@ -1,0 +1,87 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window id="editUserWindows" border="normal" hflex="1" vflex="1"
+	contentStyle="overflow:auto" closable="true"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.EditUserViewModel')">
+
+	<caption src="/imgs/profile.png" sclass="fn-caption"
+		label="@load('Edit User Information &quot;'.concat(vm.userAccount.userName).concat('&quot;'))" />
+	<vlayout hflex="min">
+		<grid hflex="min">
+			<columns>
+				<column align="right" hflex="min" />
+				<column />
+			</columns>
+			<rows>
+				<row>
+					<cell sclass="row-title">Username :</cell>
+					<cell>
+						<textbox value="@bind(vm.userAccount.userName)"
+							constraint="no empty: Please enter your username." width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">First Name :</cell>
+					<cell>
+						<textbox value="@bind(vm.userAccount.firstName)"
+							constraint="no empty: Please enter your firstname" width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">Last Name :</cell>
+					<cell>
+						<textbox value="@bind(vm.userAccount.lastName)"
+							constraint="no empty: Please enter your lastname" width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">Email :</cell>
+					<cell>
+						<textbox value="@bind(vm.userAccount.email)"
+							constraint="/.+@.+\.[a-z]+/: Please enter an e-mail address"
+							width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">Password :</cell>
+					<cell>
+						<textbox value="@bind(vm.userAccount.password)"
+							type="password"
+							constraint="no empty: Please enter your password." width="300px" />
+					</cell>
+				</row>
+				<row>
+					<cell sclass="row-title">User Role :</cell>
+					<cell>
+						<listbox model="@load(vm.roleList)"
+							selectedIndex="@bind(vm.userAccount.roleId)" mold="select"
+							tabindex="8" width="300px">
+							<template name="model">
+								<listitem label="${each}" />
+							</template>
+						</listbox>
+					</cell>
+				</row>
+			</rows>
+		</grid>
+
+		<div align="center" hflex="1">
+			<button id="saveProfile" label="Save" width="100px"/>
+		</div>
+	</vlayout>
+</window>

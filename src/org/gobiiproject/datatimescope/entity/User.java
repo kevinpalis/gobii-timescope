@@ -12,6 +12,9 @@ timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::r
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+
+import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.zkoss.zul.ListModelList;
 /**
  * User entity
  */
@@ -21,19 +24,26 @@ public class User implements Serializable,Cloneable {
 	String lastName;
 	String userName;
 	String password;
+	String roleName;
 	String email;
-	Integer role;
-
+	
+	Integer roleId;
+	
+	boolean selected;
+	
 	public User() {
+		this.selected = false;
 	}
 	
-	public User(String firstName, String lastName, String userName, String password, String email, Integer role) {
+	public User(String userName, String firstName, String lastName, String password, String email, Integer roleId) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.userName = userName;
 		this.password = password;
 		this.email = email;
-		this.role = role;
+		this.roleId = roleId;
+		this.roleName = getRoleName();
+		this.selected = false;
 	}
 
 	public String getUserName() {
@@ -69,12 +79,20 @@ public class User implements Serializable,Cloneable {
 		this.email = email;
 	}
 
-	public Integer getRole() {
-		return role;
+	public String getRoleName() {
+		ListModelList<String> roleModel = new ListModelList<String>(CommonInfoService.getRoleList());
+
+		String roleName = roleModel.get(roleId);
+		
+		return roleName;
+	}
+	
+	public Integer getRoleId() {
+		return roleId;
 	}
 
-	public void setRole(Integer role) {
-		this.role = role;
+	public void setRoleId(Integer role) {
+		this.roleId = role;
 	}
 	
 	public String getPassword() {
@@ -117,5 +135,13 @@ public class User implements Serializable,Cloneable {
 			//not possible
 		}
 		return null;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }

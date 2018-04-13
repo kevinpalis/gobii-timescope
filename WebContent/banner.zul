@@ -1,13 +1,23 @@
 <div hflex="1" vflex="1" sclass="banner">
-	<hbox hflex="1" vflex="1" align="center">
-		<a href="http://www.zkoss.org/">
-			<image src="/imgs/gobiilogo.png" width="165px" />
-		</a>
-		<div width="400px">
-			<label value="Data TimeScope (will be replaced by a cool logo)" sclass="banner-head" />
-		</div>
-		<hbox hflex="1" vflex="1" pack="end" align="end">
-			Kpalis
+	<vlayout>
+		<hbox hflex="1" vflex="1" pack="end" align="end">K PALIS</hbox>
+		<hbox hflex="1" vflex="2" align="center">
+			<a href="http://www.zkoss.org/">
+				<image src="/imgs/gobiilogo.png" width="165px" />
+			</a>
+			<div width="400px">
+				<label
+					value="Data TimeScope (will be replaced by a cool logo)"
+					sclass="banner-head" />
+			</div>
+			<hbox apply="org.zkoss.bind.BindComposer"
+				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
+				hflex="1" vflex="1" pack="end" align="end">
+
+				<button label="Switch Database"
+					style="background-color:gray;"
+					onClick="@command('openDatabaseInfoDialog')" />
+			</hbox>
 		</hbox>
-	</hbox>
+	</vlayout>
 </div>
