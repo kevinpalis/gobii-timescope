@@ -57,7 +57,7 @@
 			</grid>
 			<div hflex="true" align="right">
 				<button id="reloadProfile" label="Refresh" />
-				<button label="Edit Profile" 
+				<button label="Edit Profile"
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
@@ -71,7 +71,7 @@
 						<checkbox label="Select All"
 							onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 					</column>
-					<column hflex="1"  sort="auto(userName)">
+					<column hflex="1" sort="auto(userName)">
 						<label value="Username" />
 					</column>
 					<column hflex="1" sort="auto(lastName)">
@@ -84,7 +84,7 @@
 						<label value="Email" />
 					</column>
 					<column hflex="1" sort="auto(roleName)">
-						<label value="Role"/>
+						<label value="Role" />
 					</column>
 					<column hflex="min"></column>
 				</columns>
@@ -122,6 +122,9 @@
 			</grid>
 			<div align="right">
 
+				<button id="createUsersBtn"
+					label="Create" hflex="min" onClick="@command('createUser')"/>
+					
 				<button id="deleteBtn" style="background-color: red"
 					label="Delete" hflex="min" onClick="@command('deleteUsers')" />
 

@@ -1,0 +1,47 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<zk>
+	<div height="100%">
+		<hbox vflex="1" hflex="1" align="center" pack="center"
+			spacing="20px">
+			<vlayout>
+				<window id="loginWin"
+					apply="org.zkoss.bind.BindComposer"
+					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
+					border="normal" hflex="min" vflex="max">
+					<caption image="/imgs/gobiiicon.png"
+						label="GOBII Data Timescope" />
+					<vbox hflex="min" align="center" vflex="min">
+						<hbox>
+							Username :
+							<textbox id="account" width="200px" />
+						</hbox>
+						<hbox>
+							Password :
+							<textbox id="password" type="password"
+								width="200px" />
+						</hbox>
+
+						<button label="Login" />
+					</vbox>
+				</window>
+				(use account='zkoss' and password='1234' to login)
+			</vlayout>
+		</hbox>
+	</div>
+</zk>

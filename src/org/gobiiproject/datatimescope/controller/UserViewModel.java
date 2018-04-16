@@ -44,7 +44,7 @@ public class UserViewModel {
 
 		setCbAllUsers(false);
 
-		userAccount = new User("Angel Manica", "Raquel", "araquel", "Password1!", "angelmanica@gmail.com", 1);
+		userAccount = new User("Angel Manica", "Raquel", "araquel", "Password1!", "angelmanica@gmail.com", 2);
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
 		selectedUsersList = new ListModelList<User>();
@@ -125,6 +125,21 @@ public class UserViewModel {
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", user);
+
+		Window window = (Window)Executions.createComponents(
+				"/editUser.zul", null, args);
+		window.doModal();
+
+	}
+	
+
+	@Command("createUser")
+	@NotifyChange({"users"})
+	public void createUser(){
+		User emptyUser = new User();
+		
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("editedUser", emptyUser);
 
 		Window window = (Window)Executions.createComponents(
 				"/editUser.zul", null, args);

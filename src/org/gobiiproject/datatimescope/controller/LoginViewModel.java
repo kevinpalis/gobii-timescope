@@ -26,7 +26,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
-public class EditUserViewModel {
+public class LoginViewModel {
 	//UI component
 	boolean isCreateNew = false;
 	
@@ -37,18 +37,8 @@ public class EditUserViewModel {
 	private ListModelList<String> roleList;
 	
 	@Init
-	public void init(@ExecutionArgParam("editedUser") User user) {
-		userAccount = user;
-		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
+	public void init() {
 		
-		//Figure out if this window was called to edit a user or to create one
-		if(user.getUserName()!=null) setPageCaption("Edit User Information \""+ userAccount.getUserName() + "\"");
-		else{
-			setPageCaption("Create New User");
-			isCreateNew = true;
-		}
-		
-
 	}
 
 	public User getUserAccount() {

@@ -20,7 +20,7 @@
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.EditUserViewModel')">
 
 	<caption src="/imgs/profile.png" sclass="fn-caption"
-		label="@load('Edit User Information &quot;'.concat(vm.userAccount.userName).concat('&quot;'))" />
+		label="@load(vm.pageCaption)" />
 	<vlayout hflex="min">
 		<grid hflex="min">
 			<columns>
@@ -32,21 +32,21 @@
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox value="@bind(vm.userAccount.userName)"
-							constraint="no empty: Please enter your username." width="300px" />
+							constraint="no empty: Please enter your username. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">First Name :</cell>
 					<cell>
 						<textbox value="@bind(vm.userAccount.firstName)"
-							constraint="no empty: Please enter your firstname" width="300px" />
+							constraint="no empty: Please enter your firstname. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Last Name :</cell>
 					<cell>
 						<textbox value="@bind(vm.userAccount.lastName)"
-							constraint="no empty: Please enter your lastname" width="300px" />
+							constraint="no empty: Please enter your lastname. " width="300px" />
 					</cell>
 				</row>
 				<row>
