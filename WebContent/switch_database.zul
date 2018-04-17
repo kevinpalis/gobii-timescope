@@ -33,8 +33,8 @@
 					<cell sclass="row-title">Host:</cell>
 					<cell>
 						<textbox
-							constraint="/.+@.+\.[a-z]+/: You enterd an invalid host format"
-							width="300px" />
+							constraint="no empty: Please enter a host name"
+							width="300px" value="@bind(vm.host)" />
 					</cell>
 				</row>
 				<row>
@@ -42,7 +42,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database port"
-							width="300px" />
+							width="300px" value="@bind(vm.port)"/>
 					</cell>
 				</row>
 				<row>
@@ -50,7 +50,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database name"
-							width="300px" />
+							width="300px" value="@bind(vm.dbName)"/>
 					</cell>
 				</row>
 
@@ -58,21 +58,21 @@
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox
-							constraint="no empty: Please enter your username." width="300px" />
+							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.userName)"/>
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Password :</cell>
 					<cell>
 						<textbox id="password" type="password"
-							constraint="no empty: Please enter your password." width="300px" />
+							constraint="no empty: Please enter your password." width="300px" value="@bind(vm.password)"/>
 					</cell>
 				</row>
 			</rows>
 		</grid>
 		<div align = "center">
 			<hlayout>
-				<button id="saveProfile" label="Save" hflex="1"/>
+				<button id="switchDatabase" label="Connect" hflex="1" onClick="@command('connectToDatabase')"/>
 				<button id="reloadProfile" label="Reload" hflex="1"/>
 			</hlayout>
 		</div>
