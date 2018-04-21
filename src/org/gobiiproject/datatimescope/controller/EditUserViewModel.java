@@ -5,6 +5,8 @@ import java.util.ListIterator;
 
 import org.gobiiproject.datatimescope.entity.User;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -36,10 +38,13 @@ public class EditUserViewModel {
 
 	private ListModelList<String> roleList;
 	
+	ViewModelService userInfoService;
+	
 	@Init
 	public void init(@ExecutionArgParam("editedUser") User user) {
 		userAccount = user;
 		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
+		userInfoService = new ViewModelServiceImpl();
 		
 		//Figure out if this window was called to edit a user or to create one
 		if(user.getUserName()!=null) setPageCaption("Edit User Information \""+ userAccount.getUserName() + "\"");
@@ -47,10 +52,16 @@ public class EditUserViewModel {
 			setPageCaption("Create New User");
 			isCreateNew = true;
 		}
-		
-
 	}
 
+	@Command("saveUserInfo")
+	public void saveUser(){
+		if(isCreateNew){
+			System.out.println("creating new user...");
+			userInfoService.createNewUser(userAccount);
+		}
+	}
+	
 	public User getUserAccount() {
 		return userAccount;
 	}

@@ -1,5 +1,6 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
 	apply="org.zkoss.bind.BindComposer"

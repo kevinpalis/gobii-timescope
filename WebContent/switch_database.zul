@@ -14,6 +14,7 @@
 
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <window hflex="1" vflex="1" contentStyle="overflow:auto"
 	apply="org.zkoss.bind.BindComposer"
@@ -34,7 +35,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a host name"
-							width="300px" value="@bind(vm.host)" />
+							width="300px" value="@bind(vm.serverInfo.host)" />
 					</cell>
 				</row>
 				<row>
@@ -42,7 +43,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database port"
-							width="300px" value="@bind(vm.port)"/>
+							width="300px" value="@bind(vm.serverInfo.port)"/>
 					</cell>
 				</row>
 				<row>
@@ -50,7 +51,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database name"
-							width="300px" value="@bind(vm.dbName)"/>
+							width="300px" value="@bind(vm.serverInfo.dbName)"/>
 					</cell>
 				</row>
 
@@ -58,14 +59,14 @@
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox
-							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.userName)"/>
+							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.serverInfo.userName)"/>
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Password :</cell>
 					<cell>
 						<textbox id="password" type="password"
-							constraint="no empty: Please enter your password." width="300px" value="@bind(vm.password)"/>
+							constraint="no empty: Please enter your password." width="300px" value="@bind(vm.serverInfo.password)"/>
 					</cell>
 				</row>
 			</rows>

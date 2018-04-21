@@ -23,8 +23,8 @@ import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
-import org.gobiiproject.datatimescope.services.UserInfoService;
-import org.gobiiproject.datatimescope.services.UserInfoServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -61,7 +61,7 @@ public class UserController extends SelectorComposer<Component>{
 	
 	//services
 	AuthenticationService authService = new AuthenticationServiceChapter3Impl();
-	UserInfoService userInfoService = new UserInfoServiceChapter3Impl();
+	ViewModelService userInfoService = new ViewModelServiceImpl();
 	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception{

@@ -17,7 +17,9 @@
 </zk> -->
 
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 <zk>
+
 	<borderlayout hflex="1" vflex="1" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
 		<north height="100px" border="none" >
 			<apply templateURI="banner.zul"/>
