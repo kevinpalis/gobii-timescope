@@ -18,6 +18,6 @@ public interface ViewModelService {
 	/** update user **/
 	public User updateUser(User user);
 
-	public void connectToDB(String userName, String password, ServerInfo serverInfo);
+	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
 
 }

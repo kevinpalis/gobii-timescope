@@ -32,8 +32,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public void connectToDB(String userName, String password, ServerInfo serverInfo) {
+	public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
 		// TODO Auto-generated method stub
+		boolean isConnected = false;
 		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e1) {
@@ -57,6 +58,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				System.out.println("CV_id: " + id + " Term: " + term );
 			}
+			
+			isConnected = true;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -70,6 +73,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				Messagebox.show(e.getLocalizedMessage(), "Error", Messagebox.OK, Messagebox.ERROR);
 			}
 		}
+		
+		return isConnected;
 	}
 
 	@Override

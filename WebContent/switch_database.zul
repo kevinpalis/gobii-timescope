@@ -14,15 +14,14 @@
 
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
-<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
-<window hflex="1" vflex="1" contentStyle="overflow:auto"
+<window hflex="1" vflex="1" contentStyle="overflow:auto" id="databaseConnectionWindow"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
 	closable="true">
 
 	<caption src="/imgs/profile.png" sclass="fn-caption"
-		label="Modify Database Connection" />
+		label="@load(vm.pageCaption)" />
 	<vlayout>
 		<grid hflex="min" vflex="min">
 			<columns>
@@ -55,14 +54,14 @@
 					</cell>
 				</row>
 
-				<row>
+				<row visible="@load(vm.loggedIn)">
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox
 							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.serverInfo.userName)"/>
 					</cell>
 				</row>
-				<row>
+				<row visible="@load(vm.loggedIn)">
 					<cell sclass="row-title">Password :</cell>
 					<cell>
 						<textbox id="password" type="password"

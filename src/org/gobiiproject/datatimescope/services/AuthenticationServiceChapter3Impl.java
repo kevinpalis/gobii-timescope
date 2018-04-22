@@ -19,11 +19,6 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
 		Session sess = Sessions.getCurrent();
 		UserCredential cre = (UserCredential)sess.getAttribute("userCredential");
 		
-		if(cre==null){
-			cre = new UserCredential();//new a anonymous user and set to session
-			sess.setAttribute("userCredential",cre);
-		}
-		
 		return cre;
 	}
      

@@ -40,7 +40,6 @@
 						<button label="Login" />
 					</vbox>
 				</window>
-				(use account='zkoss' and password='1234' to login)
 			</vlayout>
 		</hbox>
 	</div>

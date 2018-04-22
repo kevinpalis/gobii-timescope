@@ -21,6 +21,10 @@ public class ServerInfo {
 	private String password;
 	
 	public ServerInfo() {
+	
+	}
+	
+	public ServerInfo(String defaults) {
 		//defaultValues
 	      setHost("localhost");
 	      setPort("5432");

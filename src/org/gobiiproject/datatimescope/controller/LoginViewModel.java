@@ -1,7 +1,9 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.gobiiproject.datatimescope.entity.User;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
@@ -38,7 +40,13 @@ public class LoginViewModel {
 	
 	@Init
 	public void init() {
+
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("isLoggedIn", false);
 		
+		 Window window = (Window)Executions.createComponents(
+	                "/switch_database.zul", null, args);
+	      window.doModal();
 	}
 
 	public User getUserAccount() {
