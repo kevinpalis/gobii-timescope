@@ -8,6 +8,7 @@ import java.io.Serializable;
 import org.gobiiproject.datatimescope.entity.User;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zul.Messagebox;
 
 public class AuthenticationServiceChapter3Impl implements AuthenticationService,Serializable{
 	private static final long serialVersionUID = 1L;
@@ -27,11 +28,15 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
     	
     	//retrieve userInfo from database
         User user = userInfoService.findUser(nm);
-        
-        if(user.getUserName().isEmpty()){
-            return false;
-        }
+
+        //check if not empty and if password matches
+		if(user.getUserName()==null) return false;
+		else if (!user.getPassword().equals(pd)){
+			Messagebox.show("Invalid password!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			return false;
+		}
          
+		//if still here, then checks passed. Update Sessions
         Session sess = Sessions.getCurrent();
         UserCredential cre = new UserCredential(user.getUserName(),user.getRoleId());
         user.setPassword("removePasswordInfo");

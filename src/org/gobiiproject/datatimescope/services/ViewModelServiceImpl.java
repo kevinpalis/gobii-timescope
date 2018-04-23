@@ -43,12 +43,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 		try  {
 
-	        String url = "jdbc:postgresql://"+serverInfo.getHost()+":"+serverInfo.getPort()+"/"+serverInfo.getDbName();
+			String url = "jdbc:postgresql://"+serverInfo.getHost()+":"+serverInfo.getPort()+"/"+serverInfo.getDbName();
 			Connection conn = DriverManager.getConnection(url, userName, password);        
 
 			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
 			Sessions.getCurrent().setAttribute("dbContext", context);
-			Sessions.getCurrent().setAttribute("serverInfo", context);
+			Sessions.getCurrent().setAttribute("serverInfo", serverInfo);
 
 			Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
 
@@ -58,7 +58,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				System.out.println("CV_id: " + id + " Term: " + term );
 			}
-			
+
 			isConnected = true;
 		} 
 		catch (Exception e) {
@@ -66,14 +66,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			if(e.getLocalizedMessage().contains("FATAL: password authentication failed")){
 				Messagebox.show("Invalid username or password.", "Error", Messagebox.OK, Messagebox.ERROR);
 			}
-			else if(e.getCause().getStackTrace()[0].toString().contains("connect(Unknown Source)")){
-				Messagebox.show("Host not found.", "Error", Messagebox.OK, Messagebox.ERROR);
+			else if(e.getMessage().contains("connect(Unknown Source)")){
+				Messagebox.show("Host name not found.", "Error", Messagebox.OK, Messagebox.ERROR);
 			}
 			else{
 				Messagebox.show(e.getLocalizedMessage(), "Error", Messagebox.OK, Messagebox.ERROR);
 			}
 		}
-		
+
 		return isConnected;
 	}
 
@@ -107,21 +107,29 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	/** synchronized is just because we use static userList in this demo to prevent concurrent access **/
-	@SuppressWarnings("deprecation")
 	public synchronized User findUser(String username){
+
 		User user = new User();
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-		Result<Record> result = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equals(username)).fetch();
-		//.from(CV).where(CV.CV_ID.lessThan(11)).fetch();
+		try{
 
-		for (Record r : result) {
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+
+			Record r = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
+
+			System.out.println("retrieved user.");
 			user.setEmail(r.getValue(TIMESCOPER.EMAIL));
 			user.setFirstName(r.getValue(TIMESCOPER.FIRSTNAME));
 			user.setLastName(r.getValue(TIMESCOPER.LASTNAME));
 			user.setPassword(r.getValue(TIMESCOPER.PASSWORD));
 			user.setRoleId(r.getValue(TIMESCOPER.ROLE));
 			user.setUserName(r.getValue(TIMESCOPER.USERNAME));
+
+		}catch(Exception e ){
+
+			Messagebox.show("Invalid username", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			
 		}
 
 		return user;

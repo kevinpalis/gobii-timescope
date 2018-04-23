@@ -6,7 +6,11 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.services.AuthenticationService;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -31,22 +35,40 @@ import org.zkoss.zul.Window;
 public class LoginViewModel {
 	//UI component
 	boolean isCreateNew = false;
-	
+
 	private String pageCaption;
-	
+
 	private User userAccount;
 
 	private ListModelList<String> roleList;
-	
+
+	ViewModelService viewModelService;
+
 	@Init
 	public void init() {
+		userAccount = new User();
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("isLoggedIn", false);
-		
-		 Window window = (Window)Executions.createComponents(
-	                "/switch_database.zul", null, args);
-	      window.doModal();
+
+		Window window = (Window)Executions.createComponents(
+				"/switch_database.zul", null, args);
+		window.doModal();
+	}
+
+	@Command("login")
+	public void openDatabaseInfoDialog() {
+
+		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
+
+		if (authService.login(userAccount.getUserName(), userAccount.getPassword())){
+			Messagebox.show("Login successful!");
+
+			Executions.sendRedirect("/index.zul");
+			return;
+
+		}
+
 	}
 
 	public User getUserAccount() {

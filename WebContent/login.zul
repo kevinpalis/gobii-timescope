@@ -29,15 +29,15 @@
 					<vbox hflex="min" align="center" vflex="min">
 						<hbox>
 							Username :
-							<textbox id="account" width="200px" />
+							<textbox id="account" width="200px" value="@bind(vm.userAccount.userName)" />
 						</hbox>
 						<hbox>
 							Password :
 							<textbox id="password" type="password"
-								width="200px" />
+								width="200px"  value="@bind(vm.userAccount.password)" />
 						</hbox>
 
-						<button label="Login" />
+						<button label="Login" onClick="@command('login')"/>
 					</vbox>
 				</window>
 			</vlayout>
