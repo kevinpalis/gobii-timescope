@@ -24,7 +24,7 @@ public class SidebarPageConfigAjaxBasedImpl implements SidebarPageConfig{
 		pageMap.put("fn1",new SidebarPage("markers","Markers","/imgs/site.png","http://www.zkoss.org/"));
 		pageMap.put("fn2",new SidebarPage("dnasample","DNA Samples","/imgs/demo.png","http://www.zkoss.org/zkdemo"));
 		pageMap.put("fn3",new SidebarPage("dnarun","DNA Runs","/imgs/doc.png","http://books.zkoss.org/wiki/ZK_Developer's_Reference"));
-		pageMap.put("fn4",new SidebarPage("dataset","Datasets","/imgs/doc.png","http://books.zkoss.org/wiki/ZK_Developer's_Reference"));
+		pageMap.put("fn4",new SidebarPage("dataset","Datasets","/imgs/doc.png","/datasets.zul"));
 		pageMap.put("fn5",new SidebarPage("user","Users","/imgs/demo.png","/users.zul"));
 	}
 	

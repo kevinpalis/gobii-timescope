@@ -19,6 +19,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
@@ -44,7 +45,7 @@ public class UserViewModel {
 
 		setCbAllUsers(false);
 
-		userAccount = new User("Angel Manica", "Raquel", "araquel", "Password1!", "angelmanica@gmail.com", 2);
+		userAccount = (User) Sessions.getCurrent().getAttribute("userInfo");
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
 		selectedUsersList = new ListModelList<User>();
@@ -62,7 +63,7 @@ public class UserViewModel {
 		int i = 0;
 		int randomNum;
 		Random r = new Random();
-		
+
 		User newUser = new User();
 		while (i<numOfUsers){
 			randomNum = r.nextInt(3);
@@ -131,13 +132,13 @@ public class UserViewModel {
 		window.doModal();
 
 	}
-	
+
 
 	@Command("createUser")
 	@NotifyChange({"users"})
 	public void createUser(){
 		User emptyUser = new User();
-		
+
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", emptyUser);
 

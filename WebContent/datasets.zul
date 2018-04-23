@@ -1,0 +1,191 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
+
+	<caption sclass="fn-caption" label="Datasets" />
+	<vlayout>
+
+		<groupbox mold="3d" closable="false">
+			<caption label="FILTERS: " />
+			<vlayout>
+
+				<hlayout>
+
+					<grid hflex="true" vflex="1">
+						<columns>
+							<column align="left" />
+							<column align="left" />
+						</columns>
+						<rows>
+							<row>
+								<cell sclass="row-title">
+									Dataset ID :
+								</cell>
+								<cell>
+									<hbox hflex="true">
+										<intbox value="1" hflex="true" />
+										to
+										<intbox value="20" hflex="true" />
+									</hbox>
+								</cell>
+							</row>
+							<row>
+								<cell sclass="row-title">
+									Dataset Names :
+								</cell>
+								<cell>
+									<textbox rows="8" cols="40"
+										hflex="true" vflex="true">
+										<attribute name="value">
+											comma separated, names list,
+										</attribute>
+									</textbox>
+								</cell>
+							</row>
+						</rows>
+					</grid>
+
+					<grid hflex="true">
+						<columns>
+							<column align="left" />
+							<column align="left" />
+						</columns>
+						<rows>
+							<row>
+								<cell sclass="row-title">
+									Created By :
+								</cell>
+								<cell>
+									<combobox autodrop="true"
+										hflex="true">
+										<comboitem label="KPalis" />
+										<comboitem label="USER_READER" />
+										<comboitem label="wee" />
+									</combobox>
+								</cell>
+							</row>
+							<row>
+								<cell sclass="row-title">
+									Creation Date :
+								</cell>
+								<cell>
+									<hbox>
+										<datebox lenient="true"
+											buttonVisible="true" />
+										to
+										<datebox lenient="true"
+											buttonVisible="true" />
+									</hbox>
+								</cell>
+							</row>
+							<row>
+								<cell sclass="row-title">
+									Dataset Type :
+								</cell>
+								<cell>
+									<combobox autodrop="true"
+										hflex="true">
+										<comboitem
+											label="nucleotide_2_letter" />
+										<comboitem label="iupac" />
+									</combobox>
+								</cell>
+							</row>
+
+							<row>
+								<cell sclass="row-title">
+									Principal Investigator :
+								</cell>
+								<cell>
+									<combobox autodrop="true"
+										hflex="true">
+										<comboitem label="Liz Jones" />
+										<comboitem label="Kevin Palis" />
+										<comboitem label="Phil Glaser" />
+									</combobox>
+								</cell>
+							</row>
+						</rows>
+					</grid>
+				</hlayout>
+
+				<div align="center" hflex="1">
+
+					<button label="Submit Query" width="200px" />
+
+					<button label="Clear" width="200px" />
+				</div>
+
+			</vlayout>
+		</groupbox>
+
+		<grid id="mgrid"  model="@load(vm.datasetList)">
+			<columns>
+				<column hflex="min">
+					<checkbox label="Select All"
+						onCheck="@command('doSelectAll')" />
+				</column>
+				<column hflex="1">
+					<label value="ID" />
+				</column>
+				<column hflex="1">
+					<label value="Name" />
+				</column>
+				<column hflex="1">
+					<label value="Experiment Id" />
+				</column>
+				<column hflex="1">
+					<label value="Data Table" />
+				</column>
+				<column hflex="1">
+					<label value="Data File" />
+				</column>
+				<column hflex="1">
+					<label value="Created By" />
+				</column>
+				<column hflex="1">
+					<label value="Created Date" />
+				</column>
+			</columns>
+				<template name="model" var="dataset">
+				<row>
+				<cell>
+				<checkbox value="@load(dataset)"
+				checked="@load(dataset.selected)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.id)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.name)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.expId)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.dataTable)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.dataFile)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.createdBy)" />
+				</cell>
+				<cell>
+				<label value="@load(dataset.createdDate)" />
+				</cell>
+				</row>
+				</template>
+		</grid>
+
+		<div align="right">
+
+			<button id="deleteBtn" style="background-color: red"
+				label="Delete" hflex="min" />
+
+		</div>
+	</vlayout>
+</window>
