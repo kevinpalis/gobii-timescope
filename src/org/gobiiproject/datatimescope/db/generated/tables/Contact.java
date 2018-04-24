@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Contact extends TableImpl<ContactRecord> {
 
-    private static final long serialVersionUID = 1276035504;
+    private static final long serialVersionUID = 1440481746;
 
     /**
      * The reference instance of <code>public.contact</code>
@@ -157,7 +157,7 @@ public class Contact extends TableImpl<ContactRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EMAIL_KEY, Indexes.PK_CONTACT);
+        return Arrays.<Index>asList(Indexes.CONTACT_USERNAME_KEY, Indexes.EMAIL_KEY, Indexes.PK_CONTACT);
     }
 
     /**
@@ -181,7 +181,7 @@ public class Contact extends TableImpl<ContactRecord> {
      */
     @Override
     public List<UniqueKey<ContactRecord>> getKeys() {
-        return Arrays.<UniqueKey<ContactRecord>>asList(Keys.PK_CONTACT, Keys.EMAIL_KEY);
+        return Arrays.<UniqueKey<ContactRecord>>asList(Keys.PK_CONTACT, Keys.EMAIL_KEY, Keys.CONTACT_USERNAME_KEY);
     }
 
     /**

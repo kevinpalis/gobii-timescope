@@ -59,6 +59,7 @@ public class Indexes {
 
     public static final Index IDX_ANALYSIS_TYPE_ID = Indexes0.IDX_ANALYSIS_TYPE_ID;
     public static final Index PK_ANALYSIS = Indexes0.PK_ANALYSIS;
+    public static final Index CONTACT_USERNAME_KEY = Indexes0.CONTACT_USERNAME_KEY;
     public static final Index EMAIL_KEY = Indexes0.EMAIL_KEY;
     public static final Index PK_CONTACT = Indexes0.PK_CONTACT;
     public static final Index IDX_CV_CVGROUPID = Indexes0.IDX_CV_CVGROUPID;
@@ -158,6 +159,7 @@ public class Indexes {
     private static class Indexes0 extends AbstractKeys {
         public static Index IDX_ANALYSIS_TYPE_ID = createIndex("idx_analysis_type_id", Analysis.ANALYSIS, new OrderField[] { Analysis.ANALYSIS.TYPE_ID }, false);
         public static Index PK_ANALYSIS = createIndex("pk_analysis", Analysis.ANALYSIS, new OrderField[] { Analysis.ANALYSIS.ANALYSIS_ID }, true);
+        public static Index CONTACT_USERNAME_KEY = createIndex("contact_username_key", Contact.CONTACT, new OrderField[] { Contact.CONTACT.USERNAME }, true);
         public static Index EMAIL_KEY = createIndex("email_key", Contact.CONTACT, new OrderField[] { Contact.CONTACT.EMAIL }, true);
         public static Index PK_CONTACT = createIndex("pk_contact", Contact.CONTACT, new OrderField[] { Contact.CONTACT.CONTACT_ID }, true);
         public static Index IDX_CV_CVGROUPID = createIndex("idx_cv_cvgroupid", Cv.CV, new OrderField[] { Cv.CV.CVGROUP_ID }, false);
