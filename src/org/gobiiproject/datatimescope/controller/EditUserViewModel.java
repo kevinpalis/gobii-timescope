@@ -3,7 +3,7 @@ package org.gobiiproject.datatimescope.controller;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -34,20 +34,20 @@ public class EditUserViewModel {
 	
 	private String pageCaption;
 	
-	private User userAccount;
+	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
 	
 	ViewModelService userInfoService;
 	
 	@Init
-	public void init(@ExecutionArgParam("editedUser") User user) {
+	public void init(@ExecutionArgParam("editedUser") TimescoperRecord user) {
 		userAccount = user;
 		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
 		userInfoService = new ViewModelServiceImpl();
 		
 		//Figure out if this window was called to edit a user or to create one
-		if(user.getUserName()!=null) setPageCaption("Edit User Information \""+ userAccount.getUserName() + "\"");
+		if(user.getUsername()!=null) setPageCaption("Edit User Information \""+ userAccount.getUsername() + "\"");
 		else{
 			setPageCaption("Create New User");
 			isCreateNew = true;
@@ -62,11 +62,11 @@ public class EditUserViewModel {
 		}
 	}
 	
-	public User getUserAccount() {
+	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(User userAccount) {
+	public void setUserAccount(TimescoperRecord userAccount) {
 		this.userAccount = userAccount;
 	}
 

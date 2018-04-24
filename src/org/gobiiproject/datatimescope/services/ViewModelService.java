@@ -3,20 +3,23 @@
 */
 package org.gobiiproject.datatimescope.services;
 
+import java.util.List;
+
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.entity.User;
 
 public interface ViewModelService {
 
 
 	/** create new user **/
-	public void createNewUser(User userAccount);
+	public void createNewUser(TimescoperRecord userAccount);
 	
 	/** find user by username **/
-	public User findUser(String account);
+	public TimescoperRecord findUser(String account);
 	
-	/** update user **/
-	public User updateUser(User user);
+
+	/** find user by username **/
+	public List<TimescoperRecord> getAllUsers();
 
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
 

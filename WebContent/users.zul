@@ -20,21 +20,21 @@
 						<cell sclass="row-title">Username :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.userName)" />
+								value="@load(vm.userAccount.username)" />
 						</cell>
 					</row>
 					<row>
 						<cell sclass="row-title">First Name :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.firstName)" />
+								value="@load(vm.userAccount.firstname)" />
 						</cell>
 					</row>
 					<row>
 						<cell sclass="row-title">Last Name :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.lastName)" />
+								value="@load(vm.userAccount.lastname)" />
 						</cell>
 					</row>
 					<row>
@@ -51,7 +51,7 @@
 						<cell sclass="row-title">Role :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.roleName)" />
+								value="@load(vm.userAccount.role)" />
 						</cell>
 					</row>
 				</rows>
@@ -72,19 +72,19 @@
 						<checkbox label="Select All"
 							onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 					</column>
-					<column hflex="1" sort="auto(userName)">
+					<column hflex="1" sort="auto(username)">
 						<label value="Username" />
 					</column>
-					<column hflex="1" sort="auto(lastName)">
+					<column hflex="1" sort="auto(lastname)">
 						<label value="Last Name" />
 					</column>
-					<column hflex="1" sort="auto(firstName)">
+					<column hflex="1" sort="auto(firstname)">
 						<label value="First Name" />
 					</column>
 					<column hflex="1" sort="auto(email)">
 						<label value="Email" />
 					</column>
-					<column hflex="1" sort="auto(roleName)">
+					<column hflex="1" sort="auto(role)">
 						<label value="Role" />
 					</column>
 					<column hflex="min"></column>
@@ -93,25 +93,24 @@
 				<template name="model" var="user">
 					<row>
 						<cell>
-							<checkbox value="@load(user)"
-								checked="@load(user.selected)"
+							<checkbox checked="@load(vm.cbAllUsers)"
 								onCheck="@command('updateSelectUser', userChecked=self.value, isChecked=self.checked)" />
 
 						</cell>
 						<cell>
-							<label value="@load(user.userName)" />
+							<label value="@load(user.username)" />
 						</cell>
 						<cell>
-							<label value="@load(user.lastName)" />
+							<label value="@load(user.lastname)" />
 						</cell>
 						<cell>
-							<label value="@load(user.firstName)" />
+							<label value="@load(user.firstname)" />
 						</cell>
 						<cell>
 							<label value="@load(user.email)" />
 						</cell>
 						<cell>
-							<label value="@load(user.roleName)" />
+							<label value="@load(user.role)" />
 						</cell>
 						<cell>
 							<button label="Edit"

@@ -29,7 +29,7 @@
 					<vbox hflex="min" align="center" vflex="min">
 						<hbox>
 							Username :
-							<textbox id="account" width="200px" value="@bind(vm.userAccount.userName)" />
+							<textbox id="account" width="200px" value="@bind(vm.userAccount.username)" />
 						</hbox>
 						<hbox>
 							Password :
