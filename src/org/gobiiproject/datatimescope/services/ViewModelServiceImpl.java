@@ -19,6 +19,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zul.Messagebox;
 
@@ -72,21 +73,28 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public void createNewUser(TimescoperRecord userAccount) {
+	public boolean createNewUser(TimescoperRecord userAccount) {
 		// TODO Auto-generated method stub
 
+		boolean successful = false;
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			context.insertInto(TIMESCOPER)
-			.set(TIMESCOPER.EMAIL, userAccount.getEmail())
-			.set(TIMESCOPER.FIRSTNAME, userAccount.getFirstname())
-			.set(TIMESCOPER.LASTNAME, userAccount.getLastname())
-			.set(TIMESCOPER.PASSWORD, userAccount.getPassword())
-			.set(TIMESCOPER.ROLE, userAccount.getRole())
-			.set(TIMESCOPER.USERNAME, userAccount.getUsername())
-			.execute();
 
+			userAccount.store();
+			
+			context.executeInsert(userAccount);
+			
+//			context.insertInto(TIMESCOPER)
+//			.set(TIMESCOPER.EMAIL, userAccount.getEmail())
+//			.set(TIMESCOPER.FIRSTNAME, userAccount.getFirstname())
+//			.set(TIMESCOPER.LASTNAME, userAccount.getLastname())
+//			.set(TIMESCOPER.PASSWORD, userAccount.getPassword())
+//			.set(TIMESCOPER.ROLE, userAccount.getRole())
+//			.set(TIMESCOPER.USERNAME, userAccount.getUsername())
+//			.execute();
+
+			successful = true;
 			Messagebox.show("Successfully created new user!");
 
 		}
@@ -97,7 +105,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			else Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
-
+		return successful;
 	}
 
 	public synchronized TimescoperRecord findUser(String username){
@@ -129,15 +137,39 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<TimescoperRecord> getAllUsers() {
+	public List<TimescoperRecord> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
 		
 
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-		List<TimescoperRecord> userList = context.select().from(TIMESCOPER).fetchInto(TimescoperRecord.class);
+		List<TimescoperRecord> userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
 
 		
 		return userList;
+	}
+
+	@Override
+	public boolean updateUser(TimescoperRecord userAccount) {
+		// TODO Auto-generated method stub
+
+		boolean successful = false;
+		try{
+
+			userAccount.store();
+			userAccount.refresh();
+			
+			successful = true;
+			Messagebox.show("Successfully updated user!");
+			
+		}catch(Exception e ){
+			if(e.getMessage().contains("violates unique constraint")){
+				Messagebox.show(userAccount.getUsername()+" already exists!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			}
+			else Messagebox.show("Invalid username", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			
+		}
+		return successful;
+
 	}
 
 

@@ -11,16 +11,19 @@ import org.gobiiproject.datatimescope.entity.ServerInfo;
 public interface ViewModelService {
 
 
-	/** create new user **/
-	public void createNewUser(TimescoperRecord userAccount);
+	/** create new user 
+	 * @return **/
+	public boolean createNewUser(TimescoperRecord userAccount);
 	
 	/** find user by username **/
 	public TimescoperRecord findUser(String account);
 	
 
 	/** find user by username **/
-	public List<TimescoperRecord> getAllUsers();
+	public List<TimescoperRecord> getAllOtherUsers(String username);
 
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
+
+	public boolean updateUser(TimescoperRecord userAccount);
 
 }

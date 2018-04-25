@@ -57,8 +57,7 @@
 				</rows>
 			</grid>
 			<div hflex="true" align="right">
-				<button id="reloadProfile" label="Refresh" />
-				<button label="Edit Profile"
+				<button label="Edit Profile" width="100px"
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
@@ -93,7 +92,7 @@
 				<template name="model" var="user">
 					<row>
 						<cell>
-							<checkbox checked="@load(vm.cbAllUsers)"
+							<checkbox value="@load(user)" checked="@load(vm.allCbSelected)"
 								onCheck="@command('updateSelectUser', userChecked=self.value, isChecked=self.checked)" />
 
 						</cell>

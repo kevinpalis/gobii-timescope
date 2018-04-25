@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -36,8 +37,8 @@ public class UserViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	
-	private boolean cbAllUsers;
+
+	private boolean cbAllUsers, isAllCbSelected=false;
 
 	private TimescoperRecord userAccount;
 
@@ -47,41 +48,32 @@ public class UserViewModel {
 	@AfterCompose
 	public void afterCompose() {
 		viewModelService = new ViewModelServiceImpl();
-		
-		setCbAllUsers(false);
 
-		userAccount = (TimescoperRecord) Sessions.getCurrent().getAttribute("userInfo");
+		setCbAllUsers(false);
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+		
+		String accountUsername = cre.getAccount();
+		
+		userAccount = viewModelService.findUser(accountUsername);
+		
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
 		selectedUsersList = new ListModelList<TimescoperRecord>();
-		
-		userlist = new ListModelList<TimescoperRecord>(viewModelService.getAllUsers(), true);
-		
+
+		userlist = new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true);
+
 		userlist.setMultiple(true);
 
 	}
 
-	private ListModelList<TimescoperRecord> getDummyUsers() {
-		// TODO Auto-generated method stub
 
-		ListModelList<TimescoperRecord> users = new ListModelList<TimescoperRecord>();
+	@NotifyChange("userAccount")
+	@Command("userProfile")
+	public void userProfile(){
 
-		int numOfUsers = 20;
-		int i = 0;
-		int randomNum;
-		Random r = new Random();
 
-		TimescoperRecord newUser = new TimescoperRecord();
-		while (i<numOfUsers){
-			randomNum = r.nextInt(3);
-			newUser = new TimescoperRecord(randomNum, "Dummy", "data", "User"+ Integer.toString(i), "Password1!", "em@il.com", randomNum);
-			users.add(newUser);
-			i++;
-		}
-
-		return users;
 	}
-
+	
 	@Command
 	public void editProfile(){
 
@@ -114,14 +106,18 @@ public class UserViewModel {
 	}
 
 	@Command("doSelectAll")
-	@NotifyChange("users")
+	@NotifyChange({"users", "isAllCbSelected"})
 	public void doSelectAll(){
 		ListModelList<TimescoperRecord> users = getUsers();
 
 		selectedUsersList.clear(); //clear the list first and then just add if there are any selected
 
-		for(TimescoperRecord u: users){
-			if (isCbAllUsers()) selectedUsersList.add(u);
+		setAllCbSelected(isCbAllUsers());
+		
+		if (isCbAllUsers()) {
+			for(TimescoperRecord u: users){
+				selectedUsersList.add(u);
+			}
 		}
 	}
 
@@ -211,5 +207,13 @@ public class UserViewModel {
 
 	public void setSelectedUsersList(ListModelList<TimescoperRecord> selectedUsersList) {
 		this.selectedUsersList = selectedUsersList;
+	}
+
+	public boolean isAllCbSelected() {
+		return isAllCbSelected;
+	}
+
+	public void setAllCbSelected(boolean isAllCbSelected) {
+		this.isAllCbSelected = isAllCbSelected;
 	}
 }

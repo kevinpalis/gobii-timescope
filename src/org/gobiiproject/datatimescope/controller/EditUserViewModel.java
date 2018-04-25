@@ -30,9 +30,14 @@ import org.zkoss.zul.Window;
 
 public class EditUserViewModel {
 	//UI component
+
+	@Wire("#editUserWindows")
+	Window editUserWindow;
+	
+	
 	boolean isCreateNew = false;
 	
-	private String pageCaption;
+	private String pageCaption, userName;
 	
 	private TimescoperRecord userAccount;
 
@@ -47,19 +52,33 @@ public class EditUserViewModel {
 		userInfoService = new ViewModelServiceImpl();
 		
 		//Figure out if this window was called to edit a user or to create one
-		if(user.getUsername()!=null) setPageCaption("Edit User Information \""+ userAccount.getUsername() + "\"");
+		if(user.getUsername()!=null){
+			userName = userAccount.getUsername();
+			setPageCaption("Edit User Information \""+ userName + "\"");
+		}
 		else{
 			setPageCaption("Create New User");
 			isCreateNew = true;
 		}
 	}
 
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		Selectors.wireComponents(view, this, false);
+	}
+	
 	@Command("saveUserInfo")
 	public void saveUser(){
+		boolean successful = false;
 		if(isCreateNew){
 			System.out.println("creating new user...");
-			userInfoService.createNewUser(userAccount);
+			successful = userInfoService.createNewUser(userAccount);
+		}else{
+
+			successful = userInfoService.updateUser(userAccount);
 		}
+		
+		if(successful) editUserWindow.detach();
 	}
 	
 	public TimescoperRecord getUserAccount() {

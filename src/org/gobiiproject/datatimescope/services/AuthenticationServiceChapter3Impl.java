@@ -30,8 +30,13 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
     	TimescoperRecord user = userInfoService.findUser(nm);
 
         //check if not empty and if password matches
-		if(user.getUsername()==null) return false;
+		if(user==null){
+			
+			Messagebox.show("Invalid username!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			return false;
+		}		
 		else if (!user.getPassword().equals(pd)){
+			
 			Messagebox.show("Invalid password!", "ERROR", Messagebox.OK, Messagebox.ERROR);
 			return false;
 		}
@@ -42,8 +47,6 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
         user.setPassword("removePasswordInfo");
         
         sess.setAttribute("userCredential",cre);
-        sess.setAttribute("userInfo",user);
-         
  
         return true;
     }

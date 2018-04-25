@@ -73,7 +73,7 @@
 		<div align = "center">
 			<hlayout>
 				<button id="switchDatabase" label="Connect" hflex="1" onClick="@command('connectToDatabase')"/>
-				<button id="reloadProfile" label="Reload" hflex="1"/>
+				<button id="reloadProfile" label="Reload" hflex="1" visible="@load(vm.loggedIn)"/>
 			</hlayout>
 		</div>
 	</vlayout>
