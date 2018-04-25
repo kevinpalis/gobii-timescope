@@ -12,24 +12,19 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.entity.User;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zul.Messagebox;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
-	static protected List<User> userList = new ArrayList<User>();  
-	static{
-		userList.add(new User("anonymous","lastname", "anonymous","password","a@your.com", 1));
-		userList.add(new User("anonymous2","lastname", "anonymous2","password","b@your.com", 1));
-		userList.add(new User("anonymous3","lastname", "anonymous3","password","c@your.com", 1));
-	}
 
 	@Override
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -78,53 +73,59 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public void createNewUser(User userAccount) {
+	public boolean createNewUser(TimescoperRecord userAccount) {
 		// TODO Auto-generated method stub
 
+		boolean successful = false;
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			context.insertInto(TIMESCOPER)
-			.set(TIMESCOPER.EMAIL, userAccount.getEmail())
-			.set(TIMESCOPER.FIRSTNAME, userAccount.getFirstName())
-			.set(TIMESCOPER.LASTNAME, userAccount.getLastName())
-			.set(TIMESCOPER.PASSWORD, userAccount.getPassword())
-			.set(TIMESCOPER.ROLE, userAccount.getRoleId())
-			.set(TIMESCOPER.USERNAME, userAccount.getUserName())
-			.execute();
 
+			userAccount.store();
+			
+			context.executeInsert(userAccount);
+			
+//			context.insertInto(TIMESCOPER)
+//			.set(TIMESCOPER.EMAIL, userAccount.getEmail())
+//			.set(TIMESCOPER.FIRSTNAME, userAccount.getFirstname())
+//			.set(TIMESCOPER.LASTNAME, userAccount.getLastname())
+//			.set(TIMESCOPER.PASSWORD, userAccount.getPassword())
+//			.set(TIMESCOPER.ROLE, userAccount.getRole())
+//			.set(TIMESCOPER.USERNAME, userAccount.getUsername())
+//			.execute();
+
+			successful = true;
 			Messagebox.show("Successfully created new user!");
 
 		}
 		catch(Exception e ){
 			if(e.getMessage().contains("violates unique constraint")){
-				Messagebox.show(userAccount.getUserName()+" already exists!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+				Messagebox.show(userAccount.getUsername()+" already exists!", "ERROR", Messagebox.OK, Messagebox.ERROR);
 			}
 			else Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
-
+		return successful;
 	}
 
-	/** synchronized is just because we use static userList in this demo to prevent concurrent access **/
-	public synchronized User findUser(String username){
+	public synchronized TimescoperRecord findUser(String username){
 
-		User user = new User();
+		TimescoperRecord user = new TimescoperRecord();
 
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
 
-			Record r = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
+			user = (TimescoperRecord) context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
 
-			System.out.println("retrieved user.");
-			user.setEmail(r.getValue(TIMESCOPER.EMAIL));
-			user.setFirstName(r.getValue(TIMESCOPER.FIRSTNAME));
-			user.setLastName(r.getValue(TIMESCOPER.LASTNAME));
-			user.setPassword(r.getValue(TIMESCOPER.PASSWORD));
-			user.setRoleId(r.getValue(TIMESCOPER.ROLE));
-			user.setUserName(r.getValue(TIMESCOPER.USERNAME));
+//			System.out.println("retrieved user.");
+//			user.setEmail(r.getValue(TIMESCOPER.EMAIL));
+//			user.setFirstName(r.getValue(TIMESCOPER.FIRSTNAME));
+//			user.setLastName(r.getValue(TIMESCOPER.LASTNAME));
+//			user.setPassword(r.getValue(TIMESCOPER.PASSWORD));
+//			user.setRoleId(r.getValue(TIMESCOPER.ROLE));
+//			user.setUserName(r.getValue(TIMESCOPER.USERNAME));
 
 		}catch(Exception e ){
 
@@ -135,18 +136,42 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return user;
 	}
 
-	/** synchronized is just because we use static userList in this demo to prevent concurrent access **/
-	public synchronized User updateUser(User user){
-		int s = userList.size();
-		for(int i=0;i<s;i++){
-			User u = userList.get(i);
-			if(user.getUserName().equals(u.getUserName())){
-				userList.set(i,u = User.clone(user));
-				return u;
-			}
-		}
-		throw new RuntimeException("user not found "+user.getUserName());
+	@Override
+	public List<TimescoperRecord> getAllOtherUsers(String username) {
+		// TODO Auto-generated method stub
+		
+
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<TimescoperRecord> userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
+
+		
+		return userList;
 	}
+
+	@Override
+	public boolean updateUser(TimescoperRecord userAccount) {
+		// TODO Auto-generated method stub
+
+		boolean successful = false;
+		try{
+
+			userAccount.store();
+			userAccount.refresh();
+			
+			successful = true;
+			Messagebox.show("Successfully updated user!");
+			
+		}catch(Exception e ){
+			if(e.getMessage().contains("violates unique constraint")){
+				Messagebox.show(userAccount.getUsername()+" already exists!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			}
+			else Messagebox.show("Invalid username", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			
+		}
+		return successful;
+
+	}
+
 
 
 }

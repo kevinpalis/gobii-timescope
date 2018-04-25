@@ -7,8 +7,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.services.UserCredential;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -33,48 +36,44 @@ import org.zkoss.zul.Window;
 public class UserViewModel {
 	//UI component
 
-	private boolean cbAllUsers;
+	ViewModelService viewModelService;
 
-	private User userAccount;
+	private boolean cbAllUsers, isAllCbSelected=false;
+
+	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
-	private ListModelList<User> userlist, selectedUsersList;
+	private ListModelList<TimescoperRecord> userlist, selectedUsersList;
 
 	@AfterCompose
 	public void afterCompose() {
+		viewModelService = new ViewModelServiceImpl();
 
 		setCbAllUsers(false);
-
-		userAccount = (User) Sessions.getCurrent().getAttribute("userInfo");
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+		
+		String accountUsername = cre.getAccount();
+		
+		userAccount = viewModelService.findUser(accountUsername);
+		
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
-		selectedUsersList = new ListModelList<User>();
-		userlist = getDummyUsers();
+		selectedUsersList = new ListModelList<TimescoperRecord>();
+
+		userlist = new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true);
+
 		userlist.setMultiple(true);
 
 	}
 
-	private ListModelList<User> getDummyUsers() {
-		// TODO Auto-generated method stub
 
-		ListModelList<User> users = new ListModelList<User>();
+	@NotifyChange("userAccount")
+	@Command("userProfile")
+	public void userProfile(){
 
-		int numOfUsers = 20;
-		int i = 0;
-		int randomNum;
-		Random r = new Random();
 
-		User newUser = new User();
-		while (i<numOfUsers){
-			randomNum = r.nextInt(3);
-			newUser = new User("User"+ Integer.toString(i), "Dummy", "data", "Password1!", "em@il.com", randomNum);
-			users.add(newUser);
-			i++;
-		}
-
-		return users;
 	}
-
+	
 	@Command
 	public void editProfile(){
 
@@ -98,8 +97,8 @@ public class UserViewModel {
 		else{
 			StringBuilder sb = new StringBuilder();
 
-			for(User u: selectedUsersList){
-				sb.append("\n"+u.getUserName()+"\" "+u.getLastName() +", "+ u.getFirstName());
+			for(TimescoperRecord u: selectedUsersList){
+				sb.append("\n"+u.getUsername()+"\" "+u.getLastname() +", "+ u.getFirstname());
 			}
 			Messagebox.show("Are you sure you want to delete the following users?"+sb.toString(), "Confirm Delete", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
 		}
@@ -107,22 +106,25 @@ public class UserViewModel {
 	}
 
 	@Command("doSelectAll")
-	@NotifyChange("users")
+	@NotifyChange({"users", "isAllCbSelected"})
 	public void doSelectAll(){
-		ListModelList<User> users = getUsers();
+		ListModelList<TimescoperRecord> users = getUsers();
 
 		selectedUsersList.clear(); //clear the list first and then just add if there are any selected
 
-		for(User u: users){
-			u.setSelected(isCbAllUsers());
-			if (isCbAllUsers()) selectedUsersList.add(u);
+		setAllCbSelected(isCbAllUsers());
+		
+		if (isCbAllUsers()) {
+			for(TimescoperRecord u: users){
+				selectedUsersList.add(u);
+			}
 		}
 	}
 
 
 	@Command("modifyUser")
 	@NotifyChange({"users"})
-	public void modifyUser(@BindingParam("editedUser") User user){
+	public void modifyUser(@BindingParam("editedUser") TimescoperRecord user){
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", user);
@@ -137,7 +139,7 @@ public class UserViewModel {
 	@Command("createUser")
 	@NotifyChange({"users"})
 	public void createUser(){
-		User emptyUser = new User();
+		TimescoperRecord emptyUser = new TimescoperRecord();
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", emptyUser);
@@ -151,18 +153,15 @@ public class UserViewModel {
 
 	@Command("updateSelectUser")
 	@NotifyChange({"cbAllUsers", "selectedUsersList"})
-	public void updateSelectUser(@BindingParam("userChecked") User user, @BindingParam("isChecked") Boolean isChecked){
-
-		user.setSelected(isChecked);
-
+	public void updateSelectUser(@BindingParam("userChecked") TimescoperRecord user, @BindingParam("isChecked") Boolean isChecked){
 		if(isChecked){
 			selectedUsersList.add(user);
 		}else{
 			setCbAllUsers(false);
 
-			ListIterator<User> it = selectedUsersList.listIterator();
+			ListIterator<TimescoperRecord> it = selectedUsersList.listIterator();
 			while (it.hasNext()) {
-				if (it.next().getUserName().matches(user.getUserName())) {
+				if (it.next().getUsername().matches(user.getUsername())) {
 					it.remove();
 					break;
 				}
@@ -170,11 +169,11 @@ public class UserViewModel {
 		}
 	}
 
-	public User getUserAccount() {
+	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(User userAccount) {
+	public void setUserAccount(TimescoperRecord userAccount) {
 		this.userAccount = userAccount;
 	}
 
@@ -186,11 +185,11 @@ public class UserViewModel {
 		this.roleList = roleList;
 	}
 
-	public ListModelList<User> getUsers() {
+	public ListModelList<TimescoperRecord> getUsers() {
 		return userlist;
 	}
 
-	public void setUsers(ListModelList<User> users) {
+	public void setUsers(ListModelList<TimescoperRecord> users) {
 		this.userlist = users;
 	}
 
@@ -202,11 +201,19 @@ public class UserViewModel {
 		this.cbAllUsers = selectedAllUsers;
 	}
 
-	public ListModelList<User> getSelectedUsersList() {
+	public ListModelList<TimescoperRecord> getSelectedUsersList() {
 		return selectedUsersList;
 	}
 
-	public void setSelectedUsersList(ListModelList<User> selectedUsersList) {
+	public void setSelectedUsersList(ListModelList<TimescoperRecord> selectedUsersList) {
 		this.selectedUsersList = selectedUsersList;
+	}
+
+	public boolean isAllCbSelected() {
+		return isAllCbSelected;
+	}
+
+	public void setAllCbSelected(boolean isAllCbSelected) {
+		this.isAllCbSelected = isAllCbSelected;
 	}
 }

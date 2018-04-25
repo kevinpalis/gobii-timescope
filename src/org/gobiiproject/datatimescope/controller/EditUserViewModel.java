@@ -3,7 +3,7 @@ package org.gobiiproject.datatimescope.controller;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -30,43 +30,62 @@ import org.zkoss.zul.Window;
 
 public class EditUserViewModel {
 	//UI component
+
+	@Wire("#editUserWindows")
+	Window editUserWindow;
+	
+	
 	boolean isCreateNew = false;
 	
-	private String pageCaption;
+	private String pageCaption, userName;
 	
-	private User userAccount;
+	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
 	
 	ViewModelService userInfoService;
 	
 	@Init
-	public void init(@ExecutionArgParam("editedUser") User user) {
+	public void init(@ExecutionArgParam("editedUser") TimescoperRecord user) {
 		userAccount = user;
 		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
 		userInfoService = new ViewModelServiceImpl();
 		
 		//Figure out if this window was called to edit a user or to create one
-		if(user.getUserName()!=null) setPageCaption("Edit User Information \""+ userAccount.getUserName() + "\"");
+		if(user.getUsername()!=null){
+			userName = userAccount.getUsername();
+			setPageCaption("Edit User Information \""+ userName + "\"");
+		}
 		else{
 			setPageCaption("Create New User");
 			isCreateNew = true;
 		}
 	}
 
-	@Command("saveUserInfo")
-	public void saveUser(){
-		if(isCreateNew){
-			System.out.println("creating new user...");
-			userInfoService.createNewUser(userAccount);
-		}
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		Selectors.wireComponents(view, this, false);
 	}
 	
-	public User getUserAccount() {
+	@Command("saveUserInfo")
+	public void saveUser(){
+		boolean successful = false;
+		if(isCreateNew){
+			System.out.println("creating new user...");
+			successful = userInfoService.createNewUser(userAccount);
+		}else{
+
+			successful = userInfoService.updateUser(userAccount);
+		}
+		
+		if(successful) editUserWindow.detach();
+	}
+	
+	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(User userAccount) {
+	public void setUserAccount(TimescoperRecord userAccount) {
 		this.userAccount = userAccount;
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
@@ -38,7 +38,7 @@ public class LoginViewModel {
 
 	private String pageCaption;
 
-	private User userAccount;
+	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
 
@@ -46,7 +46,7 @@ public class LoginViewModel {
 
 	@Init
 	public void init() {
-		userAccount = new User();
+		userAccount = new TimescoperRecord();
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("isLoggedIn", false);
@@ -61,7 +61,7 @@ public class LoginViewModel {
 
 		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
 
-		if (authService.login(userAccount.getUserName(), userAccount.getPassword())){
+		if (authService.login(userAccount.getUsername(), userAccount.getPassword())){
 			Messagebox.show("Login successful!");
 
 			Executions.sendRedirect("/index.zul");
@@ -71,11 +71,11 @@ public class LoginViewModel {
 
 	}
 
-	public User getUserAccount() {
+	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(User userAccount) {
+	public void setUserAccount(TimescoperRecord userAccount) {
 		this.userAccount = userAccount;
 	}
 

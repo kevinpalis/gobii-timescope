@@ -31,21 +31,21 @@
 				<row>
 					<cell sclass="row-title">Username :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.userName)"
+						<textbox value="@bind(vm.userAccount.username)"
 							constraint="no empty: Please enter your username. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">First Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.firstName)"
+						<textbox value="@bind(vm.userAccount.firstname)"
 							constraint="no empty: Please enter your firstname. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Last Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.lastName)"
+						<textbox value="@bind(vm.userAccount.lastname)"
 							constraint="no empty: Please enter your lastname. " width="300px" />
 					</cell>
 				</row>
@@ -69,7 +69,7 @@
 					<cell sclass="row-title">User Role :</cell>
 					<cell>
 						<listbox model="@load(vm.roleList)"
-							selectedIndex="@bind(vm.userAccount.roleId)" mold="select"
+							selectedIndex="@bind(vm.userAccount.role)" mold="select"
 							tabindex="8" width="300px">
 							<template name="model">
 								<listitem label="${each}" />

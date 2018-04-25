@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.entity.Dataset;
-import org.gobiiproject.datatimescope.entity.User;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
