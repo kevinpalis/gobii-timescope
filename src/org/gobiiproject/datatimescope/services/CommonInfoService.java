@@ -11,9 +11,10 @@ public class CommonInfoService {
 
 	static List<String> roleList= new ArrayList<String>();
 	static{
-		roleList.add("Super Administrator");
-		roleList.add("Administrator");
-		roleList.add("User");
+		roleList.add(""); // empty for index 0
+		roleList.add("Super Administrator"); // index 1
+		roleList.add("Administrator"); // index 2
+		roleList.add("User"); // index 3
 		roleList = Collections.unmodifiableList(roleList);
 	}
 	

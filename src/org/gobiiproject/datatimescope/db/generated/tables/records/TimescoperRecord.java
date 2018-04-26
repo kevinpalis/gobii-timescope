@@ -7,6 +7,7 @@ package org.gobiiproject.datatimescope.db.generated.tables.records;
 import javax.annotation.Generated;
 
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
+import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
@@ -125,6 +126,16 @@ public class TimescoperRecord extends UpdatableRecordImpl<TimescoperRecord> impl
      */
     public Integer getRole() {
         return (Integer) get(6);
+    }
+    
+    /**
+     * Getter for <code>public.timescoper.role</code>.
+     */
+    public String getRolename() {
+    	int role = (Integer) get(6);
+    	String rolename = CommonInfoService.getRoleList().get(role);
+    			
+        return rolename; 
     }
 
     // -------------------------------------------------------------------------

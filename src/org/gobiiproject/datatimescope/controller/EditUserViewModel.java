@@ -39,7 +39,7 @@ public class EditUserViewModel {
 	Window editUserWindow;
 
 
-	boolean isCreateNew = false;
+	boolean isCreateNew = false, isSuperAdmin=false;
 
 	private String pageCaption, userName;
 
@@ -65,6 +65,8 @@ public class EditUserViewModel {
 			setPageCaption("Create New User");
 			isCreateNew = true;
 		}
+
+		if(userAccount.getRolename().contains("Super")) isSuperAdmin=true;
 	}
 
 	@AfterCompose
@@ -86,12 +88,12 @@ public class EditUserViewModel {
 					// TODO Auto-generated method stub
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
-						
+
 						if(!isCreateNew){
-							
-						Map<String,Object> args = new HashMap<String,Object>();
-						args.put("timescoperRecord", userAccount);
-						BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
+
+							Map<String,Object> args = new HashMap<String,Object>();
+							args.put("timescoperRecord", userAccount);
+							BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
 
 						}
 						editUserWindow.detach();
@@ -105,26 +107,35 @@ public class EditUserViewModel {
 	@Command("saveUserInfo")
 	public void saveUser(){
 		boolean successful = false;
-		if(isCreateNew){
-			System.out.println("creating new user...");
-			successful = userInfoService.createNewUser(userAccount);
-			
-			BindUtils.postGlobalCommand(null, null, "retrieveUserList", null);
+
+		if(userAccount.getRole()>0){ // check if a role is selected
+
+
+			if(isCreateNew){
+				System.out.println("creating new user...");
+				successful = userInfoService.createNewUser(userAccount);
+
+				BindUtils.postGlobalCommand(null, null, "retrieveUserList", null);
+			}else{
+				if(userAccount.changed()){
+
+					//update Original User Values
+					successful = userInfoService.updateUser(userAccount);
+
+					Map<String,Object> args = new HashMap<String,Object>();
+					args.put("timescoperRecord", userAccount);
+					BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
+				} else Messagebox.show("There are no changes yet.", "There's nothing to save", Messagebox.OK, Messagebox.INFORMATION);
+
+			}
+
+			if(successful){
+				editUserWindow.detach();
+			}
+
+
 		}else{
-			if(userAccount.changed()){
-
-				//update Original User Values
-				successful = userInfoService.updateUser(userAccount);
-
-				Map<String,Object> args = new HashMap<String,Object>();
-				args.put("timescoperRecord", userAccount);
-				BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
-			} else Messagebox.show("There are no changes yet.", "There's nothing to save", Messagebox.OK, Messagebox.INFORMATION);
-
-		}
-
-		if(successful){
-			editUserWindow.detach();
+			Messagebox.show("Please specify the user's role.", "There's no role selected", Messagebox.OK, Messagebox.INFORMATION);
 		}
 	}
 

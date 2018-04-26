@@ -40,7 +40,7 @@ public class UserViewModel {
 
 	ViewModelService viewModelService;
 
-	private boolean cbAllUsers, isAllCbSelected=false;
+	private boolean cbAllUsers, isAllCbSelected=false, superUser=false;
 
 	private TimescoperRecord userAccount;
 
@@ -65,6 +65,8 @@ public class UserViewModel {
 		userlist = new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true);
 
 		userlist.setMultiple(true);
+		
+		if(userAccount.getRolename().contains("Super")) superUser=true;
 
 	}
 
@@ -162,13 +164,15 @@ public class UserViewModel {
 		Window window = (Window)Executions.createComponents(
 				"/editUser.zul", null, args);
 		window.doModal();
-
+		
+			
 	}
 
 
 	@Command("createUser")
 	public void createUser(){
 		TimescoperRecord emptyUser = new TimescoperRecord();
+		emptyUser.setRole(0);
 		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", emptyUser);
@@ -181,7 +185,7 @@ public class UserViewModel {
 
 
 	@GlobalCommand("refreshTimescoperRecord")
-	@NotifyChange({"userAccount", "userlist"})
+	@NotifyChange({"userAccount", "userlist", "users" })
 	public void refreshTimescoperRecord(@BindingParam("timescoperRecord")TimescoperRecord record){
 		//...
 		record.refresh();
@@ -275,5 +279,15 @@ public class UserViewModel {
 
 	public void setAllCbSelected(boolean isAllCbSelected) {
 		this.isAllCbSelected = isAllCbSelected;
+	}
+
+
+	public boolean isSuperUser() {
+		return superUser;
+	}
+
+
+	public void setSuperUser(boolean superUser) {
+		this.superUser = superUser;
 	}
 }
