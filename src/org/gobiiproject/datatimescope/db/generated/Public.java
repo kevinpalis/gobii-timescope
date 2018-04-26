@@ -39,7 +39,9 @@ import org.gobiiproject.datatimescope.db.generated.tables.Protocol;
 import org.gobiiproject.datatimescope.db.generated.tables.Reference;
 import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
+import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkageGenetic;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
@@ -67,7 +69,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 854601237;
+    private static final long serialVersionUID = 1765691321;
 
     /**
      * The reference instance of <code>public</code>
@@ -226,9 +228,19 @@ between them.
     public final Timescoper TIMESCOPER = org.gobiiproject.datatimescope.db.generated.tables.Timescoper.TIMESCOPER;
 
     /**
+     * The table <code>public.v_dataset_summary</code>.
+     */
+    public final VDatasetSummary V_DATASET_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary.V_DATASET_SUMMARY;
+
+    /**
      * The table <code>public.v_jobs_summary</code>.
      */
     public final VJobsSummary V_JOBS_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary.V_JOBS_SUMMARY;
+
+    /**
+     * The table <code>public.v_marker_group_summary</code>.
+     */
+    public final VMarkerGroupSummary V_MARKER_GROUP_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY;
 
     /**
      * The table <code>public.v_marker_linkage_genetic</code>.
@@ -343,7 +355,9 @@ between them.
             Reference.REFERENCE,
             Role.ROLE,
             Timescoper.TIMESCOPER,
+            VDatasetSummary.V_DATASET_SUMMARY,
             VJobsSummary.V_JOBS_SUMMARY,
+            VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY,
             VMarkerLinkageGenetic.V_MARKER_LINKAGE_GENETIC,
             VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL,
             Variant.VARIANT,

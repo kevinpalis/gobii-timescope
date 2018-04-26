@@ -20,8 +20,10 @@
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
 	closable="true">
 
-	<caption src="/imgs/profile.png" sclass="fn-caption"
-		label="@load(vm.pageCaption)" />
+	<caption sclass="fn-caption">
+		<image src="/imgs/datatimescope4.png"  width="70px"/>
+		<label value="@load(vm.pageCaption)"/>
+	</caption>
 	<vlayout>
 		<grid hflex="min" vflex="min">
 			<columns>
