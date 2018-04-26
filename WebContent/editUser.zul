@@ -15,7 +15,7 @@
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
 <window id="editUserWindows" border="normal" hflex="1" vflex="1"
-	contentStyle="overflow:auto" closable="true"
+	contentStyle="overflow:auto" closable="false"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.EditUserViewModel')">
 
@@ -82,6 +82,7 @@
 
 		<div align="center" hflex="1">
 			<button id="saveProfile" label="Save" width="100px" onClick="@command('saveUserInfo')"/>
+			<button  label="Cancel" width="100px" onClick="@command('refreshUserBeforeClose')"/>
 		</div>
 	</vlayout>
 </window>

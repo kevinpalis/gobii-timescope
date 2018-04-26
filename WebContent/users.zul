@@ -51,13 +51,13 @@
 						<cell sclass="row-title">Role :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.role)" />
+								value="@load(vm.roleList[vm.userAccount.role])" />
 						</cell>
 					</row>
 				</rows>
 			</grid>
 			<div hflex="true" align="right">
-				<button label="Edit Profile" width="100px"
+				<button label="Edit Profile" width="200px"
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
@@ -92,7 +92,8 @@
 				<template name="model" var="user">
 					<row>
 						<cell>
-							<checkbox value="@load(user)" checked="@load(vm.allCbSelected)"
+							<checkbox value="@load(user)"
+								checked="@load(vm.allCbSelected)"
 								onCheck="@command('updateSelectUser', userChecked=self.value, isChecked=self.checked)" />
 
 						</cell>
@@ -121,9 +122,9 @@
 			</grid>
 			<div align="right">
 
-				<button id="createUsersBtn"
-					label="Create" hflex="min" onClick="@command('createUser')"/>
-					
+				<button id="createUsersBtn" label="Create" hflex="min"
+					onClick="@command('createUser')" />
+
 				<button id="deleteBtn" style="background-color: red"
 					label="Delete" hflex="min" onClick="@command('deleteUsers')" />
 

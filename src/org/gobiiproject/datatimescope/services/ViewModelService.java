@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.zkoss.zul.ListModelList;
 
 public interface ViewModelService {
 
@@ -25,5 +26,9 @@ public interface ViewModelService {
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
 
 	public boolean updateUser(TimescoperRecord userAccount);
+
+	public boolean deleteUser(TimescoperRecord userAccount);
+
+	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList);
 
 }
