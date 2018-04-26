@@ -73,3 +73,10 @@
    .borderRadius(0px);
 }
 
+.main {
+  padding: 15px;
+}
+
+.filterbox{
+  background: url("/imgs/todo.png") no-repeat 0 -16px;
+}

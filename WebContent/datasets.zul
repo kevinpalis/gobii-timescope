@@ -4,16 +4,13 @@
 <window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
-
 	<caption sclass="fn-caption" label="Datasets" />
 	<vlayout>
 
-		<groupbox mold="3d" closable="false">
-			<caption label="FILTERS: " />
+		<groupbox>
+			<caption label="Filters: " />
 			<vlayout>
-
 				<hlayout>
-
 					<grid hflex="true" vflex="1">
 						<columns>
 							<column align="left" />
@@ -50,8 +47,8 @@
 
 					<grid hflex="true">
 						<columns>
-							<column align="left" />
-							<column align="left" />
+							<column align="left" width="40%"/>
+							<column align="left" width="60%"/>
 						</columns>
 						<rows>
 							<row>
@@ -113,16 +110,15 @@
 				</hlayout>
 
 				<div align="center" hflex="1">
-
-					<button label="Submit Query" width="200px" />
-
 					<button label="Clear" width="200px" />
+					<button label="Submit Query" width="200px" />
+					<button id="deleteBtn" style="background-color: red" label="Delete Selected" hflex="min" />
 				</div>
 
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid"  model="@load(vm.datasetList)">
+		<grid id="mgrid" model="@load(vm.datasetList)">
 			<columns>
 				<column hflex="min">
 					<checkbox label="Select All"
@@ -150,41 +146,40 @@
 					<label value="Created Date" />
 				</column>
 			</columns>
-				<template name="model" var="dataset">
+			<template name="model" var="dataset">
 				<row>
-				<cell>
-				<checkbox value="@load(dataset)"
-				checked="@load(dataset.selected)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.id)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.name)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.expId)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.dataTable)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.dataFile)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.createdBy)" />
-				</cell>
-				<cell>
-				<label value="@load(dataset.createdDate)" />
-				</cell>
+					<cell>
+						<checkbox value="@load(dataset)"
+							checked="@load(dataset.selected)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.id)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.name)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.expId)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.dataTable)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.dataFile)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.createdBy)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.createdDate)" />
+					</cell>
 				</row>
-				</template>
+			</template>
 		</grid>
 
 		<div align="right">
 
-			<button id="deleteBtn" style="background-color: red"
-				label="Delete" hflex="min" />
+			
 
 		</div>
 	</vlayout>

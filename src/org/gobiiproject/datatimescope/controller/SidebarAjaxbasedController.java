@@ -54,6 +54,8 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 		//construct component and hierarchy
 		Row row = new Row();
 		Image image = new Image(imageSrc);
+		image.setWidth("27px");
+		image.setHeight("27px");
 		Label lab = new Label(label);
 		
 		row.appendChild(image);

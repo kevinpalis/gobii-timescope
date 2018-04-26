@@ -21,7 +21,7 @@
 <zk>
 
 	<borderlayout hflex="1" vflex="1" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
-		<north height="100px" border="none" >
+		<north height="115px" border="none" >
 			<apply templateURI="banner.zul"/>
 		</north>
 		<west width="260px" border="none" collapsible="true" splittable="true" minsize="300">
