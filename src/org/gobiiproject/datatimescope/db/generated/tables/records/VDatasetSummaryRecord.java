@@ -129,6 +129,22 @@ public class VDatasetSummaryRecord extends TableRecordImpl<VDatasetSummaryRecord
     }
 
     /**
+     * Not Generated. to get Analyses values as String
+     */
+    public String getAnalysesAsString(){
+    	StringBuilder sb = new StringBuilder();
+    	
+    	Integer[] analysesList =  (Integer[]) get(6);
+
+		sb.append("{");
+    	for(Integer i: analysesList){
+    		sb.append(i.toString()+", ");
+    	}
+		sb.append("}");
+		
+    	return sb.toString();
+    }
+    /**
      * Setter for <code>public.v_dataset_summary.data_table</code>.
      */
     public void setDataTable(String value) {

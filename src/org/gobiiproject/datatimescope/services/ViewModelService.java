@@ -6,7 +6,10 @@ package org.gobiiproject.datatimescope.services;
 import java.util.List;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
 
 public interface ViewModelService {
@@ -19,7 +22,6 @@ public interface ViewModelService {
 	/** find user by username **/
 	public TimescoperRecord findUser(String account);
 	
-
 	/** find user by username **/
 	public List<TimescoperRecord> getAllOtherUsers(String username);
 
@@ -30,5 +32,11 @@ public interface ViewModelService {
 	public boolean deleteUser(TimescoperRecord userAccount);
 
 	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList);
+
+	public List<VDatasetSummaryRecord> getAllDatasets();
+
+	public boolean deleteDataset(VDatasetSummaryRecord vDatasetSummaryRecord);
+
+	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList);
 
 }

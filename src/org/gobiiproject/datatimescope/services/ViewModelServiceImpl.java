@@ -5,6 +5,7 @@ package org.gobiiproject.datatimescope.services;
 
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
+import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -13,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -127,9 +131,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
+
 			context.batchDelete(selectedUsersList).execute();
-			
+
 			successful = true;
 			Messagebox.show("Successfully deleted users!");
 
@@ -167,12 +171,36 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<TimescoperRecord> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
 
-
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-		List<TimescoperRecord> userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
+		List<TimescoperRecord> userList = null;
+		try{
+			
+			userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
 
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error whil trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
 
 		return userList;
+	}
+
+	@Override
+	public List<VDatasetSummaryRecord> getAllDatasets() {
+		// TODO Auto-generated method stub
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VDatasetSummaryRecord> datasetList = null ;
+		try{
+			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error whil trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+		return datasetList;
 	}
 
 	@Override
@@ -197,6 +225,55 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 		return successful;
 
+	}
+
+	@Override
+	public boolean deleteDataset(VDatasetSummaryRecord vDatasetSummaryRecord) {
+		// TODO Auto-generated method stub
+	
+		boolean successful = false;
+		try{
+			DatasetRecord dr = new DatasetRecord();
+			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
+			dr.attach(vDatasetSummaryRecord.configuration());
+
+			dr.delete();
+			
+			successful = true;
+			Messagebox.show("Successfully deleted dataset!");
+
+		}
+		catch(Exception e ){
+
+			e.printStackTrace();
+		}
+		return successful;
+	}
+
+	@Override
+	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList) {
+		// TODO Auto-generated method stub
+		
+		boolean successful = false;
+		try{
+
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
+			        .stream()
+			        .map(VDatasetSummaryRecord::getDatasetId)
+			        .collect(Collectors.toList())))
+			    .execute();
+			
+			successful = true;
+			Messagebox.show("Successfully deleted users!");
+
+		}
+		catch(Exception e ){
+
+			e.printStackTrace();
+		}
+		return successful;
 	}
 
 }
