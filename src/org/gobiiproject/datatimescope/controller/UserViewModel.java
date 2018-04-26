@@ -12,6 +12,7 @@ import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -24,6 +25,7 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.CheckEvent;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
@@ -51,11 +53,11 @@ public class UserViewModel {
 
 		setCbAllUsers(false);
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-		
+
 		String accountUsername = cre.getAccount();
-		
+
 		userAccount = viewModelService.findUser(accountUsername);
-		
+
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
 		selectedUsersList = new ListModelList<TimescoperRecord>();
@@ -73,7 +75,7 @@ public class UserViewModel {
 
 
 	}
-	
+
 	@Command
 	public void editProfile(){
 
@@ -85,9 +87,12 @@ public class UserViewModel {
 		Window window = (Window)Executions.createComponents(
 				"/editUser.zul", null, args);
 		window.doModal();
+		window.setVisible(true);
+
+
 	}
 
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteUsers")
 	public void deleteUsers(){
 
@@ -100,20 +105,45 @@ public class UserViewModel {
 			for(TimescoperRecord u: selectedUsersList){
 				sb.append("\n"+u.getUsername()+"\" "+u.getLastname() +", "+ u.getFirstname());
 			}
-			Messagebox.show("Are you sure you want to delete the following users?"+sb.toString(), "Confirm Delete", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION);
+
+
+			Messagebox.show("Are you sure you want to delete the following users?"+sb.toString(), 
+					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
+					Messagebox.QUESTION,
+					new org.zkoss.zk.ui.event.EventListener(){
+				@Override
+				public void onEvent(Event event) throws Exception {
+					// TODO Auto-generated method stub
+					if(Messagebox.ON_YES.equals(event.getName())){
+						//YES is clicked
+						boolean successful;
+
+						if(selectedUsersList.getSize() == 1){  // just one user is selected
+							successful = viewModelService.deleteUser(selectedUsersList.get(0));
+						}else{
+							//bulk delete
+							successful = viewModelService.deleteUsers(selectedUsersList);
+						}
+
+						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveUserList", null);
+
+					}
+				}
+			});
+
 		}
 
 	}
 
 	@Command("doSelectAll")
-	@NotifyChange({"users", "isAllCbSelected"})
+	@NotifyChange({"userlist", "allCbSelected"})
 	public void doSelectAll(){
 		ListModelList<TimescoperRecord> users = getUsers();
 
 		selectedUsersList.clear(); //clear the list first and then just add if there are any selected
 
 		setAllCbSelected(isCbAllUsers());
-		
+
 		if (isCbAllUsers()) {
 			for(TimescoperRecord u: users){
 				selectedUsersList.add(u);
@@ -123,7 +153,7 @@ public class UserViewModel {
 
 
 	@Command("modifyUser")
-	@NotifyChange({"users"})
+	@NotifyChange({"userlist"})
 	public void modifyUser(@BindingParam("editedUser") TimescoperRecord user){
 
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -137,10 +167,9 @@ public class UserViewModel {
 
 
 	@Command("createUser")
-	@NotifyChange({"users"})
 	public void createUser(){
 		TimescoperRecord emptyUser = new TimescoperRecord();
-
+		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", emptyUser);
 
@@ -150,6 +179,37 @@ public class UserViewModel {
 
 	}
 
+
+	@GlobalCommand("refreshTimescoperRecord")
+	@NotifyChange({"userAccount", "userlist"})
+	public void refreshTimescoperRecord(@BindingParam("timescoperRecord")TimescoperRecord record){
+		//...
+		record.refresh();
+
+	}
+
+
+	@GlobalCommand("retrieveUserList")
+	@NotifyChange({"userlist", "users", "selectedUsersList", "allCbSelected", "cbAllUsers"})
+	public void retrieveUserList(){
+		//...
+
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+
+		String accountUsername = cre.getAccount();
+
+		userAccount = viewModelService.findUser(accountUsername);
+		setUsers(new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true));
+
+
+		userlist.setMultiple(true);
+
+		selectedUsersList.clear();
+
+		setAllCbSelected(false);
+		setCbAllUsers(false);
+
+	}
 
 	@Command("updateSelectUser")
 	@NotifyChange({"cbAllUsers", "selectedUsersList"})

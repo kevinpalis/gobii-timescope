@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
@@ -21,6 +22,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
@@ -79,20 +81,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-
 			userAccount.store();
-			
-			context.executeInsert(userAccount);
-			
-//			context.insertInto(TIMESCOPER)
-//			.set(TIMESCOPER.EMAIL, userAccount.getEmail())
-//			.set(TIMESCOPER.FIRSTNAME, userAccount.getFirstname())
-//			.set(TIMESCOPER.LASTNAME, userAccount.getLastname())
-//			.set(TIMESCOPER.PASSWORD, userAccount.getPassword())
-//			.set(TIMESCOPER.ROLE, userAccount.getRole())
-//			.set(TIMESCOPER.USERNAME, userAccount.getUsername())
-//			.execute();
+			userAccount.refresh();
+
 
 			successful = true;
 			Messagebox.show("Successfully created new user!");
@@ -108,6 +99,49 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return successful;
 	}
 
+
+	@Override
+	public boolean deleteUser(TimescoperRecord userAccount) {
+
+		boolean successful = false;
+		try{
+
+			userAccount.delete();
+
+			successful = true;
+			Messagebox.show("Successfully deleted user!");
+
+		}
+		catch(Exception e ){
+
+			e.printStackTrace();
+		}
+		return successful;
+	}
+
+	@Override
+	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList) {
+		// TODO Auto-generated method stub
+
+		boolean successful = false;
+		try{
+
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+			context.batchDelete(selectedUsersList).execute();
+			
+			successful = true;
+			Messagebox.show("Successfully deleted users!");
+
+		}
+		catch(Exception e ){
+
+			e.printStackTrace();
+		}
+		return successful;
+	}
+
+
 	public synchronized TimescoperRecord findUser(String username){
 
 		TimescoperRecord user = new TimescoperRecord();
@@ -119,18 +153,11 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			user = (TimescoperRecord) context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
 
-//			System.out.println("retrieved user.");
-//			user.setEmail(r.getValue(TIMESCOPER.EMAIL));
-//			user.setFirstName(r.getValue(TIMESCOPER.FIRSTNAME));
-//			user.setLastName(r.getValue(TIMESCOPER.LASTNAME));
-//			user.setPassword(r.getValue(TIMESCOPER.PASSWORD));
-//			user.setRoleId(r.getValue(TIMESCOPER.ROLE));
-//			user.setUserName(r.getValue(TIMESCOPER.USERNAME));
 
 		}catch(Exception e ){
 
 			Messagebox.show("Invalid username", "ERROR", Messagebox.OK, Messagebox.ERROR);
-			
+
 		}
 
 		return user;
@@ -139,12 +166,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	@Override
 	public List<TimescoperRecord> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
-		
+
 
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 		List<TimescoperRecord> userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
 
-		
+
 		return userList;
 	}
 
@@ -157,21 +184,19 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			userAccount.store();
 			userAccount.refresh();
-			
+
 			successful = true;
 			Messagebox.show("Successfully updated user!");
-			
+
 		}catch(Exception e ){
 			if(e.getMessage().contains("violates unique constraint")){
 				Messagebox.show(userAccount.getUsername()+" already exists!", "ERROR", Messagebox.OK, Messagebox.ERROR);
 			}
 			else Messagebox.show("Invalid username", "ERROR", Messagebox.OK, Messagebox.ERROR);
-			
+
 		}
 		return successful;
 
 	}
-
-
 
 }
