@@ -24,7 +24,7 @@
 					apply="org.zkoss.bind.BindComposer"
 					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
 					border="normal" hflex="min" vflex="max">
-					<caption image="/imgs/gobiiicon.png"
+					<caption image="/imgs/user.png"
 						label="GOBII Data Timescope" />
 					<vbox hflex="min" align="center" vflex="min">
 						<hbox>
@@ -36,8 +36,8 @@
 							<textbox id="password" type="password"
 								width="200px"  value="@bind(vm.userAccount.password)" />
 						</hbox>
-
 						<button label="Login" onClick="@command('login')"/>
+						<label value="Need help?" onClick='alert("Hello world!")' />
 					</vbox>
 				</window>
 			</vlayout>
