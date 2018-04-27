@@ -9,7 +9,7 @@
 	<caption src="/imgs/profile.png" sclass="fn-caption"
 		label="User Info" />
 	<hlayout>
-		<vlayout vflex="max" hflex="1">
+		<vlayout vflex="max" hflex="2">
 			<grid sclass="grid-borderless" vflex="min" hflex="1">
 				<columns>
 					<column align="left" />
@@ -61,8 +61,8 @@
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
-		<groupbox mold="3d" hflex="3" vflex="max" closable="false" visible="@load(vm.superUser)">
-			<caption label="ALL USERS" />
+		<groupbox mold="3d" hflex="5" vflex="max" closable="false" visible="@load(vm.superUser)">
+			<caption label="All Users" />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
 				pageSize="6">

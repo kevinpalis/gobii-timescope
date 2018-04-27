@@ -24,7 +24,7 @@
 		<north height="115px" border="none" >
 			<apply templateURI="banner.zul"/>
 		</north>
-		<west width="260px" collapsible="true" splittable="true" minsize="300">
+		<west width="260px" collapsible="true" splittable="true" minsize="300" border="none">
 			<apply templateURI="sidebar.zul"/>
 		</west>
 		<center id="mainContent" autoscroll="true">
