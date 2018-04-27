@@ -51,7 +51,7 @@
 						<cell sclass="row-title">Role :</cell>
 						<cell>
 							<label
-								value="@load(vm.roleList[vm.userAccount.role])" />
+								value="@load(vm.userAccount.rolename)" />
 						</cell>
 					</row>
 				</rows>
@@ -61,7 +61,7 @@
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
-		<groupbox mold="3d" hflex="3" vflex="max" closable="false">
+		<groupbox mold="3d" hflex="3" vflex="max" closable="false" visible="@load(vm.superUser)">
 			<caption label="ALL USERS" />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
@@ -110,7 +110,7 @@
 							<label value="@load(user.email)" />
 						</cell>
 						<cell>
-							<label value="@load(user.role)" />
+							<label value="@load(user.rolename)" />
 						</cell>
 						<cell>
 							<button label="Edit"

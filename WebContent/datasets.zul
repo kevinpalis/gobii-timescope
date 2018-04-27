@@ -1,7 +1,7 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
+<window border="normal" hflex="min" vflex="1" contentStyle="overflow-y:visible;"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
@@ -47,8 +47,8 @@
 
 					<grid hflex="true">
 						<columns>
-							<column align="left" width="40%"/>
-							<column align="left" width="60%"/>
+							<column align="left" width="40%" />
+							<column align="left" width="60%" />
 						</columns>
 						<rows>
 							<row>
@@ -112,54 +112,101 @@
 				<div align="center" hflex="1">
 					<button label="Clear" width="200px" />
 					<button label="Submit Query" width="200px" />
-					<button id="deleteBtn" style="background-color: red" label="Delete Selected" hflex="min" />
+					<button id="deleteBtn" style="background-color: red"
+						label="Delete Selected" hflex="min" onClick="@command('deleteSelectedDatasets')" />
 				</div>
 
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid" model="@load(vm.datasetList)">
-			<columns>
+		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging" pageSize="15" pagingPosition="both" >
+			<columns sizable="true">
 				<column hflex="min">
 					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" />
+						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 				</column>
-				<column hflex="1">
-					<label value="ID" />
+				<column hflex="min">
+					<label value="Dataset ID" />
 				</column>
-				<column hflex="1">
-					<label value="Name" />
+				<column hflex="min">
+					<label value="Dataset Name" />
 				</column>
-				<column hflex="1">
+				<column hflex="min">
 					<label value="Experiment Id" />
 				</column>
-				<column hflex="1">
+				<column hflex="min">
+					<label value="Experiment Name" />
+				</column>
+				<column hflex="min">
+					<label value="Calling Analysis Id" />
+				</column>
+				<column hflex="min">
+					<label value="Calling Analysis Name" />
+				</column>
+				<column hflex="min">
+					<label value="Analyses" />
+				</column>
+				<column hflex="min">
 					<label value="Data Table" />
 				</column>
-				<column hflex="1">
+				<column hflex="min">
 					<label value="Data File" />
 				</column>
-				<column hflex="1">
+				<column hflex="min">
+					<label value="Quality Table" />
+				</column>
+				<column hflex="min">
+					<label value="Quality File" />
+				</column>
+				<column hflex="min">
 					<label value="Created By" />
 				</column>
-				<column hflex="1">
+				<column hflex="min">
 					<label value="Created Date" />
+				</column>
+				<column hflex="min">
+					<label value="Modified By" />
+				</column>
+				<column hflex="min">
+					<label value="Modified Date" />
+				</column>
+				<column hflex="min">
+					<label value="Status Name" />
+				</column>
+				<column hflex="min">
+					<label value="Type Name" />
+				</column>
+				<column hflex="min">
+					<label value="Job Name" />
 				</column>
 			</columns>
 			<template name="model" var="dataset">
 				<row>
 					<cell>
 						<checkbox value="@load(dataset)"
-							checked="@load(dataset.selected)" />
+							checked="@load(vm.allCbSelected)"
+							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.id)" />
+						<label value="@load(dataset.datasetId)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.name)" />
+						<label value="@load(dataset.datasetName)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.expId)" />
+						<label value="@load(dataset.experimentId)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.experimentName)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.callinganalysisId)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.callingnalysisName)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.analysesAsString)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.dataTable)" />
@@ -168,19 +215,35 @@
 						<label value="@load(dataset.dataFile)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.createdBy)" />
+						<label value="@load(dataset.qualityTable)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.qualityFile)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.createdByUsername)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.createdDate)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.modifiedByUsername)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.modifiedDate)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.statusName)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.typeName)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.jobName)" />
 					</cell>
 				</row>
 			</template>
 		</grid>
 
-		<div align="right">
-
-			
-
-		</div>
 	</vlayout>
 </window>
