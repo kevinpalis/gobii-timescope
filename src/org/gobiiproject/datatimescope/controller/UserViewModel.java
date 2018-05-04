@@ -56,7 +56,7 @@ public class UserViewModel {
 
 		String accountUsername = cre.getAccount();
 
-		userAccount = viewModelService.findUser(accountUsername);
+		userAccount = viewModelService.getUserInfo(accountUsername);
 
 		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
 
@@ -202,7 +202,7 @@ public class UserViewModel {
 
 		String accountUsername = cre.getAccount();
 
-		userAccount = viewModelService.findUser(accountUsername);
+		userAccount = viewModelService.getUserInfo(accountUsername);
 		setUsers(new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true));
 
 

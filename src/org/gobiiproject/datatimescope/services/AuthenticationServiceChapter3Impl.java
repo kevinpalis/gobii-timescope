@@ -27,24 +27,16 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
     public boolean login(String nm, String pd) {
     	
     	//retrieve userInfo from database
-    	TimescoperRecord user = userInfoService.findUser(nm);
+    	TimescoperRecord user = userInfoService.loginTimescoper(nm, pd);
 
         //check if not empty and if password matches
-		if(user==null){
-			
-			Messagebox.show("Invalid username!", "ERROR", Messagebox.OK, Messagebox.ERROR);
-			return false;
-		}		
-		else if (!user.getPassword().equals(pd)){
-			
-			Messagebox.show("Invalid password!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+		if(user.getUsername()==null){
 			return false;
 		}
-         
+		
 		//if still here, then checks passed. Update Sessions
         Session sess = Sessions.getCurrent();
         UserCredential cre = new UserCredential(user.getUsername(),user.getRole());
-        user.setPassword("removePasswordInfo");
         
         sess.setAttribute("userCredential",cre);
  

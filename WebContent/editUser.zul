@@ -60,7 +60,7 @@
 				<row>
 					<cell sclass="row-title">Password :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.password)"
+						<textbox value="@load(vm.password) @save(vm.userAccount.password)"
 							type="password"
 							constraint="no empty: Please enter your password." width="300px" />
 					</cell>

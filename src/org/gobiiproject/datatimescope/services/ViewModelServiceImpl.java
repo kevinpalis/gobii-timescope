@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
+import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
+import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
+import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
@@ -51,15 +55,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			Sessions.getCurrent().setAttribute("dbContext", context);
 			Sessions.getCurrent().setAttribute("serverInfo", serverInfo);
 
-			Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
-
-			for (Record r : result) {
-				Integer id = r.getValue(CV.CV_ID);
-				String term = r.getValue(CV.TERM);
-
-				System.out.println("CV_id: " + id + " Term: " + term );
-			}
-
 			isConnected = true;
 		} 
 		catch (Exception e) {
@@ -85,12 +80,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 		try{
 
-			userAccount.store();
-			userAccount.refresh();
 
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+			Createtimescoper createTimescoper = createTimescoperFromRecord(userAccount);
+			createTimescoper.execute(context.configuration());
 
-			successful = true;
 			Messagebox.show("Successfully created new user!");
+			successful = true;
 
 		}
 		catch(Exception e ){
@@ -103,6 +100,20 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return successful;
 	}
 
+
+	private Createtimescoper createTimescoperFromRecord(TimescoperRecord userAccount) {
+		// TODO Auto-generated method stub
+
+		Createtimescoper createTimescoper = new Createtimescoper();
+		createTimescoper.set_Email(userAccount.getEmail());
+		createTimescoper.set_Firstname(userAccount.getFirstname());
+		createTimescoper.set_Lastname(userAccount.getLastname());
+		createTimescoper.set_Password(userAccount.getPassword());
+		createTimescoper.set_Role(userAccount.getRole());
+		createTimescoper.set_Username(userAccount.getUsername());
+		
+		return createTimescoper;
+	}
 
 	@Override
 	public boolean deleteUser(TimescoperRecord userAccount) {
@@ -146,7 +157,40 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 
-	public synchronized TimescoperRecord findUser(String username){
+	public TimescoperRecord loginTimescoper(String username, String password){
+		boolean successful= false;
+		TimescoperRecord user = new TimescoperRecord();
+		Gettimescoper gettimescoper = new Gettimescoper();
+		try{
+
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+			gettimescoper.set_Password(password);
+			gettimescoper.set_Username(username);
+
+			int result = gettimescoper.execute(context.configuration());
+		
+			if(result==0) successful=true;
+			
+		}catch(Exception e ){
+			successful=false;
+		}
+
+		if(successful){
+			user.setFirstname(gettimescoper.getFirstname());
+			user.setLastname(gettimescoper.getLastname());
+			user.setEmail(gettimescoper.getEmail());
+			user.setRole(gettimescoper.getRole());
+			user.setUsername(gettimescoper.getUsername());
+			
+			
+		}else Messagebox.show("Invalid username or password!", "ERROR", Messagebox.OK, Messagebox.ERROR);
+		
+		return user;
+	}
+	
+
+	public synchronized TimescoperRecord getUserInfo(String username){
 
 		TimescoperRecord user = new TimescoperRecord();
 
@@ -210,6 +254,22 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 		try{
 
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperRecord
+			GenSalt2 genSalt = new GenSalt2();
+			genSalt.set__1("bf");
+			genSalt.set__2(11);
+			genSalt.execute(context.configuration());
+			
+			Crypt crypt = new Crypt();
+			crypt.set__1(userAccount.getPassword()); 
+			crypt.set__2(genSalt.getReturnValue());
+			crypt.execute(context.configuration());
+			
+			userAccount.setPassword(crypt.getReturnValue());
+			}
+			
 			userAccount.store();
 			userAccount.refresh();
 

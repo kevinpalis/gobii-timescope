@@ -41,7 +41,7 @@ public class EditUserViewModel {
 
 	boolean isCreateNew = false, isSuperAdmin=false;
 
-	private String pageCaption, userName;
+	private String pageCaption, userName, password;
 
 	private TimescoperRecord userAccount;
 
@@ -55,15 +55,17 @@ public class EditUserViewModel {
 		userAccount.changed(false);
 		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
 		userInfoService = new ViewModelServiceImpl();
-
+		
 		//Figure out if this window was called to edit a user or to create one
 		if(user.getUsername()!=null){
 			userName = userAccount.getUsername();
 			setPageCaption("Edit User Information \""+ userName + "\"");
+			password = "dummypassword";
 		}
 		else{
 			setPageCaption("Create New User");
 			isCreateNew = true;
+			password = "";
 		}
 
 		if(userAccount.getRolename().contains("Super")) isSuperAdmin=true;
@@ -108,7 +110,7 @@ public class EditUserViewModel {
 	public void saveUser(){
 		boolean successful = false;
 
-		if(userAccount.getRole()>0){ // check if a role is selected
+		if(validate(userAccount)){ // check if a role is selected
 
 
 			if(isCreateNew){
@@ -132,11 +134,37 @@ public class EditUserViewModel {
 			if(successful){
 				editUserWindow.detach();
 			}
+		}
+	}
 
-
-		}else{
+	private boolean validate(TimescoperRecord userAccount2) {
+		// TODO Auto-generated method stub
+		boolean didItPass = false;
+		
+		if( userAccount.getRole()==null || userAccount.getRole()==0){
 			Messagebox.show("Please specify the user's role.", "There's no role selected", Messagebox.OK, Messagebox.INFORMATION);
 		}
+		else if(userAccount.getUsername() == null || userAccount.getUsername().isEmpty()){
+			Messagebox.show("Please specify a username.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getEmail() == null || userAccount.getEmail().isEmpty()){
+			Messagebox.show("Please specify an email.", "Email cannot be empty.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getFirstname() == null || userAccount.getFirstname().isEmpty()){
+			Messagebox.show("Please specify the user's first name.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getLastname() == null || userAccount.getLastname().isEmpty()){
+			Messagebox.show("Please specify the user's last name.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getPassword() == null || userAccount.getPassword().isEmpty()){
+			Messagebox.show("Please specify a password.", "Password cannot be empty.", Messagebox.OK, Messagebox.INFORMATION);
+		}else{
+			didItPass = true;
+		}
+
+		
+		
+		return didItPass;
 	}
 
 	public TimescoperRecord getUserAccount() {
@@ -161,5 +189,13 @@ public class EditUserViewModel {
 
 	public void setPageCaption(String pageCaption) {
 		this.pageCaption = pageCaption;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

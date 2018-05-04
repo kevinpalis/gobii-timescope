@@ -19,10 +19,6 @@ public interface ViewModelService {
 	 * @return **/
 	public boolean createNewUser(TimescoperRecord userAccount);
 	
-	/** find user by username **/
-	public TimescoperRecord findUser(String account);
-	
-	/** find user by username **/
 	public List<TimescoperRecord> getAllOtherUsers(String username);
 
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
@@ -39,4 +35,7 @@ public interface ViewModelService {
 
 	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList);
 
+	public TimescoperRecord loginTimescoper(String username, String password);
+	
+	public TimescoperRecord getUserInfo(String username);
 }
