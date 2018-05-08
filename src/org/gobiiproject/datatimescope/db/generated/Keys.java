@@ -124,6 +124,7 @@ public class Keys {
     public static final UniqueKey<AnalysisRecord> PK_ANALYSIS = UniqueKeys0.PK_ANALYSIS;
     public static final UniqueKey<ContactRecord> PK_CONTACT = UniqueKeys0.PK_CONTACT;
     public static final UniqueKey<ContactRecord> EMAIL_KEY = UniqueKeys0.EMAIL_KEY;
+    public static final UniqueKey<ContactRecord> CONTACT_USERNAME_KEY = UniqueKeys0.CONTACT_USERNAME_KEY;
     public static final UniqueKey<CvRecord> PK_CV = UniqueKeys0.PK_CV;
     public static final UniqueKey<CvRecord> UNIQUE_CVTERM_TERM_CVGROUPID = UniqueKeys0.UNIQUE_CVTERM_TERM_CVGROUPID;
     public static final UniqueKey<CvgroupRecord> CV_PKEY = UniqueKeys0.CV_PKEY;
@@ -240,6 +241,7 @@ public class Keys {
         public static final UniqueKey<AnalysisRecord> PK_ANALYSIS = createUniqueKey(Analysis.ANALYSIS, "pk_analysis", Analysis.ANALYSIS.ANALYSIS_ID);
         public static final UniqueKey<ContactRecord> PK_CONTACT = createUniqueKey(Contact.CONTACT, "pk_contact", Contact.CONTACT.CONTACT_ID);
         public static final UniqueKey<ContactRecord> EMAIL_KEY = createUniqueKey(Contact.CONTACT, "email_key", Contact.CONTACT.EMAIL);
+        public static final UniqueKey<ContactRecord> CONTACT_USERNAME_KEY = createUniqueKey(Contact.CONTACT, "contact_username_key", Contact.CONTACT.USERNAME);
         public static final UniqueKey<CvRecord> PK_CV = createUniqueKey(Cv.CV, "pk_cv", Cv.CV.CV_ID);
         public static final UniqueKey<CvRecord> UNIQUE_CVTERM_TERM_CVGROUPID = createUniqueKey(Cv.CV, "unique_cvterm_term_cvgroupid", Cv.CV.TERM, Cv.CV.CVGROUP_ID);
         public static final UniqueKey<CvgroupRecord> CV_PKEY = createUniqueKey(Cvgroup.CVGROUP, "cv_pkey", Cvgroup.CVGROUP.CVGROUP_ID);

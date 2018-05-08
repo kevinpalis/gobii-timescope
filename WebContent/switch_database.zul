@@ -15,13 +15,15 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window hflex="1" vflex="1" contentStyle="overflow:auto"
+<window hflex="1" vflex="1" contentStyle="overflow:auto" id="databaseConnectionWindow"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
 	closable="true">
 
-	<caption src="/imgs/profile.png" sclass="fn-caption"
-		label="Modify Database Connection" />
+	<caption sclass="fn-caption">
+		<image src="/imgs/datatimescope5.png"  width="100px"/>
+		<label value="@load(vm.pageCaption)" style="font-weight:bold"/>
+	</caption>
 	<vlayout>
 		<grid hflex="min" vflex="min">
 			<columns>
@@ -33,8 +35,8 @@
 					<cell sclass="row-title">Host:</cell>
 					<cell>
 						<textbox
-							constraint="/.+@.+\.[a-z]+/: You enterd an invalid host format"
-							width="300px" />
+							constraint="no empty: Please enter a host name"
+							width="300px" value="@bind(vm.serverInfo.host)" />
 					</cell>
 				</row>
 				<row>
@@ -42,7 +44,7 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database port"
-							width="300px" />
+							width="300px" value="@bind(vm.serverInfo.port)"/>
 					</cell>
 				</row>
 				<row>
@@ -50,30 +52,30 @@
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a database name"
-							width="300px" />
+							width="300px" value="@bind(vm.serverInfo.dbName)"/>
 					</cell>
 				</row>
 
-				<row>
+				<row visible="@load(vm.loggedIn)">
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox
-							constraint="no empty: Please enter your username." width="300px" />
+							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.serverInfo.userName)"/>
 					</cell>
 				</row>
-				<row>
+				<row visible="@load(vm.loggedIn)">
 					<cell sclass="row-title">Password :</cell>
 					<cell>
 						<textbox id="password" type="password"
-							constraint="no empty: Please enter your password." width="300px" />
+							constraint="no empty: Please enter your password." width="300px" value="@bind(vm.serverInfo.password)"/>
 					</cell>
 				</row>
 			</rows>
 		</grid>
 		<div align = "center">
 			<hlayout>
-				<button id="saveProfile" label="Save" hflex="1"/>
-				<button id="reloadProfile" label="Reload" hflex="1"/>
+				<button id="switchDatabase" label="Connect" hflex="1" onClick="@command('connectToDatabase')"/>
+				<button id="reloadProfile" label="Reload" hflex="1" visible="@load(vm.loggedIn)"/>
 			</hlayout>
 		</div>
 	</vlayout>

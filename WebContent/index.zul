@@ -17,15 +17,17 @@
 </zk> -->
 
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 <zk>
+
 	<borderlayout hflex="1" vflex="1" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
-		<north height="100px" border="none" >
+		<north height="115px" border="none" >
 			<apply templateURI="banner.zul"/>
 		</north>
-		<west width="260px" border="none" collapsible="true" splittable="true" minsize="300">
+		<west width="260px" collapsible="true" splittable="true" minsize="300" border="none">
 			<apply templateURI="sidebar.zul"/>
 		</west>
-		<center id="mainContent" autoscroll="true" border="none">
+		<center id="mainContent" autoscroll="true">
 			<apply templateURI="mainContent.zul"/>
 		</center>
 		<south height="50px" border="none">

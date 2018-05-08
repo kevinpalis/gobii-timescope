@@ -1,10 +1,15 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -17,6 +22,7 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.CheckEvent;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
@@ -29,22 +35,143 @@ import org.zkoss.zul.Window;
 public class EditUserViewModel {
 	//UI component
 
-	private User userAccount;
+	@Wire("#editUserWindows")
+	Window editUserWindow;
+
+
+	boolean isCreateNew = false, isSuperAdmin=false;
+
+	private String pageCaption, userName, password;
+
+	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
-	
-	@Init
-	public void init(@ExecutionArgParam("editedUser") User user) {
-		userAccount = user;
-		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
 
+	ViewModelService userInfoService;
+
+	@Init
+	public void init(@ExecutionArgParam("editedUser") TimescoperRecord user) {
+		userAccount = user;
+		userAccount.changed(false);
+		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
+		userInfoService = new ViewModelServiceImpl();
+		
+		//Figure out if this window was called to edit a user or to create one
+		if(user.getUsername()!=null){
+			userName = userAccount.getUsername();
+			setPageCaption("Edit User Information \""+ userName + "\"");
+			password = "dummypassword";
+		}
+		else{
+			setPageCaption("Create New User");
+			isCreateNew = true;
+			password = "";
+		}
+
+		if(userAccount.getRolename().contains("Super")) isSuperAdmin=true;
 	}
 
-	public User getUserAccount() {
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		Selectors.wireComponents(view, this, false);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Command("refreshUserBeforeClose")
+	public void refreshUserBeforeClose(){
+		if(userAccount.changed()){
+
+			Messagebox.show("Are you sure you want to exit without saving your changes?", 
+					"Question", Messagebox.YES | Messagebox.CANCEL,
+					Messagebox.QUESTION,
+					new org.zkoss.zk.ui.event.EventListener(){
+				@Override
+				public void onEvent(Event event) throws Exception {
+					// TODO Auto-generated method stub
+					if(Messagebox.ON_YES.equals(event.getName())){
+						//YES is clicked
+
+						if(!isCreateNew){
+
+							Map<String,Object> args = new HashMap<String,Object>();
+							args.put("timescoperRecord", userAccount);
+							BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
+
+						}
+						editUserWindow.detach();
+					}
+				}
+			});
+
+		} else editUserWindow.detach();
+	}
+
+	@Command("saveUserInfo")
+	public void saveUser(){
+		boolean successful = false;
+
+		if(validate(userAccount)){ // check if a role is selected
+
+
+			if(isCreateNew){
+				System.out.println("creating new user...");
+				successful = userInfoService.createNewUser(userAccount);
+
+				BindUtils.postGlobalCommand(null, null, "retrieveUserList", null);
+			}else{
+				if(userAccount.changed()){
+
+					//update Original User Values
+					successful = userInfoService.updateUser(userAccount);
+
+					Map<String,Object> args = new HashMap<String,Object>();
+					args.put("timescoperRecord", userAccount);
+					BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
+				} else Messagebox.show("There are no changes yet.", "There's nothing to save", Messagebox.OK, Messagebox.INFORMATION);
+
+			}
+
+			if(successful){
+				editUserWindow.detach();
+			}
+		}
+	}
+
+	private boolean validate(TimescoperRecord userAccount2) {
+		// TODO Auto-generated method stub
+		boolean didItPass = false;
+		
+		if( userAccount.getRole()==null || userAccount.getRole()==0){
+			Messagebox.show("Please specify the user's role.", "There's no role selected", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getUsername() == null || userAccount.getUsername().isEmpty()){
+			Messagebox.show("Please specify a username.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getEmail() == null || userAccount.getEmail().isEmpty()){
+			Messagebox.show("Please specify an email.", "Email cannot be empty.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getFirstname() == null || userAccount.getFirstname().isEmpty()){
+			Messagebox.show("Please specify the user's first name.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getLastname() == null || userAccount.getLastname().isEmpty()){
+			Messagebox.show("Please specify the user's last name.", "Please do not ignore warnings.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(userAccount.getPassword() == null || userAccount.getPassword().isEmpty()){
+			Messagebox.show("Please specify a password.", "Password cannot be empty.", Messagebox.OK, Messagebox.INFORMATION);
+		}else{
+			didItPass = true;
+		}
+
+		
+		
+		return didItPass;
+	}
+
+	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(User userAccount) {
+	public void setUserAccount(TimescoperRecord userAccount) {
 		this.userAccount = userAccount;
 	}
 
@@ -54,5 +181,21 @@ public class EditUserViewModel {
 
 	public void setRoleList(ListModelList<String> roleList) {
 		this.roleList = roleList;
+	}
+
+	public String getPageCaption() {
+		return pageCaption;
+	}
+
+	public void setPageCaption(String pageCaption) {
+		this.pageCaption = pageCaption;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

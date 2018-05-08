@@ -35,7 +35,9 @@ import org.gobiiproject.datatimescope.db.generated.tables.Protocol;
 import org.gobiiproject.datatimescope.db.generated.tables.Reference;
 import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
+import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkageGenetic;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
@@ -207,9 +209,19 @@ between them.
     public static final Timescoper TIMESCOPER = org.gobiiproject.datatimescope.db.generated.tables.Timescoper.TIMESCOPER;
 
     /**
+     * The table <code>public.v_dataset_summary</code>.
+     */
+    public static final VDatasetSummary V_DATASET_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary.V_DATASET_SUMMARY;
+
+    /**
      * The table <code>public.v_jobs_summary</code>.
      */
     public static final VJobsSummary V_JOBS_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary.V_JOBS_SUMMARY;
+
+    /**
+     * The table <code>public.v_marker_group_summary</code>.
+     */
+    public static final VMarkerGroupSummary V_MARKER_GROUP_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY;
 
     /**
      * The table <code>public.v_marker_linkage_genetic</code>.

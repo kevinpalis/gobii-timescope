@@ -1,23 +1,26 @@
-<div hflex="1" vflex="1" sclass="banner">
-	<vlayout>
-		<hbox hflex="1" vflex="1" pack="end" align="end">K PALIS</hbox>
-		<hbox hflex="1" vflex="2" align="center">
-			<a href="http://www.zkoss.org/">
-				<image src="/imgs/gobiilogo.png" width="165px" />
-			</a>
-			<div width="400px">
-				<label
-					value="Data TimeScope (will be replaced by a cool logo)"
-					sclass="banner-head" />
-			</div>
-			<hbox apply="org.zkoss.bind.BindComposer"
-				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
-				hflex="1" vflex="1" pack="end" align="end">
-
-				<button label="Switch Database"
-					style="background-color:gray;"
-					onClick="@command('openDatabaseInfoDialog')" />
-			</hbox>
+<div hflex="1" sclass="banner" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
+		<hbox hflex="1">
+			<vbox hflex="1" vflex="2">
+				<a href="http://www.zkoss.org/">
+					<!-- image src="/imgs/datatimescope2.png" height="80px"/-->
+					<!-- image src="/imgs/datatimescope4.png" height="100px" style="position:relative ; left:20px;" -->
+					<image src="/imgs/datatimescope5.png" height="100px" />
+				</a>
+			</vbox>
+			<vbox hflex="1">
+				<hbox hflex="1" vflex="1" pack="end" align="end">
+					<label value="@load(vm.userAccount.firstname)" />
+					<label value="@load(vm.userAccount.lastname)" />
+					(<label value="@load(vm.userAccount.username)" />)
+				</hbox>
+				<hbox apply="org.zkoss.bind.BindComposer"
+					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
+					hflex="1" vflex="1" pack="end" align="end">
+	
+					<button label="Switch Database"
+						style="background-color:gray;"
+						onClick="@command('openDatabaseInfoDialog')" />
+				</hbox>
+			</vbox>
 		</hbox>
-	</vlayout>
 </div>

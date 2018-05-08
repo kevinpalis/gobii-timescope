@@ -1,5 +1,6 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
 	apply="org.zkoss.bind.BindComposer"
@@ -8,7 +9,7 @@
 	<caption src="/imgs/profile.png" sclass="fn-caption"
 		label="User Info" />
 	<hlayout>
-		<vlayout vflex="max" hflex="1">
+		<vlayout vflex="max" hflex="2">
 			<grid sclass="grid-borderless" vflex="min" hflex="1">
 				<columns>
 					<column align="left" />
@@ -19,21 +20,21 @@
 						<cell sclass="row-title">Username :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.userName)" />
+								value="@load(vm.userAccount.username)" />
 						</cell>
 					</row>
 					<row>
 						<cell sclass="row-title">First Name :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.firstName)" />
+								value="@load(vm.userAccount.firstname)" />
 						</cell>
 					</row>
 					<row>
 						<cell sclass="row-title">Last Name :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.lastName)" />
+								value="@load(vm.userAccount.lastname)" />
 						</cell>
 					</row>
 					<row>
@@ -50,19 +51,18 @@
 						<cell sclass="row-title">Role :</cell>
 						<cell>
 							<label
-								value="@load(vm.userAccount.roleName)" />
+								value="@load(vm.userAccount.rolename)" />
 						</cell>
 					</row>
 				</rows>
 			</grid>
 			<div hflex="true" align="right">
-				<button id="reloadProfile" label="Refresh" />
-				<button label="Edit Profile" 
+				<button label="Edit Profile" width="200px"
 					onClick="@command('editProfile')" />
 			</div>
 		</vlayout>
-		<groupbox mold="3d" hflex="3" vflex="max" closable="false">
-			<caption label="ALL USERS" />
+		<groupbox mold="3d" hflex="5" vflex="max" closable="false" visible="@load(vm.superUser)">
+			<caption label="All Users" />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
 				pageSize="6">
@@ -71,20 +71,20 @@
 						<checkbox label="Select All"
 							onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 					</column>
-					<column hflex="1"  sort="auto(userName)">
+					<column hflex="1" sort="auto(username)">
 						<label value="Username" />
 					</column>
-					<column hflex="1" sort="auto(lastName)">
+					<column hflex="1" sort="auto(lastname)">
 						<label value="Last Name" />
 					</column>
-					<column hflex="1" sort="auto(firstName)">
+					<column hflex="1" sort="auto(firstname)">
 						<label value="First Name" />
 					</column>
 					<column hflex="1" sort="auto(email)">
 						<label value="Email" />
 					</column>
-					<column hflex="1" sort="auto(roleName)">
-						<label value="Role"/>
+					<column hflex="1" sort="auto(role)">
+						<label value="Role" />
 					</column>
 					<column hflex="min"></column>
 				</columns>
@@ -93,24 +93,24 @@
 					<row>
 						<cell>
 							<checkbox value="@load(user)"
-								checked="@load(user.selected)"
+								checked="@load(vm.allCbSelected)"
 								onCheck="@command('updateSelectUser', userChecked=self.value, isChecked=self.checked)" />
 
 						</cell>
 						<cell>
-							<label value="@load(user.userName)" />
+							<label value="@load(user.username)" />
 						</cell>
 						<cell>
-							<label value="@load(user.lastName)" />
+							<label value="@load(user.lastname)" />
 						</cell>
 						<cell>
-							<label value="@load(user.firstName)" />
+							<label value="@load(user.firstname)" />
 						</cell>
 						<cell>
 							<label value="@load(user.email)" />
 						</cell>
 						<cell>
-							<label value="@load(user.roleName)" />
+							<label value="@load(user.rolename)" />
 						</cell>
 						<cell>
 							<button label="Edit"
@@ -121,6 +121,9 @@
 				</template>
 			</grid>
 			<div align="right">
+
+				<button id="createUsersBtn" label="Create" hflex="min"
+					onClick="@command('createUser')" />
 
 				<button id="deleteBtn" style="background-color: red"
 					label="Delete" hflex="min" onClick="@command('deleteUsers')" />

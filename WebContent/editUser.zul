@@ -15,12 +15,12 @@
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
 <window id="editUserWindows" border="normal" hflex="1" vflex="1"
-	contentStyle="overflow:auto" closable="true"
+	contentStyle="overflow:auto" closable="false"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.EditUserViewModel')">
 
 	<caption src="/imgs/profile.png" sclass="fn-caption"
-		label="@load('Edit User Information &quot;'.concat(vm.userAccount.userName).concat('&quot;'))" />
+		label="@load(vm.pageCaption)" />
 	<vlayout hflex="min">
 		<grid hflex="min">
 			<columns>
@@ -31,22 +31,22 @@
 				<row>
 					<cell sclass="row-title">Username :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.userName)"
-							constraint="no empty: Please enter your username." width="300px" />
+						<textbox value="@bind(vm.userAccount.username)"
+							constraint="no empty: Please enter your username. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">First Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.firstName)"
-							constraint="no empty: Please enter your firstname" width="300px" />
+						<textbox value="@bind(vm.userAccount.firstname)"
+							constraint="no empty: Please enter your firstname. " width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Last Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.lastName)"
-							constraint="no empty: Please enter your lastname" width="300px" />
+						<textbox value="@bind(vm.userAccount.lastname)"
+							constraint="no empty: Please enter your lastname. " width="300px" />
 					</cell>
 				</row>
 				<row>
@@ -60,7 +60,7 @@
 				<row>
 					<cell sclass="row-title">Password :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.password)"
+						<textbox value="@load(vm.password) @save(vm.userAccount.password)"
 							type="password"
 							constraint="no empty: Please enter your password." width="300px" />
 					</cell>
@@ -69,7 +69,7 @@
 					<cell sclass="row-title">User Role :</cell>
 					<cell>
 						<listbox model="@load(vm.roleList)"
-							selectedIndex="@bind(vm.userAccount.roleId)" mold="select"
+							selectedIndex="@bind(vm.userAccount.role)" mold="select"
 							tabindex="8" width="300px">
 							<template name="model">
 								<listitem label="${each}" />
@@ -81,7 +81,8 @@
 		</grid>
 
 		<div align="center" hflex="1">
-			<button id="saveProfile" label="Save" width="100px"/>
+			<button id="saveProfile" label="Save" width="100px" onClick="@command('saveUserInfo')"/>
+			<button  label="Cancel" width="100px" onClick="@command('refreshUserBeforeClose')"/>
 		</div>
 	</vlayout>
 </window>

@@ -1,6 +1,6 @@
 <grid hflex="1" vflex="1" sclass="sidebar" id="fnList" apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
 	<columns>
-		<column width="36px"/>
+		<column width="45px"/>
 		<column/>
 	</columns>
 	<rows/>

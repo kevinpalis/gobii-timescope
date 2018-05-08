@@ -7,7 +7,7 @@
     <driver>org.postgresql.Driver</driver>
     <url>jdbc:postgresql://localhost:5432/timescope_db2</url>
     <user>timescoper</user>
-    <password>helloworld</password>
+    <password>t1m3sc0p3dbusr</password>
   </jdbc>
 
   <generator>
