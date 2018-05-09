@@ -9,12 +9,16 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -43,7 +47,9 @@ public class DatasetViewModel {
 
 	ViewModelService viewModelService;
 	private boolean cbAllUsers, isAllCbSelected=false;
-	
+
+	private List<CvRecord> datasetTypes;
+	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryRecord> datasetList, selectedDsList;
 
 	@Init
@@ -51,7 +57,10 @@ public class DatasetViewModel {
 		selectedDsList = new ArrayList<VDatasetSummaryRecord>();
 		viewModelService = new ViewModelServiceImpl();
 		setDatasetList(viewModelService.getAllDatasets());
-		
+		contactsList = viewModelService.getAllContacts();
+		Integer [] roles = {1}; // PI only
+		piList = viewModelService.getContactsByRoles(roles);
+		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 	}
 
 	@Command("doSelectAll")
@@ -112,7 +121,6 @@ public class DatasetViewModel {
 		}
 	}
 
-
 	@GlobalCommand("retrieveDatasetList")
 	@NotifyChange({"datasetList", "selectedDsList", "allCbSelected", "cbAllUsers"})
 	public void retrieveUserList(){
@@ -124,7 +132,6 @@ public class DatasetViewModel {
 
 		setAllCbSelected(false);
 		setCbAllUsers(false);
-
 	}
 	
 	@Command("updateSelectDs")
@@ -164,6 +171,30 @@ public class DatasetViewModel {
 
 	public void setDatasetList(List<VDatasetSummaryRecord> datasetList) {
 		this.datasetList = datasetList;
+	}
+
+	public List<ContactRecord> getContactsList() {
+		return contactsList;
+	}
+
+	public void setContactsList(List<ContactRecord> contactsList) {
+		this.contactsList = contactsList;
+	}
+
+	public List<ContactRecord> getPiList() {
+		return piList;
+	}
+
+	public void setPiList(List<ContactRecord> piList) {
+		this.piList = piList;
+	}
+
+	public List<CvRecord> getDatasetTypes() {
+		return datasetTypes;
+	}
+
+	public void setDatasetTypes(List<CvRecord> list) {
+		this.datasetTypes = list;
 	}
 
 }

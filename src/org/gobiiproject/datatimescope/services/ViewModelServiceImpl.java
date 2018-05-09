@@ -4,7 +4,9 @@
 package org.gobiiproject.datatimescope.services;
 
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
+import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
+import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.Serializable;
@@ -17,8 +19,11 @@ import java.util.stream.Collectors;
 import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
+import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
@@ -189,6 +194,31 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return user;
 	}
 	
+	@Override
+	public List<CvRecord> getCvTermsByGroupName(String groupName) {
+		// TODO Auto-generated method stub
+		List<CvRecord> cvRecordList = null;
+		try{
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+//			Getcvtermsbycvgroupname getcvtermsbycvgroupname = new Getcvtermsbycvgroupname();
+//			getcvtermsbycvgroupname.setCvgroupname(groupName);
+//			getcvtermsbycvgroupname.execute(context.configuration());
+//
+//			cvRecordList  = getcvtermsbycvgroupname.getResults();
+
+//			select cv.term from cv, cvgroup
+//			where cv.cvgroup_id = cvgroup.cvgroup_id and cvgroup.name = cvgroupName;
+			
+			cvRecordList = context.select().from(CV, CVGROUP).where(CVGROUP.CVGROUP_ID.eq(CV.CVGROUP_ID)).and(CVGROUP.NAME.equal(groupName)).fetchInto(CvRecord.class);
+
+		}
+		catch(Exception e ){
+			Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+		return cvRecordList;
+	}
 
 	public synchronized TimescoperRecord getUserInfo(String username){
 
@@ -229,13 +259,32 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return userList;
 	}
+	
+	@Override
+	public List<ContactRecord> getAllContacts() {
+		// TODO Auto-generated method stub
 
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<ContactRecord> contactList = null;
+		try{
+			
+			contactList = context.select().from(CONTACT).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error whil trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return contactList;
+	}
+	
 	@Override
 	public List<VDatasetSummaryRecord> getAllDatasets() {
 		// TODO Auto-generated method stub
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-		List<VDatasetSummaryRecord> datasetList = null ;
+		List<VDatasetSummaryRecord> datasetList = null;
 		try{
 			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryRecord.class);
 
@@ -247,6 +296,25 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return datasetList;
 	}
 
+	@Override
+	public List<ContactRecord> getContactsByRoles(Integer[] role) {
+		// TODO Auto-generated method stub
+
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<ContactRecord> contactList = null;
+		try{
+			
+			contactList = context.select().from(CONTACT).where(CONTACT.ROLES.contains(role)).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error whil trying to retrieve contacts", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return contactList;
+	}
+	
 	@Override
 	public boolean updateUser(TimescoperRecord userAccount) {
 		// TODO Auto-generated method stub

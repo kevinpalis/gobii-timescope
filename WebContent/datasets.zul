@@ -1,8 +1,8 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow-y:visible;"
-	apply="org.zkoss.bind.BindComposer"
+<window border="normal" hflex="1" vflex="1"
+	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
 	<vlayout>
@@ -57,10 +57,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem label="KPalis" />
-										<comboitem label="USER_READER" />
-										<comboitem label="wee" />
+										hflex="true" model="@load(vm.contactsList)">
+										<template name="model">
+											<comboitem
+												label="@load(each.wholename)" />
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -84,10 +85,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem
-											label="nucleotide_2_letter" />
-										<comboitem label="iupac" />
+										hflex="true" model="@load(vm.datasetTypes)">
+										<template name="model">
+											<comboitem
+												label="@load(each.term)" />
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -98,10 +100,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem label="Liz Jones" />
-										<comboitem label="Kevin Palis" />
-										<comboitem label="Phil Glaser" />
+										hflex="true" model="@load(vm.piList)">
+										<template name="model">
+											<comboitem
+												label="@load(each.wholename)" />
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -113,13 +116,15 @@
 					<button label="Clear" width="200px" />
 					<button label="Submit Query" width="200px" />
 					<button id="deleteBtn" style="background-color: red"
-						label="Delete Selected" hflex="min" onClick="@command('deleteSelectedDatasets')" />
+						label="Delete Selected" hflex="min"
+						onClick="@command('deleteSelectedDatasets')" />
 				</div>
 
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging" pageSize="15" pagingPosition="both" >
+		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging"
+			pageSize="15" pagingPosition="both">
 			<columns sizable="true">
 				<column hflex="min">
 					<checkbox label="Select All"
@@ -203,7 +208,8 @@
 						<label value="@load(dataset.callinganalysisId)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.callingnalysisName)" />
+						<label
+							value="@load(dataset.callingnalysisName)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.analysesAsString)" />
@@ -227,7 +233,8 @@
 						<label value="@load(dataset.createdDate)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.modifiedByUsername)" />
+						<label
+							value="@load(dataset.modifiedByUsername)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.modifiedDate)" />

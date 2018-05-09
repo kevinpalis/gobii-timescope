@@ -199,6 +199,16 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
         return (String) get(11);
     }
 
+    /**
+     * User-defined Getter to get whole name
+     */
+    public String getWholename() {
+    	
+    	String name= (String) get(1) +", " + (String) get(2);
+    	
+        return name;
+    }
+    
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------

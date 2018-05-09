@@ -5,6 +5,8 @@ package org.gobiiproject.datatimescope.services;
 
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
@@ -38,4 +40,10 @@ public interface ViewModelService {
 	public TimescoperRecord loginTimescoper(String username, String password);
 	
 	public TimescoperRecord getUserInfo(String username);
+
+	public List<ContactRecord> getAllContacts();
+
+	public List<ContactRecord> getContactsByRoles(Integer[] role);
+
+	List<CvRecord> getCvTermsByGroupName(String groupName);
 }
