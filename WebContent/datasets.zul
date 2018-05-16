@@ -57,10 +57,10 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.contactsList)">
+										hflex="true" model="@load(vm.contactsList)" selected="@bind(vm.datasetEntity.createdByContactId)">
 										<template name="model">
 											<comboitem
-												label="@load(each.wholename)" />
+												label="@load(each.wholename)" value="@load(each.contactId)" />
 										</template>
 									</combobox>
 								</cell>
@@ -100,7 +100,7 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.piList)">
+										hflex="true" model="@load(vm.piList)" selected="@bind(vm.datasetEntity.piID)">
 										<template name="model">
 											<comboitem
 												label="@load(each.wholename)" />
@@ -114,7 +114,7 @@
 
 				<div align="center" hflex="1">
 					<button label="Clear" width="200px" />
-					<button label="Submit Query" width="200px" />
+					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
 					<button id="deleteBtn" style="background-color: red"
 						label="Delete Selected" hflex="min"
 						onClick="@command('deleteSelectedDatasets')" />

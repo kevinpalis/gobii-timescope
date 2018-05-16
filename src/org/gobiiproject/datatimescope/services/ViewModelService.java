@@ -9,6 +9,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -46,4 +47,6 @@ public interface ViewModelService {
 	public List<ContactRecord> getContactsByRoles(Integer[] role);
 
 	List<CvRecord> getCvTermsByGroupName(String groupName);
+
+	public List<VDatasetSummaryRecord> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity);
 }

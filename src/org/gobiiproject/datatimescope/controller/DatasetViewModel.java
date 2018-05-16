@@ -13,6 +13,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -51,11 +52,13 @@ public class DatasetViewModel {
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryRecord> datasetList, selectedDsList;
+	private DatasetEntity datasetEntity;
 
 	@Init
 	public void init() {
 		selectedDsList = new ArrayList<VDatasetSummaryRecord>();
 		viewModelService = new ViewModelServiceImpl();
+		setDatasetEntity(new DatasetEntity());
 		setDatasetList(viewModelService.getAllDatasets());
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
@@ -63,6 +66,24 @@ public class DatasetViewModel {
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 	}
 
+	@Command("submitQuery")
+	@NotifyChange("datasetList")
+	public void submitQuery(){
+		List<VDatasetSummaryRecord> datasetListOnDisplay = getDatasetList();
+
+		datasetList.clear(); //clear the list first and then just add if there are any selected
+
+		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
+		
+		setAllCbSelected(isCbAllUsers());
+
+		if (isCbAllUsers()) {
+			for(VDatasetSummaryRecord u: datasetListOnDisplay){
+				selectedDsList.add(u);
+			}
+		}
+	}
+	
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -195,6 +216,14 @@ public class DatasetViewModel {
 
 	public void setDatasetTypes(List<CvRecord> list) {
 		this.datasetTypes = list;
+	}
+
+	public DatasetEntity getDatasetEntity() {
+		return datasetEntity;
+	}
+
+	public void setDatasetEntity(DatasetEntity datasetEntity) {
+		this.datasetEntity = datasetEntity;
 	}
 
 }

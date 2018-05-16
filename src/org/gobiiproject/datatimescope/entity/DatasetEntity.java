@@ -12,139 +12,60 @@ timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::r
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
-import org.gobiiproject.datatimescope.services.CommonInfoService;
-import org.zkoss.zul.ListModelList;
 /**
  * User entity
  */
 public class DatasetEntity implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
-	private Integer datasetId;
-	public Integer getDatasetId() {
-		return datasetId;
+	
+	private List<Integer> datasetIDRange;
+	private List<String> datasetNames;
+	private Integer createdByContactId;
+	private List<Date> creationDateRange;
+	private Integer datasetTypeId;
+	private Integer piID;
+	
+	public DatasetEntity(){
+		
 	}
-	public void setDatasetId(Integer datasetId) {
-		this.datasetId = datasetId;
+	
+	public List<Integer> getDatasetIDRange() {
+		return datasetIDRange;
 	}
-	public String getDatasetName() {
-		return datasetName;
+	public void setDatasetIDRange(List<Integer> datasetIDRange) {
+		this.datasetIDRange = datasetIDRange;
 	}
-	public void setDatasetName(String datasetName) {
-		this.datasetName = datasetName;
+	public List<String> getDatasetNames() {
+		return datasetNames;
 	}
-	public Integer getExperimentId() {
-		return experimentId;
+	public void setDatasetNames(List<String> datasetNames) {
+		this.datasetNames = datasetNames;
 	}
-	public void setExperimentId(Integer experimentId) {
-		this.experimentId = experimentId;
+	public Integer getCreatedByContactId() {
+		return createdByContactId;
 	}
-	public String getExperimentName() {
-		return experimentName;
+	public void setCreatedByContactId(Integer createdByContactId) {
+		this.createdByContactId = createdByContactId;
 	}
-	public void setExperimentName(String experimentName) {
-		this.experimentName = experimentName;
+	public List<Date> getCreationDateRange() {
+		return creationDateRange;
 	}
-	public Integer getCallingAnalysisId() {
-		return callingAnalysisId;
+	public void setCreationDateRange(List<Date> creationDateRange) {
+		this.creationDateRange = creationDateRange;
 	}
-	public void setCallingAnalysisId(Integer callingAnalysisId) {
-		this.callingAnalysisId = callingAnalysisId;
+	public Integer getDatasetTypeId() {
+		return datasetTypeId;
 	}
-	public String getCallingAnalysisName() {
-		return callingAnalysisName;
+	public void setDatasetTypeId(Integer datasetTypeId) {
+		this.datasetTypeId = datasetTypeId;
 	}
-	public void setCallingAnalysisName(String callingAnalysisName) {
-		this.callingAnalysisName = callingAnalysisName;
+	public Integer getPiID() {
+		return piID;
 	}
-	public Integer[] getAnalyses() {
-		return analyses;
+	public void setPiID(Integer piID) {
+		this.piID = piID;
 	}
-	public void setAnalyses(Integer[] analyses) {
-		this.analyses = analyses;
-	}
-	public String getDataTable() {
-		return dataTable;
-	}
-	public void setDataTable(String dataTable) {
-		this.dataTable = dataTable;
-	}
-	public String getDataFile() {
-		return dataFile;
-	}
-	public void setDataFile(String dataFile) {
-		this.dataFile = dataFile;
-	}
-	public String getQualityTable() {
-		return qualityTable;
-	}
-	public void setQualityTable(String qualityTable) {
-		this.qualityTable = qualityTable;
-	}
-	public String getQualityFile() {
-		return qualityFile;
-	}
-	public void setQualityFile(String qualityFile) {
-		this.qualityFile = qualityFile;
-	}
-	public String getCreatedByUsername() {
-		return createdByUsername;
-	}
-	public void setCreatedByUsername(String createdByUsername) {
-		this.createdByUsername = createdByUsername;
-	}
-	public String getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
-	}
-	public String getModifiedByUsername() {
-		return modifiedByUsername;
-	}
-	public void setModifiedByUsername(String modifiedByUsername) {
-		this.modifiedByUsername = modifiedByUsername;
-	}
-	public String getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(String modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	public String getStatusName() {
-		return statusName;
-	}
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
-	public String getTypeName() {
-		return typeName;
-	}
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
-	}
-	public String getJobName() {
-		return jobName;
-	}
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
-	}
-	private String datasetName;
-	private Integer experimentId;
-	private String experimentName;
-	private Integer callingAnalysisId;
-	private String callingAnalysisName;
-	private Integer[] analyses;
-	private String dataTable;
-	private String dataFile;
-	private String qualityTable;
-	private String qualityFile;
-	private String createdByUsername;
-	private String createdDate;
-	private String modifiedByUsername;
-	private String modifiedDate;
-	private String statusName;
-	private String typeName;
-	private String jobName;
-
 }

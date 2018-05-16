@@ -27,6 +27,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -253,7 +254,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 
@@ -272,7 +273,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 
@@ -290,7 +291,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 		return datasetList;
@@ -308,7 +309,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve contacts", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve contacts", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 
@@ -402,6 +403,38 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			e.printStackTrace();
 		}
 		return successful;
+	}
+
+	@Override
+	public List<VDatasetSummaryRecord> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
+		// TODO Auto-generated method stub
+		int queryCount =0;
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VDatasetSummaryRecord> datasetList = null;
+		try{
+			StringBuilder sb = new StringBuilder();
+			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, c3.lastname as pi_contact, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+			if (datasetEntity.getCreatedByContactId()!=null){
+				sb.append(" where c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactId()));
+				queryCount++;
+			}
+			if (datasetEntity.getDatasetTypeId()!=null){
+				queryCount++;
+				if(queryCount==0) sb.append(" and ");
+				else sb.append(" where ");
+				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getDatasetTypeId()));
+			}
+
+			sb.append(";");
+			datasetList = context.fetch(sb.toString()).into(VDatasetSummaryRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+		return datasetList;
 	}
 
 }
