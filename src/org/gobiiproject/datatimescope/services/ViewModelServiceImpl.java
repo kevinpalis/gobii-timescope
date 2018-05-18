@@ -412,22 +412,34 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
 		List<VDatasetSummaryRecord> datasetList = null;
-		try{
+		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
-			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, c3.lastname as pi_contact, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
-			if (datasetEntity.getCreatedByContactId()!=null){
-				sb.append(" where c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactId()));
+			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+			if (datasetEntity.getCreatedByContactRecord()!=null){
+				sb.append(" where c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
 				queryCount++;
 			}
-			if (datasetEntity.getDatasetTypeId()!=null){
-				queryCount++;
-				if(queryCount==0) sb.append(" and ");
+			if (datasetEntity.getDatasetTypeRecord()!=null){
+				if(queryCount>0) sb.append(" and ");
 				else sb.append(" where ");
-				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getDatasetTypeId()));
+				sb.append(" cv2.cv_id="+Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId()));
+				queryCount++;
 			}
-
+			if (datasetEntity.getPiRecord()!=null){
+				if(queryCount>0) sb.append(" and ");
+				else sb.append(" where ");
+				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getPiRecord().getContactId()));
+				queryCount++;
+			}
+			if (datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){
+				if(queryCount>0) sb.append(" and ");
+				else sb.append(" where ");
+				sb.append(" d.dataset_id between "+Integer.toString(datasetEntity.getDatasetIDStartRange())+" and "+Integer.toString(datasetEntity.getDatasetIDEndRange()));
+				queryCount++;
+			}
 			sb.append(";");
-			datasetList = context.fetch(sb.toString()).into(VDatasetSummaryRecord.class);
+			String query = sb.toString();
+			datasetList = context.fetch(query).into(VDatasetSummaryRecord.class);
 
 		}catch(Exception e ){
 

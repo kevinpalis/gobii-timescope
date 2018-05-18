@@ -23,9 +23,9 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox value="1" hflex="true" />
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)"/>
 										to
-										<intbox value="20" hflex="true" />
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)"/>
 									</hbox>
 								</cell>
 							</row>
@@ -57,7 +57,7 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.contactsList)" selected="@bind(vm.datasetEntity.createdByContactId)">
+										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
 										<template name="model">
 											<comboitem
 												label="@load(each.wholename)" value="@load(each.contactId)" />
@@ -85,7 +85,7 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.datasetTypes)">
+										hflex="true" model="@load(vm.datasetTypes)" selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
 										<template name="model">
 											<comboitem
 												label="@load(each.term)" />
@@ -100,10 +100,10 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.piList)" selected="@bind(vm.datasetEntity.piID)">
+										hflex="true" model="@load(vm.piList)" selectedItem="@bind(vm.datasetEntity.piRecord)">
 										<template name="model">
 											<comboitem
-												label="@load(each.wholename)" />
+												label="@load(each.wholename)" value="@load(each.contactId)"/>
 										</template>
 									</combobox>
 								</cell>
@@ -113,7 +113,7 @@
 				</hlayout>
 
 				<div align="center" hflex="1">
-					<button label="Clear" width="200px" />
+					<button label="Clear" width="200px"  onClick="@command('resetDatasetTab')"/>
 					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
 					<button id="deleteBtn" style="background-color: red"
 						label="Delete Selected" hflex="min"

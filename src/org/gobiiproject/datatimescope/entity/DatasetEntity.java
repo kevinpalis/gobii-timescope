@@ -15,40 +15,32 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+
 /**
  * User entity
  */
 public class DatasetEntity implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
 	
-	private List<Integer> datasetIDRange;
+	private Integer datasetIDStartRange;
+	private Integer datasetIDEndRange;
 	private List<String> datasetNames;
-	private Integer createdByContactId;
 	private List<Date> creationDateRange;
-	private Integer datasetTypeId;
-	private Integer piID;
+	private CvRecord datasetTypeRecord;
+	private ContactRecord piRecord;
+	private ContactRecord createdByContactRecord;
 	
 	public DatasetEntity(){
 		
 	}
 	
-	public List<Integer> getDatasetIDRange() {
-		return datasetIDRange;
-	}
-	public void setDatasetIDRange(List<Integer> datasetIDRange) {
-		this.datasetIDRange = datasetIDRange;
-	}
 	public List<String> getDatasetNames() {
 		return datasetNames;
 	}
 	public void setDatasetNames(List<String> datasetNames) {
 		this.datasetNames = datasetNames;
-	}
-	public Integer getCreatedByContactId() {
-		return createdByContactId;
-	}
-	public void setCreatedByContactId(Integer createdByContactId) {
-		this.createdByContactId = createdByContactId;
 	}
 	public List<Date> getCreationDateRange() {
 		return creationDateRange;
@@ -56,16 +48,43 @@ public class DatasetEntity implements Serializable,Cloneable {
 	public void setCreationDateRange(List<Date> creationDateRange) {
 		this.creationDateRange = creationDateRange;
 	}
-	public Integer getDatasetTypeId() {
-		return datasetTypeId;
+	public ContactRecord getPiRecord() {
+		return piRecord;
 	}
-	public void setDatasetTypeId(Integer datasetTypeId) {
-		this.datasetTypeId = datasetTypeId;
+
+	public void setPiRecord(ContactRecord piRecord) {
+		this.piRecord = piRecord;
 	}
-	public Integer getPiID() {
-		return piID;
+
+	public ContactRecord getCreatedByContactRecord() {
+		return createdByContactRecord;
 	}
-	public void setPiID(Integer piID) {
-		this.piID = piID;
+
+	public void setCreatedByContactRecord(ContactRecord createdByContactRecord) {
+		this.createdByContactRecord = createdByContactRecord;
+	}
+
+	public CvRecord getDatasetTypeRecord() {
+		return datasetTypeRecord;
+	}
+
+	public void setDatasetTypeRecord(CvRecord datasetTypeRecord) {
+		this.datasetTypeRecord = datasetTypeRecord;
+	}
+
+	public Integer getDatasetIDStartRange() {
+		return datasetIDStartRange;
+	}
+
+	public void setDatasetIDStartRange(Integer datasetIDStartRange) {
+		this.datasetIDStartRange = datasetIDStartRange;
+	}
+
+	public Integer getDatasetIDEndRange() {
+		return datasetIDEndRange;
+	}
+
+	public void setDatasetIDEndRange(Integer datasetIDEndRange) {
+		this.datasetIDEndRange = datasetIDEndRange;
 	}
 }

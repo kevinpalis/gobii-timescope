@@ -67,23 +67,34 @@ public class DatasetViewModel {
 	}
 
 	@Command("submitQuery")
-	@NotifyChange("datasetList")
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers"})
 	public void submitQuery(){
-		List<VDatasetSummaryRecord> datasetListOnDisplay = getDatasetList();
-
+		try{
 		datasetList.clear(); //clear the list first and then just add if there are any selected
-
+		}catch(NullPointerException e){
+			
+		}
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 		
-		setAllCbSelected(isCbAllUsers());
 
-		if (isCbAllUsers()) {
-			for(VDatasetSummaryRecord u: datasetListOnDisplay){
-				selectedDsList.add(u);
-			}
-		}
+		setAllCbSelected(false);
+		setCbAllUsers(false);
 	}
 	
+	@Command("resetDatasetTab")
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity"})
+	public void resetDatasetTab(){
+		try{
+		datasetList.clear(); //clear the list first and then just add if there are any selected
+		selectedDsList.clear(); 
+		}catch(NullPointerException e){
+			
+		}
+		datasetEntity = new DatasetEntity();
+
+		setAllCbSelected(false);
+		setCbAllUsers(false);
+	}
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -99,8 +110,7 @@ public class DatasetViewModel {
 			}
 		}
 	}
-
-
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
 	public void deleteUsers(){
@@ -147,7 +157,7 @@ public class DatasetViewModel {
 	public void retrieveUserList(){
 		//...
 
-		setDatasetList(viewModelService.getAllDatasets());
+		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
 		selectedDsList.clear();
 
