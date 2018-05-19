@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VDatasetSummary extends TableImpl<VDatasetSummaryRecord> {
 
-    private static final long serialVersionUID = 536979117;
+    private static final long serialVersionUID = -1445119148;
 
     /**
      * The reference instance of <code>public.v_dataset_summary</code>
@@ -142,6 +142,31 @@ public class VDatasetSummary extends TableImpl<VDatasetSummaryRecord> {
      * The column <code>public.v_dataset_summary.job_name</code>.
      */
     public final TableField<VDatasetSummaryRecord, String> JOB_NAME = createField("job_name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.v_dataset_summary.project_id</code>.
+     */
+    public final TableField<VDatasetSummaryRecord, Integer> PROJECT_ID = createField("project_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.v_dataset_summary.project_name</code>.
+     */
+    public final TableField<VDatasetSummaryRecord, String> PROJECT_NAME = createField("project_name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.v_dataset_summary.pi_id</code>.
+     */
+    public final TableField<VDatasetSummaryRecord, Integer> PI_ID = createField("pi_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.v_dataset_summary.pi_firstname</code>.
+     */
+    public final TableField<VDatasetSummaryRecord, String> PI_FIRSTNAME = createField("pi_firstname", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.v_dataset_summary.pi_lastname</code>.
+     */
+    public final TableField<VDatasetSummaryRecord, String> PI_LASTNAME = createField("pi_lastname", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>public.v_dataset_summary</code> table reference
