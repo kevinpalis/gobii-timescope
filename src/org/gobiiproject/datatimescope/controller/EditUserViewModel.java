@@ -6,9 +6,10 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
-import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -43,17 +44,17 @@ public class EditUserViewModel {
 
 	private String pageCaption, userName, password;
 
-	private TimescoperRecord userAccount;
+	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
 
 	ViewModelService userInfoService;
 
 	@Init
-	public void init(@ExecutionArgParam("editedUser") TimescoperRecord user) {
+	public void init(@ExecutionArgParam("editedUser") TimescoperEntity user) {
 		userAccount = user;
 		userAccount.changed(false);
-		setRoleList(new ListModelList<String>(CommonInfoService.getRoleList()));
+		setRoleList(new ListModelList<String>(Utils.getRoleList()));
 		userInfoService = new ViewModelServiceImpl();
 		
 		//Figure out if this window was called to edit a user or to create one
@@ -67,7 +68,7 @@ public class EditUserViewModel {
 			isCreateNew = true;
 			password = "";
 		}
-
+		
 		if(userAccount.getRolename().contains("Super")) isSuperAdmin=true;
 	}
 
@@ -94,7 +95,7 @@ public class EditUserViewModel {
 						if(!isCreateNew){
 
 							Map<String,Object> args = new HashMap<String,Object>();
-							args.put("timescoperRecord", userAccount);
+							args.put("timescoperRecordEntity", userAccount);
 							BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
 
 						}
@@ -125,7 +126,7 @@ public class EditUserViewModel {
 					successful = userInfoService.updateUser(userAccount);
 
 					Map<String,Object> args = new HashMap<String,Object>();
-					args.put("timescoperRecord", userAccount);
+					args.put("timescoperRecordEntity", userAccount);
 					BindUtils.postGlobalCommand(null, null, "refreshTimescoperRecord", args);
 				} else Messagebox.show("There are no changes yet.", "There's nothing to save", Messagebox.OK, Messagebox.INFORMATION);
 
@@ -137,7 +138,7 @@ public class EditUserViewModel {
 		}
 	}
 
-	private boolean validate(TimescoperRecord userAccount2) {
+	private boolean validate(TimescoperEntity userAccount2) {
 		// TODO Auto-generated method stub
 		boolean didItPass = false;
 		
@@ -167,11 +168,11 @@ public class EditUserViewModel {
 		return didItPass;
 	}
 
-	public TimescoperRecord getUserAccount() {
+	public TimescoperEntity getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(TimescoperRecord userAccount) {
+	public void setUserAccount(TimescoperEntity userAccount) {
 		this.userAccount = userAccount;
 	}
 

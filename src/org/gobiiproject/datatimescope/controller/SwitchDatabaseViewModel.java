@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;

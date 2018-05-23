@@ -29,6 +29,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperReco
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -80,7 +81,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean createNewUser(TimescoperRecord userAccount) {
+	public boolean createNewUser(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -107,7 +108,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 
-	private Createtimescoper createTimescoperFromRecord(TimescoperRecord userAccount) {
+	private Createtimescoper createTimescoperFromRecord(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		Createtimescoper createTimescoper = new Createtimescoper();
@@ -122,7 +123,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteUser(TimescoperRecord userAccount) {
+	public boolean deleteUser(TimescoperEntity userAccount) {
 
 		boolean successful = false;
 		try{
@@ -141,7 +142,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList) {
+	public boolean deleteUsers(ListModelList<TimescoperEntity> selectedUsersList) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -221,16 +222,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return cvRecordList;
 	}
 
-	public synchronized TimescoperRecord getUserInfo(String username){
+	public synchronized TimescoperEntity getUserInfo(String username){
 
-		TimescoperRecord user = new TimescoperRecord();
+		TimescoperEntity user = new TimescoperEntity();
 
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
 
-			user = (TimescoperRecord) context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
+			user =  context.fetchOne("select * from timescoper where username = '"+username+"';").into(TimescoperEntity.class);
 
 
 		}catch(Exception e ){
@@ -243,14 +244,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<TimescoperRecord> getAllOtherUsers(String username) {
+	public List<TimescoperEntity> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
 
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-		List<TimescoperRecord> userList = null;
+		List<TimescoperEntity> userList = null;
 		try{
 			
-			userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
+			userList = context.fetch("select * from timescoper where username != '"+username+"';").into(TimescoperEntity.class);
 
 		}catch(Exception e ){
 
@@ -317,7 +318,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 	
 	@Override
-	public boolean updateUser(TimescoperRecord userAccount) {
+	public boolean updateUser(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -325,7 +326,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 			
-			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperRecord
+			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperEntity
 			GenSalt2 genSalt = new GenSalt2();
 			genSalt.set__1("bf");
 			genSalt.set__2(11);

@@ -11,6 +11,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperReco
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
@@ -20,17 +21,17 @@ public interface ViewModelService {
 
 	/** create new user 
 	 * @return **/
-	public boolean createNewUser(TimescoperRecord userAccount);
+	public boolean createNewUser(TimescoperEntity userAccount);
 	
-	public List<TimescoperRecord> getAllOtherUsers(String username);
+	public List<TimescoperEntity> getAllOtherUsers(String username);
 
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo);
 
-	public boolean updateUser(TimescoperRecord userAccount);
+	public boolean updateUser(TimescoperEntity userAccount);
 
-	public boolean deleteUser(TimescoperRecord userAccount);
+	public boolean deleteUser(TimescoperEntity userAccount);
 
-	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList);
+	public boolean deleteUsers(ListModelList<TimescoperEntity> selectedUsersList);
 
 	public List<VDatasetSummaryRecord> getAllDatasets();
 
@@ -40,7 +41,7 @@ public interface ViewModelService {
 
 	public TimescoperRecord loginTimescoper(String username, String password);
 	
-	public TimescoperRecord getUserInfo(String username);
+	public TimescoperEntity getUserInfo(String username);
 
 	public List<ContactRecord> getAllContacts();
 
