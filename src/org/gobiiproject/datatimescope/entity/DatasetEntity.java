@@ -26,6 +26,7 @@ public class DatasetEntity implements Serializable,Cloneable {
 	
 	private Integer datasetIDStartRange;
 	private Integer datasetIDEndRange;
+	private String datasetNamesAsCommaSeparatedString;
 	private List<String> datasetNames;
 	private Date creationDateStart;
 	private Date creationDateEnd;
@@ -97,5 +98,31 @@ public class DatasetEntity implements Serializable,Cloneable {
 
 	public void setCreationDateEnd(Date creationDateEnd) {
 		this.creationDateEnd = creationDateEnd;
+	}
+
+	public String getDatasetNamesAsCommaSeparatedString() {
+		return datasetNamesAsCommaSeparatedString;
+	}
+
+	public void setDatasetNamesAsCommaSeparatedString(String datasetNamesAsCommaSeparatedString) {
+		this.datasetNamesAsCommaSeparatedString = datasetNamesAsCommaSeparatedString;
+	}
+
+	public void setDatasetNames(String[] split) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getSQLReadyDatasetNames() {
+		// TODO Auto-generated method stub
+		int ctr = 0;
+		StringBuilder sb = new StringBuilder();
+		
+		for(String s: datasetNamesAsCommaSeparatedString.split(",")){
+			if(ctr>0)sb.append(",");
+		sb.append(" '"+s+"' ");
+		ctr++;
+		}
+		return sb.toString();
 	}
 }

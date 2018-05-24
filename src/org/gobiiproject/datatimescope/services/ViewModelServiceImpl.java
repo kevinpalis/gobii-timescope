@@ -407,43 +407,55 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 		return successful;
 	}
-
+	
 	@Override
 	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
 		// TODO Auto-generated method stub
 		int queryCount =0;
+		int dsNameCount = 0;
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
 			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+
+			if (!datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
+				
+				sb.append(" where d.name in ("+datasetEntity.getSQLReadyDatasetNames()+")");
+				dsNameCount++;	
+			}
+			
 			if (datasetEntity.getCreatedByContactRecord()!=null){
-				sb.append(" where c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
+				
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				
+				sb.append(" c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
 				queryCount++;
 			}
 			if (datasetEntity.getDatasetTypeRecord()!=null){
-				if(queryCount>0) sb.append(" and ");
-				else sb.append(" where ");
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				
 				sb.append(" cv2.cv_id="+Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId()));
 				queryCount++;
 			}
 			if (datasetEntity.getPiRecord()!=null){
-				if(queryCount>0) sb.append(" and ");
-				else sb.append(" where ");
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
 				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getPiRecord().getContactId()));
 				queryCount++;
 			}
 			if (datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){
-				if(queryCount>0) sb.append(" and ");
-				else sb.append(" where ");
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
 				sb.append(" d.dataset_id between "+Integer.toString(datasetEntity.getDatasetIDStartRange())+" and "+Integer.toString(datasetEntity.getDatasetIDEndRange()));
 				queryCount++;
 			}
 
 			if (datasetEntity.getCreationDateStart()!=null && datasetEntity.getCreationDateEnd()!=null){
-				if(queryCount>0) sb.append(" and ");
-				else sb.append(" where ");
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
 				
 				java.sql.Date sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
 				java.sql.Date sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
@@ -451,6 +463,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
 				queryCount++;
 			}
+			if(queryCount>0) sb.append(") ");
 			sb.append(";");
 			String query = sb.toString();
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
@@ -461,6 +474,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			e.printStackTrace();
 		}
 		return datasetList;
+	}
+
+	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
+		// TODO Auto-generated method stub
+
+		if(dsNameCount>0 && queryCount==0) sb.append(" OR ("); 
+		else if(dsNameCount==0 && queryCount==0) sb.append(" where (");
+		else sb.append(" and ");
 	}
 
 }

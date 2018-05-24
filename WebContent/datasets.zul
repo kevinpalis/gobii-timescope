@@ -11,7 +11,7 @@
 			<caption label="Filters: " />
 			<vlayout>
 				<hlayout>
-					<grid hflex="true" vflex="1">
+					<grid hflex="1" vflex="1">
 						<columns>
 							<column align="left" />
 							<column align="left" />
@@ -35,10 +35,8 @@
 								</cell>
 								<cell>
 									<textbox rows="8" cols="40"
-										hflex="true" vflex="true">
-										<attribute name="value">
-											comma separated, names list,
-										</attribute>
+										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_after">
+									
 									</textbox>
 								</cell>
 							</row>
@@ -253,4 +251,10 @@
 		</grid>
 
 	</vlayout>
+	
+    <popup id="title" width="400px">
+		<label value="Separate dataset names with comma" />
+        <html><![CDATA[Do not add unnecessary whitespaces]]></html>
+
+    </popup>
 </window>
