@@ -11,8 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
+import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -49,12 +49,12 @@ public class DatasetViewModel {
 
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
-	private List<VDatasetSummaryRecord> datasetList, selectedDsList;
+	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
 	private DatasetEntity datasetEntity;
 
 	@Init
 	public void init() {
-		selectedDsList = new ArrayList<VDatasetSummaryRecord>();
+		selectedDsList = new ArrayList<VDatasetSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
 		setDatasetEntity(new DatasetEntity());
 		setDatasetList(viewModelService.getAllDatasets());
@@ -96,14 +96,14 @@ public class DatasetViewModel {
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
-		List<VDatasetSummaryRecord> datasetListOnDisplay = getDatasetList();
+		List<VDatasetSummaryEntity> datasetListOnDisplay = getDatasetList();
 
 		selectedDsList.clear(); //clear the list first and then just add if there are any selected
 
 		setAllCbSelected(isCbAllUsers());
 
 		if (isCbAllUsers()) {
-			for(VDatasetSummaryRecord u: datasetListOnDisplay){
+			for(VDatasetSummaryEntity u: datasetListOnDisplay){
 				selectedDsList.add(u);
 			}
 		}
@@ -119,7 +119,7 @@ public class DatasetViewModel {
 		else{
 			StringBuilder sb = new StringBuilder();
 
-			for(VDatasetSummaryRecord u: selectedDsList){
+			for(VDatasetSummaryEntity u: selectedDsList){
 				sb.append("\n"+u.getDatasetName());
 			}
 
@@ -165,13 +165,13 @@ public class DatasetViewModel {
 	
 	@Command("updateSelectDs")
 	@NotifyChange({"cbAllUsers", "selectedDsList"})
-	public void updateSelectDs(@BindingParam("dsChecked") VDatasetSummaryRecord dsList, @BindingParam("isChecked") Boolean isChecked){
+	public void updateSelectDs(@BindingParam("dsChecked") VDatasetSummaryEntity dsList, @BindingParam("isChecked") Boolean isChecked){
 		if(isChecked){
 			selectedDsList.add(dsList);
 		}else{
 			setCbAllUsers(false);
 
-			ListIterator<VDatasetSummaryRecord> it = selectedDsList.listIterator();
+			ListIterator<VDatasetSummaryEntity> it = selectedDsList.listIterator();
 			while (it.hasNext()) {
 				if (it.next().getDatasetId().equals(dsList.getDatasetId())) {
 					it.remove();
@@ -194,11 +194,11 @@ public class DatasetViewModel {
 		this.cbAllUsers = cbAllUsers;
 	}
 
-	public List<VDatasetSummaryRecord> getDatasetList() {
+	public List<VDatasetSummaryEntity> getDatasetList() {
 		return datasetList;
 	}
 
-	public void setDatasetList(List<VDatasetSummaryRecord> datasetList) {
+	public void setDatasetList(List<VDatasetSummaryEntity> datasetList) {
 		this.datasetList = datasetList;
 	}
 

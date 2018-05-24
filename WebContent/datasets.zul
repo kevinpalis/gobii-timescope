@@ -71,10 +71,10 @@
 								</cell>
 								<cell>
 									<hbox>
-										<datebox lenient="true"
+										<datebox lenient="true"  value="@save(vm.datasetEntity.creationDateStart)"
 											buttonVisible="true" />
 										to
-										<datebox lenient="true"
+										<datebox lenient="true"  value="@save(vm.datasetEntity.creationDateEnd)"
 											buttonVisible="true" />
 									</hbox>
 								</cell>

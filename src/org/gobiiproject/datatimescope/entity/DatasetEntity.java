@@ -27,7 +27,8 @@ public class DatasetEntity implements Serializable,Cloneable {
 	private Integer datasetIDStartRange;
 	private Integer datasetIDEndRange;
 	private List<String> datasetNames;
-	private List<Date> creationDateRange;
+	private Date creationDateStart;
+	private Date creationDateEnd;
 	private CvRecord datasetTypeRecord;
 	private ContactRecord piRecord;
 	private ContactRecord createdByContactRecord;
@@ -41,12 +42,6 @@ public class DatasetEntity implements Serializable,Cloneable {
 	}
 	public void setDatasetNames(List<String> datasetNames) {
 		this.datasetNames = datasetNames;
-	}
-	public List<Date> getCreationDateRange() {
-		return creationDateRange;
-	}
-	public void setCreationDateRange(List<Date> creationDateRange) {
-		this.creationDateRange = creationDateRange;
 	}
 	public ContactRecord getPiRecord() {
 		return piRecord;
@@ -86,5 +81,21 @@ public class DatasetEntity implements Serializable,Cloneable {
 
 	public void setDatasetIDEndRange(Integer datasetIDEndRange) {
 		this.datasetIDEndRange = datasetIDEndRange;
+	}
+
+	public Date getCreationDateStart() {
+		return creationDateStart;
+	}
+
+	public void setCreationDateStart(Date creationDateStart) {
+		this.creationDateStart = creationDateStart;
+	}
+
+	public Date getCreationDateEnd() {
+		return creationDateEnd;
+	}
+
+	public void setCreationDateEnd(Date creationDateEnd) {
+		this.creationDateEnd = creationDateEnd;
 	}
 }

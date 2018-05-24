@@ -95,7 +95,7 @@ public class UserController extends SelectorComposer<Component>{
 			e1.printStackTrace();
 		}
         try  {
-            Connection conn = DriverManager.getConnection(url, userName, password);        
+            Connection conn = DriverManager.getConnection(url, userName, password);
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
             Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
             

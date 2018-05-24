@@ -12,6 +12,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
@@ -33,11 +34,11 @@ public interface ViewModelService {
 
 	public boolean deleteUsers(ListModelList<TimescoperEntity> selectedUsersList);
 
-	public List<VDatasetSummaryRecord> getAllDatasets();
+	public List<VDatasetSummaryEntity> getAllDatasets();
 
-	public boolean deleteDataset(VDatasetSummaryRecord vDatasetSummaryRecord);
+	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord);
 
-	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList);
+	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList);
 
 	public TimescoperRecord loginTimescoper(String username, String password);
 	
@@ -49,5 +50,5 @@ public interface ViewModelService {
 
 	List<CvRecord> getCvTermsByGroupName(String groupName);
 
-	public List<VDatasetSummaryRecord> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity);
+	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity);
 }

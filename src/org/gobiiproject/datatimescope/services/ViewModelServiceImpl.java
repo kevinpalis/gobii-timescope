@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -282,13 +284,13 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 	
 	@Override
-	public List<VDatasetSummaryRecord> getAllDatasets() {
+	public List<VDatasetSummaryEntity> getAllDatasets() {
 		// TODO Auto-generated method stub
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-		List<VDatasetSummaryRecord> datasetList = null;
+		List<VDatasetSummaryEntity> datasetList = null;
 		try{
-			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryRecord.class);
+			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryEntity.class);
 
 		}catch(Exception e ){
 
@@ -358,7 +360,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteDataset(VDatasetSummaryRecord vDatasetSummaryRecord) {
+	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord) {
 		// TODO Auto-generated method stub
 	
 		boolean successful = false;
@@ -381,7 +383,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList) {
+	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList) {
 		// TODO Auto-generated method stub
 		
 		boolean successful = false;
@@ -391,7 +393,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			
 			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
 			        .stream()
-			        .map(VDatasetSummaryRecord::getDatasetId)
+			        .map(VDatasetSummaryEntity::getDatasetId)
 			        .collect(Collectors.toList())))
 			    .execute();
 			
@@ -407,12 +409,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VDatasetSummaryRecord> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
+	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
 		// TODO Auto-generated method stub
 		int queryCount =0;
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-		List<VDatasetSummaryRecord> datasetList = null;
+		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
 			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
@@ -438,9 +440,20 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				sb.append(" d.dataset_id between "+Integer.toString(datasetEntity.getDatasetIDStartRange())+" and "+Integer.toString(datasetEntity.getDatasetIDEndRange()));
 				queryCount++;
 			}
+
+			if (datasetEntity.getCreationDateStart()!=null && datasetEntity.getCreationDateEnd()!=null){
+				if(queryCount>0) sb.append(" and ");
+				else sb.append(" where ");
+				
+				java.sql.Date sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+				java.sql.Date sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+				
+				sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
+				queryCount++;
+			}
 			sb.append(";");
 			String query = sb.toString();
-			datasetList = context.fetch(query).into(VDatasetSummaryRecord.class);
+			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
 
 		}catch(Exception e ){
 
