@@ -120,7 +120,7 @@ public class DatasetEntity implements Serializable,Cloneable {
 		
 		for(String s: datasetNamesAsCommaSeparatedString.split(",")){
 			if(ctr>0)sb.append(",");
-		sb.append(" '"+s+"' ");
+		sb.append(" '"+s.replaceAll(", ",",")+"' ");
 		ctr++;
 		}
 		return sb.toString();

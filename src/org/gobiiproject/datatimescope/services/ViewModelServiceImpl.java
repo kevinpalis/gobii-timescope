@@ -420,7 +420,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			StringBuilder sb = new StringBuilder();
 			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
 
-			if (!datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
+			if (datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
 				
 				sb.append(" where d.name in ("+datasetEntity.getSQLReadyDatasetNames()+")");
 				dsNameCount++;	
@@ -463,7 +463,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
 				queryCount++;
 			}
-			if(queryCount>0) sb.append(") ");
+//			if(queryCount>0 && dsNameCount>0) sb.append(") ");
 			sb.append(";");
 			String query = sb.toString();
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
@@ -479,8 +479,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
 		// TODO Auto-generated method stub
 
-		if(dsNameCount>0 && queryCount==0) sb.append(" OR ("); 
-		else if(dsNameCount==0 && queryCount==0) sb.append(" where (");
+//		if(dsNameCount>0 && queryCount==0) sb.append(" OR ( where"); 
+
+		if(dsNameCount>0 && queryCount==0) sb.append(" and "); 
+		else if(dsNameCount==0 && queryCount==0) sb.append(" where ");
 		else sb.append(" and ");
 	}
 

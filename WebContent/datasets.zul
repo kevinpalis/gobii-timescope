@@ -35,7 +35,7 @@
 								</cell>
 								<cell>
 									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_after">
+										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before">
 									
 									</textbox>
 								</cell>
@@ -69,10 +69,10 @@
 								</cell>
 								<cell>
 									<hbox>
-										<datebox lenient="true"  value="@save(vm.datasetEntity.creationDateStart)"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)"
 											buttonVisible="true" />
 										to
-										<datebox lenient="true"  value="@save(vm.datasetEntity.creationDateEnd)"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)"
 											buttonVisible="true" />
 									</hbox>
 								</cell>
@@ -253,8 +253,6 @@
 	</vlayout>
 	
     <popup id="title" width="400px">
-		<label value="Separate dataset names with comma" />
-        <html><![CDATA[Do not add unnecessary whitespaces]]></html>
-
+		<label value="Separate dataset names with a comma" />
     </popup>
 </window>
