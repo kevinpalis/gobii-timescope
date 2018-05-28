@@ -23,9 +23,9 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)"/>
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero"/>
 										to
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)"/>
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero"/>
 									</hbox>
 								</cell>
 							</row>
@@ -69,10 +69,10 @@
 								</cell>
 								<cell>
 									<hbox>
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)" constraint="no future, no today"
 											buttonVisible="true" />
 										to
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)" constraint="no future, no today"
 											buttonVisible="true" />
 									</hbox>
 								</cell>
@@ -141,6 +141,12 @@
 					<label value="Experiment Name" />
 				</column>
 				<column hflex="min">
+					<label value="PI Id" />
+				</column>
+				<column hflex="min">
+					<label value="PI Name" />
+				</column>
+				<column hflex="min">
 					<label value="Calling Analysis Id" />
 				</column>
 				<column hflex="min">
@@ -201,6 +207,12 @@
 					</cell>
 					<cell>
 						<label value="@load(dataset.experimentName)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.piId)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.piName)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.callinganalysisId)" />

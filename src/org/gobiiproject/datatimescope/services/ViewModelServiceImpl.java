@@ -290,7 +290,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{
-			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryEntity.class);
+			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryEntity.class);
 
 		}catch(Exception e ){
 
@@ -418,11 +418,13 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
-			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact c3 on p.pi_contact=c3.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+			
+		  
+			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
 
 			if (datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
 				
-				sb.append(" where d.name in ("+datasetEntity.getSQLReadyDatasetNames()+")");
+				sb.append(" where LOWER(d.name) in ("+datasetEntity.getSQLReadyDatasetNames()+")");
 				dsNameCount++;	
 			}
 			
@@ -446,24 +448,72 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getPiRecord().getContactId()));
 				queryCount++;
 			}
-			if (datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){
+			if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
 
+				//check which is not null
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-				sb.append(" d.dataset_id between "+Integer.toString(datasetEntity.getDatasetIDStartRange())+" and "+Integer.toString(datasetEntity.getDatasetIDEndRange()));
+				
+				if(datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){ //if both is not null
+					Integer lowerID = datasetEntity.getDatasetIDStartRange();
+					Integer higherID = datasetEntity.getDatasetIDEndRange();
+					
+					if(lowerID.compareTo(higherID)>0){
+						lowerID = datasetEntity.getDatasetIDEndRange();
+						 higherID = datasetEntity.getDatasetIDStartRange();
+					}
+					
+					sb.append(" d.dataset_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+				}else{
+					Integer ID = null;
+					if(datasetEntity.getDatasetIDStartRange()!=null) ID = datasetEntity.getDatasetIDStartRange();
+					else ID = datasetEntity.getDatasetIDEndRange();
+					
+					sb.append(" d.dataset_id = "+Integer.toString(ID));
+				}
+				
 				queryCount++;
 			}
 
-			if (datasetEntity.getCreationDateStart()!=null && datasetEntity.getCreationDateEnd()!=null){
+			if (datasetEntity.getCreationDateStart()!=null || datasetEntity.getCreationDateEnd()!=null){
 
 				checkPreviousAppends(dsNameCount, queryCount, sb);
+
+				if(datasetEntity.getCreationDateStart()!=null && datasetEntity.getCreationDateEnd()!=null){ //if both is not null
+
+					java.sql.Date sqlDateStart = null;
+					java.sql.Date sqlDateEnd= null;
+					
+					//check order of query. This is to filter out dummy queries where the range is not in the proper order.
+
+					if(datasetEntity.getCreationDateStart().after(datasetEntity.getCreationDateEnd())){
+						
+						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+						
+					}else{
+						
+						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+					}
+					
+					sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
+				}
+				else{ //check which is not null
+
+					java.sql.Date sqlDate = null;
+					
+					if(datasetEntity.getCreationDateStart()!=null){
+						sqlDate = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+					}else{
+						sqlDate  = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+					}
+					
+					sb.append(" d.created_date = '"+sqlDate+"' ");
+				}
 				
-				java.sql.Date sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
-				java.sql.Date sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
-				
-				sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
 				queryCount++;
 			}
-//			if(queryCount>0 && dsNameCount>0) sb.append(") ");
+
 			sb.append(";");
 			String query = sb.toString();
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
@@ -479,9 +529,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
 		// TODO Auto-generated method stub
 
-//		if(dsNameCount>0 && queryCount==0) sb.append(" OR ( where"); 
-
-		if(dsNameCount>0 && queryCount==0) sb.append(" and "); 
+		if(dsNameCount>0 && queryCount==0) sb.append(" or "); 
 		else if(dsNameCount==0 && queryCount==0) sb.append(" where ");
 		else sb.append(" and ");
 	}

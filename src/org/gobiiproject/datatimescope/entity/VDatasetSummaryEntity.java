@@ -10,7 +10,8 @@ import org.gobiiproject.datatimescope.utils.Utils;
 
 @SuppressWarnings("serial")
 public class VDatasetSummaryEntity extends VDatasetSummaryRecord {
-
+	private String piName;
+	
 	public VDatasetSummaryEntity() {
 		new VDatasetSummaryRecord();
 	}
@@ -63,4 +64,14 @@ public class VDatasetSummaryEntity extends VDatasetSummaryRecord {
 		
     	return sb.toString();
     }
+
+	public String getPiName() {
+
+    	String piLastName=  (String) get(23);
+    	String piFirstName= (String) get(22);
+    	
+    	piName = piLastName +", "+ piFirstName;
+		return piName;
+	}
+
 }

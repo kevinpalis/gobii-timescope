@@ -67,18 +67,21 @@ public class DatasetViewModel {
 	@Command("submitQuery")
 	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers"})
 	public void submitQuery(){
+		
 		try{
 		datasetList.clear(); //clear the list first and then just add if there are any selected
 		}catch(NullPointerException e){
 			
 		}
+		
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 		
 
 		setAllCbSelected(false);
 		setCbAllUsers(false);
+		
 	}
-	
+
 	@Command("resetDatasetTab")
 	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity"})
 	public void resetDatasetTab(){

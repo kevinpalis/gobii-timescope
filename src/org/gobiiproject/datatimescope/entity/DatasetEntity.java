@@ -118,9 +118,9 @@ public class DatasetEntity implements Serializable,Cloneable {
 		int ctr = 0;
 		StringBuilder sb = new StringBuilder();
 		
-		for(String s: datasetNamesAsCommaSeparatedString.split(",")){
+		for(String s: datasetNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
 			if(ctr>0)sb.append(",");
-		sb.append(" '"+s.replaceAll(", ",",")+"' ");
+		sb.append(" '"+s.toLowerCase()+"' ");
 		ctr++;
 		}
 		return sb.toString();
