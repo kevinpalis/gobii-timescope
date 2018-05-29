@@ -45,7 +45,7 @@ public class DatasetViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false;
+	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false;
 
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
@@ -83,7 +83,7 @@ public class DatasetViewModel {
 	}
 
 	@Command("resetDatasetTab")
-	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity"})
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled"})
 	public void resetDatasetTab(){
 		try{
 		datasetList.clear(); //clear the list first and then just add if there are any selected
@@ -93,6 +93,9 @@ public class DatasetViewModel {
 		}
 		datasetEntity = new DatasetEntity();
 
+
+		setiDBoxDisabled(false);
+		setnameListDisabled(false);
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
@@ -108,6 +111,25 @@ public class DatasetViewModel {
 		if (isCbAllUsers()) {
 			for(VDatasetSummaryEntity u: datasetListOnDisplay){
 				selectedDsList.add(u);
+			}
+		}
+	}
+
+	@Command("changeEnabled")
+	@NotifyChange({"iDBoxDisabled","nameListDisabled"})
+	public void changeEnabled(){
+		isIDBoxDisabled = false; // reseet
+		isNameListDisabled= false; 
+		
+		if(datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
+			isIDBoxDisabled = true;
+		}else if(datasetEntity.getDatasetIDStartRange() != null ){
+			if(datasetEntity.getDatasetIDStartRange() >0 ){
+			isNameListDisabled=true;
+			}
+		}else if(datasetEntity.getDatasetIDEndRange() !=null){
+			if(datasetEntity.getDatasetIDEndRange()>0){
+			isNameListDisabled=true;
 			}
 		}
 	}
@@ -161,7 +183,7 @@ public class DatasetViewModel {
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
 		selectedDsList.clear();
-
+		
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
@@ -235,6 +257,22 @@ public class DatasetViewModel {
 
 	public void setDatasetEntity(DatasetEntity datasetEntity) {
 		this.datasetEntity = datasetEntity;
+	}
+
+	public boolean isiDBoxDisabled() {
+		return isIDBoxDisabled;
+	}
+
+	public void setiDBoxDisabled(boolean isIDBoxDisabled) {
+		this.isIDBoxDisabled = isIDBoxDisabled;
+	}
+
+	public boolean isnameListDisabled() {
+		return isNameListDisabled;
+	}
+
+	public void setnameListDisabled(boolean isNameListDisabled) {
+		this.isNameListDisabled = isNameListDisabled;
 	}
 
 }

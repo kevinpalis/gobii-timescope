@@ -23,9 +23,9 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero"/>
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 										to
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero"/>
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 									</hbox>
 								</cell>
 							</row>
@@ -35,7 +35,7 @@
 								</cell>
 								<cell>
 									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before">
+										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
 									
 									</textbox>
 								</cell>

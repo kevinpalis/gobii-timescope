@@ -529,8 +529,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
 		// TODO Auto-generated method stub
 
-		if(dsNameCount>0 && queryCount==0) sb.append(" or "); 
-		else if(dsNameCount==0 && queryCount==0) sb.append(" where ");
+		if(dsNameCount==0 && queryCount==0) sb.append(" where ");
 		else sb.append(" and ");
 	}
 
