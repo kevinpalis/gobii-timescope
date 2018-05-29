@@ -4,25 +4,34 @@
 package org.gobiiproject.datatimescope.services;
 
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
+import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
+import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
+import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -74,7 +83,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean createNewUser(TimescoperRecord userAccount) {
+	public boolean createNewUser(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -101,7 +110,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 
-	private Createtimescoper createTimescoperFromRecord(TimescoperRecord userAccount) {
+	private Createtimescoper createTimescoperFromRecord(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		Createtimescoper createTimescoper = new Createtimescoper();
@@ -116,7 +125,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteUser(TimescoperRecord userAccount) {
+	public boolean deleteUser(TimescoperEntity userAccount) {
 
 		boolean successful = false;
 		try{
@@ -135,7 +144,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteUsers(ListModelList<TimescoperRecord> selectedUsersList) {
+	public boolean deleteUsers(ListModelList<TimescoperEntity> selectedUsersList) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -189,17 +198,42 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return user;
 	}
 	
+	@Override
+	public List<CvRecord> getCvTermsByGroupName(String groupName) {
+		// TODO Auto-generated method stub
+		List<CvRecord> cvRecordList = null;
+		try{
+			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			
+//			Getcvtermsbycvgroupname getcvtermsbycvgroupname = new Getcvtermsbycvgroupname();
+//			getcvtermsbycvgroupname.setCvgroupname(groupName);
+//			getcvtermsbycvgroupname.execute(context.configuration());
+//
+//			cvRecordList  = getcvtermsbycvgroupname.getResults();
 
-	public synchronized TimescoperRecord getUserInfo(String username){
+//			select cv.term from cv, cvgroup
+//			where cv.cvgroup_id = cvgroup.cvgroup_id and cvgroup.name = cvgroupName;
+			
+			cvRecordList = context.select().from(CV, CVGROUP).where(CVGROUP.CVGROUP_ID.eq(CV.CVGROUP_ID)).and(CVGROUP.NAME.equal(groupName)).fetchInto(CvRecord.class);
 
-		TimescoperRecord user = new TimescoperRecord();
+		}
+		catch(Exception e ){
+			Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+		return cvRecordList;
+	}
+
+	public synchronized TimescoperEntity getUserInfo(String username){
+
+		TimescoperEntity user = new TimescoperEntity();
 
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
 
-			user = (TimescoperRecord) context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.equal(username)).limit(1).fetchOne();
+			user =  context.fetchOne("select * from timescoper where username = '"+username+"';").into(TimescoperEntity.class);
 
 
 		}catch(Exception e ){
@@ -212,43 +246,81 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<TimescoperRecord> getAllOtherUsers(String username) {
+	public List<TimescoperEntity> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
 
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-		List<TimescoperRecord> userList = null;
+		List<TimescoperEntity> userList = null;
 		try{
 			
-			userList = context.select().from(TIMESCOPER).where(TIMESCOPER.USERNAME.notEqual(username)).fetchInto(TimescoperRecord.class);
+			userList = context.fetch("select * from timescoper where username != '"+username+"';").into(TimescoperEntity.class);
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 
 		return userList;
 	}
-
+	
 	@Override
-	public List<VDatasetSummaryRecord> getAllDatasets() {
+	public List<ContactRecord> getAllContacts() {
 		// TODO Auto-generated method stub
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-		List<VDatasetSummaryRecord> datasetList = null ;
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<ContactRecord> contactList = null;
 		try{
-			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryRecord.class);
+			
+			contactList = context.select().from(CONTACT).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error whil trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve users", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return contactList;
+	}
+	
+	@Override
+	public List<VDatasetSummaryEntity> getAllDatasets() {
+		// TODO Auto-generated method stub
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VDatasetSummaryEntity> datasetList = null;
+		try{
+			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryEntity.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 		return datasetList;
 	}
 
 	@Override
-	public boolean updateUser(TimescoperRecord userAccount) {
+	public List<ContactRecord> getContactsByRoles(Integer[] role) {
+		// TODO Auto-generated method stub
+
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<ContactRecord> contactList = null;
+		try{
+			
+			contactList = context.select().from(CONTACT).where(CONTACT.ROLES.contains(role)).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve contacts", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return contactList;
+	}
+	
+	@Override
+	public boolean updateUser(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -256,7 +328,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 			
-			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperRecord
+			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperEntity
 			GenSalt2 genSalt = new GenSalt2();
 			genSalt.set__1("bf");
 			genSalt.set__2(11);
@@ -288,7 +360,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteDataset(VDatasetSummaryRecord vDatasetSummaryRecord) {
+	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord) {
 		// TODO Auto-generated method stub
 	
 		boolean successful = false;
@@ -311,7 +383,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteDatasets(List<VDatasetSummaryRecord> selectedDsList) {
+	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList) {
 		// TODO Auto-generated method stub
 		
 		boolean successful = false;
@@ -321,7 +393,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			
 			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
 			        .stream()
-			        .map(VDatasetSummaryRecord::getDatasetId)
+			        .map(VDatasetSummaryEntity::getDatasetId)
 			        .collect(Collectors.toList())))
 			    .execute();
 			
@@ -334,6 +406,131 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			e.printStackTrace();
 		}
 		return successful;
+	}
+	
+	@Override
+	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
+		// TODO Auto-generated method stub
+		int queryCount =0;
+		int dsNameCount = 0;
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VDatasetSummaryEntity> datasetList = null;
+		try{ //c3.lastname as pi_contact,
+			StringBuilder sb = new StringBuilder();
+			
+		  
+			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+
+			if (datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
+				
+				sb.append(" where LOWER(d.name) in ("+datasetEntity.getSQLReadyDatasetNames()+")");
+				dsNameCount++;	
+			}
+			
+			if (datasetEntity.getCreatedByContactRecord()!=null){
+				
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				
+				sb.append(" c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
+				queryCount++;
+			}
+			if (datasetEntity.getDatasetTypeRecord()!=null){
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				
+				sb.append(" cv2.cv_id="+Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId()));
+				queryCount++;
+			}
+			if (datasetEntity.getPiRecord()!=null){
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getPiRecord().getContactId()));
+				queryCount++;
+			}
+			if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
+
+				//check which is not null
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				
+				if(datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){ //if both is not null
+					Integer lowerID = datasetEntity.getDatasetIDStartRange();
+					Integer higherID = datasetEntity.getDatasetIDEndRange();
+					
+					if(lowerID.compareTo(higherID)>0){
+						lowerID = datasetEntity.getDatasetIDEndRange();
+						 higherID = datasetEntity.getDatasetIDStartRange();
+					}
+					
+					sb.append(" d.dataset_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+				}else{
+					Integer ID = null;
+					if(datasetEntity.getDatasetIDStartRange()!=null) ID = datasetEntity.getDatasetIDStartRange();
+					else ID = datasetEntity.getDatasetIDEndRange();
+					
+					sb.append(" d.dataset_id = "+Integer.toString(ID));
+				}
+				
+				queryCount++;
+			}
+
+			if (datasetEntity.getCreationDateStart()!=null || datasetEntity.getCreationDateEnd()!=null){
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+
+				if(datasetEntity.getCreationDateStart()!=null && datasetEntity.getCreationDateEnd()!=null){ //if both is not null
+
+					java.sql.Date sqlDateStart = null;
+					java.sql.Date sqlDateEnd= null;
+					
+					//check order of query. This is to filter out dummy queries where the range is not in the proper order.
+
+					if(datasetEntity.getCreationDateStart().after(datasetEntity.getCreationDateEnd())){
+						
+						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+						
+					}else{
+						
+						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+					}
+					
+					sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
+				}
+				else{ //check which is not null
+
+					java.sql.Date sqlDate = null;
+					
+					if(datasetEntity.getCreationDateStart()!=null){
+						sqlDate = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
+					}else{
+						sqlDate  = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
+					}
+					
+					sb.append(" d.created_date = '"+sqlDate+"' ");
+				}
+				
+				queryCount++;
+			}
+
+			sb.append(";");
+			String query = sb.toString();
+			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+		return datasetList;
+	}
+
+	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
+		// TODO Auto-generated method stub
+
+		if(dsNameCount==0 && queryCount==0) sb.append(" where ");
+		else sb.append(" and ");
 	}
 
 }

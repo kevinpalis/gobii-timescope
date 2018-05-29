@@ -8,10 +8,11 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
-import org.gobiiproject.datatimescope.services.CommonInfoService;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -37,15 +38,14 @@ import org.zkoss.zul.Window;
 
 public class UserViewModel {
 	//UI component
-
 	ViewModelService viewModelService;
 
 	private boolean cbAllUsers, isAllCbSelected=false, superUser=false;
 
-	private TimescoperRecord userAccount;
+	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
-	private ListModelList<TimescoperRecord> userlist, selectedUsersList;
+	private ListModelList<TimescoperEntity> userlist, selectedUsersList;
 
 	@AfterCompose
 	public void afterCompose() {
@@ -58,11 +58,11 @@ public class UserViewModel {
 
 		userAccount = viewModelService.getUserInfo(accountUsername);
 
-		roleList= new ListModelList<String>(CommonInfoService.getRoleList());
+		roleList= new ListModelList<String>(Utils.getRoleList());
 
-		selectedUsersList = new ListModelList<TimescoperRecord>();
+		selectedUsersList = new ListModelList<TimescoperEntity>();
 
-		userlist = new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true);
+		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
 
 		userlist.setMultiple(true);
 		
@@ -104,7 +104,7 @@ public class UserViewModel {
 		else{
 			StringBuilder sb = new StringBuilder();
 
-			for(TimescoperRecord u: selectedUsersList){
+			for(TimescoperEntity u: selectedUsersList){
 				sb.append("\n"+u.getUsername()+"\" "+u.getLastname() +", "+ u.getFirstname());
 			}
 
@@ -140,14 +140,14 @@ public class UserViewModel {
 	@Command("doSelectAll")
 	@NotifyChange({"userlist", "allCbSelected"})
 	public void doSelectAll(){
-		ListModelList<TimescoperRecord> users = getUsers();
+		ListModelList<TimescoperEntity> users = getUsers();
 
 		selectedUsersList.clear(); //clear the list first and then just add if there are any selected
 
 		setAllCbSelected(isCbAllUsers());
 
 		if (isCbAllUsers()) {
-			for(TimescoperRecord u: users){
+			for(TimescoperEntity u: users){
 				selectedUsersList.add(u);
 			}
 		}
@@ -156,7 +156,7 @@ public class UserViewModel {
 
 	@Command("modifyUser")
 	@NotifyChange({"userlist"})
-	public void modifyUser(@BindingParam("editedUser") TimescoperRecord user){
+	public void modifyUser(@BindingParam("editedUser") TimescoperEntity user){
 
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", user);
@@ -171,7 +171,7 @@ public class UserViewModel {
 
 	@Command("createUser")
 	public void createUser(){
-		TimescoperRecord emptyUser = new TimescoperRecord();
+		TimescoperEntity emptyUser = new TimescoperEntity();
 		emptyUser.setRole(0);
 		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -185,8 +185,8 @@ public class UserViewModel {
 
 
 	@GlobalCommand("refreshTimescoperRecord")
-	@NotifyChange({"userAccount", "userlist", "users" })
-	public void refreshTimescoperRecord(@BindingParam("timescoperRecord")TimescoperRecord record){
+	@NotifyChange({"userAccount", "userlist", "users", "userRole" })
+	public void refreshTimescoperRecord(@BindingParam("timescoperRecordEntity")TimescoperEntity record){
 		//...
 		record.refresh();
 
@@ -203,7 +203,7 @@ public class UserViewModel {
 		String accountUsername = cre.getAccount();
 
 		userAccount = viewModelService.getUserInfo(accountUsername);
-		setUsers(new ListModelList<TimescoperRecord>(viewModelService.getAllOtherUsers(accountUsername), true));
+		setUsers(new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true));
 
 
 		userlist.setMultiple(true);
@@ -217,13 +217,13 @@ public class UserViewModel {
 
 	@Command("updateSelectUser")
 	@NotifyChange({"cbAllUsers", "selectedUsersList"})
-	public void updateSelectUser(@BindingParam("userChecked") TimescoperRecord user, @BindingParam("isChecked") Boolean isChecked){
+	public void updateSelectUser(@BindingParam("userChecked") TimescoperEntity user, @BindingParam("isChecked") Boolean isChecked){
 		if(isChecked){
 			selectedUsersList.add(user);
 		}else{
 			setCbAllUsers(false);
 
-			ListIterator<TimescoperRecord> it = selectedUsersList.listIterator();
+			ListIterator<TimescoperEntity> it = selectedUsersList.listIterator();
 			while (it.hasNext()) {
 				if (it.next().getUsername().matches(user.getUsername())) {
 					it.remove();
@@ -233,11 +233,11 @@ public class UserViewModel {
 		}
 	}
 
-	public TimescoperRecord getUserAccount() {
+	public TimescoperEntity getUserAccount() {
 		return userAccount;
 	}
 
-	public void setUserAccount(TimescoperRecord userAccount) {
+	public void setUserAccount(TimescoperEntity userAccount) {
 		this.userAccount = userAccount;
 	}
 
@@ -249,11 +249,11 @@ public class UserViewModel {
 		this.roleList = roleList;
 	}
 
-	public ListModelList<TimescoperRecord> getUsers() {
+	public ListModelList<TimescoperEntity> getUsers() {
 		return userlist;
 	}
 
-	public void setUsers(ListModelList<TimescoperRecord> users) {
+	public void setUsers(ListModelList<TimescoperEntity> users) {
 		this.userlist = users;
 	}
 
@@ -265,11 +265,11 @@ public class UserViewModel {
 		this.cbAllUsers = selectedAllUsers;
 	}
 
-	public ListModelList<TimescoperRecord> getSelectedUsersList() {
+	public ListModelList<TimescoperEntity> getSelectedUsersList() {
 		return selectedUsersList;
 	}
 
-	public void setSelectedUsersList(ListModelList<TimescoperRecord> selectedUsersList) {
+	public void setSelectedUsersList(ListModelList<TimescoperEntity> selectedUsersList) {
 		this.selectedUsersList = selectedUsersList;
 	}
 
@@ -290,4 +290,5 @@ public class UserViewModel {
 	public void setSuperUser(boolean superUser) {
 		this.superUser = superUser;
 	}
+	
 }

@@ -12,139 +12,117 @@ timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::r
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
-import org.gobiiproject.datatimescope.services.CommonInfoService;
-import org.zkoss.zul.ListModelList;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+
 /**
  * User entity
  */
 public class DatasetEntity implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
-	private Integer datasetId;
-	public Integer getDatasetId() {
-		return datasetId;
+	
+	private Integer datasetIDStartRange;
+	private Integer datasetIDEndRange;
+	private String datasetNamesAsCommaSeparatedString;
+	private List<String> datasetNames;
+	private Date creationDateStart;
+	private Date creationDateEnd;
+	private CvRecord datasetTypeRecord;
+	private ContactRecord piRecord;
+	private ContactRecord createdByContactRecord;
+	
+	public DatasetEntity(){
+		
 	}
-	public void setDatasetId(Integer datasetId) {
-		this.datasetId = datasetId;
+	
+	public List<String> getDatasetNames() {
+		return datasetNames;
 	}
-	public String getDatasetName() {
-		return datasetName;
+	public void setDatasetNames(List<String> datasetNames) {
+		this.datasetNames = datasetNames;
 	}
-	public void setDatasetName(String datasetName) {
-		this.datasetName = datasetName;
+	public ContactRecord getPiRecord() {
+		return piRecord;
 	}
-	public Integer getExperimentId() {
-		return experimentId;
-	}
-	public void setExperimentId(Integer experimentId) {
-		this.experimentId = experimentId;
-	}
-	public String getExperimentName() {
-		return experimentName;
-	}
-	public void setExperimentName(String experimentName) {
-		this.experimentName = experimentName;
-	}
-	public Integer getCallingAnalysisId() {
-		return callingAnalysisId;
-	}
-	public void setCallingAnalysisId(Integer callingAnalysisId) {
-		this.callingAnalysisId = callingAnalysisId;
-	}
-	public String getCallingAnalysisName() {
-		return callingAnalysisName;
-	}
-	public void setCallingAnalysisName(String callingAnalysisName) {
-		this.callingAnalysisName = callingAnalysisName;
-	}
-	public Integer[] getAnalyses() {
-		return analyses;
-	}
-	public void setAnalyses(Integer[] analyses) {
-		this.analyses = analyses;
-	}
-	public String getDataTable() {
-		return dataTable;
-	}
-	public void setDataTable(String dataTable) {
-		this.dataTable = dataTable;
-	}
-	public String getDataFile() {
-		return dataFile;
-	}
-	public void setDataFile(String dataFile) {
-		this.dataFile = dataFile;
-	}
-	public String getQualityTable() {
-		return qualityTable;
-	}
-	public void setQualityTable(String qualityTable) {
-		this.qualityTable = qualityTable;
-	}
-	public String getQualityFile() {
-		return qualityFile;
-	}
-	public void setQualityFile(String qualityFile) {
-		this.qualityFile = qualityFile;
-	}
-	public String getCreatedByUsername() {
-		return createdByUsername;
-	}
-	public void setCreatedByUsername(String createdByUsername) {
-		this.createdByUsername = createdByUsername;
-	}
-	public String getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
-	}
-	public String getModifiedByUsername() {
-		return modifiedByUsername;
-	}
-	public void setModifiedByUsername(String modifiedByUsername) {
-		this.modifiedByUsername = modifiedByUsername;
-	}
-	public String getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(String modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-	public String getStatusName() {
-		return statusName;
-	}
-	public void setStatusName(String statusName) {
-		this.statusName = statusName;
-	}
-	public String getTypeName() {
-		return typeName;
-	}
-	public void setTypeName(String typeName) {
-		this.typeName = typeName;
-	}
-	public String getJobName() {
-		return jobName;
-	}
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
-	}
-	private String datasetName;
-	private Integer experimentId;
-	private String experimentName;
-	private Integer callingAnalysisId;
-	private String callingAnalysisName;
-	private Integer[] analyses;
-	private String dataTable;
-	private String dataFile;
-	private String qualityTable;
-	private String qualityFile;
-	private String createdByUsername;
-	private String createdDate;
-	private String modifiedByUsername;
-	private String modifiedDate;
-	private String statusName;
-	private String typeName;
-	private String jobName;
 
+	public void setPiRecord(ContactRecord piRecord) {
+		this.piRecord = piRecord;
+	}
+
+	public ContactRecord getCreatedByContactRecord() {
+		return createdByContactRecord;
+	}
+
+	public void setCreatedByContactRecord(ContactRecord createdByContactRecord) {
+		this.createdByContactRecord = createdByContactRecord;
+	}
+
+	public CvRecord getDatasetTypeRecord() {
+		return datasetTypeRecord;
+	}
+
+	public void setDatasetTypeRecord(CvRecord datasetTypeRecord) {
+		this.datasetTypeRecord = datasetTypeRecord;
+	}
+
+	public Integer getDatasetIDStartRange() {
+		return datasetIDStartRange;
+	}
+
+	public void setDatasetIDStartRange(Integer datasetIDStartRange) {
+		this.datasetIDStartRange = datasetIDStartRange;
+	}
+
+	public Integer getDatasetIDEndRange() {
+		return datasetIDEndRange;
+	}
+
+	public void setDatasetIDEndRange(Integer datasetIDEndRange) {
+		this.datasetIDEndRange = datasetIDEndRange;
+	}
+
+	public Date getCreationDateStart() {
+		return creationDateStart;
+	}
+
+	public void setCreationDateStart(Date creationDateStart) {
+		this.creationDateStart = creationDateStart;
+	}
+
+	public Date getCreationDateEnd() {
+		return creationDateEnd;
+	}
+
+	public void setCreationDateEnd(Date creationDateEnd) {
+		this.creationDateEnd = creationDateEnd;
+	}
+
+	public String getDatasetNamesAsCommaSeparatedString() {
+		return datasetNamesAsCommaSeparatedString;
+	}
+
+	public void setDatasetNamesAsCommaSeparatedString(String datasetNamesAsCommaSeparatedString) {
+		this.datasetNamesAsCommaSeparatedString = datasetNamesAsCommaSeparatedString;
+	}
+
+	public void setDatasetNames(String[] split) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getSQLReadyDatasetNames() {
+		// TODO Auto-generated method stub
+		int ctr = 0;
+		StringBuilder sb = new StringBuilder();
+		
+		for(String s: datasetNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
+			if(ctr>0)sb.append(",");
+		sb.append(" '"+s.toLowerCase()+"' ");
+		ctr++;
+		}
+		return sb.toString();
+	}
 }

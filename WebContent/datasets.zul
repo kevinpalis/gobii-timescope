@@ -1,8 +1,8 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow-y:visible;"
-	apply="org.zkoss.bind.BindComposer"
+<window border="normal" hflex="1" vflex="1"
+	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
 	<vlayout>
@@ -11,7 +11,7 @@
 			<caption label="Filters: " />
 			<vlayout>
 				<hlayout>
-					<grid hflex="true" vflex="1">
+					<grid hflex="1" vflex="1">
 						<columns>
 							<column align="left" />
 							<column align="left" />
@@ -23,9 +23,9 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox value="1" hflex="true" />
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 										to
-										<intbox value="20" hflex="true" />
+										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 									</hbox>
 								</cell>
 							</row>
@@ -35,10 +35,8 @@
 								</cell>
 								<cell>
 									<textbox rows="8" cols="40"
-										hflex="true" vflex="true">
-										<attribute name="value">
-											comma separated, names list,
-										</attribute>
+										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
+									
 									</textbox>
 								</cell>
 							</row>
@@ -57,10 +55,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem label="KPalis" />
-										<comboitem label="USER_READER" />
-										<comboitem label="wee" />
+										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
+										<template name="model">
+											<comboitem
+												label="@load(each.wholename)" value="@load(each.contactId)" />
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -70,10 +69,10 @@
 								</cell>
 								<cell>
 									<hbox>
-										<datebox lenient="true"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)" constraint="no future, no today"
 											buttonVisible="true" />
 										to
-										<datebox lenient="true"
+										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)" constraint="no future, no today"
 											buttonVisible="true" />
 									</hbox>
 								</cell>
@@ -84,10 +83,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem
-											label="nucleotide_2_letter" />
-										<comboitem label="iupac" />
+										hflex="true" model="@load(vm.datasetTypes)" selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
+										<template name="model">
+											<comboitem
+												label="@load(each.term)" />
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -98,10 +98,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true">
-										<comboitem label="Liz Jones" />
-										<comboitem label="Kevin Palis" />
-										<comboitem label="Phil Glaser" />
+										hflex="true" model="@load(vm.piList)" selectedItem="@bind(vm.datasetEntity.piRecord)">
+										<template name="model">
+											<comboitem
+												label="@load(each.wholename)" value="@load(each.contactId)"/>
+										</template>
 									</combobox>
 								</cell>
 							</row>
@@ -110,16 +111,18 @@
 				</hlayout>
 
 				<div align="center" hflex="1">
-					<button label="Clear" width="200px" />
-					<button label="Submit Query" width="200px" />
+					<button label="Clear" width="200px"  onClick="@command('resetDatasetTab')"/>
+					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
 					<button id="deleteBtn" style="background-color: red"
-						label="Delete Selected" hflex="min" onClick="@command('deleteSelectedDatasets')" />
+						label="Delete Selected" hflex="min"
+						onClick="@command('deleteSelectedDatasets')" />
 				</div>
 
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging" pageSize="15" pagingPosition="both" >
+		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging"
+			pageSize="15" pagingPosition="both">
 			<columns sizable="true">
 				<column hflex="min">
 					<checkbox label="Select All"
@@ -136,6 +139,12 @@
 				</column>
 				<column hflex="min">
 					<label value="Experiment Name" />
+				</column>
+				<column hflex="min">
+					<label value="PI Id" />
+				</column>
+				<column hflex="min">
+					<label value="PI Name" />
 				</column>
 				<column hflex="min">
 					<label value="Calling Analysis Id" />
@@ -200,10 +209,17 @@
 						<label value="@load(dataset.experimentName)" />
 					</cell>
 					<cell>
+						<label value="@load(dataset.piId)" />
+					</cell>
+					<cell>
+						<label value="@load(dataset.piName)" />
+					</cell>
+					<cell>
 						<label value="@load(dataset.callinganalysisId)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.callingnalysisName)" />
+						<label
+							value="@load(dataset.callingnalysisName)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.analysesAsString)" />
@@ -227,7 +243,8 @@
 						<label value="@load(dataset.createdDate)" />
 					</cell>
 					<cell>
-						<label value="@load(dataset.modifiedByUsername)" />
+						<label
+							value="@load(dataset.modifiedByUsername)" />
 					</cell>
 					<cell>
 						<label value="@load(dataset.modifiedDate)" />
@@ -246,4 +263,8 @@
 		</grid>
 
 	</vlayout>
+	
+    <popup id="title" width="400px">
+		<label value="Separate dataset names with a comma" />
+    </popup>
 </window>

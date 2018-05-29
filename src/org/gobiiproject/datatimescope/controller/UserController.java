@@ -21,10 +21,10 @@ import java.util.Set;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
-import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -67,7 +67,7 @@ public class UserController extends SelectorComposer<Component>{
 	public void doAfterCompose(Component comp) throws Exception{
 		super.doAfterCompose(comp);
 		
-		ListModelList<String> roleModel = new ListModelList<String>(CommonInfoService.getRoleList());
+		ListModelList<String> roleModel = new ListModelList<String>(Utils.getRoleList());
 		role.setValue(roleModel.get(1));
 	}
 	
@@ -95,7 +95,7 @@ public class UserController extends SelectorComposer<Component>{
 			e1.printStackTrace();
 		}
         try  {
-            Connection conn = DriverManager.getConnection(url, userName, password);        
+            Connection conn = DriverManager.getConnection(url, userName, password);
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
             Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
             
