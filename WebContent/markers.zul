@@ -1,0 +1,215 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window border="normal" hflex="1" vflex="1"
+	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerViewModel')">
+	<caption sclass="fn-caption" label="Markers" />
+	<vlayout>
+
+		<groupbox>
+			<caption label="Filters: " />
+			<vlayout>
+				<hlayout>
+					<grid hflex="1" vflex="1">
+						<columns>
+							<column align="left" />
+							<column align="left" />
+						</columns>
+						<rows>
+							<row>
+								<cell sclass="row-title">
+									Marker ID :
+								</cell>
+								<cell>
+									<hbox hflex="true">
+										<intbox hflex="true" value="@bind(vm.markerEntity.markerId)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+										to
+										<intbox hflex="true" value="@bind(vm.markerEntity.markerId)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+									</hbox>
+								</cell>
+							</row>
+							<row>
+								<cell sclass="row-title">
+									Marker Names :
+								</cell>
+								<cell>
+									<textbox rows="8" cols="40"
+										hflex="true" vflex="true" tooltiptext="Separate marker names with comma" value="@bind(vm.markerEntity.markerNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
+									
+									</textbox>
+								</cell>
+							</row>
+						</rows>
+					</grid>
+
+					<grid hflex="true">
+						<columns>
+							<column align="left" width="40%" />
+							<column align="left" width="60%" />
+						</columns>
+						<rows>
+							<row>
+								<cell sclass="row-title">
+									Platform :
+								</cell>
+								<cell>
+									<combobox autodrop="true"
+										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.markerEntity.createdByContactRecord)">
+										<template name="model">
+											<comboitem
+												label="@load(each.wholename)" value="@load(each.contactId)" />
+										</template>
+									</combobox>
+								</cell>
+							</row>
+						</rows>
+					</grid>
+				</hlayout>
+
+				<div align="center" hflex="1">
+					<button label="Clear" width="200px"  onClick="@command('resetMarkerTab')"/>
+					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
+					<button id="deleteBtn" style="background-color: red"
+						label="Delete Selected" hflex="min"
+						onClick="@command('deleteSelectedMarkers')" />
+				</div>
+
+			</vlayout>
+		</groupbox>
+
+		<grid id="mgrid" model="@load(vm.MarkerList)" mold="paging"
+			pageSize="15" pagingPosition="both">
+			<columns sizable="true">
+				<column hflex="min">
+					<checkbox label="Select All"
+						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
+				</column>
+				<column hflex="min">
+					<label value="Marker Id" />
+				</column>
+				<column hflex="min">
+					<label value="Marker Name" />
+				</column>
+				<column hflex="min">
+					<label value="Platform Id" />
+				</column>
+				<column hflex="min">
+					<label value="Variant Id" />
+				</column>
+				<column hflex="min">
+					<label value="Code" />
+				</column>
+				<column hflex="min">
+					<label value="Ref" />
+				</column>
+				<column hflex="min">
+					<label value="Alts" />
+				</column>
+				<column hflex="min">
+					<label value="Sequence" />
+				</column>
+				<column hflex="min">
+					<label value="Reference Id" />
+				</column>
+				<column hflex="min">
+					<label value="Primers" />
+				</column>
+				<column hflex="min">
+					<label value="Strand Id" />
+				</column>
+				<column hflex="min">
+					<label value="Status" />
+				</column>
+				<column hflex="min">
+					<label value="Probsets" />
+				</column>
+				<column hflex="min">
+					<label value="Dataset Marker Id" />
+				</column>
+				<column hflex="min">
+					<label value="Props" />
+				</column>
+				<column hflex="min">
+					<label value="Dtaset Vendor Protocol" />
+				</column>
+			</columns>
+			<template name="model" var="dataset">
+				<row>
+					<cell>
+						<checkbox value="@load(marker)"
+							checked="@load(vm.allCbSelected)"
+							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.markerId)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.Name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.experimentId)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.experimentName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.piId)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.piName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.callinganalysisId)" />
+					</cell>
+					<cell>
+						<label
+							value="@load(marker.callingnalysisName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.analysesAsString)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.dataTable)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.dataFile)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.qualityTable)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.qualityFile)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.createdByUsername)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.createdDate)" />
+					</cell>
+					<cell>
+						<label
+							value="@load(marker.modifiedByUsername)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.modifiedDate)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.statusName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.typeName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.jobName)" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+
+	</vlayout>
+	
+    <popup id="title" width="400px">
+		<label value="Separate marker names with a comma" />
+    </popup>
+</window>
