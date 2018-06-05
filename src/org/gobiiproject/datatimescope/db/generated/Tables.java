@@ -40,6 +40,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkageGenetic;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
 
@@ -232,6 +233,11 @@ between them.
      * The table <code>public.v_marker_linkage_physical</code>.
      */
     public static final VMarkerLinkagePhysical V_MARKER_LINKAGE_PHYSICAL = org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL;
+
+    /**
+     * The table <code>public.v_marker_summary</code>.
+     */
+    public static final VMarkerSummary V_MARKER_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary.V_MARKER_SUMMARY;
 
     /**
      * The table <code>public.variant</code>.
