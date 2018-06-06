@@ -44,6 +44,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkageGenetic;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
 import org.gobiiproject.datatimescope.db.generated.udt.DistinctSourceKeys;
@@ -69,7 +70,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 1765691321;
+    private static final long serialVersionUID = 967802927;
 
     /**
      * The reference instance of <code>public</code>
@@ -253,6 +254,11 @@ between them.
     public final VMarkerLinkagePhysical V_MARKER_LINKAGE_PHYSICAL = org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL;
 
     /**
+     * The table <code>public.v_marker_summary</code>.
+     */
+    public final VMarkerSummary V_MARKER_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary.V_MARKER_SUMMARY;
+
+    /**
      * The table <code>public.variant</code>.
      */
     public final Variant VARIANT = org.gobiiproject.datatimescope.db.generated.tables.Variant.VARIANT;
@@ -360,6 +366,7 @@ between them.
             VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY,
             VMarkerLinkageGenetic.V_MARKER_LINKAGE_GENETIC,
             VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL,
+            VMarkerSummary.V_MARKER_SUMMARY,
             Variant.VARIANT,
             VendorProtocol.VENDOR_PROTOCOL);
     }

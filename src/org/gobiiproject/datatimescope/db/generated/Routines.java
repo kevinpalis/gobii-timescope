@@ -74,6 +74,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Deletecontact;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletecv;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletecvgroup;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnarunindices;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkerindices;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedbxref;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletednarun;
@@ -1949,6 +1951,68 @@ public class Routines {
     public static Field<Integer> deletedataset(Field<Integer> id) {
         Deletedataset f = new Deletedataset();
         f.setId(id);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.deletedatasetdnarunindices</code>
+     */
+    public static Integer deletedatasetdnarunindices(Configuration configuration, Integer datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.deletedatasetdnarunindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetdnarunindices(Integer datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.deletedatasetdnarunindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetdnarunindices(Field<Integer> datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.deletedatasetmarkerindices</code>
+     */
+    public static Integer deletedatasetmarkerindices(Configuration configuration, Integer datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.deletedatasetmarkerindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetmarkerindices(Integer datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.deletedatasetmarkerindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetmarkerindices(Field<Integer> datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
 
         return f.asField();
     }
