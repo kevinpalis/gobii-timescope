@@ -9,7 +9,13 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -91,7 +97,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
+
 			Createtimescoper createTimescoper = createTimescoperFromRecord(userAccount);
 			createTimescoper.execute(context.configuration());
 
@@ -120,7 +126,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		createTimescoper.set_Password(userAccount.getPassword());
 		createTimescoper.set_Role(userAccount.getRole());
 		createTimescoper.set_Username(userAccount.getUsername());
-		
+
 		return createTimescoper;
 	}
 
@@ -128,6 +134,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public boolean deleteUser(TimescoperEntity userAccount) {
 
 		boolean successful = false;
+
 		try{
 
 			userAccount.delete();
@@ -173,14 +180,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
+
 			gettimescoper.set_Password(password);
 			gettimescoper.set_Username(username);
 
 			int result = gettimescoper.execute(context.configuration());
-		
+
 			if(result==0) successful=true;
-			
+
 		}catch(Exception e ){
 			successful=false;
 		}
@@ -191,29 +198,29 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			user.setEmail(gettimescoper.getEmail());
 			user.setRole(gettimescoper.getRole());
 			user.setUsername(gettimescoper.getUsername());
-			
-			
+
+
 		}else Messagebox.show("Invalid username or password!", "ERROR", Messagebox.OK, Messagebox.ERROR);
-		
+
 		return user;
 	}
-	
+
 	@Override
 	public List<CvRecord> getCvTermsByGroupName(String groupName) {
 		// TODO Auto-generated method stub
 		List<CvRecord> cvRecordList = null;
 		try{
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
-//			Getcvtermsbycvgroupname getcvtermsbycvgroupname = new Getcvtermsbycvgroupname();
-//			getcvtermsbycvgroupname.setCvgroupname(groupName);
-//			getcvtermsbycvgroupname.execute(context.configuration());
-//
-//			cvRecordList  = getcvtermsbycvgroupname.getResults();
 
-//			select cv.term from cv, cvgroup
-//			where cv.cvgroup_id = cvgroup.cvgroup_id and cvgroup.name = cvgroupName;
-			
+			//			Getcvtermsbycvgroupname getcvtermsbycvgroupname = new Getcvtermsbycvgroupname();
+			//			getcvtermsbycvgroupname.setCvgroupname(groupName);
+			//			getcvtermsbycvgroupname.execute(context.configuration());
+			//
+			//			cvRecordList  = getcvtermsbycvgroupname.getResults();
+
+			//			select cv.term from cv, cvgroup
+			//			where cv.cvgroup_id = cvgroup.cvgroup_id and cvgroup.name = cvgroupName;
+
 			cvRecordList = context.select().from(CV, CVGROUP).where(CVGROUP.CVGROUP_ID.eq(CV.CVGROUP_ID)).and(CVGROUP.NAME.equal(groupName)).fetchInto(CvRecord.class);
 
 		}
@@ -252,7 +259,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 		List<TimescoperEntity> userList = null;
 		try{
-			
+
 			userList = context.fetch("select * from timescoper where username != '"+username+"';").into(TimescoperEntity.class);
 
 		}catch(Exception e ){
@@ -263,7 +270,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return userList;
 	}
-	
+
 	@Override
 	public List<ContactRecord> getAllContacts() {
 		// TODO Auto-generated method stub
@@ -271,7 +278,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 		List<ContactRecord> contactList = null;
 		try{
-			
+
 			contactList = context.select().from(CONTACT).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
 
 		}catch(Exception e ){
@@ -282,7 +289,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return contactList;
 	}
-	
+
 	@Override
 	public List<VDatasetSummaryEntity> getAllDatasets() {
 		// TODO Auto-generated method stub
@@ -307,7 +314,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 		List<ContactRecord> contactList = null;
 		try{
-			
+
 			contactList = context.select().from(CONTACT).where(CONTACT.ROLES.contains(role)).orderBy(CONTACT.LASTNAME).fetchInto(ContactRecord.class);
 
 		}catch(Exception e ){
@@ -318,7 +325,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return contactList;
 	}
-	
+
 	@Override
 	public boolean updateUser(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
@@ -327,21 +334,21 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
+
 			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperEntity
-			GenSalt2 genSalt = new GenSalt2();
-			genSalt.set__1("bf");
-			genSalt.set__2(11);
-			genSalt.execute(context.configuration());
-			
-			Crypt crypt = new Crypt();
-			crypt.set__1(userAccount.getPassword()); 
-			crypt.set__2(genSalt.getReturnValue());
-			crypt.execute(context.configuration());
-			
-			userAccount.setPassword(crypt.getReturnValue());
+				GenSalt2 genSalt = new GenSalt2();
+				genSalt.set__1("bf");
+				genSalt.set__2(11);
+				genSalt.execute(context.configuration());
+
+				Crypt crypt = new Crypt();
+				crypt.set__1(userAccount.getPassword()); 
+				crypt.set__2(genSalt.getReturnValue());
+				crypt.execute(context.configuration());
+
+				userAccount.setPassword(crypt.getReturnValue());
 			}
-			
+
 			userAccount.store();
 			userAccount.refresh();
 
@@ -362,15 +369,33 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	@Override
 	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord) {
 		// TODO Auto-generated method stub
-	
+
 		boolean successful = false;
+
+
+		if(vDatasetSummaryRecord.getQualityFile()!=null){
+			String textPath = vDatasetSummaryRecord.getQualityFile();
+			Path path = Paths.get(textPath);
+
+//			try {
+//				Files.delete(path);
+//			} catch (NoSuchFileException x) {
+//				System.err.format("%s: no such" + " file or directory%n", path);
+//			} catch (DirectoryNotEmptyException x) {
+//				System.err.format("%s not empty%n", path);
+//			} catch (IOException x) {
+//				// File permission problems are caught here.
+//				System.err.println(x);
+//			}
+		}
+
 		try{
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
 			dr.attach(vDatasetSummaryRecord.configuration());
 
 			dr.delete();
-			
+
 			successful = true;
 			Messagebox.show("Successfully deleted dataset!");
 
@@ -385,18 +410,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	@Override
 	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList) {
 		// TODO Auto-generated method stub
-		
+
 		boolean successful = false;
 		try{
 
 			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
-			
+
 			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
-			        .stream()
-			        .map(VDatasetSummaryEntity::getDatasetId)
-			        .collect(Collectors.toList())))
-			    .execute();
-			
+					.stream()
+					.map(VDatasetSummaryEntity::getDatasetId)
+					.collect(Collectors.toList())))
+			.execute();
+
 			successful = true;
 			Messagebox.show("Successfully deleted users!");
 
@@ -407,7 +432,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 		return successful;
 	}
-	
+
 	@Override
 	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
 		// TODO Auto-generated method stub
@@ -418,27 +443,27 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
-			
-		  
+
+
 			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
 
 			if (datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
-				
+
 				sb.append(" where LOWER(d.name) in ("+datasetEntity.getSQLReadyDatasetNames()+")");
 				dsNameCount++;	
 			}
-			
+
 			if (datasetEntity.getCreatedByContactRecord()!=null){
-				
+
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-				
+
 				sb.append(" c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
 				queryCount++;
 			}
 			if (datasetEntity.getDatasetTypeRecord()!=null){
 
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-				
+
 				sb.append(" cv2.cv_id="+Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId()));
 				queryCount++;
 			}
@@ -452,25 +477,25 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				//check which is not null
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-				
+
 				if(datasetEntity.getDatasetIDStartRange()!=null && datasetEntity.getDatasetIDEndRange()!=null){ //if both is not null
 					Integer lowerID = datasetEntity.getDatasetIDStartRange();
 					Integer higherID = datasetEntity.getDatasetIDEndRange();
-					
+
 					if(lowerID.compareTo(higherID)>0){
 						lowerID = datasetEntity.getDatasetIDEndRange();
-						 higherID = datasetEntity.getDatasetIDStartRange();
+						higherID = datasetEntity.getDatasetIDStartRange();
 					}
-					
+
 					sb.append(" d.dataset_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
 				}else{
 					Integer ID = null;
 					if(datasetEntity.getDatasetIDStartRange()!=null) ID = datasetEntity.getDatasetIDStartRange();
 					else ID = datasetEntity.getDatasetIDEndRange();
-					
+
 					sb.append(" d.dataset_id = "+Integer.toString(ID));
 				}
-				
+
 				queryCount++;
 			}
 
@@ -482,35 +507,35 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 					java.sql.Date sqlDateStart = null;
 					java.sql.Date sqlDateEnd= null;
-					
+
 					//check order of query. This is to filter out dummy queries where the range is not in the proper order.
 
 					if(datasetEntity.getCreationDateStart().after(datasetEntity.getCreationDateEnd())){
-						
+
 						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
 						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
-						
+
 					}else{
-						
+
 						sqlDateStart = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
 						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
 					}
-					
+
 					sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
 				}
 				else{ //check which is not null
 
 					java.sql.Date sqlDate = null;
-					
+
 					if(datasetEntity.getCreationDateStart()!=null){
 						sqlDate = new java.sql.Date(datasetEntity.getCreationDateStart().getTime());
 					}else{
 						sqlDate  = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
 					}
-					
+
 					sb.append(" d.created_date = '"+sqlDate+"' ");
 				}
-				
+
 				queryCount++;
 			}
 

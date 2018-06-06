@@ -1,5 +1,8 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +102,7 @@ public class DatasetViewModel {
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
+	
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -139,17 +143,26 @@ public class DatasetViewModel {
 	public void deleteUsers(){
 
 		if(selectedDsList.isEmpty()){ //Nothing is selected
-			Messagebox.show("There are no users selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
+			Messagebox.show("There are no datasets selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 		else{
 			StringBuilder sb = new StringBuilder();
 
 			for(VDatasetSummaryEntity u: selectedDsList){
 				sb.append("\n"+u.getDatasetName());
+				
+				if(u.getQualityFile()!=null){
+					String textPath = u.getQualityFile();
+					Path path = Paths.get(textPath);
+					
+					if(Files.exists(path)){
+						Messagebox.show("File Exists!");
+					}
+				}
 			}
 
 
-			Messagebox.show("Are you sure you want to delete the following datasets?"+sb.toString(), 
+			Messagebox.show("Are you sure you want to delete the following datasets\n?"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
 					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
