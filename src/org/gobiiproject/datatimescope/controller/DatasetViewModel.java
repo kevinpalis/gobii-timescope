@@ -150,15 +150,6 @@ public class DatasetViewModel {
 
 			for(VDatasetSummaryEntity u: selectedDsList){
 				sb.append("\n"+u.getDatasetName());
-				
-				if(u.getQualityFile()!=null){
-					String textPath = u.getQualityFile();
-					Path path = Paths.get(textPath);
-					
-					if(Files.exists(path)){
-						Messagebox.show("File Exists!");
-					}
-				}
 			}
 
 

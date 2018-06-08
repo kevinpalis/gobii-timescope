@@ -9,6 +9,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.DirectoryNotEmptyException;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 
 import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnarunindices;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkerindices;
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
@@ -38,6 +41,7 @@ import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -372,28 +376,30 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		boolean successful = false;
 
-
-		if(vDatasetSummaryRecord.getQualityFile()!=null){
-			String textPath = vDatasetSummaryRecord.getQualityFile();
-			Path path = Paths.get(textPath);
-
-//			try {
-//				Files.delete(path);
-//			} catch (NoSuchFileException x) {
-//				System.err.format("%s: no such" + " file or directory%n", path);
-//			} catch (DirectoryNotEmptyException x) {
-//				System.err.format("%s not empty%n", path);
-//			} catch (IOException x) {
-//				// File permission problems are caught here.
-//				System.err.println(x);
-//			}
+		if(vDatasetSummaryRecord.getDataFile()!=null){
+			String deletedErrorMessage = deleteFilePath(vDatasetSummaryRecord.getDataFile());
+			
+			if(deletedErrorMessage!=null){
+				Messagebox.show(deletedErrorMessage, "ERROR: Cannot delete data file!", Messagebox.OK, Messagebox.ERROR);
+				return false;
+			}
 		}
 
 		try{
+			Integer dataset_id = vDatasetSummaryRecord.getDatasetId();
+			Configuration configuration = vDatasetSummaryRecord.configuration();
+			
+
+			//delete Marker.dataset_marker_idx
+			deleteDatasetMarkerIndices(dataset_id, configuration);
+			
+			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
+			deleteDatasetDnarunIndices(dataset_id, configuration);
+			
+			
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
-			dr.attach(vDatasetSummaryRecord.configuration());
-
+			dr.attach(configuration);
 			dr.delete();
 
 			successful = true;
@@ -401,10 +407,49 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}
 		catch(Exception e ){
-
+			Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dataset!", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 		return successful;
+	}
+
+	private void deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
+		// TODO Auto-generated method stub
+		Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();
+		deleteDatasetDnarunIndices.setDatasetid(dataset_id);
+		deleteDatasetDnarunIndices.attach(configuration);
+		deleteDatasetDnarunIndices.execute();
+	}
+
+	private void deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
+		// TODO Auto-generated method stub
+		
+		Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
+		deleteDatasetMarkerIndices.setDatasetid(dataset_id);
+		deleteDatasetMarkerIndices.attach(configuration);
+		deleteDatasetMarkerIndices.execute();
+	}
+
+	private String deleteFilePath(String string) {
+		// TODO Auto-generated method stub
+		String deletedSuccessfully = null;
+		Path path = Paths.get(string);
+		
+		try {
+		    Files.delete(path);
+		} catch (NoSuchFileException x) {
+			deletedSuccessfully = path+": no such" + " file or directory.";
+		    System.err.format("%s: no such" + " file or directory%n", path);
+		} catch (DirectoryNotEmptyException x) {
+			deletedSuccessfully = path+": is a directory that is not empty";
+		    System.err.format("%s not empty%n", path);
+		} catch (IOException x) {
+		    // File permission problems are caught here.
+			deletedSuccessfully = x.getLocalizedMessage();
+		    System.err.println(x);
+		}
+
+		return deletedSuccessfully;
 	}
 
 	@Override
