@@ -128,26 +128,26 @@
 					<checkbox label="Select All"
 						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
 				</column>
-				<column hflex="min">
-					<label value="Dataset ID" />
+				<column hflex="min" sort="auto(datasetId)"	>
+					<label value="Dataset ID"/>
 				</column>
-				<column hflex="min">
-					<label value="Dataset Name" />
+				<column hflex="min" sort="auto(datasetName)">
+					<label value="Dataset Name"/>
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(experimentId)">
 					<label value="Experiment Id" />
 				</column>
-				<column hflex="min">
-					<label value="Experiment Name" />
+				<column hflex="min" sort="auto(experimentName)">
+					<label value="Experiment Name"/>
 				</column>
-				<column hflex="min">
-					<label value="PI Id" />
+				<column hflex="min" sort="auto(piId)">
+					<label value="PI Id"/>
 				</column>
-				<column hflex="min">
-					<label value="PI Name" />
+				<column hflex="min" sort="auto(piName)">
+					<label value="PI Name"/>
 				</column>
-				<column hflex="min">
-					<label value="Calling Analysis Id" />
+				<column hflex="min"  sort="auto(callinganalysisId)">
+					<label value="Calling Analysis Id"/>
 				</column>
 				<column hflex="min">
 					<label value="Calling Analysis Name" />
@@ -155,37 +155,37 @@
 				<column hflex="min">
 					<label value="Analyses" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(dataTable)">
 					<label value="Data Table" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(dataFile)">
 					<label value="Data File" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(qualityTable)">
 					<label value="Quality Table" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(qualityFile)">
 					<label value="Quality File" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(createdByUsername)">
 					<label value="Created By" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(createdDate)">
 					<label value="Created Date" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(modifiedByUsername)">
 					<label value="Modified By" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(modifiedDate)">
 					<label value="Modified Date" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(statusName)">
 					<label value="Status Name" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(typeName)">
 					<label value="Type Name" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(jobName)" >
 					<label value="Job Name" />
 				</column>
 			</columns>

@@ -153,7 +153,7 @@ public class DatasetViewModel {
 			}
 
 
-			Messagebox.show("Are you sure you want to delete the following datasets\n?"+sb.toString(), 
+			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
 					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
