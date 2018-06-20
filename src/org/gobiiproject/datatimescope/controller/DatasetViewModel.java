@@ -73,13 +73,18 @@ public class DatasetViewModel {
 		
 		try{
 		datasetList.clear(); //clear the list first and then just add if there are any selected
+
+		selectedDsList.clear();
+		
 		}catch(NullPointerException e){
 			
 		}
 		
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
-		
 
+
+		setiDBoxDisabled(false);
+		setnameListDisabled(false);
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 		
@@ -95,7 +100,6 @@ public class DatasetViewModel {
 			
 		}
 		datasetEntity = new DatasetEntity();
-
 
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
@@ -151,7 +155,6 @@ public class DatasetViewModel {
 			for(VDatasetSummaryEntity u: selectedDsList){
 				sb.append("\n"+u.getDatasetName());
 			}
-
 
 			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,

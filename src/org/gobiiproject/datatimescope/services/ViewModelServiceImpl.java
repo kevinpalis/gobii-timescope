@@ -31,6 +31,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkeri
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
+import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
@@ -47,8 +48,10 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 
@@ -378,7 +381,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		if(vDatasetSummaryRecord.getDataFile()!=null){
 			String deletedErrorMessage = deleteFilePath(vDatasetSummaryRecord.getDataFile());
-			
+
 			if(deletedErrorMessage!=null){
 				Messagebox.show(deletedErrorMessage, "ERROR: Cannot delete data file!", Messagebox.OK, Messagebox.ERROR);
 				return false;
@@ -388,15 +391,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 			Integer dataset_id = vDatasetSummaryRecord.getDatasetId();
 			Configuration configuration = vDatasetSummaryRecord.configuration();
-			
+
 
 			//delete Marker.dataset_marker_idx
 			deleteDatasetMarkerIndices(dataset_id, configuration);
-			
+
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
 			deleteDatasetDnarunIndices(dataset_id, configuration);
-			
-			
+
+
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
 			dr.attach(configuration);
@@ -423,7 +426,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	private void deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
-		
+
 		Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
 		deleteDatasetMarkerIndices.setDatasetid(dataset_id);
 		deleteDatasetMarkerIndices.attach(configuration);
@@ -434,47 +437,112 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		// TODO Auto-generated method stub
 		String deletedSuccessfully = null;
 		Path path = Paths.get(string);
-		
+
 		try {
-		    Files.delete(path);
+			Files.delete(path);
 		} catch (NoSuchFileException x) {
 			deletedSuccessfully = path+": no such" + " file or directory.";
-		    System.err.format("%s: no such" + " file or directory%n", path);
+			System.err.format("%s: no such" + " file or directory%n", path);
 		} catch (DirectoryNotEmptyException x) {
 			deletedSuccessfully = path+": is a directory that is not empty";
-		    System.err.format("%s not empty%n", path);
+			System.err.format("%s not empty%n", path);
 		} catch (IOException x) {
-		    // File permission problems are caught here.
+			// File permission problems are caught here.
 			deletedSuccessfully = x.getLocalizedMessage();
-		    System.err.println(x);
+			System.err.println(x);
 		}
 
 		return deletedSuccessfully;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList) {
 		// TODO Auto-generated method stub
 
+		int dsCount = selectedDsList.size();
 		boolean successful = false;
-		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
-					.stream()
-					.map(VDatasetSummaryEntity::getDatasetId)
-					.collect(Collectors.toList())))
-			.execute();
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
-			successful = true;
-			Messagebox.show("Successfully deleted users!");
+		//Try to deleteDataFiles
+		List<VDatasetSummaryEntity> cannotDeleteFileDSList = new ArrayList<VDatasetSummaryEntity>();
+
+		StringBuilder errorMessages = new StringBuilder();
+		StringBuilder errorDSNames = new StringBuilder();
+
+		for(VDatasetSummaryEntity ds : selectedDsList){
+
+			if(ds.getDataFile()!=null){	
+				String errorMessage =  deleteFilePath(ds.getDataFile());
+
+				if(errorMessage!=null){
+					errorMessages.append(errorMessage+"\n");
+					errorDSNames.append(ds.getDatasetName()+"\n");
+					cannotDeleteFileDSList.add(ds);
+				}
+			}	
 
 		}
-		catch(Exception e ){
 
-			e.printStackTrace();
-		}
+
+		Messagebox.show("Cannot delete the data files for the following dataset(s):\n\n"+errorDSNames.toString()+"\n\n Do you still want to continue?", 
+				"Some dataset can't be deleted", Messagebox.YES | Messagebox.CANCEL,
+				Messagebox.QUESTION,
+				new org.zkoss.zk.ui.event.EventListener(){
+			@Override
+			public void onEvent(Event event) throws Exception {
+				// TODO Auto-generated method stub
+				if(Messagebox.ON_YES.equals(event.getName())){
+					//YES is clicked
+
+					if(selectedDsList.size() == cannotDeleteFileDSList.size()){
+
+						Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
+					}else{
+						//remove error datasets from the list of dataset to be deleted.
+						selectedDsList.removeAll(cannotDeleteFileDSList);
+
+
+						StringBuilder dsLeft = new StringBuilder();
+						for(VDatasetSummaryEntity ds : selectedDsList){
+
+							//check which datasets are left just to be sure and display it later for the user to see 
+							dsLeft.append(ds.getDatasetName()+"\n");
+
+
+							Integer dataset_id = ds.getDatasetId();
+							Configuration configuration = ds.configuration();
+
+
+							//delete Marker.dataset_marker_idx
+							deleteDatasetMarkerIndices(dataset_id, configuration);
+
+							//delete Dnarun.dataset_dnarun idx entries for that particular dataset
+							deleteDatasetDnarunIndices(dataset_id, configuration);
+						}
+
+						try{
+							context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
+									.stream()
+									.map(VDatasetSummaryEntity::getDatasetId)
+									.collect(Collectors.toList())))
+							.execute();
+
+						}
+						catch(Exception e ){
+
+							e.printStackTrace();
+						}
+
+						Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
+					}
+				}
+			}
+		});
+
+		if(selectedDsList.size()!=dsCount) successful=true;
 		return successful;
 	}
 
