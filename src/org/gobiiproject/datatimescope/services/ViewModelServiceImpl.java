@@ -7,6 +7,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
+import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.File;
@@ -36,12 +37,15 @@ import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
+import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -669,6 +673,123 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		if(dsNameCount==0 && queryCount==0) sb.append(" where ");
 		else sb.append(" and ");
+	}
+
+	@Override
+	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity) {
+		// TODO Auto-generated method stub
+
+		int queryCount =0;
+		int dsNameCount = 0;
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VMarkerSummaryEntity> markerList = null;
+		try{ //c3.lastname as pi_contact,
+			StringBuilder sb = new StringBuilder();
+
+
+			sb.append("SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id ");
+
+			if (markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
+
+				sb.append(" where LOWER(m.name) in ("+markerEntity.getSQLReadyMarkerNames()+")");
+				dsNameCount++;	
+			}
+			if (markerEntity.getPlatform()!=null){
+
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+				sb.append(" p.platform_id="+Integer.toString(markerEntity.getPlatform().getPlatformId()));
+				queryCount++;
+			}
+			if (markerEntity.getMarkerIDStartRange()!=null || markerEntity.getMarkerIDEndRange()!=null){
+
+				//check which is not null
+				checkPreviousAppends(dsNameCount, queryCount, sb);
+
+				if(markerEntity.getMarkerIDStartRange()!=null && markerEntity.getMarkerIDEndRange()!=null){ //if both is not null
+					Integer lowerID = markerEntity.getMarkerIDStartRange();
+					Integer higherID = markerEntity.getMarkerIDEndRange();
+
+					if(lowerID.compareTo(higherID)>0){
+						lowerID = markerEntity.getMarkerIDEndRange();
+						higherID = markerEntity.getMarkerIDStartRange();
+					}
+
+					sb.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+				}else{
+					Integer ID = null;
+					if(markerEntity.getMarkerIDStartRange()!=null) ID = markerEntity.getMarkerIDStartRange();
+					else ID = markerEntity.getMarkerIDEndRange();
+
+					sb.append(" m.marker_id = "+Integer.toString(ID));
+				}
+
+				queryCount++;
+			}
+			
+			sb.append(";");
+			String query = sb.toString();
+			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+		return markerList;
+		
+	}
+
+	@Override
+	public List<VMarkerSummaryEntity> getAllMarkers() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		List<VMarkerSummaryEntity> markerList = null;
+		try{
+			markerList = context.fetch("SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id;").into(VMarkerSummaryEntity.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+		return markerList;
+		
+	}
+
+	@Override
+	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity) {
+		// TODO Auto-generated method stub
+		return false;
+		
+	}
+
+	@Override
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList) {
+		// TODO Auto-generated method stub
+		
+		return false;
+	}
+
+	@Override
+	public List<PlatformRecord> getAllPlatforms() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		List<PlatformRecord> platformList = null;
+		try{
+
+			platformList = context.select().from(PLATFORM).orderBy(PLATFORM.NAME).fetchInto(PlatformRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve platforms", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return platformList;
 	}
 
 }

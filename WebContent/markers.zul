@@ -1,4 +1,4 @@
-<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?page title="Manage Markers" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
 <window border="normal" hflex="1" vflex="1"
@@ -23,9 +23,9 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerId)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 										to
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerId)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
 									</hbox>
 								</cell>
 							</row>
@@ -55,10 +55,10 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.markerEntity.createdByContactRecord)">
+										hflex="true" model="@load(vm.platformList)" selectedItem="@bind(vm.markerEntity.platform)">
 										<template name="model">
 											<comboitem
-												label="@load(each.wholename)" value="@load(each.contactId)" />
+												label="@load(each.name)" value="@load(each.platformId)" />
 										</template>
 									</combobox>
 								</cell>
@@ -78,21 +78,24 @@
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid" model="@load(vm.MarkerList)" mold="paging"
+		<grid id="mgrid" model="@load(vm.markerList)" mold="paging"
 			pageSize="15" pagingPosition="both">
 			<columns sizable="true">
 				<column hflex="min">
 					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
+						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllMarkers)" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(markerId)">
 					<label value="Marker Id" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(markerName)">
 					<label value="Marker Name" />
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(platformId)">
 					<label value="Platform Id" />
+				</column>
+				<column hflex="min" sort="auto(platformName)">
+					<label value="Platform Name" />
 				</column>
 				<column hflex="min">
 					<label value="Variant Id" />
@@ -113,10 +116,16 @@
 					<label value="Reference Id" />
 				</column>
 				<column hflex="min">
+					<label value="Reference Name" />
+				</column>
+				<column hflex="min">
 					<label value="Primers" />
 				</column>
 				<column hflex="min">
 					<label value="Strand Id" />
+				</column>
+				<column hflex="min">
+					<label value="Strand Name" />
 				</column>
 				<column hflex="min">
 					<label value="Status" />
@@ -125,16 +134,16 @@
 					<label value="Probsets" />
 				</column>
 				<column hflex="min">
-					<label value="Dataset Marker Id" />
+					<label value="Dataset Marker Idx" />
 				</column>
 				<column hflex="min">
 					<label value="Props" />
 				</column>
 				<column hflex="min">
-					<label value="Dtaset Vendor Protocol" />
+					<label value="Dataset Vendor Protocol" />
 				</column>
 			</columns>
-			<template name="model" var="dataset">
+			<template name="model" var="marker">
 				<row>
 					<cell>
 						<checkbox value="@load(marker)"
@@ -145,63 +154,60 @@
 						<label value="@load(marker.markerId)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.Name)" />
+						<label value="@load(marker.markerName)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.experimentId)" />
+						<label value="@load(marker.platformId)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.experimentName)" />
+						<label value="@load(marker.platformName)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.piId)" />
+						<label value="@load(marker.variantId)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.piName)" />
+						<label value="@load(marker.code)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.callinganalysisId)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(marker.callingnalysisName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.analysesAsString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.dataTable)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.dataFile)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.qualityTable)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.qualityFile)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.createdByUsername)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.createdDate)" />
+						<label value="@load(marker.ref)" />
 					</cell>
 					<cell>
 						<label
-							value="@load(marker.modifiedByUsername)" />
+							value="@load(marker.altsToString)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.modifiedDate)" />
+						<label value="@load(marker.sequence)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.statusName)" />
+						<label value="@load(marker.referenceId)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.typeName)" />
+						<label value="@load(marker.referenceName)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.jobName)" />
+						<label value="@load(marker.primersToString)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.strandId)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.strandName)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.status)" />
+					</cell>
+					<cell>
+						<label
+							value="@load(marker.probsetsToString)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.datasetMarkerIdxToString)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.propsToString)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.datasetVendorProtocolToString)" />
 					</cell>
 				</row>
 			</template>

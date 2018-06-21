@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
-import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -45,45 +45,47 @@ public class MarkerViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false;
+	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false;
 
-	private List<MarkerRecordEntity> markerList, selectedMarkerList;
+	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
+	private List<PlatformRecord> platformList;
 	private MarkerRecordEntity markerEntity;
 
 	@Init
 	public void init() {
-		selectedMarkerList = new ArrayList<MarkerRecordEntity>();
+		markerList = new ArrayList<VMarkerSummaryEntity>();
+		selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
 		setMarkerEntity(new MarkerRecordEntity());
-		setMarkerList(viewModelService.getAllMarkers());
+//		setMarkerList(viewModelService.getAllMarkers());
+		setPlatformList(viewModelService.getAllPlatforms());
 	}
 
 	@Command("submitQuery")
-	@NotifyChange({"datasetList","selectedMarkerList", "allCbSelected", "cbAllUsers"})
+	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers"})
 	public void submitQuery(){
-		
+
 		try{
-		markerList.clear(); //clear the list first and then just add if there are any selected
+			markerList.clear(); //clear the list first and then just add if there are any selected
 		}catch(NullPointerException e){
-			
+
 		}
-		
+
 		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity));
-		
 
 		setAllCbSelected(false);
-		setCbAllUsers(false);
-		
+		setCbAllMarkers(false);
+
 	}
 
-	@Command("resetDatasetTab")
-	@NotifyChange({"datasetList","selectedMarkerList", "allCbSelected", "cbAllUsers", "markerEntity","iDBoxDisabled","nameListDisabled"})
-	public void resetDatasetTab(){
+	@Command("resetMarkerTab")
+	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity","iDBoxDisabled","nameListDisabled"})
+	public void resetMarkerTab(){
 		try{
-		markerList.clear(); //clear the list first and then just add if there are any selected
-		selectedMarkerList.clear(); 
+			markerList.clear(); //clear the list first and then just add if there are any selected
+			selectedMarkerList.clear(); 
 		}catch(NullPointerException e){
-			
+
 		}
 		markerEntity = new MarkerRecordEntity();
 
@@ -91,20 +93,24 @@ public class MarkerViewModel {
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
-		setCbAllUsers(false);
+		setCbAllMarkers(false);
 	}
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
-		List<MarkerRecordEntity> datasetListOnDisplay = getMarkerList();
+		List<VMarkerSummaryEntity> markerListOnDisplay = getMarkerList();
 
 		selectedMarkerList.clear(); //clear the list first and then just add if there are any selected
 
-		setAllCbSelected(isCbAllUsers());
+		setAllCbSelected(isCbAllMarkers());
 
-		if (isCbAllUsers()) {
-			for(MarkerRecordEntity u: datasetListOnDisplay){
-				selectedMarkerList.add(u);
+		if (isCbAllMarkers()) {
+			try{
+				for(VMarkerSummaryEntity u: markerListOnDisplay){
+					selectedMarkerList.add(u);
+				}
+			}catch(NullPointerException npe){
+				Messagebox.show("Submit an empty query to display all markers", "There is nothing to select", Messagebox.OK, Messagebox.EXCLAMATION);
 			}
 		}
 	}
@@ -114,32 +120,36 @@ public class MarkerViewModel {
 	public void changeEnabled(){
 		isIDBoxDisabled = false; // reseet
 		isNameListDisabled= false; 
-		
-		if(markerEntity.getName()!=null && !markerEntity.getName().isEmpty()){
+
+		if(markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
 			isIDBoxDisabled = true;
-		}else if(markerEntity.getMarkerId() != null ){
-			if(markerEntity.getMarkerId() >0 ){
-			isNameListDisabled=true;
+		}else if(markerEntity.getMarkerIDStartRange() != null ){
+			if(markerEntity.getMarkerIDStartRange() >0 ){
+				isNameListDisabled=true;
+			}
+		}else if(markerEntity.getMarkerIDEndRange() != null ){
+			if(markerEntity.getMarkerIDEndRange() >0 ){
+				isNameListDisabled=true;
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Command("deleteSelectedDatasets")
-	public void deleteUsers(){
+	@Command("deleteSelectedMarkers")
+	public void deleteMarkers(){
 
 		if(selectedMarkerList.isEmpty()){ //Nothing is selected
-			Messagebox.show("There are no users selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
+			Messagebox.show("There are no markers selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 		else{
 			StringBuilder sb = new StringBuilder();
 
-			for(MarkerRecordEntity u: selectedMarkerList){
-				sb.append("\n"+u.getName());
+			for(VMarkerSummaryEntity u: selectedMarkerList){
+				sb.append("\n"+u.getMarkerName());
 			}
 
 
-			Messagebox.show("Are you sure you want to delete the following datasets?"+sb.toString(), 
+			Messagebox.show("Are you sure you want to delete the following markers?"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
 					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
@@ -150,14 +160,14 @@ public class MarkerViewModel {
 						//YES is clicked
 						boolean successful;
 
-						if(selectedMarkerList.size() == 1){  // just one user is selected
+						if(selectedMarkerList.size() == 1){  // just one marker is selected
 							successful = viewModelService.deleteMarkers(selectedMarkerList.get(0));
 						}else{
 							//bulk delete
 							successful = viewModelService.deleteMarkers(selectedMarkerList);
 						}
 
-						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
 
 					}
 				}
@@ -165,28 +175,28 @@ public class MarkerViewModel {
 		}
 	}
 
-	@GlobalCommand("retrieveDatasetList")
-	@NotifyChange({"datasetList", "selectedMarkerList", "allCbSelected", "cbAllUsers"})
-	public void retrieveUserList(){
+	@GlobalCommand("retrieveMarkerList")
+	@NotifyChange({"markerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers"})
+	public void retrieveMarkerList(){
 		//...
 
 		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity));
 
 		selectedMarkerList.clear();
-		
+
 		setAllCbSelected(false);
-		setCbAllUsers(false);
+		setCbAllMarkers(false);
 	}
-	
+
 	@Command("updateSelectMarker")
-	@NotifyChange({"cbAllUsers", "selectedMarkerList"})
-	public void updateSelectMarker(@BindingParam("markerChecked") MarkerRecordEntity markerList, @BindingParam("isChecked") Boolean isChecked){
+	@NotifyChange({"cbAllMarkers", "selectedMarkerList"})
+	public void updateSelectMarker(@BindingParam("markerChecked") VMarkerSummaryEntity markerList, @BindingParam("isChecked") Boolean isChecked){
 		if(isChecked){
 			selectedMarkerList.add(markerList);
 		}else{
-			setCbAllUsers(false);
+			setCbAllMarkers(false);
 
-			ListIterator<MarkerRecordEntity> it = selectedMarkerList.listIterator();
+			ListIterator<VMarkerSummaryEntity> it = selectedMarkerList.listIterator();
 			while (it.hasNext()) {
 				if (it.next().getMarkerId().equals(markerList.getMarkerId())) {
 					it.remove();
@@ -195,18 +205,18 @@ public class MarkerViewModel {
 			}
 		}
 	}
-	
+
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
 	public void setAllCbSelected(boolean isAllCbSelected) {
 		this.isAllCbSelected = isAllCbSelected;
 	}
-	public boolean isCbAllUsers() {
-		return cbAllUsers;
+	public boolean isCbAllMarkers() {
+		return cbAllMarkers;
 	}
-	public void setCbAllUsers(boolean cbAllUsers) {
-		this.cbAllUsers = cbAllUsers;
+	public void setCbAllMarkers(boolean cbAllMarkers) {
+		this.cbAllMarkers = cbAllMarkers;
 	}
 
 	public boolean isiDBoxDisabled() {
@@ -233,12 +243,20 @@ public class MarkerViewModel {
 		this.markerEntity = markerEntity;
 	}
 
-	public List<MarkerRecordEntity> getMarkerList() {
+	public List<VMarkerSummaryEntity> getMarkerList() {
 		return markerList;
 	}
 
-	public void setMarkerList(List<MarkerRecordEntity> markerList) {
-		this.markerList = markerList;
+	public void setMarkerList(List<VMarkerSummaryEntity> list) {
+		this.markerList = list;
+	}
+
+	public List<PlatformRecord> getPlatformList() {
+		return platformList;
+	}
+
+	public void setPlatformList(List<PlatformRecord> platformList) {
+		this.platformList = platformList;
 	}
 
 }

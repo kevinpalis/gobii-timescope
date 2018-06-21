@@ -70,16 +70,16 @@ public class DatasetViewModel {
 	@Command("submitQuery")
 	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers"})
 	public void submitQuery(){
-		
-		try{
-		datasetList.clear(); //clear the list first and then just add if there are any selected
 
-		selectedDsList.clear();
-		
+		try{
+			datasetList.clear(); //clear the list first and then just add if there are any selected
+
+			selectedDsList.clear();
+
 		}catch(NullPointerException e){
-			
+
 		}
-		
+
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
 
@@ -87,17 +87,17 @@ public class DatasetViewModel {
 		setnameListDisabled(false);
 		setAllCbSelected(false);
 		setCbAllUsers(false);
-		
+
 	}
 
 	@Command("resetDatasetTab")
 	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled"})
 	public void resetDatasetTab(){
 		try{
-		datasetList.clear(); //clear the list first and then just add if there are any selected
-		selectedDsList.clear(); 
+			datasetList.clear(); //clear the list first and then just add if there are any selected
+			selectedDsList.clear(); 
 		}catch(NullPointerException e){
-			
+
 		}
 		datasetEntity = new DatasetEntity();
 
@@ -106,7 +106,7 @@ public class DatasetViewModel {
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
-	
+
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -117,8 +117,12 @@ public class DatasetViewModel {
 		setAllCbSelected(isCbAllUsers());
 
 		if (isCbAllUsers()) {
-			for(VDatasetSummaryEntity u: datasetListOnDisplay){
-				selectedDsList.add(u);
+			try{
+				for(VDatasetSummaryEntity u: datasetListOnDisplay){
+					selectedDsList.add(u);
+				}
+			}catch(NullPointerException npe){
+				Messagebox.show("Submit an empty query to display all datasets", "There is nothing to select", Messagebox.OK, Messagebox.EXCLAMATION);
 			}
 		}
 	}
@@ -126,22 +130,22 @@ public class DatasetViewModel {
 	@Command("changeEnabled")
 	@NotifyChange({"iDBoxDisabled","nameListDisabled"})
 	public void changeEnabled(){
-		isIDBoxDisabled = false; // reseet
+		isIDBoxDisabled = false; // reset
 		isNameListDisabled= false; 
-		
+
 		if(datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
 			isIDBoxDisabled = true;
 		}else if(datasetEntity.getDatasetIDStartRange() != null ){
 			if(datasetEntity.getDatasetIDStartRange() >0 ){
-			isNameListDisabled=true;
+				isNameListDisabled=true;
 			}
 		}else if(datasetEntity.getDatasetIDEndRange() !=null){
 			if(datasetEntity.getDatasetIDEndRange()>0){
-			isNameListDisabled=true;
+				isNameListDisabled=true;
 			}
 		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
 	public void deleteUsers(){
@@ -190,11 +194,11 @@ public class DatasetViewModel {
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
 		selectedDsList.clear();
-		
+
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
-	
+
 	@Command("updateSelectDs")
 	@NotifyChange({"cbAllUsers", "selectedDsList"})
 	public void updateSelectDs(@BindingParam("dsChecked") VDatasetSummaryEntity dsList, @BindingParam("isChecked") Boolean isChecked){
@@ -212,7 +216,7 @@ public class DatasetViewModel {
 			}
 		}
 	}
-	
+
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}

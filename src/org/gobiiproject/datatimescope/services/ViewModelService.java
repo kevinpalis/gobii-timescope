@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
@@ -14,6 +15,7 @@ import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
@@ -53,11 +55,13 @@ public interface ViewModelService {
 
 	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity);
 
-	public List<MarkerRecordEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity);
+	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity);
 
-	public List<MarkerRecordEntity> getAllMarkers();
+	public List<VMarkerSummaryEntity> getAllMarkers();
 
-	public boolean deleteMarkers(MarkerRecordEntity markerEntity);
+	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity);
 
-	public boolean deleteMarkers(List<MarkerRecordEntity> selectedMarkerList);
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList);
+
+	public List<PlatformRecord> getAllPlatforms();
 }

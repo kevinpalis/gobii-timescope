@@ -1,54 +1,69 @@
 package org.gobiiproject.datatimescope.entity;
 
-import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerRecord;
+import java.io.Serializable;
 
-@SuppressWarnings("serial")
-public class MarkerRecordEntity extends MarkerRecord {
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+
+public class MarkerRecordEntity  implements Serializable,Cloneable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+
+	private Integer markerIDStartRange;
+	private Integer  markerIDEndRange;
+	private PlatformRecord platform;
+	private String markerNamesAsCommaSeparatedString;
 	
 	public MarkerRecordEntity() {
-		new MarkerRecord();
 	}
 
-	/**
-	 * Create a detached, initialised MarkerRecord
-	 */
-	 public MarkerRecordEntity(Integer markerId, Integer platformId, Integer variantId, String name, String code, String ref, String[] alts, String sequence, Integer referenceId, Object primers, Integer strandId, Integer status, Object probsets, Object datasetMarkerIdx, Object props, Object datasetVendorProtocol) {
-		 new MarkerRecord();
+	public String getMarkerNamesAsCommaSeparatedString() {
+		return markerNamesAsCommaSeparatedString;
+	}
 
-	        set(0, markerId);
-	        set(1, platformId);
-	        set(2, variantId);
-	        set(3, name);
-	        set(4, code);
-	        set(5, ref);
-	        set(6, alts);
-	        set(7, sequence);
-	        set(8, referenceId);
-	        set(9, primers);
-	        set(10, strandId);
-	        set(11, status);
-	        set(12, probsets);
-	        set(13, datasetMarkerIdx);
-	        set(14, props);
-	        set(15, datasetVendorProtocol);
-	    }
-	
-	 /**
-     * Not Generated. to get Analyses values as String
-     */
-    public String getAnalysesAsString(){
-    	StringBuilder sb = new StringBuilder();
-    	
-    	Integer[] analysesList =  (Integer[]) get(6);
+	public void setMarkerNamesAsCommaSeparatedString(String markerNamesAsCommaSeparatedString) {
+		this.markerNamesAsCommaSeparatedString = markerNamesAsCommaSeparatedString;
+	}
 
-		sb.append("{");
-    	for(Integer i: analysesList){
-    		sb.append(i.toString()+", ");
-    	}
-		sb.append("}");
+	public PlatformRecord getPlatform() {
+		return platform;
+	}
+
+	public void setPlatform(PlatformRecord platform) {
+		this.platform = platform;
+	}
+
+	public String getSQLReadyMarkerNames() {
+		// TODO Auto-generated method stub
+
+		int ctr = 0;
+		StringBuilder sb = new StringBuilder();
 		
-    	return sb.toString();
-    }
+		for(String s: markerNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
+			if(ctr>0)sb.append(",");
+		sb.append(" '"+s.toLowerCase()+"' ");
+		ctr++;
+		}
+		return sb.toString();
+	}
+
+	public Integer getMarkerIDStartRange() {
+		return markerIDStartRange;
+	}
+
+	public void setMarkerIDStartRange(Integer markerIDStartRange) {
+		this.markerIDStartRange = markerIDStartRange;
+	}
+
+	public Integer getMarkerIDEndRange() {
+		return markerIDEndRange;
+	}
+
+	public void setMarkerIDEndRange(Integer markerIDEndRange) {
+		this.markerIDEndRange = markerIDEndRange;
+	}
 
 }
