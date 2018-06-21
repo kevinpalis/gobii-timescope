@@ -14,12 +14,12 @@
 					(<label value="@load(vm.userAccount.username)" />)
 				</hbox>
 				<hbox apply="org.zkoss.bind.BindComposer"
-					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
+					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
 					hflex="1" vflex="1" pack="end" align="end">
 	
-					<button label="Switch Database"
+					<button label="Logout"
 						style="background-color:gray;"
-						onClick="@command('openDatabaseInfoDialog')" />
+						onClick="@command('logout')" />
 				</hbox>
 			</vbox>
 		</hbox>

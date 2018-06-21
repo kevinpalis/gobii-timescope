@@ -37,7 +37,7 @@ public class LoginViewModel {
 	boolean isCreateNew = false;
 
 	private ServerInfo serverInfo;
-	
+
 	private String pageCaption;
 
 	private TimescoperRecord userAccount;
@@ -53,7 +53,7 @@ public class LoginViewModel {
 		serverInfo = new ServerInfo();
 		serverInfo.setUserName("timescoper");
 		serverInfo.setPassword("helloworld");
-		
+
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("isLoggedIn", false);
 
@@ -75,9 +75,18 @@ public class LoginViewModel {
 				return;
 
 			}
-			
+
 		}
 
+	}
+
+	@Command("logout")
+	public void logoutUser() {
+
+		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
+		authService.logout();
+
+		Executions.sendRedirect("/index.zul");
 	}
 
 	public TimescoperRecord getUserAccount() {
