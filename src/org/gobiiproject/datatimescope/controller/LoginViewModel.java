@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
+import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -35,6 +36,8 @@ public class LoginViewModel {
 	//UI component
 	boolean isCreateNew = false;
 
+	private ServerInfo serverInfo;
+	
 	private String pageCaption;
 
 	private TimescoperRecord userAccount;
@@ -47,25 +50,32 @@ public class LoginViewModel {
 	public void init() {
 		userAccount = new TimescoperRecord();
 
+		serverInfo = new ServerInfo();
+		serverInfo.setUserName("timescoper");
+		serverInfo.setPassword("helloworld");
+		
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("isLoggedIn", false);
 
-		Window window = (Window)Executions.createComponents(
-				"/switch_database.zul", null, args);
-		window.doModal();
+		viewModelService = new ViewModelServiceImpl();
 	}
 
 	@Command("login")
 	public void openDatabaseInfoDialog() {
 
-		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
 
-		if (authService.login(userAccount.getUsername(), userAccount.getPassword())){
-			Messagebox.show("Login successful!");
+		if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
 
-			Executions.sendRedirect("/index.zul");
-			return;
+			AuthenticationService authService =new AuthenticationServiceChapter3Impl();
 
+			if (authService.login(userAccount.getUsername(), userAccount.getPassword())){
+				Messagebox.show("Login successful!");
+
+				Executions.sendRedirect("/index.zul");
+				return;
+
+			}
+			
 		}
 
 	}
@@ -92,5 +102,13 @@ public class LoginViewModel {
 
 	public void setPageCaption(String pageCaption) {
 		this.pageCaption = pageCaption;
+	}
+
+	public ServerInfo getServerInfo() {
+		return serverInfo;
+	}
+
+	public void setServerInfo(ServerInfo serverInfo) {
+		this.serverInfo = serverInfo;
 	}
 }

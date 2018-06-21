@@ -24,20 +24,75 @@
 					apply="org.zkoss.bind.BindComposer"
 					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
 					border="normal" hflex="min" vflex="max">
-					<caption image="/imgs/user.png"
-						label="GOBII Data Timescope" />
+
+					<caption sclass="fn-caption">
+						<image src="/imgs/datatimescope5.png"
+							width="200px" />
+					</caption>
+
 					<vbox hflex="min" align="center" vflex="min">
-						<hbox>
-							Username :
-							<textbox id="account" width="200px" value="@bind(vm.userAccount.username)" />
-						</hbox>
-						<hbox>
-							Password :
-							<textbox id="password" type="password"
-								width="200px"  value="@bind(vm.userAccount.password)" />
-						</hbox>
-						<button label="Login" onClick="@command('login')"/>
-						<label value="Need help?" onClick='alert("Hello world!")' />
+
+						<grid hflex="min" vflex="min">
+							<columns>
+								<column align="right" hflex="min" />
+								<column />
+							</columns>
+							<rows>
+								<row>
+									<cell sclass="row-title">
+										Database Host:
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a host name" width="300px"
+											value="@bind(vm.serverInfo.host)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Database Port :
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a database port"
+											width="300px" value="@bind(vm.serverInfo.port)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Database Name :
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a database name"
+											width="300px" value="@bind(vm.serverInfo.dbName)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Timescope Username :
+									</cell>
+									<cell>
+										<textbox id="account"
+											width="200px" value="@bind(vm.userAccount.username)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Timescope Password :
+									</cell>
+									<cell>
+										<textbox id="password"
+											type="password" width="200px"
+											value="@bind(vm.userAccount.password)" />
+									</cell>
+								</row>
+							</rows>
+						</grid>
+						<button label="Login"
+							onClick="@command('login')" />
+						<label value="Need help?"
+							onClick='alert("Hello world!")' />
 					</vbox>
 				</window>
 			</vlayout>
