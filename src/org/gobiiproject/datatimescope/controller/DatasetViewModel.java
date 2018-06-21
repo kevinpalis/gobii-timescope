@@ -1,5 +1,8 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,13 +73,18 @@ public class DatasetViewModel {
 		
 		try{
 		datasetList.clear(); //clear the list first and then just add if there are any selected
+
+		selectedDsList.clear();
+		
 		}catch(NullPointerException e){
 			
 		}
 		
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
-		
 
+
+		setiDBoxDisabled(false);
+		setnameListDisabled(false);
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 		
@@ -93,12 +101,12 @@ public class DatasetViewModel {
 		}
 		datasetEntity = new DatasetEntity();
 
-
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
 		setCbAllUsers(false);
 	}
+	
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -139,7 +147,7 @@ public class DatasetViewModel {
 	public void deleteUsers(){
 
 		if(selectedDsList.isEmpty()){ //Nothing is selected
-			Messagebox.show("There are no users selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
+			Messagebox.show("There are no datasets selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 		else{
 			StringBuilder sb = new StringBuilder();
@@ -148,8 +156,7 @@ public class DatasetViewModel {
 				sb.append("\n"+u.getDatasetName());
 			}
 
-
-			Messagebox.show("Are you sure you want to delete the following datasets?"+sb.toString(), 
+			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
 					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
