@@ -792,4 +792,21 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return platformList;
 	}
 
+	@Override
+	public String getDatawarehouseVersion() {
+		// TODO Auto-generated method stub
+		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+
+		String version = "";
+		try{
+			version = context.fetchOne("select value from gobiiprop where type_id in (select cvid from getCvId('version','gobii_datawarehouse', 1));").into(String.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+		return version;
+	}
+
 }

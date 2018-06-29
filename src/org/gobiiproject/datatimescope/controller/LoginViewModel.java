@@ -39,7 +39,7 @@ public class LoginViewModel {
 	private ServerInfo serverInfo;
 
 	private String pageCaption;
-
+	
 	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
@@ -80,15 +80,6 @@ public class LoginViewModel {
 
 	}
 
-	@Command("logout")
-	public void logoutUser() {
-
-		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
-		authService.logout();
-
-		Executions.sendRedirect("/index.zul");
-	}
-
 	public TimescoperRecord getUserAccount() {
 		return userAccount;
 	}
@@ -120,4 +111,5 @@ public class LoginViewModel {
 	public void setServerInfo(ServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
 	}
+
 }

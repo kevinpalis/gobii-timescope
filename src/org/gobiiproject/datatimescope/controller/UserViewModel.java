@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.services.AuthenticationService;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -78,6 +80,16 @@ public class UserViewModel {
 
 	}
 
+	
+	@Command("signout")
+	public void signout() {
+		
+		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
+		authService.logout();
+
+		Executions.sendRedirect("/index.zul");
+	}
+	
 	@Command
 	public void editProfile(){
 

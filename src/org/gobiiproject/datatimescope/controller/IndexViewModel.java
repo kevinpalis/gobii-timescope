@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -34,6 +35,19 @@ import org.zkoss.zul.Window;
 
 public class IndexViewModel {
 
+
+	private ViewModelServiceImpl viewModelService;
+	private String datawarehouseVersion;
+
+	@Init
+	public void init() {
+
+		viewModelService = new ViewModelServiceImpl();
+		
+		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
+		
+	}
+
 	@Command
 	public void openDatabaseInfoDialog() {
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -42,6 +56,14 @@ public class IndexViewModel {
 		Window window = (Window)Executions.createComponents(
 				"/switch_database.zul", null, args);
 		window.doModal();
+	}
+
+	public String getDatawarehouseVersion() {
+		return datawarehouseVersion;
+	}
+
+	public void setDatawarehouseVersion(String datawarehouseVersion) {
+		this.datawarehouseVersion = datawarehouseVersion;
 	}
 
 }
