@@ -64,4 +64,6 @@ public interface ViewModelService {
 	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList);
 
 	public List<PlatformRecord> getAllPlatforms();
+
+	public String getDatawarehouseVersion();
 }
