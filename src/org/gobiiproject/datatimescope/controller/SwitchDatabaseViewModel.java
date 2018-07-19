@@ -56,6 +56,8 @@ public class SwitchDatabaseViewModel {
 			serverInfo = new ServerInfo();
 			serverInfo.setUserName("timescoper");
 			serverInfo.setPassword("helloworld");
+//			serverInfo.setUserName("appuser");
+//			serverInfo.setPassword("g0b11isw3s0m3");
 		}
 
 		viewModelService = new ViewModelServiceImpl();

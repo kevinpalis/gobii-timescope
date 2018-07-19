@@ -1,11 +1,3 @@
-/* 
-	Description:
-		ZK Essentials
-	History:
-		Created by dennis
-
-Copyright (C) 2012 Potix Corporation. All Rights Reserved.
-*/
 package org.gobiiproject.datatimescope.controller;
 
 import org.gobiiproject.datatimescope.configurator.SidebarPageConfigAjaxBasedImpl;
