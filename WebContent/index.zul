@@ -20,6 +20,11 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 <zk>
 
+    <style>
+            .mainText * { 
+            font-size: 28px !important;  
+        } 
+    </style>
 	<borderlayout hflex="1" vflex="1" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
 		<north height="115px" border="none" >
 			<apply templateURI="banner.zul"/>

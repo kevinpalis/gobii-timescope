@@ -3,6 +3,7 @@
  */
 package org.gobiiproject.datatimescope.services;
 
+
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnarunindices;
@@ -61,6 +63,7 @@ import org.zkoss.zul.Messagebox;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
+	final static Logger log = Logger.getLogger(ViewModelServiceImpl.class.getName());
 
 	@Override
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -308,8 +311,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{
-			datasetList = context.fetch("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;").into(VDatasetSummaryEntity.class);
+			String query = "select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;";
+			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
 
+			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
 			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -422,19 +427,40 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	private void deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
-		Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();
-		deleteDatasetDnarunIndices.setDatasetid(dataset_id);
-		deleteDatasetDnarunIndices.attach(configuration);
-		deleteDatasetDnarunIndices.execute();
+		try{
+			Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();
+			deleteDatasetDnarunIndices.setDatasetid(dataset_id);
+			deleteDatasetDnarunIndices.attach(configuration);
+			deleteDatasetDnarunIndices.execute();
+
+			log.info("Deleted dataset dnarun indices for dataset id :"+ Integer.toString(dataset_id));
+		}
+		catch (Exception e){
+			Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dnarun indices!", Messagebox.OK, Messagebox.ERROR);
+			log.error("Cannot delete marker dnarun for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
+		}
+
+
 	}
 
 	private void deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
 
-		Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
-		deleteDatasetMarkerIndices.setDatasetid(dataset_id);
-		deleteDatasetMarkerIndices.attach(configuration);
-		deleteDatasetMarkerIndices.execute();
+		try{
+
+			Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
+			deleteDatasetMarkerIndices.setDatasetid(dataset_id);
+			deleteDatasetMarkerIndices.attach(configuration);
+			deleteDatasetMarkerIndices.execute();
+
+			log.info("Deleted dataset marker indices for dataset id :"+ Integer.toString(dataset_id));
+		}
+		catch (Exception e){
+			Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dataset marker indices!", Messagebox.OK, Messagebox.ERROR);
+			log.error("Cannot delete marker indices for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
+		}
+
+
 	}
 
 	private String deleteFilePath(String string) {
@@ -445,7 +471,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try {
 			Files.delete(path);
 		} catch (NoSuchFileException x) {
-			deletedSuccessfully = path+": no such" + " file or directory.";
+			// We will now ignore empty datasets
+			//			deletedSuccessfully = path+": no such" + " file or directory.";
 			System.err.format("%s: no such" + " file or directory%n", path);
 		} catch (DirectoryNotEmptyException x) {
 			deletedSuccessfully = path+": is a directory that is not empty";
@@ -490,63 +517,69 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}
 
+		//check if there are datasets that can't be deleted
+		if(!errorMessages.toString().isEmpty()){
+			Messagebox.show("Cannot delete the data files for the following dataset(s):\n\n"+errorDSNames.toString()+"\n\n Do you still want to continue?", 
+					"Some dataset can't be deleted", Messagebox.YES | Messagebox.CANCEL,
+					Messagebox.QUESTION,
+					new org.zkoss.zk.ui.event.EventListener(){
+				@Override
+				public void onEvent(Event event) throws Exception {
+					// TODO Auto-generated method stub
+					if(Messagebox.ON_YES.equals(event.getName())){
+						//YES is clicked
 
-		Messagebox.show("Cannot delete the data files for the following dataset(s):\n\n"+errorDSNames.toString()+"\n\n Do you still want to continue?", 
-				"Some dataset can't be deleted", Messagebox.YES | Messagebox.CANCEL,
-				Messagebox.QUESTION,
-				new org.zkoss.zk.ui.event.EventListener(){
-			@Override
-			public void onEvent(Event event) throws Exception {
-				// TODO Auto-generated method stub
-				if(Messagebox.ON_YES.equals(event.getName())){
-					//YES is clicked
+						if(selectedDsList.size() == cannotDeleteFileDSList.size()){
 
-					if(selectedDsList.size() == cannotDeleteFileDSList.size()){
-
-						Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
-					}else{
-						//remove error datasets from the list of dataset to be deleted.
-						selectedDsList.removeAll(cannotDeleteFileDSList);
-
-
-						StringBuilder dsLeft = new StringBuilder();
-						for(VDatasetSummaryEntity ds : selectedDsList){
-
-							//check which datasets are left just to be sure and display it later for the user to see 
-							dsLeft.append(ds.getDatasetName()+"\n");
-
-
-							Integer dataset_id = ds.getDatasetId();
-							Configuration configuration = ds.configuration();
-
-
-							//delete Marker.dataset_marker_idx
-							deleteDatasetMarkerIndices(dataset_id, configuration);
-
-							//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-							deleteDatasetDnarunIndices(dataset_id, configuration);
-						}
-
-						try{
-							context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
-									.stream()
-									.map(VDatasetSummaryEntity::getDatasetId)
-									.collect(Collectors.toList())))
-							.execute();
+							Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
+							
+						}else{
+							//remove error datasets from the list of dataset to be deleted.
+							selectedDsList.removeAll(cannotDeleteFileDSList);
 
 						}
-						catch(Exception e ){
-
-							e.printStackTrace();
-						}
-
-						Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
 					}
 				}
-			}
-		});
+			});
 
-		if(selectedDsList.size()!=dsCount) successful=true;
+
+		}
+		
+		//move on to deletion
+		StringBuilder dsLeft = new StringBuilder();
+		for(VDatasetSummaryEntity ds : selectedDsList){
+
+			//check which datasets are left just to be sure and display it later for the user to see 
+			dsLeft.append(ds.getDatasetName()+"\n");
+
+
+			Integer dataset_id = ds.getDatasetId();
+			Configuration configuration = ds.configuration();
+
+
+			//delete Marker.dataset_marker_idx
+			deleteDatasetMarkerIndices(dataset_id, configuration);
+
+			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
+			deleteDatasetDnarunIndices(dataset_id, configuration);
+		}
+
+		try{
+			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
+					.stream()
+					.map(VDatasetSummaryEntity::getDatasetId)
+					.collect(Collectors.toList())))
+			.execute();
+
+		}
+		catch(Exception e ){
+
+			e.printStackTrace();
+		}
+
+		Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
+
+		if (selectedDsList.size()>0) successful=true;
 		return successful;
 	}
 
@@ -660,6 +693,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			String query = sb.toString();
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
 
+			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
 			Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -726,18 +760,19 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				queryCount++;
 			}
-			
+
 			sb.append(";");
 			String query = sb.toString();
 			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
+			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
 			Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 		return markerList;
-		
+
 	}
 
 	@Override
@@ -748,28 +783,30 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		List<VMarkerSummaryEntity> markerList = null;
 		try{
-			markerList = context.fetch("SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id;").into(VMarkerSummaryEntity.class);
+			String query = "SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id;";
+			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
+			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
 			Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 		return markerList;
-		
+
 	}
 
 	@Override
 	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity) {
 		// TODO Auto-generated method stub
 		return false;
-		
+
 	}
 
 	@Override
 	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList) {
 		// TODO Auto-generated method stub
-		
+
 		return false;
 	}
 

@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -41,7 +42,8 @@ public class IndexViewModel {
 
 	@Init
 	public void init() {
-
+		PropertyConfigurator.configure("log4j.properties");
+		
 		viewModelService = new ViewModelServiceImpl();
 		
 		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());

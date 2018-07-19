@@ -60,14 +60,14 @@
 					<cell sclass="row-title">Username :</cell>
 					<cell>
 						<textbox
-							constraint="no empty: Please enter your username." width="300px" value="@bind(vm.serverInfo.userName)"/>
+							constraint="no empty: Please enter your username." width="300px" value="@save(vm.serverInfo.userName)"/>
 					</cell>
 				</row>
 				<row visible="@load(vm.loggedIn)">
 					<cell sclass="row-title">Password :</cell>
 					<cell>
 						<textbox id="password" type="password"
-							constraint="no empty: Please enter your password." width="300px" value="@bind(vm.serverInfo.password)"/>
+							constraint="no empty: Please enter your password." width="300px" value="@save(vm.serverInfo.password)"/>
 					</cell>
 				</row>
 			</rows>

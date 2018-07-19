@@ -2,7 +2,7 @@
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
 	<hbox hflex="1">
 		<vbox hflex="1" vflex="2">
-			<a href="http://www.zkoss.org/">
+			<a href="http://localhost:8080/timescope/index.zul">
 				<!-- image src="/imgs/datatimescope2.png" height="80px"/-->
 				<!-- image src="/imgs/datatimescope4.png" height="100px" style="position:relative ; left:20px;" -->
 				<image src="/imgs/datatimescope5.png" height="100px" />
