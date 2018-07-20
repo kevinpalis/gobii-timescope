@@ -42,7 +42,6 @@ public class IndexViewModel {
 
 	@Init
 	public void init() {
-		PropertyConfigurator.configure("log4j.properties");
 		
 		viewModelService = new ViewModelServiceImpl();
 		

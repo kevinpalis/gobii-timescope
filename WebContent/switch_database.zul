@@ -15,7 +15,7 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window hflex="1" vflex="1" contentStyle="overflow:auto" id="databaseConnectionWindow"
+<window hflex="1" vflex="1" contentStyle="overflow:auto" id="switchDatabaseConnectionWindow"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SwitchDatabaseViewModel')"
 	closable="true">
@@ -57,17 +57,17 @@
 				</row>
 
 				<row visible="@load(vm.loggedIn)">
-					<cell sclass="row-title">Username :</cell>
+					<cell sclass="row-title">TImescope Username :</cell>
 					<cell>
 						<textbox
-							constraint="no empty: Please enter your username." width="300px" value="@save(vm.serverInfo.userName)"/>
+							constraint="no empty: Please enter your username." width="300px" value="@save(vm.username)"/>
 					</cell>
 				</row>
 				<row visible="@load(vm.loggedIn)">
-					<cell sclass="row-title">Password :</cell>
+					<cell sclass="row-title">Timescope Password :</cell>
 					<cell>
 						<textbox id="password" type="password"
-							constraint="no empty: Please enter your password." width="300px" value="@save(vm.serverInfo.password)"/>
+							constraint="no empty: Please enter your password." width="300px" value="@save(vm.password)"/>
 					</cell>
 				</row>
 			</rows>
