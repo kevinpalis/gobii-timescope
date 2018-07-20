@@ -95,7 +95,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				Messagebox.show("Host name not found.", "Error", Messagebox.OK, Messagebox.ERROR);
 			}
 			else{
-				Messagebox.show(e.getLocalizedMessage(), "Error", Messagebox.OK, Messagebox.ERROR);
+				Messagebox.show(e.getLocalizedMessage(), "Connect To Database Error", Messagebox.OK, Messagebox.ERROR);
 			}
 		}
 

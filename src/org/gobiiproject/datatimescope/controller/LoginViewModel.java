@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -70,8 +71,10 @@ public class LoginViewModel {
 
 		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
 		try {
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			InputStream reader = classLoader.getResourceAsStream("config.properties");
 			
-		    FileReader reader = new FileReader(configFile);
+//		    FileReader reader = new FileReader(configFile);
 		    Properties props = new Properties();
 		    props.load(reader);
 		 
@@ -105,6 +108,10 @@ public class LoginViewModel {
 			AuthenticationService authService =new AuthenticationServiceChapter3Impl();
 
 			if (authService.login(userAccount.getUsername(), userAccount.getPassword())){
+
+				serverInfo.setUserName("dummyusername");
+				serverInfo.setPassword("dummypassword");
+				
 				Messagebox.show("Login successful!");
 
 				Executions.sendRedirect("/index.zul");

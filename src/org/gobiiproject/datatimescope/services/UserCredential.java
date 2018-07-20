@@ -10,7 +10,7 @@ import java.util.Set;
 public class UserCredential implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	String account;
+	private String account;
 	Integer role;
 	
 	Set<String> roles = new HashSet<String>();
