@@ -36,7 +36,7 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
 		
 		//if still here, then checks passed. Update Sessions
         Session sess = Sessions.getCurrent();
-        UserCredential cre = new UserCredential(user.getUsername(),user.getRole());
+        UserCredential cre = new UserCredential(user.getUsername(), user.getRole());
         
         sess.setAttribute("userCredential",cre);
  
