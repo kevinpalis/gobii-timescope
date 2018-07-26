@@ -20,7 +20,7 @@ This tool will allow system administrators and anyone with admin access to the s
 4. Dnasample
 5. Dnarun
 
-{color:#205081}### User Authentication and Authorization Module{color}
+### User Authentication and Authorization Module
 
 This requires the usual login page as a landing page. A registration page, however, is not necessary, and that adding new administrators should only be possible via the use of a superAdmin account. This account should also be capable of deleting rows in the administrator table.
 
@@ -36,12 +36,14 @@ This form will connect directly to the table *timescoper* in a GOBii database,
  * The right content section will show a list of Timescope users IF the logged in user is a super admin
  ** Options to create new user, edit existing user, and delete user will be available in the left content section as well
 
- * Levels of authorization per user type:
+Levels of authorization per user type:
 
- # Super Admin
- ** Ability to delete database rows (see general functionality in the GR)
- ** Ability to manage users (create, edit, delete)
- # Admin
- ** Ability to delete database rows (see general functionality in the GR)
- # User
- ** Reserved user type for now – in preparation for update rows feature. We won't use this for the first version of the tool.
+ ** Super Admin
+ *** Ability to delete database entities
+ *** Ability to update database entities
+ *** Ability to manage users (create, edit, delete)
+ * Admin
+ ** Ability to delete database entities
+ ** Ability to update database entities
+ * User
+ ** Ability to update database entities
