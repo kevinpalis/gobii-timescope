@@ -32,18 +32,18 @@ This requires the usual login page as a landing page. A registration page, howev
 This form will connect directly to the table *timescoper* in a GOBii database, which means *each GDM instance (crop) will have its own auth set –* ie. to be able to delete data from one crop, the user account needs to be set for that particular crop database.
 
  * The left content section will contain user information of the current logged in user
- ** An option to edit own's profile will be provided – which will open the same edit dialogue window as the edit option below
+ 	* An option to edit own's profile will be provided – which will open the same edit dialogue window as the edit option below
  * The right content section will show a list of Timescope users IF the logged in user is a super admin
- ** Options to create new user, edit existing user, and delete user will be available in the left content section as well
+ 	* Options to create new user, edit existing user, and delete user will be available in the left content section as well
 
 Levels of authorization per user type:
 
- ** Super Admin
- *** Ability to delete database entities
- *** Ability to update database entities
- *** Ability to manage users (create, edit, delete)
- * Admin
- ** Ability to delete database entities
- ** Ability to update database entities
- * User
- ** Ability to update database entities
+* Super Admin
+	* Ability to delete database entities
+	* Ability to update database entities
+	* Ability to manage users (create, edit, delete)
+* Admin
+	* Ability to delete database entities
+	* Ability to update database entities
+* User
+	* Ability to update database entities
