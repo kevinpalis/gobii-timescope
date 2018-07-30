@@ -227,6 +227,30 @@ public class UserViewModel {
 
 	}
 
+	@GlobalCommand("refreshUserWindow")
+	@NotifyChange({"userlist", "users", "selectedUsersList", "allCbSelected", "cbAllUsers", "superUser"})
+	public void refreshUserWindow(){
+		setCbAllUsers(false);
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+
+		String accountUsername = cre.getAccount();
+
+		userAccount = viewModelService.getUserInfo(accountUsername);
+
+		roleList= new ListModelList<String>(Utils.getRoleList());
+
+		selectedUsersList = new ListModelList<TimescoperEntity>();
+
+		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
+
+		userlist.setMultiple(true);
+		
+		if(userAccount.getRolename().contains("Super")) superUser=true;
+		else  superUser=false;
+		
+
+	}
+
 	@Command("updateSelectUser")
 	@NotifyChange({"cbAllUsers", "selectedUsersList"})
 	public void updateSelectUser(@BindingParam("userChecked") TimescoperEntity user, @BindingParam("isChecked") Boolean isChecked){
