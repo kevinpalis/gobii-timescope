@@ -46,4 +46,4 @@ Levels of authorization per user type:
 	* Ability to delete database entities
 	* Ability to update database entities
 * User
-	* Ability to update database entities
+	* Ability to view database entities
