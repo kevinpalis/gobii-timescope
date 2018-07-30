@@ -547,10 +547,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		
 		//move on to deletion
 		StringBuilder dsLeft = new StringBuilder();
+		StringBuilder dsIDLeft = new StringBuilder();
 		for(VDatasetSummaryEntity ds : selectedDsList){
 
 			//check which datasets are left just to be sure and display it later for the user to see 
 			dsLeft.append(ds.getDatasetName()+"\n");
+			dsIDLeft.append(" "+Integer.toString(ds.getDatasetId())+",");
 
 
 			Integer dataset_id = ds.getDatasetId();
@@ -577,6 +579,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			e.printStackTrace();
 		}
 
+		log.info("Deleted the following rows from the dataset table in the database: dataset IDs {"+ dsIDLeft.toString()+"}");
 		Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
 
 		if (selectedDsList.size()>0) successful=true;
