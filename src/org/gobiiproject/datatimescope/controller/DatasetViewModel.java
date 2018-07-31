@@ -160,9 +160,9 @@ public class DatasetViewModel {
 				sb.append("\n"+u.getDatasetName());
 			}
 
-			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
+			Messagebox.show("WARNING: This action is not reversible. You cannot recover a deleted dataset.\n\nAre you sure you want to delete the following datasets?\n"+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
-					Messagebox.QUESTION,
+					Messagebox.EXCLAMATION,
 					new org.zkoss.zk.ui.event.EventListener(){
 				@Override
 				public void onEvent(Event event) throws Exception {
