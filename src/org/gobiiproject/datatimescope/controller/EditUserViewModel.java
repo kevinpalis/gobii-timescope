@@ -49,6 +49,8 @@ public class EditUserViewModel {
 	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
+	
+	private ListModelList<TimescoperEntity> allUser;
 
 	ViewModelService userInfoService;
 
@@ -59,6 +61,8 @@ public class EditUserViewModel {
 		setRoleList(new ListModelList<String>(Utils.getRoleList()));
 		userInfoService = new ViewModelServiceImpl();
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+
+		allUser = new ListModelList<TimescoperEntity>(userInfoService.getAllOtherUsers(userAccount.getUsername()), true);
 		
 		//Figure out if this window was called to edit a user or to create one
 		if(user.getUsername()!=null){
@@ -69,16 +73,16 @@ public class EditUserViewModel {
 			if(cre.getAccount().equalsIgnoreCase(user.getUsername())){
 				isEditingSelf=true;
 			}
-			if(cre.getRole() == 1){
-				isSuperAdmin=true;
-			}
 		}
 		else{
 			setPageCaption("Create New User");
 			isCreateNew = true;
 			password = "";
 		}
-		
+
+		if(cre.getRole() == 1){
+			isSuperAdmin=true;
+		}
 	}
 
 	@AfterCompose
@@ -206,11 +210,50 @@ public class EditUserViewModel {
 		}
 		else if(userAccount.getPassword() == null || userAccount.getPassword().isEmpty()){
 			Messagebox.show("Please specify a password.", "Password cannot be empty.", Messagebox.OK, Messagebox.INFORMATION);
-		}else{
+		}
+		else if(checkForDuplicateUsername(userAccount.getUsername())){
+			Messagebox.show("That username is already taken.", "Invalid username.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else if(checkForDuplicateEmail(userAccount.getEmail())){
+			Messagebox.show("That email is already taken.", "Invalid email.", Messagebox.OK, Messagebox.INFORMATION);
+		}
+		else{
+		
 			didItPass = true;
 		}
 
 		return didItPass;
+	}
+
+	private boolean checkForDuplicateEmail(String email) {
+		// TODO Auto-generated method stub
+		boolean foundDuplicate = false;
+
+		ListIterator<TimescoperEntity> it = allUser.listIterator();
+		while (it.hasNext()) {
+			if (it.next().getEmail().matches(email)) {
+				foundDuplicate = true;
+				break;
+			}
+		}
+		
+		return foundDuplicate;
+	}
+
+	private boolean checkForDuplicateUsername(String username2) {
+		// TODO Auto-generated method stub
+
+		boolean foundDuplicate = false;
+
+		ListIterator<TimescoperEntity> it = allUser.listIterator();
+		while (it.hasNext()) {
+			if (it.next().getUsername().matches(username2)) {
+				foundDuplicate = true;
+				break;
+			}
+		}
+		
+		return foundDuplicate;
 	}
 
 	public TimescoperEntity getUserAccount() {
@@ -244,4 +287,14 @@ public class EditUserViewModel {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+
+	public boolean isSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setSuperAdmin(boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
+	}
+
 }
