@@ -1,8 +1,6 @@
 <div hflex="1" vflex="1" sclass="footer">
 	<vbox hflex="1" vflex="1" align="center">
-		<label> A reminder on how important backups are goes here. This message should be more noticeable than the rest of the footer. </label>
-		Genomic Open-source Breeding Informatics Initiative (GOBII). 
-		Running on ZK ${desktop.webApp.version}
-		<a href="http://gobiiproject.org/">http://gobiiproject.org</a>
+		<label> Genomic Open-source Breeding informatics initiative (GOBii) 2018 </label>
+		<label> Powered by ZK 8.5.0 </label>
 	</vbox>
 </div>

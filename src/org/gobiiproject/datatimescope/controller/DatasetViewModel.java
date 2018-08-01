@@ -160,26 +160,39 @@ public class DatasetViewModel {
 				sb.append("\n"+u.getDatasetName());
 			}
 
-			Messagebox.show("WARNING: This action is not reversible. You cannot recover a deleted dataset.\n\nAre you sure you want to delete the following datasets?\n"+sb.toString(), 
-					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
-					Messagebox.EXCLAMATION,
+			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
+					"Confirm Delete", Messagebox.YES | Messagebox.NO,
+					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
 				@Override
 				public void onEvent(Event event) throws Exception {
 					// TODO Auto-generated method stub
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
-						boolean successful;
+						
+						Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
+								"WARNING", Messagebox.YES | Messagebox.CANCEL,
+								Messagebox.EXCLAMATION,
+								new org.zkoss.zk.ui.event.EventListener(){
+							@Override
+							public void onEvent(Event event) throws Exception {
+								// TODO Auto-generated method stub
+								if(Messagebox.ON_YES.equals(event.getName())){
+									//YES is clicked
+									boolean successful;
 
-						if(selectedDsList.size() == 1){  // just one user is selected
-							successful = viewModelService.deleteDataset(selectedDsList.get(0));
-						}else{
-							//bulk delete
-							successful = viewModelService.deleteDatasets(selectedDsList);
-						}
+									if(selectedDsList.size() == 1){  // just one user is selected
+										successful = viewModelService.deleteDataset(selectedDsList.get(0));
+									}else{
+										//bulk delete
+										successful = viewModelService.deleteDatasets(selectedDsList);
+									}
 
-						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+									if(successful) BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
 
+								}
+							}
+						});
 					}
 				}
 			});
