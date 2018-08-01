@@ -47,6 +47,7 @@ public class UserViewModel {
 	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
+	
 	private ListModelList<TimescoperEntity> userlist, selectedUsersList;
 
 	@AfterCompose
@@ -184,6 +185,7 @@ public class UserViewModel {
 	@Command("createUser")
 	public void createUser(){
 		TimescoperEntity emptyUser = new TimescoperEntity();
+		emptyUser.setUsername("");
 		emptyUser.setRole(0);
 		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();

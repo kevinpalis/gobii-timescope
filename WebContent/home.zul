@@ -1,5 +1,23 @@
-<vbox vflex="1" hflex="1" align="center" pack="center" spacing="20px" >
-	<label value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. At elementum eu facilisis sed odio morbi quis commodo. Lacus vestibulum sed arcu non odio euismod lacinia at quis. Adipiscing bibendum est ultricies integer. In nisl nisi scelerisque eu ultrices vitae auctor. In nibh mauris cursus mattis. Eu turpis egestas pretium aenean pharetra magna. Mauris nunc congue nisi vitae suscipit. Ligula ullamcorper malesuada proin libero nunc consequat interdum. Dolor purus non enim praesent elementum facilisis leo. Libero enim sed faucibus turpis in eu. A scelerisque purus semper eget. Cras ornare arcu dui vivamus arcu felis." sclass="mainText"/>
+<vbox>
+<vbox vflex="1" hflex="1" align="center" pack="center" spacing="50px" >
 
-	<label value="Id consectetur purus ut faucibus pulvinar elementum integer enim. Ultricies leo integer malesuada nunc vel risus commodo viverra maecenas. Aliquet lectus proin nibh nisl condimentum id venenatis. Luctus accumsan tortor posuere ac ut consequat semper viverra nam. Vel eros donec ac odio tempor orci. Tellus elementum sagittis vitae et. Malesuada fames ac turpis egestas sed tempus urna et pharetra. Neque viverra justo nec ultrices dui sapien eget. Lacus vestibulum sed arcu non. Blandit cursus risus at ultrices mi. Rutrum tellus pellentesque eu tincidunt tortor aliquam nulla facilisi cras. Venenatis lectus magna fringilla urna. Viverra maecenas accumsan lacus vel facilisis volutpat est velit. Malesuada proin libero nunc consequat interdum varius sit amet mattis. Mi proin sed libero enim. Pretium fusce id velit ut tortor pretium viverra suspendisse. Diam phasellus vestibulum lorem sed risus ultricies tristique nulla. Consequat mauris nunc congue nisi vitae. Ut etiam sit amet nisl. Hendrerit dolor magna eget est." sclass="mainText"/>
+	<label style="font-style: oblique; font-size: 20px" value="" />
+	<label style="font-style: oblique; font-size: 20px" value="" />
+	
+	<label style="color: red; font-style: oblique; font-size: 25px" value="Disclaimer:" />
+
+	<label style="color: red; font-style: bold; font-size: 25px" value="It is highly recommended to back up data before proceeding, as actions performed in this tool are not reversible." />
+
+	<label style="font-style: oblique; font-size: 20px" value="" />
+	<label style="font-style: oblique; font-size: 20px" value="" />
+</vbox>
+<vbox vflex="1" hflex="1" align="center" pack="center" spacing="20px" >
+	<label style="font-style: bold; font-size: 20px" value="MIT License:" />
+	<label style="font-style: bold; font-size: 20px" value="Genomic Open-source Breeding Informatics Initiative" />
+	
+	<label style="font-style: bold; font-size: 20px" value="Copyright (c) 2018 Cornell University    " />
+	<a href="http://gobiiproject.org" label="  http://gobiiproject.org" style="color: black; font-style: bold; font-size: 20px"/>
+	<label style="font-style: bold; font-size: 20px" value="Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &#8220;Software&#8221;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:" sclass="mainText"/>
+	<label style="font-style: bold; font-size: 20px" value="The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software." sclass="mainText"/>
+</vbox>
 </vbox>

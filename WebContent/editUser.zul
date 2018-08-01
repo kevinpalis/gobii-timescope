@@ -31,28 +31,35 @@
 				<row>
 					<cell sclass="row-title">Username :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.username)"
-							constraint="no empty: Please enter your username. " width="300px" />
+						<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.username)" />
+						<textbox visible="@load(vm.superAdmin)" value="@bind(vm.userAccount.username)"
+							constraint="no empty: Please enter your username. "
+							width="300px"  />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">First Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.firstname)"
-							constraint="no empty: Please enter your firstname. " width="300px" />
+						<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.firstname)" />
+						<textbox visible="@load(vm.superAdmin)" value="@bind(vm.userAccount.firstname)"
+							constraint="no empty: Please enter your firstname. "
+							width="300px" />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Last Name :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.lastname)"
-							constraint="no empty: Please enter your lastname. " width="300px" />
+					<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.lastname)" />
+						<textbox visible="@load(vm.superAdmin)" value="@bind(vm.userAccount.lastname)"
+							constraint="no empty: Please enter your lastname. "
+							width="300px"   />
 					</cell>
 				</row>
 				<row>
 					<cell sclass="row-title">Email :</cell>
 					<cell>
-						<textbox value="@bind(vm.userAccount.email)"
+						<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.email)" />
+						<textbox visible="@load(vm.superAdmin)" value="@bind(vm.userAccount.email)"
 							constraint="/.+@.+\.[a-z]+/: Please enter an e-mail address"
 							width="300px" />
 					</cell>
@@ -60,7 +67,8 @@
 				<row>
 					<cell sclass="row-title">Password :</cell>
 					<cell>
-						<textbox value="@load(vm.password) @save(vm.userAccount.password)"
+						<textbox
+							value="@load(vm.password) @save(vm.userAccount.password)"
 							type="password"
 							constraint="no empty: Please enter your password." width="300px" />
 					</cell>
@@ -68,7 +76,8 @@
 				<row>
 					<cell sclass="row-title">User Role :</cell>
 					<cell>
-						<listbox model="@load(vm.roleList)"
+						<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.rolename)" />
+						<listbox visible="@load(vm.superAdmin)" model="@load(vm.roleList)"
 							selectedIndex="@bind(vm.userAccount.role)" mold="select"
 							tabindex="8" width="300px">
 							<template name="model">
@@ -81,8 +90,10 @@
 		</grid>
 
 		<div align="center" hflex="1">
-			<button id="saveProfile" label="Save" width="100px" onClick="@command('saveUserInfo')"/>
-			<button  label="Cancel" width="100px" onClick="@command('refreshUserBeforeClose')"/>
+			<button id="saveProfile" label="Save" width="100px"
+				onClick="@command('saveUserInfo')" />
+			<button label="Cancel" width="100px"
+				onClick="@command('refreshUserBeforeClose')" />
 		</div>
 	</vlayout>
 </window>

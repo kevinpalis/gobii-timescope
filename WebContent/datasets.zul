@@ -49,7 +49,7 @@
 							<column align="left" width="60%" />
 						</columns>
 						<rows>
-							<row>
+							<!-- row>
 								<cell sclass="row-title">
 									Created By :
 								</cell>
@@ -62,18 +62,18 @@
 										</template>
 									</combobox>
 								</cell>
-							</row>
+							</row> -->
 							<row>
 								<cell sclass="row-title">
 									Creation Date :
 								</cell>
 								<cell>
-									<hbox>
+									<hbox hflex="true">
 										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)" constraint="no future, no today"
-											buttonVisible="true" />
+											buttonVisible="true" hflex="true"/>
 										to
 										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)" constraint="no future, no today"
-											buttonVisible="true" />
+											buttonVisible="true" hflex="true"/>
 									</hbox>
 								</cell>
 							</row>

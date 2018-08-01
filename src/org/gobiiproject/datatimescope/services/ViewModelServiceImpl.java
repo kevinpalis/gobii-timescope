@@ -401,13 +401,13 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			Integer dataset_id = vDatasetSummaryRecord.getDatasetId();
 			Configuration configuration = vDatasetSummaryRecord.configuration();
 
-
+			int totalDeletedDatasetMarkerIndices = 0, totalDeletedDatasetDnarunIndices = 0;
+			
 			//delete Marker.dataset_marker_idx
-			deleteDatasetMarkerIndices(dataset_id, configuration);
+			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
 
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-			deleteDatasetDnarunIndices(dataset_id, configuration);
-
+			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
 
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
@@ -415,7 +415,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			dr.delete();
 
 			successful = true;
-			Messagebox.show("Successfully deleted dataset!");
+			Messagebox.show("1 dataset deleted.\n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated.\n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated.\n", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
 
 		}
 		catch(Exception e ){
@@ -425,14 +425,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return successful;
 	}
 
-	private void deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
+	private int deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
+		int deletedDatasetDnarunIndices = 0;
 		try{
 			Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();
 			deleteDatasetDnarunIndices.setDatasetid(dataset_id);
 			deleteDatasetDnarunIndices.attach(configuration);
 			deleteDatasetDnarunIndices.execute();
-
+			deletedDatasetDnarunIndices = deleteDatasetDnarunIndices.getReturnValue();
 			log.info("Deleted dataset dnarun indices for dataset id :"+ Integer.toString(dataset_id));
 		}
 		catch (Exception e){
@@ -440,19 +441,22 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			log.error("Cannot delete marker dnarun for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
 		}
 
+		return deletedDatasetDnarunIndices;
 
 	}
 
-	private void deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
+	private int deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
 
+		int deletedDatasetMarkerIndices = 0;
 		try{
 
 			Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
 			deleteDatasetMarkerIndices.setDatasetid(dataset_id);
 			deleteDatasetMarkerIndices.attach(configuration);
 			deleteDatasetMarkerIndices.execute();
-
+			deletedDatasetMarkerIndices = deleteDatasetMarkerIndices.getReturnValue();
+			
 			log.info("Deleted dataset marker indices for dataset id :"+ Integer.toString(dataset_id));
 		}
 		catch (Exception e){
@@ -460,6 +464,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			log.error("Cannot delete marker indices for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
 		}
 
+		return deletedDatasetMarkerIndices;
 
 	}
 
@@ -548,6 +553,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		//move on to deletion
 		StringBuilder dsLeft = new StringBuilder();
 		StringBuilder dsIDLeft = new StringBuilder();
+		int totalDeletedDatasetMarkerIndices = 0, totalDeletedDatasetDnarunIndices = 0;
 		for(VDatasetSummaryEntity ds : selectedDsList){
 
 			//check which datasets are left just to be sure and display it later for the user to see 
@@ -560,10 +566,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 
 			//delete Marker.dataset_marker_idx
-			deleteDatasetMarkerIndices(dataset_id, configuration);
+			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
 
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-			deleteDatasetDnarunIndices(dataset_id, configuration);
+			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
 		}
 
 		try{
@@ -580,7 +586,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 
 		log.info("Deleted the following rows from the dataset table in the database: dataset IDs {"+ dsIDLeft.toString()+"}");
-		Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
+		Messagebox.show(Integer.toString(selectedDsList.size())+" datasets deleted.\n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated.\n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated.\n", "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
 
 		if (selectedDsList.size()>0) successful=true;
 		return successful;
