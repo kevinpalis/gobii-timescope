@@ -113,7 +113,7 @@
 				<div align="center" hflex="1">
 					<button label="Clear" width="200px"  onClick="@command('resetDatasetTab')"/>
 					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
-					<button id="deleteBtn" style="background-color: red"
+					<button visible="@load(not vm.isRoleUser)" id="deleteBtn" style="background-color: red"
 						label="Delete Selected" hflex="min"
 						onClick="@command('deleteSelectedDatasets')" />
 				</div>
