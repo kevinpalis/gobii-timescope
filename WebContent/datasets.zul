@@ -23,9 +23,17 @@
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+										<intbox hflex="true"
+											value="@bind(vm.datasetEntity.datasetIDStartRange)"
+											constraint="no negative, no zero"
+											disabled="@bind(vm.iDBoxDisabled)"
+											onChange="@command('changeEnabled')" />
 										to
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+										<intbox hflex="true"
+											value="@bind(vm.datasetEntity.datasetIDEndRange)"
+											constraint="no negative, no zero"
+											disabled="@bind(vm.iDBoxDisabled)"
+											onChange="@command('changeEnabled')" />
 									</hbox>
 								</cell>
 							</row>
@@ -35,8 +43,13 @@
 								</cell>
 								<cell>
 									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
-									
+										hflex="true" vflex="true"
+										tooltiptext="Separate dataset names with comma"
+										value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)"
+										popup="title, position=start_before"
+										disabled="@bind(vm.nameListDisabled)"
+										onChange="@command('changeEnabled')">
+
 									</textbox>
 								</cell>
 							</row>
@@ -51,29 +64,33 @@
 						<rows>
 							<!-- row>
 								<cell sclass="row-title">
-									Created By :
+								Created By :
 								</cell>
 								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
-										<template name="model">
-											<comboitem
-												label="@load(each.wholename)" value="@load(each.contactId)" />
-										</template>
-									</combobox>
+								<combobox autodrop="true"
+								hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
+								<template name="model">
+								<comboitem
+								label="@load(each.wholename)" value="@load(each.contactId)" />
+								</template>
+								</combobox>
 								</cell>
-							</row> -->
+								</row> -->
 							<row>
 								<cell sclass="row-title">
 									Creation Date :
 								</cell>
 								<cell>
 									<hbox hflex="true">
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)" constraint="no future, no today"
-											buttonVisible="true" hflex="true"/>
+										<datebox lenient="true"
+											value="@bind(vm.datasetEntity.creationDateStart)"
+											constraint="no future, no today" buttonVisible="true"
+											hflex="true" />
 										to
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)" constraint="no future, no today"
-											buttonVisible="true" hflex="true"/>
+										<datebox lenient="true"
+											value="@bind(vm.datasetEntity.creationDateEnd)"
+											constraint="no future, no today" buttonVisible="true"
+											hflex="true" />
 									</hbox>
 								</cell>
 							</row>
@@ -83,7 +100,8 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.datasetTypes)" selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
+										hflex="true" model="@load(vm.datasetTypes)"
+										selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
 										<template name="model">
 											<comboitem
 												label="@load(each.term)" />
@@ -98,10 +116,11 @@
 								</cell>
 								<cell>
 									<combobox autodrop="true"
-										hflex="true" model="@load(vm.piList)" selectedItem="@bind(vm.datasetEntity.piRecord)">
+										hflex="true" model="@load(vm.piList)"
+										selectedItem="@bind(vm.datasetEntity.piRecord)">
 										<template name="model">
 											<comboitem
-												label="@load(each.wholename)" value="@load(each.contactId)"/>
+												label="@load(each.wholename)" value="@load(each.contactId)" />
 										</template>
 									</combobox>
 								</cell>
@@ -111,9 +130,12 @@
 				</hlayout>
 
 				<div align="center" hflex="1">
-					<button label="Clear" width="200px"  onClick="@command('resetDatasetTab')"/>
-					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
-					<button visible="@load(not vm.isRoleUser)" id="deleteBtn" style="background-color: red"
+					<button label="Clear" width="200px"
+						onClick="@command('resetDatasetTab')" />
+					<button label="Submit Query" width="200px"
+						onClick="@command('submitQuery')" />
+					<button visible="@load(not vm.isRoleUser)"
+						id="deleteBtn" style="background-color: red"
 						label="Delete Selected" hflex="min"
 						onClick="@command('deleteSelectedDatasets')" />
 				</div>
@@ -121,150 +143,181 @@
 			</vlayout>
 		</groupbox>
 
-		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging"
-			pageSize="15" pagingPosition="both">
-			<columns sizable="true">
-				<column hflex="min">
-					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
-				</column>
-				<column hflex="min" sort="auto(datasetId)"	>
-					<label value="Dataset ID"/>
-				</column>
-				<column hflex="min" sort="auto(datasetName)">
-					<label value="Dataset Name"/>
-				</column>
-				<column hflex="min" sort="auto(experimentId)">
-					<label value="Experiment Id" />
-				</column>
-				<column hflex="min" sort="auto(experimentName)">
-					<label value="Experiment Name"/>
-				</column>
-				<column hflex="min" sort="auto(piId)">
-					<label value="PI Id"/>
-				</column>
-				<column hflex="min" sort="auto(piName)">
-					<label value="PI Name"/>
-				</column>
-				<column hflex="min"  sort="auto(callinganalysisId)">
-					<label value="Calling Analysis Id"/>
-				</column>
-				<column hflex="min" sort="auto(callingnalysisName)">
-					<label value="Calling Analysis Name" />
-				</column>
-				<column hflex="min">
-					<label value="Analyses" />
-				</column>
-				<column hflex="min" sort="auto(dataTable)">
-					<label value="Data Table" />
-				</column>
-				<column hflex="min" sort="auto(dataFile)">
-					<label value="Data File" />
-				</column>
-				<column hflex="min" sort="auto(qualityTable)">
-					<label value="Quality Table" />
-				</column>
-				<column hflex="min" sort="auto(qualityFile)">
-					<label value="Quality File" />
-				</column>
-				<column hflex="min" sort="auto(createdByUsername)">
-					<label value="Created By" />
-				</column>
-				<column hflex="min" sort="auto(createdDate)">
-					<label value="Created Date" />
-				</column>
-				<column hflex="min" sort="auto(modifiedByUsername)">
-					<label value="Modified By" />
-				</column>
-				<column hflex="min" sort="auto(modifiedDate)">
-					<label value="Modified Date" />
-				</column>
-				<column hflex="min" sort="auto(statusName)">
-					<label value="Status Name" />
-				</column>
-				<column hflex="min" sort="auto(typeName)">
-					<label value="Type Name" />
-				</column>
-				<column hflex="min" sort="auto(jobName)" >
-					<label value="Job Name" />
-				</column>
-			</columns>
-			<template name="model" var="dataset">
-				<row>
-					<cell>
-						<checkbox value="@load(dataset)"
-							checked="@load(vm.allCbSelected)"
-							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.datasetId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.datasetName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.experimentId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.experimentName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.piId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.piName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.callinganalysisId)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(dataset.callingnalysisName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.analysesAsString)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.dataTable)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.dataFile)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.qualityTable)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.qualityFile)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.createdByUsername)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.createdDate)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(dataset.modifiedByUsername)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.modifiedDate)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.statusName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.typeName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.jobName)" />
-					</cell>
-				</row>
-			</template>
-		</grid>
-
+		<div sclass="Container Flipped">
+			<div sclass="Content">
+				<grid id="mgrid" model="@load(vm.datasetList)"
+					mold="paging" pageSize="15" pagingPosition="both">
+					<columns sizable="true">
+						<column hflex="min">
+							<checkbox label="Select All"
+								onCheck="@command('doSelectAll')"
+								checked="@bind(vm.cbAllUsers)" />
+						</column>
+						<column hflex="min" sort="auto(datasetId)">
+							<label value="Dataset ID" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(datasetName))">
+							<label value="Dataset Name" />
+						</column>
+						<column hflex="min" sort="auto(experimentId)">
+							<label value="Experiment Id" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(experimentName))">
+							<label value="Experiment Name" />
+						</column>
+						<column hflex="min" sort="auto(piId)">
+							<label value="PI Id" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(piName))">
+							<label value="PI Name" />
+						</column>
+						<column hflex="min"
+							sort="auto(callinganalysisId)">
+							<label value="Calling Analysis Id" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(callingnalysisName))">
+							<label value="Calling Analysis Name" />
+						</column>
+						<column hflex="min">
+							<label value="Analyses" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(dataTable))">
+							<label value="Data Table" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(dataFile))">
+							<label value="Data File" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(qualityTable))">
+							<label value="Quality Table" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(qualityFile))">
+							<label value="Quality File" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(createdByUsername))">
+							<label value="Created By" />
+						</column>
+						<column hflex="min" sort="auto(createdDate)">
+							<label value="Created Date" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(modifiedByUsername))">
+							<label value="Modified By" />
+						</column>
+						<column hflex="min" sort="auto(modifiedDate)">
+							<label value="Modified Date" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(statusName))">
+							<label value="Status Name" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(typeName))">
+							<label value="Type Name" />
+						</column>
+						<column hflex="min"
+							sort="auto(LOWER(jobName))">
+							<label value="Job Name" />
+						</column>
+					</columns>
+					<template name="model" var="dataset">
+						<row>
+							<cell>
+								<checkbox value="@load(dataset)"
+									checked="@load(vm.allCbSelected)"
+									onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.datasetId)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.datasetName)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.experimentId)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.experimentName)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.piId)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.piName)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.callinganalysisId)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.callingnalysisName)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.analysesAsString)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.dataTable)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.dataFile)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.qualityTable)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.qualityFile)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.createdByUsername)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.createdDate)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.modifiedByUsername)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.modifiedDate)" />
+							</cell>
+							<cell>
+								<label
+									value="@load(dataset.statusName)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.typeName)" />
+							</cell>
+							<cell>
+								<label value="@load(dataset.jobName)" />
+							</cell>
+						</row>
+					</template>
+				</grid>
+			</div>
+		</div>
 	</vlayout>
-	
-    <popup id="title" width="400px">
+
+	    
+	<popup id="title" width="400px">
 		<label value="Separate dataset names with a comma" />
-    </popup>
+		    
+	</popup>
 </window>
