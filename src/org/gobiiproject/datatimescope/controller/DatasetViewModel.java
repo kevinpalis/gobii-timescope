@@ -82,7 +82,6 @@ public class DatasetViewModel {
 
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
-
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -96,11 +95,13 @@ public class DatasetViewModel {
 		try{
 			datasetList.clear(); //clear the list first and then just add if there are any selected
 			selectedDsList.clear(); 
+
 		}catch(NullPointerException e){
 
 		}
 		datasetEntity = new DatasetEntity();
 
+		setDatasetList(viewModelService.getAllDatasets());
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
