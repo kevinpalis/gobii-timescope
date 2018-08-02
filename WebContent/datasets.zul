@@ -149,7 +149,7 @@
 				<column hflex="min"  sort="auto(callinganalysisId)">
 					<label value="Calling Analysis Id"/>
 				</column>
-				<column hflex="min">
+				<column hflex="min" sort="auto(callingnalysisName)">
 					<label value="Calling Analysis Name" />
 				</column>
 				<column hflex="min">
