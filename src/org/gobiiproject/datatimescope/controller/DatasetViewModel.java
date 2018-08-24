@@ -48,7 +48,7 @@ public class DatasetViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false;
+	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false;
 
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
@@ -65,6 +65,13 @@ public class DatasetViewModel {
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
+		
+
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+
+		if(cre.getRole() == 3){
+			isIsRoleUser=true;
+		}
 	}
 
 	@Command("submitQuery")
@@ -82,7 +89,6 @@ public class DatasetViewModel {
 
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
 
-
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -96,11 +102,13 @@ public class DatasetViewModel {
 		try{
 			datasetList.clear(); //clear the list first and then just add if there are any selected
 			selectedDsList.clear(); 
+
 		}catch(NullPointerException e){
 
 		}
 		datasetEntity = new DatasetEntity();
 
+		setDatasetList(viewModelService.getAllDatasets());
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -297,6 +305,14 @@ public class DatasetViewModel {
 
 	public void setnameListDisabled(boolean isNameListDisabled) {
 		this.isNameListDisabled = isNameListDisabled;
+	}
+
+	public boolean isIsRoleUser() {
+		return isIsRoleUser;
+	}
+
+	public void setIsRoleUser(boolean isIsRoleUser) {
+		this.isIsRoleUser = isIsRoleUser;
 	}
 
 }

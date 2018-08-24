@@ -117,8 +117,9 @@ public class DatasetEntity implements Serializable,Cloneable {
 		// TODO Auto-generated method stub
 		int ctr = 0;
 		StringBuilder sb = new StringBuilder();
-		
-		for(String s: datasetNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
+		String removeSpaces = datasetNamesAsCommaSeparatedString.replaceAll(", ",",");
+		String removeEnters = removeSpaces.replaceAll(",\n",",");
+		for(String s: removeEnters.split(",")){
 			if(ctr>0)sb.append(",");
 		sb.append(" '"+s.toLowerCase()+"' ");
 		ctr++;

@@ -25,17 +25,17 @@
             font-size: 28px !important;  
         } 
     </style>
-	<borderlayout hflex="1" vflex="1" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
-		<north height="115px" border="none" >
+	<borderlayout hflex="1" vflex="max" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
+		<north height="120px" border="none" vflex="min" >
 			<apply templateURI="banner.zul"/>
 		</north>
 		<west width="260px" collapsible="true" splittable="true" minsize="300" border="none">
 			<apply templateURI="sidebar.zul"/>
 		</west>
-		<center id="mainContent" autoscroll="true">
+		<center id="mainContent" autoscroll="true" vflex="true" >
 			<apply templateURI="mainContent.zul"/>
 		</center>
-		<south height="50px" border="none">
+		<south height="70px" border="none">
 			<apply templateURI="footer.zul"/>
 		</south>
 	</borderlayout>
