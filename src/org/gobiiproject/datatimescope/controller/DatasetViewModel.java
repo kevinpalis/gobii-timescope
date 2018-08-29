@@ -164,6 +164,19 @@ public class DatasetViewModel {
 		}
 	}
 
+
+	@SuppressWarnings("unchecked")
+	@Command("resetDSSummary")
+	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
+	public void resetDSSummary(){
+        datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		
+        
+        if(datasetSummary.size()>0){
+        	performedDeleteSuccesfully=true;
+        }
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
 	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})

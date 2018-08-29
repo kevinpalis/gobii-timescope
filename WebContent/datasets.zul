@@ -8,7 +8,7 @@
 	<tabbox>
 		<tabs>
 			<tab id="datasetSearchTab" label="Search" />
-			<tab id="datasetSummaryTab" label="Summary" />
+			<tab id="datasetSummaryTab" label="Summary"  onClick="@command('resetDSSummary')"/>
 		</tabs>
 		<tabpanels>
 			<tabpanel>
@@ -372,7 +372,7 @@
 
 						<grid id="summarygrid"
 							model="@load(vm.datasetSummary)" mold="paging" pageSize="15"
-							pagingPosition="both" hflex="min">
+							pagingPosition="both" hflex="1">
 							<columns sizable="true">
 								<column label="Entity" />
 								<column label="Row Count" />

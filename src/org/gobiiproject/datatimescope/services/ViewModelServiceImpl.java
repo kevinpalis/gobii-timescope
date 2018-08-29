@@ -315,7 +315,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			String query = "select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;";
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
 			
-			datasetSummaryEntity.setFilter("All Datasets");
+			datasetSummaryEntity.setFilter("");
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
@@ -437,6 +437,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			//set Summary
 
 			//dataset
+			String recentFilter = datasetSummaryEntity.getFilter();
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setFilter(recentFilter);
 			datasetSummaryEntity.setEntityName("Dataset rows");
 			datasetSummaryEntity.setRowCount("1");
 			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
@@ -445,7 +448,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			
 			//dataset DNA Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("Dataset DNA Run Indices");
+			datasetSummaryEntity.setEntityName("DNA Run Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
 			datasetSummaryEntity.setDuration(Double.toString(DNARunSeconds)+" sec");
 			datasetSummaryEntity.setFilter("");
@@ -455,7 +458,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			//dataset Marker Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("Dataset Marker Indices");
+			datasetSummaryEntity.setEntityName("Marker Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetMarkerIndices));
 			datasetSummaryEntity.setDuration(Double.toString(Markerseconds)+" sec");
 			datasetSummaryEntity.setFilter("");
@@ -463,10 +466,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummary.add(datasetSummaryEntity);
 			//border
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("===");
-			datasetSummaryEntity.setRowCount("===");
-			datasetSummaryEntity.setDuration("===");
-			datasetSummaryEntity.setFilter("===");
+			datasetSummaryEntity.setEntityName(" ");
+			datasetSummaryEntity.setRowCount(" ");
+			datasetSummaryEntity.setDuration(" ");
+			datasetSummaryEntity.setFilter(" ");
 			
 			datasetSummary.add(datasetSummaryEntity);
 		}
@@ -650,6 +653,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			//set Summary
 
 			//dataset
+			String recentFilter = datasetSummaryEntity.getFilter();
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setFilter(recentFilter);
 			datasetSummaryEntity.setEntityName("Dataset rows");
 			datasetSummaryEntity.setRowCount(Integer.toString(selectedDsList.size()));
 			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
@@ -658,7 +664,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			
 			//dataset DNA Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("Dataset DNA Run Indices");
+			datasetSummaryEntity.setEntityName("DNA Run Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
 			datasetSummaryEntity.setDuration(Double.toString(dnaRunSeconds)+" sec");
 			datasetSummaryEntity.setFilter("");
@@ -668,7 +674,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			//dataset Marker Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("Dataset Marker Indices");
+			datasetSummaryEntity.setEntityName("Marker Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetMarkerIndices));
 			datasetSummaryEntity.setDuration(Double.toString(markerseconds)+" sec");
 			datasetSummaryEntity.setFilter("");
@@ -677,10 +683,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			//border
 			datasetSummaryEntity = new DatasetSummaryEntity();
-			datasetSummaryEntity.setEntityName("===");
-			datasetSummaryEntity.setRowCount("===");
-			datasetSummaryEntity.setDuration("===");
-			datasetSummaryEntity.setFilter("===");
+			datasetSummaryEntity.setEntityName("");
+			datasetSummaryEntity.setRowCount("");
+			datasetSummaryEntity.setDuration("");
+			datasetSummaryEntity.setFilter("");
 			datasetSummary.add(datasetSummaryEntity);
 			
 		}
