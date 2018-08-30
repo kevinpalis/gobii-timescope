@@ -20,4 +20,3 @@ If the project is to be distributed, it should meet the following criteria:
 * For recipients: If you will continue to develop or maintain the project with the ZK framework, you should contact Potix to request for your own ZOL.
 
 For further information regarding ZOL, please contact Potix Corporation.
->>>>>>> 69f61c55f8104a531afd48a46efd1bff242157ea
