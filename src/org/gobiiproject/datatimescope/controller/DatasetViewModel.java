@@ -15,6 +15,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
+import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -32,6 +33,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
@@ -48,27 +50,35 @@ public class DatasetViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false;
+	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false;
 
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
+	private List<DatasetSummaryEntity> datasetSummary;
+	private DatasetSummaryEntity datasetSummaryEntity;
 	private DatasetEntity datasetEntity;
 
+	@SuppressWarnings("unchecked")
 	@Init
 	public void init() {
+		datasetSummaryEntity= new DatasetSummaryEntity();
 		selectedDsList = new ArrayList<VDatasetSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
 		setDatasetEntity(new DatasetEntity());
-		setDatasetList(viewModelService.getAllDatasets());
+		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
-		
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-
+        datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		
+        if(datasetSummary.size()>0){
+        	performedDeleteSuccesfully=true;
+        }
+		
 		if(cre.getRole() == 3){
 			isIsRoleUser=true;
 		}
@@ -86,8 +96,8 @@ public class DatasetViewModel {
 		}catch(NullPointerException e){
 
 		}
-
-		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
+		
+		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity,datasetSummaryEntity));
 
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
@@ -108,7 +118,7 @@ public class DatasetViewModel {
 		}
 		datasetEntity = new DatasetEntity();
 
-		setDatasetList(viewModelService.getAllDatasets());
+		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -154,8 +164,22 @@ public class DatasetViewModel {
 		}
 	}
 
+
+	@SuppressWarnings("unchecked")
+	@Command("resetDSSummary")
+	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
+	public void resetDSSummary(){
+        datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		
+        
+        if(datasetSummary.size()>0){
+        	performedDeleteSuccesfully=true;
+        }
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
+	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
 	public void deleteUsers(){
 
 		if(selectedDsList.isEmpty()){ //Nothing is selected
@@ -190,13 +214,23 @@ public class DatasetViewModel {
 									boolean successful;
 
 									if(selectedDsList.size() == 1){  // just one user is selected
-										successful = viewModelService.deleteDataset(selectedDsList.get(0));
+										successful = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
+									
 									}else{
 										//bulk delete
-										successful = viewModelService.deleteDatasets(selectedDsList);
+										successful = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity);
 									}
 
-									if(successful) BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+									if(successful){
+										BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+
+								        Session sess = Sessions.getCurrent();
+								        sess.setAttribute("datasetSummary",datasetSummary);
+								        
+								        if(datasetSummary.size()>0){
+								        	performedDeleteSuccesfully=true;
+								        }
+									}
 
 								}
 							}
@@ -212,7 +246,7 @@ public class DatasetViewModel {
 	public void retrieveUserList(){
 		//...
 
-		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity));
+		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity, datasetSummaryEntity));
 
 		selectedDsList.clear();
 
@@ -313,6 +347,22 @@ public class DatasetViewModel {
 
 	public void setIsRoleUser(boolean isIsRoleUser) {
 		this.isIsRoleUser = isIsRoleUser;
+	}
+
+	public boolean isPerformedDeleteSuccesfully() {
+		return performedDeleteSuccesfully;
+	}
+
+	public void setPerformedDeleteSuccesfully(boolean performedDeleteSuccesfully) {
+		this.performedDeleteSuccesfully = performedDeleteSuccesfully;
+	}
+
+	public List<DatasetSummaryEntity> getDatasetSummary() {
+		return datasetSummary;
+	}
+
+	public void setDatasetSummary(List<DatasetSummaryEntity> datasetSummary) {
+		this.datasetSummary = datasetSummary;
 	}
 
 }

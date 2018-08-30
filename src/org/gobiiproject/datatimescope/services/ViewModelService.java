@@ -11,6 +11,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
+import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -37,11 +38,11 @@ public interface ViewModelService {
 
 	public boolean deleteUsers(ListModelList<TimescoperEntity> selectedUsersList);
 
-	public List<VDatasetSummaryEntity> getAllDatasets();
+	public List<VDatasetSummaryEntity> getAllDatasets(DatasetSummaryEntity datasetSummaryEntity);
 
-	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord);
+	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord, List<DatasetSummaryEntity> datasetSummary, DatasetSummaryEntity datasetSummaryEntity);
 
-	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList);
+	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList, List<DatasetSummaryEntity> datasetSummary, DatasetSummaryEntity datasetSummaryEntity);
 
 	public TimescoperRecord loginTimescoper(String username, String password);
 	
@@ -53,7 +54,7 @@ public interface ViewModelService {
 
 	List<CvRecord> getCvTermsByGroupName(String groupName);
 
-	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity);
+	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity, DatasetSummaryEntity datasetSummaryEntity);
 
 	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity);
 
