@@ -47,6 +47,7 @@ public class UserViewModel {
 	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
+	
 	private ListModelList<TimescoperEntity> userlist, selectedUsersList;
 
 	@AfterCompose
@@ -184,6 +185,7 @@ public class UserViewModel {
 	@Command("createUser")
 	public void createUser(){
 		TimescoperEntity emptyUser = new TimescoperEntity();
+		emptyUser.setUsername("");
 		emptyUser.setRole(0);
 		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -224,6 +226,30 @@ public class UserViewModel {
 
 		setAllCbSelected(false);
 		setCbAllUsers(false);
+
+	}
+
+	@GlobalCommand("refreshUserWindow")
+	@NotifyChange({"userlist", "users", "selectedUsersList", "allCbSelected", "cbAllUsers", "superUser"})
+	public void refreshUserWindow(){
+		setCbAllUsers(false);
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+
+		String accountUsername = cre.getAccount();
+
+		userAccount = viewModelService.getUserInfo(accountUsername);
+
+		roleList= new ListModelList<String>(Utils.getRoleList());
+
+		selectedUsersList = new ListModelList<TimescoperEntity>();
+
+		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
+
+		userlist.setMultiple(true);
+		
+		if(userAccount.getRolename().contains("Super")) superUser=true;
+		else  superUser=false;
+		
 
 	}
 

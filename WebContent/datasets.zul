@@ -1,270 +1,410 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1"
+<window border="none" hflex="1" vflex="1"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
-	<vlayout>
+	<tabbox>
+		<tabs>
+			<tab id="datasetSearchTab" label="Search" />
+			<tab id="datasetSummaryTab" label="Summary"  onClick="@command('resetDSSummary')"/>
+		</tabs>
+		<tabpanels>
+			<tabpanel>
+				<vlayout>
+					<groupbox>
+						<caption label="Filters: " />
+						<vlayout>
+							<hlayout>
+								<grid hflex="1" vflex="1"
+									style="border: none; important!">
+									<columns>
+										<column align="left" />
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												Dataset ID :
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Dataset Names :
+											</cell>
+											<cell>
+												<textbox rows="8"
+													cols="40" hflex="true" vflex="true"
+													tooltiptext="Separate dataset names with comma"
+													value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.nameListDisabled)"
+													onChange="@command('changeEnabled')">
 
-		<groupbox>
-			<caption label="Filters: " />
-			<vlayout>
-				<hlayout>
-					<grid hflex="1" vflex="1">
-						<columns>
-							<column align="left" />
-							<column align="left" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Dataset ID :
-								</cell>
-								<cell>
-									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
-										to
-										<intbox hflex="true" value="@bind(vm.datasetEntity.datasetIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
-									</hbox>
-								</cell>
-							</row>
-							<row>
-								<cell sclass="row-title">
-									Dataset Names :
-								</cell>
-								<cell>
-									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate dataset names with comma" value="@bind(vm.datasetEntity.datasetNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
-									
-									</textbox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
-
-					<grid hflex="true">
-						<columns>
-							<column align="left" width="40%" />
-							<column align="left" width="60%" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Created By :
-								</cell>
-								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
-										<template name="model">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+								</grid>
+								<label value="  " />
+								<label value="  " />
+								<grid hflex="true"
+									style="border: none; important!">
+									<columns>
+										<column align="left"
+											width="40%" />
+										<column align="left"
+											width="60%" />
+									</columns>
+									<rows>
+										<!-- row>
+											<cell sclass="row-title">
+											Created By :
+											</cell>
+											<cell>
+											<combobox autodrop="true"
+											hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.datasetEntity.createdByContactRecord)">
+											<template name="model">
 											<comboitem
-												label="@load(each.wholename)" value="@load(each.contactId)" />
-										</template>
-									</combobox>
-								</cell>
-							</row>
-							<row>
-								<cell sclass="row-title">
-									Creation Date :
-								</cell>
-								<cell>
-									<hbox>
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateStart)" constraint="no future, no today"
-											buttonVisible="true" />
-										to
-										<datebox lenient="true"  value="@bind(vm.datasetEntity.creationDateEnd)" constraint="no future, no today"
-											buttonVisible="true" />
-									</hbox>
-								</cell>
-							</row>
-							<row>
-								<cell sclass="row-title">
-									Dataset Type :
-								</cell>
-								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.datasetTypes)" selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
-										<template name="model">
-											<comboitem
-												label="@load(each.term)" />
-										</template>
-									</combobox>
-								</cell>
-							</row>
+											label="@load(each.wholename)" value="@load(each.contactId)" />
+											</template>
+											</combobox>
+											</cell>
+											</row> -->
+										<row>
+											<cell sclass="row-title">
+												Creation Date :
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<datebox
+														lenient="true"
+														value="@bind(vm.datasetEntity.creationDateStart)"
+														constraint="no future, no today" buttonVisible="true"
+														hflex="true" />
+													to
+													<datebox
+														lenient="true"
+														value="@bind(vm.datasetEntity.creationDateEnd)"
+														constraint="no future, no today" buttonVisible="true"
+														hflex="true" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Dataset Type :
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.datasetTypes)"
+													selectedItem="@bind(vm.datasetEntity.datasetTypeRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.term)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
 
-							<row>
-								<cell sclass="row-title">
-									Principal Investigator :
-								</cell>
-								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.piList)" selectedItem="@bind(vm.datasetEntity.piRecord)">
-										<template name="model">
-											<comboitem
-												label="@load(each.wholename)" value="@load(each.contactId)"/>
-										</template>
-									</combobox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
-				</hlayout>
+										<row>
+											<cell sclass="row-title">
+												Principal Investigator :
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.piList)"
+													selectedItem="@bind(vm.datasetEntity.piRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.wholename)"
+															value="@load(each.contactId)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
+									</rows>
+								</grid>
+							</hlayout>
 
-				<div align="center" hflex="1">
-					<button label="Clear" width="200px"  onClick="@command('resetDatasetTab')"/>
-					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
-					<button id="deleteBtn" style="background-color: red"
-						label="Delete Selected" hflex="min"
-						onClick="@command('deleteSelectedDatasets')" />
+							<div align="center" hflex="1">
+								<button label="Clear" width="200px"
+									onClick="@command('resetDatasetTab')" />
+								<button label="Submit Query"
+									width="200px" onClick="@command('submitQuery')" />
+								<button
+									visible="@load(not vm.isRoleUser)" id="deleteBtn"
+									style="background-color: red" label="Delete Selected"
+									hflex="min" onClick="@command('deleteSelectedDatasets')" />
+							</div>
+
+						</vlayout>
+					</groupbox>
+
+					<div sclass="Container">
+						<grid id="mgrid" model="@load(vm.datasetList)"
+							mold="paging" pageSize="15" pagingPosition="both">
+							<columns sizable="true">
+								<column hflex="min">
+									<checkbox label="Select All"
+										onCheck="@command('doSelectAll')"
+										checked="@bind(vm.cbAllUsers)" />
+								</column>
+								<column hflex="min"
+									sort="auto(datasetId)">
+									<label value="Dataset ID" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(datasetName))">
+									<label value="Dataset Name" />
+								</column>
+								<column hflex="min"
+									sort="auto(experimentId)">
+									<label value="Experiment Id" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(experimentName))">
+									<label value="Experiment Name" />
+								</column>
+								<column hflex="min" sort="auto(piId)">
+									<label value="PI Id" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(piName))">
+									<label value="PI Name" />
+								</column>
+								<column hflex="min"
+									sort="auto(callinganalysisId)">
+									<label value="Calling Analysis Id" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(callingnalysisName))">
+									<label
+										value="Calling Analysis Name" />
+								</column>
+								<column hflex="min">
+									<label value="Analyses" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(dataTable))">
+									<label value="Data Table" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(dataFile))">
+									<label value="Data File" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(qualityTable))">
+									<label value="Quality Table" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(qualityFile))">
+									<label value="Quality File" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(createdByUsername))">
+									<label value="Created By" />
+								</column>
+								<column hflex="min"
+									sort="auto(createdDate)">
+									<label value="Created Date" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(modifiedByUsername))">
+									<label value="Modified By" />
+								</column>
+								<column hflex="min"
+									sort="auto(modifiedDate)">
+									<label value="Modified Date" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(statusName))">
+									<label value="Status Name" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(typeName))">
+									<label value="Type Name" />
+								</column>
+								<column hflex="min"
+									sort="auto(LOWER(jobName))">
+									<label value="Job Name" />
+								</column>
+							</columns>
+							<template name="model" var="dataset">
+								<row>
+									<cell>
+										<checkbox value="@load(dataset)"
+											checked="@load(vm.allCbSelected)"
+											onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.datasetId)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.datasetName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.experimentId)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.experimentName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.piId)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.piName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.callinganalysisId)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.callingnalysisName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.analysesAsString)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.dataTable)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.dataFile)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.qualityTable)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.qualityFile)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.createdByUsername)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.createdDate)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.modifiedByUsername)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.modifiedDate)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.statusName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.typeName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(dataset.jobName)" />
+									</cell>
+								</row>
+							</template>
+						</grid>
+					</div>
+					<popup id="title" width="400px">
+						<label
+							value="Separate dataset names with a comma" />
+					</popup>
+				</vlayout>
+			</tabpanel>
+			<tabpanel>
+
+				<div
+					visible="@load(not vm.performedDeleteSuccesfully)">
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
+
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="You have not deleted anything yet." />
+					</vbox>
 				</div>
 
-			</vlayout>
-		</groupbox>
+				<div visible="@load(vm.performedDeleteSuccesfully)">
 
-		<grid id="mgrid" model="@load(vm.datasetList)" mold="paging"
-			pageSize="15" pagingPosition="both">
-			<columns sizable="true">
-				<column hflex="min">
-					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllUsers)" />
-				</column>
-				<column hflex="min" sort="auto(datasetId)"	>
-					<label value="Dataset ID"/>
-				</column>
-				<column hflex="min" sort="auto(datasetName)">
-					<label value="Dataset Name"/>
-				</column>
-				<column hflex="min" sort="auto(experimentId)">
-					<label value="Experiment Id" />
-				</column>
-				<column hflex="min" sort="auto(experimentName)">
-					<label value="Experiment Name"/>
-				</column>
-				<column hflex="min" sort="auto(piId)">
-					<label value="PI Id"/>
-				</column>
-				<column hflex="min" sort="auto(piName)">
-					<label value="PI Name"/>
-				</column>
-				<column hflex="min"  sort="auto(callinganalysisId)">
-					<label value="Calling Analysis Id"/>
-				</column>
-				<column hflex="min">
-					<label value="Calling Analysis Name" />
-				</column>
-				<column hflex="min">
-					<label value="Analyses" />
-				</column>
-				<column hflex="min" sort="auto(dataTable)">
-					<label value="Data Table" />
-				</column>
-				<column hflex="min" sort="auto(dataFile)">
-					<label value="Data File" />
-				</column>
-				<column hflex="min" sort="auto(qualityTable)">
-					<label value="Quality Table" />
-				</column>
-				<column hflex="min" sort="auto(qualityFile)">
-					<label value="Quality File" />
-				</column>
-				<column hflex="min" sort="auto(createdByUsername)">
-					<label value="Created By" />
-				</column>
-				<column hflex="min" sort="auto(createdDate)">
-					<label value="Created Date" />
-				</column>
-				<column hflex="min" sort="auto(modifiedByUsername)">
-					<label value="Modified By" />
-				</column>
-				<column hflex="min" sort="auto(modifiedDate)">
-					<label value="Modified Date" />
-				</column>
-				<column hflex="min" sort="auto(statusName)">
-					<label value="Status Name" />
-				</column>
-				<column hflex="min" sort="auto(typeName)">
-					<label value="Type Name" />
-				</column>
-				<column hflex="min" sort="auto(jobName)" >
-					<label value="Job Name" />
-				</column>
-			</columns>
-			<template name="model" var="dataset">
-				<row>
-					<cell>
-						<checkbox value="@load(dataset)"
-							checked="@load(vm.allCbSelected)"
-							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.datasetId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.datasetName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.experimentId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.experimentName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.piId)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.piName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.callinganalysisId)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(dataset.callingnalysisName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.analysesAsString)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.dataTable)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.dataFile)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.qualityTable)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.qualityFile)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.createdByUsername)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.createdDate)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(dataset.modifiedByUsername)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.modifiedDate)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.statusName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.typeName)" />
-					</cell>
-					<cell>
-						<label value="@load(dataset.jobName)" />
-					</cell>
-				</row>
-			</template>
-		</grid>
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
 
-	</vlayout>
-	
-    <popup id="title" width="400px">
-		<label value="Separate dataset names with a comma" />
-    </popup>
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="Succesfully deleted dataset(s)!" />
+
+						<label
+							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
+
+						<grid id="summarygrid"
+							model="@load(vm.datasetSummary)" mold="paging" pageSize="15"
+							pagingPosition="both" hflex="1">
+							<columns sizable="true">
+								<column label="Entity" />
+								<column label="Row Count" />
+								<column label="Filters" />
+								<column label="Duration" />
+							</columns>
+							<template name="model" var="entity">
+								<row>
+									<cell>
+										<label
+											value="@load(entity.entityName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.rowCount)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.filter)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.duration)" />
+									</cell>
+								</row>
+							</template>
+						</grid>
+
+					</vbox>
+				</div>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	         
 </window>

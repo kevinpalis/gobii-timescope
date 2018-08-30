@@ -31,11 +31,11 @@
 			</hbox>
 			<hbox apply="org.zkoss.bind.BindComposer"
 				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
-				hflex="1" vflex="1" pack="end" align="end">
+				hflex="1" vflex="2" pack="end" align="end">
 
 				<button label="Switch Database"
 					style="background-color:gray;"
-					onClick="@command('openDatabaseInfoDialog')" />
+					onClick="@command('openDatabaseInfoDialog')" height="15px" vflex="min"/>
 			</hbox>
 		</vbox>
 	</hbox>

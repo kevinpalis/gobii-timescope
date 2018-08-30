@@ -43,6 +43,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
+import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -305,7 +306,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VDatasetSummaryEntity> getAllDatasets() {
+	public List<VDatasetSummaryEntity> getAllDatasets(DatasetSummaryEntity datasetSummaryEntity) {
 		// TODO Auto-generated method stub
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
 
@@ -313,7 +314,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 			String query = "select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;";
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
-
+			
+			datasetSummaryEntity.setFilter("");
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 
@@ -383,7 +385,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord) {
+	public boolean deleteDataset(VDatasetSummaryEntity vDatasetSummaryRecord, List<DatasetSummaryEntity> datasetSummary,
+			DatasetSummaryEntity datasetSummaryEntity) {
 		// TODO Auto-generated method stub
 
 		boolean successful = false;
@@ -398,25 +401,77 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 
 		try{
+			
+			// DB deletion starts here
 			Integer dataset_id = vDatasetSummaryRecord.getDatasetId();
 			Configuration configuration = vDatasetSummaryRecord.configuration();
 
-
+			int totalDeletedDatasetMarkerIndices = 0, totalDeletedDatasetDnarunIndices = 0;
+			
 			//delete Marker.dataset_marker_idx
-			deleteDatasetMarkerIndices(dataset_id, configuration);
-
+			double startTime = System.currentTimeMillis();
+			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
+			double endTime = System.currentTimeMillis();
+			double Markerseconds = (endTime - startTime) / 1000;
+			
+			
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-			deleteDatasetDnarunIndices(dataset_id, configuration);
-
-
+			
+			startTime = System.currentTimeMillis();
+			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
+			endTime = System.currentTimeMillis();
+			double DNARunSeconds = (endTime - startTime) / 1000;
+			
+			
+			startTime = System.currentTimeMillis();
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
 			dr.attach(configuration);
 			dr.delete();
-
+			endTime = System.currentTimeMillis();
+			double rowDeleteSeconds = (endTime - startTime) / 1000;
+			
 			successful = true;
-			Messagebox.show("Successfully deleted dataset!");
+			Messagebox.show("1 dataset deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(Markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(DNARunSeconds)+" sec) \n", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
 
+			//set Summary
+
+			//dataset
+			String recentFilter = datasetSummaryEntity.getFilter();
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setFilter(recentFilter);
+			datasetSummaryEntity.setEntityName("Dataset rows");
+			datasetSummaryEntity.setRowCount("1");
+			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
+			
+			datasetSummary.add(datasetSummaryEntity);
+			
+			//dataset DNA Run
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName("DNA Run Indices");
+			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
+			datasetSummaryEntity.setDuration(Double.toString(DNARunSeconds)+" sec");
+			datasetSummaryEntity.setFilter("");
+			
+			datasetSummary.add(datasetSummaryEntity);
+			
+
+			//dataset Marker Run
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName("Marker Indices");
+			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetMarkerIndices));
+			datasetSummaryEntity.setDuration(Double.toString(Markerseconds)+" sec");
+			datasetSummaryEntity.setFilter("");
+
+			datasetSummary.add(datasetSummaryEntity);
+			//border
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName(" ");
+			datasetSummaryEntity.setRowCount(" ");
+			datasetSummaryEntity.setDuration(" ");
+			datasetSummaryEntity.setFilter(" ");
+			
+			datasetSummary.add(datasetSummaryEntity);
 		}
 		catch(Exception e ){
 			Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dataset!", Messagebox.OK, Messagebox.ERROR);
@@ -425,14 +480,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return successful;
 	}
 
-	private void deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
+	private int deleteDatasetDnarunIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
+		int deletedDatasetDnarunIndices = 0;
 		try{
 			Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();
 			deleteDatasetDnarunIndices.setDatasetid(dataset_id);
 			deleteDatasetDnarunIndices.attach(configuration);
 			deleteDatasetDnarunIndices.execute();
-
+			deletedDatasetDnarunIndices = deleteDatasetDnarunIndices.getReturnValue();
 			log.info("Deleted dataset dnarun indices for dataset id :"+ Integer.toString(dataset_id));
 		}
 		catch (Exception e){
@@ -440,19 +496,22 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			log.error("Cannot delete marker dnarun for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
 		}
 
+		return deletedDatasetDnarunIndices;
 
 	}
 
-	private void deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
+	private int deleteDatasetMarkerIndices(Integer dataset_id, Configuration configuration) {
 		// TODO Auto-generated method stub
 
+		int deletedDatasetMarkerIndices = 0;
 		try{
 
 			Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();
 			deleteDatasetMarkerIndices.setDatasetid(dataset_id);
 			deleteDatasetMarkerIndices.attach(configuration);
 			deleteDatasetMarkerIndices.execute();
-
+			deletedDatasetMarkerIndices = deleteDatasetMarkerIndices.getReturnValue();
+			
 			log.info("Deleted dataset marker indices for dataset id :"+ Integer.toString(dataset_id));
 		}
 		catch (Exception e){
@@ -460,6 +519,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			log.error("Cannot delete marker indices for dataset id"+ Integer.toString(dataset_id) +"\n"+ e.getStackTrace().toString());
 		}
 
+		return deletedDatasetMarkerIndices;
 
 	}
 
@@ -488,7 +548,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList) {
+	public boolean deleteDatasets(List<VDatasetSummaryEntity> selectedDsList, List<DatasetSummaryEntity> datasetSummary,
+			DatasetSummaryEntity datasetSummaryEntity)  {
 		// TODO Auto-generated method stub
 
 		int dsCount = selectedDsList.size();
@@ -547,44 +608,102 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		
 		//move on to deletion
 		StringBuilder dsLeft = new StringBuilder();
+		StringBuilder dsIDLeft = new StringBuilder();
+		int totalDeletedDatasetMarkerIndices = 0, totalDeletedDatasetDnarunIndices = 0;
+		double markerseconds=0, dnaRunSeconds=0, rowDeleteSeconds = 0;
 		for(VDatasetSummaryEntity ds : selectedDsList){
 
 			//check which datasets are left just to be sure and display it later for the user to see 
 			dsLeft.append(ds.getDatasetName()+"\n");
+			dsIDLeft.append(" "+Integer.toString(ds.getDatasetId())+",");
 
 
 			Integer dataset_id = ds.getDatasetId();
 			Configuration configuration = ds.configuration();
 
 
+			double startTime = System.currentTimeMillis();
 			//delete Marker.dataset_marker_idx
-			deleteDatasetMarkerIndices(dataset_id, configuration);
-
+			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
+			double endTime = System.currentTimeMillis();
+			markerseconds = (endTime - startTime) / 1000;
+			
+			
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-			deleteDatasetDnarunIndices(dataset_id, configuration);
+			startTime = System.currentTimeMillis();
+			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
+			endTime = System.currentTimeMillis();
+			dnaRunSeconds = (endTime - startTime) / 1000;
 		}
 
 		try{
+
+			double startTime = System.currentTimeMillis();
+			
 			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
 					.stream()
 					.map(VDatasetSummaryEntity::getDatasetId)
 					.collect(Collectors.toList())))
 			.execute();
+			
+			double endTime = System.currentTimeMillis();
+			rowDeleteSeconds = (endTime - startTime) / 1000;
+			
 
+			//set Summary
+
+			//dataset
+			String recentFilter = datasetSummaryEntity.getFilter();
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setFilter(recentFilter);
+			datasetSummaryEntity.setEntityName("Dataset rows");
+			datasetSummaryEntity.setRowCount(Integer.toString(selectedDsList.size()));
+			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
+			
+			datasetSummary.add(datasetSummaryEntity);
+			
+			//dataset DNA Run
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName("DNA Run Indices");
+			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
+			datasetSummaryEntity.setDuration(Double.toString(dnaRunSeconds)+" sec");
+			datasetSummaryEntity.setFilter("");
+			
+			datasetSummary.add(datasetSummaryEntity);
+			
+
+			//dataset Marker Run
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName("Marker Indices");
+			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetMarkerIndices));
+			datasetSummaryEntity.setDuration(Double.toString(markerseconds)+" sec");
+			datasetSummaryEntity.setFilter("");
+			
+			datasetSummary.add(datasetSummaryEntity);
+
+			//border
+			datasetSummaryEntity = new DatasetSummaryEntity();
+			datasetSummaryEntity.setEntityName("");
+			datasetSummaryEntity.setRowCount("");
+			datasetSummaryEntity.setDuration("");
+			datasetSummaryEntity.setFilter("");
+			datasetSummary.add(datasetSummaryEntity);
+			
 		}
 		catch(Exception e ){
 
 			e.printStackTrace();
 		}
 
-		Messagebox.show("Successfully deleted the following dataset(s):\n\n"+dsLeft.toString());
+		log.info("Deleted the following rows from the dataset table in the database: dataset IDs {"+ dsIDLeft.toString()+"}");
+		Messagebox.show(Integer.toString(selectedDsList.size())+" datasets deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(dnaRunSeconds)+" sec) \n", "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
 
 		if (selectedDsList.size()>0) successful=true;
 		return successful;
 	}
 
 	@Override
-	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity) {
+	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity, DatasetSummaryEntity datasetSummaryEntity) {
 		// TODO Auto-generated method stub
 		int queryCount =0;
 		int dsNameCount = 0;
@@ -593,34 +712,42 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
 			StringBuilder sb = new StringBuilder();
+			StringBuilder sbFilteringCriteria = new StringBuilder();
 
 
 			sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
 
 			if (datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
-
-				sb.append(" where LOWER(d.name) in ("+datasetEntity.getSQLReadyDatasetNames()+")");
+				String names = datasetEntity.getSQLReadyDatasetNames();
+				sbFilteringCriteria.append("\n Dataset name is/are: "+names);
+				
+				sb.append(" where LOWER(d.name) in ("+names+")");
 				dsNameCount++;	
 			}
 
 			if (datasetEntity.getCreatedByContactRecord()!=null){
 
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-
-				sb.append(" c1.contact_id="+Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId()));
+				String id = Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId());
+				sbFilteringCriteria.append("\n Contact ID: "+id);
+				sb.append(" c1.contact_id="+id);
 				queryCount++;
 			}
 			if (datasetEntity.getDatasetTypeRecord()!=null){
 
 				checkPreviousAppends(dsNameCount, queryCount, sb);
 
-				sb.append(" cv2.cv_id="+Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId()));
+				String id = Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId());
+				sbFilteringCriteria.append("\n Cv ID: "+id);
+				sb.append(" cv2.cv_id="+id);
 				queryCount++;
 			}
 			if (datasetEntity.getPiRecord()!=null){
 
 				checkPreviousAppends(dsNameCount, queryCount, sb);
-				sb.append(" p.pi_contact="+Integer.toString(datasetEntity.getPiRecord().getContactId()));
+				String id = Integer.toString(datasetEntity.getPiRecord().getContactId());
+				sbFilteringCriteria.append("\n PI Contact ID: "+id);
+				sb.append(" p.pi_contact="+id);
 				queryCount++;
 			}
 			if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
@@ -637,12 +764,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 						higherID = datasetEntity.getDatasetIDStartRange();
 					}
 
+					sbFilteringCriteria.append("\n Dataset ID between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
 					sb.append(" d.dataset_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
 				}else{
 					Integer ID = null;
 					if(datasetEntity.getDatasetIDStartRange()!=null) ID = datasetEntity.getDatasetIDStartRange();
 					else ID = datasetEntity.getDatasetIDEndRange();
 
+					sbFilteringCriteria.append("\n Dataset ID : "+Integer.toString(ID));
 					sb.append(" d.dataset_id = "+Integer.toString(ID));
 				}
 
@@ -671,6 +800,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 						sqlDateEnd = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
 					}
 
+					sbFilteringCriteria.append("\n Created date between "+sqlDateStart+" and "+sqlDateEnd);
 					sb.append(" d.created_date between '"+sqlDateStart+"' and '"+sqlDateEnd+"' order by d.created_date");
 				}
 				else{ //check which is not null
@@ -683,6 +813,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 						sqlDate  = new java.sql.Date(datasetEntity.getCreationDateEnd().getTime());
 					}
 
+					sbFilteringCriteria.append("\n Created on: "+sqlDate);
 					sb.append(" d.created_date = '"+sqlDate+"' ");
 				}
 
@@ -692,7 +823,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			sb.append(";");
 			String query = sb.toString();
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
-
+			datasetSummaryEntity.setFilter(sbFilteringCriteria.toString());
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
 

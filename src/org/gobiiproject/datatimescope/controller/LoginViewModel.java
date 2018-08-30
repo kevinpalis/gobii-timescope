@@ -16,6 +16,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperReco
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -29,6 +30,8 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.Session;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
@@ -56,14 +59,24 @@ public class LoginViewModel {
 
 	@Init
 	public void init() {
-		userAccount = new TimescoperRecord();
 
-		serverInfo = new ServerInfo();
+	    AuthenticationService authService = new AuthenticationServiceChapter3Impl();
+	  
+        UserCredential cre = authService.getUserCredential();
+        if(cre==null){
 
-		Map<String, Object> args = new HashMap<String, Object>();
-		args.put("isLoggedIn", false);
+    		userAccount = new TimescoperRecord();
 
-		viewModelService = new ViewModelServiceImpl();
+    		serverInfo = new ServerInfo();
+
+    		Map<String, Object> args = new HashMap<String, Object>();
+    		args.put("isLoggedIn", false);
+
+    		viewModelService = new ViewModelServiceImpl();
+        } else{
+        	Executions.sendRedirect("/index.zul");
+            return;
+        }
 	}
 
 	@Command("login")
