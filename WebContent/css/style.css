@@ -1,3 +1,10 @@
+.z-north-splitter,
+.z-south-splitter {
+    border-left: 1px solid #E3E3E3 !important;
+    border-right: 1px solid #E3E3E3 !important;
+    .verGradient(#EBEBEB, #EBEBEB); /* no gradient, pass the same color arguments for the function */
+    height: 13px !important; /* omitted */
+}
 .banner {
 	background-color: #102d35;
 	color: white;

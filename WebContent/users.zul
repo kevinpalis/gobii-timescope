@@ -10,7 +10,7 @@
 		label="User Info" />
 	<hlayout>
 		<vlayout vflex="max" hflex="2">
-			<grid sclass="grid-borderless" vflex="min" hflex="1">
+			<grid sclass="grid-borderless" vflex="min" hflex="1" style="border: 0;">
 				<columns>
 					<column align="left" />
 					<column align="right" />
@@ -62,10 +62,10 @@
 			</div>
 		</vlayout>
 		<groupbox mold="3d" hflex="5" vflex="max" closable="false" visible="@load(vm.superUser)">
-			<caption label="All Users" />
+			<caption label="All Users"  />
 
 			<grid id="mgrid" model="@load(vm.users)" mold="paging"
-				pageSize="6">
+				pageSize="6" style="border: 0;">
 				<columns>
 					<column hflex="min">
 						<checkbox label="Select All"

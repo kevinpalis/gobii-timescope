@@ -29,10 +29,10 @@
 		<north height="120px" border="none" vflex="min" >
 			<apply templateURI="banner.zul"/>
 		</north>
-		<west width="260px" collapsible="true" splittable="true" minsize="300" border="none">
+		<west width="260px" collapsible="true" splittable="true" minsize="300" border="0">
 			<apply templateURI="sidebar.zul"/>
 		</west>
-		<center id="mainContent" autoscroll="true" vflex="true" >
+		<center id="mainContent" autoscroll="true" vflex="true" border="0">
 			<apply templateURI="mainContent.zul"/>
 		</center>
 		<south height="70px" border="none">
