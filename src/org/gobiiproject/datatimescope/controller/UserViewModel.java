@@ -185,9 +185,9 @@ public class UserViewModel {
 	@Command("createUser")
 	public void createUser(){
 		TimescoperEntity emptyUser = new TimescoperEntity();
+		emptyUser.attach(userAccount.configuration());
 		emptyUser.setUsername("");
 		emptyUser.setRole(0);
-		emptyUser.attach(userAccount.configuration());
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("editedUser", emptyUser);
 
