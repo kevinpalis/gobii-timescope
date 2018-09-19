@@ -5,8 +5,8 @@
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
-	<tabbox>
-		<tabs>
+	<tabbox style=" border: 0px;">
+		<tabs visible="false">
 			<tab id="datasetSearchTab" label="Search" />
 			<tab id="datasetSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
@@ -353,7 +353,7 @@
 					</center>
 				</borderlayout>
 			</tabpanel>
-			<tabpanel>
+			<tabpanel visible="false">
 
 				<div
 					visible="@load(not vm.performedDeleteSuccesfully)">

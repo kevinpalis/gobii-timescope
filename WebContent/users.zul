@@ -2,7 +2,7 @@
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
-<window border="normal" hflex="1" vflex="1" contentStyle="overflow:auto"
+<window border="0" hflex="1" vflex="1" contentStyle="overflow:auto"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
 

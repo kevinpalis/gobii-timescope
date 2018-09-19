@@ -116,7 +116,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			Createtimescoper createTimescoper = createTimescoperFromRecord(userAccount);
 			createTimescoper.execute(context.configuration());
 
-			Messagebox.show("Successfully created new user!");
+
+			Messagebox.show("Successfully created new user!", "", Messagebox.OK, Messagebox.INFORMATION);
 			successful = true;
 
 		}
@@ -155,7 +156,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			userAccount.delete();
 
 			successful = true;
-			Messagebox.show("Successfully deleted user!");
+
+			Messagebox.show("Successfully deleted user!", "", Messagebox.OK, Messagebox.INFORMATION);
 
 		}
 		catch(Exception e ){
@@ -177,7 +179,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			context.batchDelete(selectedUsersList).execute();
 
 			successful = true;
-			Messagebox.show("Successfully deleted users!");
+
+			Messagebox.show("Successfully deleted users!", "", Messagebox.OK, Messagebox.INFORMATION);
 
 		}
 		catch(Exception e ){
@@ -371,7 +374,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			userAccount.refresh();
 
 			successful = true;
-			Messagebox.show("Successfully updated user!");
+
+			Messagebox.show("Successfully updated user!", "", Messagebox.OK, Messagebox.INFORMATION);
 
 		}catch(Exception e ){
 			if(e.getMessage().contains("violates unique constraint")){
