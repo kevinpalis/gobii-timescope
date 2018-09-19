@@ -23,7 +23,7 @@
 	<caption src="/imgs/profile.png" sclass="fn-caption"
 		label="@load(vm.pageCaption)" />
 	<vlayout hflex="min">
-		<grid hflex="min">
+		<grid hflex="min" style="border: 0;">
 			<columns>
 				<column align="right" hflex="min" />
 				<column />

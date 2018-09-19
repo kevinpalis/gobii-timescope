@@ -65,7 +65,7 @@ public class EditUserViewModel {
 		allUser = new ListModelList<TimescoperEntity>(userInfoService.getAllOtherUsers(userAccount.getUsername()), true);
 		
 		//Figure out if this window was called to edit a user or to create one
-		if(user.getUsername()!=null){
+		if(user.getUsername()!=null && !user.getUsername().isEmpty() ){
 			userName = userAccount.getUsername();
 			setPageCaption("Edit User Information \""+ userName + "\"");
 			password = "dummypassword";
@@ -74,7 +74,7 @@ public class EditUserViewModel {
 				isEditingSelf=true;
 			}
 		}
-		else{
+		else {
 			setPageCaption("Create New User");
 			isCreateNew = true;
 			password = "";
