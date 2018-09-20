@@ -118,7 +118,7 @@ public class UserViewModel {
 			StringBuilder sb = new StringBuilder();
 
 			for(TimescoperEntity u: selectedUsersList){
-				sb.append("\n"+u.getUsername()+"\" "+u.getLastname() +", "+ u.getFirstname());
+				sb.append("\n"+u.getLastname() +", "+ u.getFirstname()+"  ("+u.getUsername()+") ");
 			}
 
 

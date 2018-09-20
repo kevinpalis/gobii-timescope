@@ -125,8 +125,7 @@ public class LoginViewModel {
 				serverInfo.setUserName("dummyusername");
 				serverInfo.setPassword("dummypassword");
 				
-				Messagebox.show("Login successful!");
-
+				Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
 				Executions.sendRedirect("/index.zul");
 				return;
 
