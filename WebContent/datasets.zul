@@ -13,7 +13,7 @@
 		</tabs>
 		<tabpanels>
 			<tabpanel>
-				<borderlayout vflex="min" hflex="min">
+				<borderlayout vflex="min" hflex="true">
 					<north title="Filters:"  style=" border: 0px;"
 						splittable="true" collapsible="true">
 						<vlayout>
