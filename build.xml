@@ -61,6 +61,7 @@
   	    <copy includeemptydirs="false" todir="WebContent/WEB-INF/classes">
   	            <fileset dir="build/classes">
   	            <include name="**/*.class"/>
+  	  			<include name="*.properties" />
   	            </fileset>
   	    </copy>
   	     
