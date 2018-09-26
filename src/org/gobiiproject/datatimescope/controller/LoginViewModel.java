@@ -79,6 +79,14 @@ public class LoginViewModel {
         }
 	}
 
+
+	@Command("needhelp")
+	public void needhelp() {
+		  Window window = (Window)Executions.createComponents(
+	                "needHelp.zul", null, null);
+	        window.doModal();
+	}
+	
 	@Command("login")
 	public void openDatabaseInfoDialog() {
 
