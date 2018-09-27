@@ -91,8 +91,9 @@
 						</grid>
 						<button label="Login"
 							onClick="@command('login')" />
-						<label value="Need help?"
-							onClick='alert("Hello world!")' />
+							
+						<label value="Need help?" style="font-style: oblique; color: blue; text-decoration: underline;"
+							onClick="@command('needhelp')" />
 					</vbox>
 				</window>
 			</vlayout>
