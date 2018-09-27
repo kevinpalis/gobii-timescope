@@ -12,9 +12,10 @@
 	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
 -->
 
-<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?page title="Timescope Login" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
-
+<?link rel="shortcut icon" type="image/x-icon" href="/imgs/favicon.ico"?>
+<?link rel="icon" type="image/x-icon" href="/imgs/favicon.ico"?>
 <zk>
 	<div height="100%">
 		<hbox vflex="1" hflex="1" align="center" pack="center"
