@@ -26,7 +26,7 @@ public class DatasetEntity implements Serializable,Cloneable {
 	
 	private Integer datasetIDStartRange;
 	private Integer datasetIDEndRange;
-	private String datasetNamesAsCommaSeparatedString;
+	private String datasetNamesAsEnterSeparatedString;
 	private List<String> datasetNames;
 	private Date creationDateStart;
 	private Date creationDateEnd;
@@ -100,12 +100,12 @@ public class DatasetEntity implements Serializable,Cloneable {
 		this.creationDateEnd = creationDateEnd;
 	}
 
-	public String getDatasetNamesAsCommaSeparatedString() {
-		return datasetNamesAsCommaSeparatedString;
+	public String getDatasetNamesAsEnterSeparatedString() {
+		return datasetNamesAsEnterSeparatedString;
 	}
 
-	public void setDatasetNamesAsCommaSeparatedString(String datasetNamesAsCommaSeparatedString) {
-		this.datasetNamesAsCommaSeparatedString = datasetNamesAsCommaSeparatedString;
+	public void setDatasetNamesAsEnterSeparatedString(String datasetNamesAsEnterSeparatedString) {
+		this.datasetNamesAsEnterSeparatedString = datasetNamesAsEnterSeparatedString;
 	}
 
 	public void setDatasetNames(String[] split) {
@@ -117,9 +117,10 @@ public class DatasetEntity implements Serializable,Cloneable {
 		// TODO Auto-generated method stub
 		int ctr = 0;
 		StringBuilder sb = new StringBuilder();
-		String removeSpaces = datasetNamesAsCommaSeparatedString.replaceAll(", ",",");
-		String removeEnters = removeSpaces.replaceAll(",\n",",");
-		for(String s: removeEnters.split(",")){
+		String names = datasetNamesAsEnterSeparatedString;
+//		String removeSpaces = datasetNamesAsEnterSeparatedString.replaceAll(", ",",");
+//		String removeEnters = removeSpaces.replaceAll(",\n",",");
+		for(String s: names.split("\n")){
 			if(ctr>0)sb.append(",");
 		sb.append(" '"+s.toLowerCase()+"' ");
 		ctr++;
