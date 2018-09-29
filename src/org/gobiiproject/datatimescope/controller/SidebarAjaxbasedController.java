@@ -1,5 +1,7 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.util.Iterator;
+
 import org.gobiiproject.datatimescope.configurator.SidebarPageConfigAjaxBasedImpl;
 import org.gobiiproject.datatimescope.services.SidebarPage;
 import org.gobiiproject.datatimescope.services.SidebarPageConfig;
@@ -24,17 +26,17 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 	private static final long serialVersionUID = 1L;
 	@Wire
 	Grid fnList;
-	
+
 	//wire service
 	SidebarPageConfig pageConfig = new SidebarPageConfigAjaxBasedImpl();
-	
+
 	@Override
 	public void doAfterCompose(Component comp) throws Exception{
 		super.doAfterCompose(comp);
-		
+
 		//to initial view after view constructed.
 		Rows rows = fnList.getRows();
-		
+
 		for(SidebarPage page:pageConfig.getPages()){
 			Row row = constructSidebarRow(page.getName(),page.getLabel(),page.getIconUri(),page.getUri());
 			rows.appendChild(row);
@@ -42,20 +44,20 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 	}
 
 	private Row constructSidebarRow(final String name,String label, String imageSrc, final String locationUri) {
-		
+
 		//construct component and hierarchy
 		Row row = new Row();
 		Image image = new Image(imageSrc);
 		image.setWidth("27px");
 		image.setHeight("27px");
 		Label lab = new Label(label);
-		
+
 		row.appendChild(image);
 		row.appendChild(lab);
-		
+
 		//set style attribute
 		row.setSclass("sidebar-fn");
-		
+
 		//new and register listener for events
 		EventListener<Event> onActionListener = new SerializableEventListener<Event>(){
 			private static final long serialVersionUID = 1L;
@@ -67,15 +69,22 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 					Executions.getCurrent().sendRedirect(locationUri);
 				}else{
 					//use iterable to find the first include only
-					Include include = (Include)Selectors.iterable(fnList.getPage(), "#mainInclude")
-							.iterator().next();
-					include.setSrc(locationUri);
-					
-					//advance bookmark control, 
-					//bookmark with a prefix
-					if(name!=null){
-						getPage().getDesktop().setBookmark("p_"+name);
-					}
+
+//					Iterator<?> ite = Selectors.iterable(fnList.getPage(), "#mainContent")
+//							.iterator();
+//
+//					while(ite.hasNext()){
+
+						Include include = (Include)Selectors.iterable(fnList.getPage(), "#mainContent")
+								.iterator().next();
+						include.setSrc(locationUri);
+
+						//advance bookmark control, 
+						//bookmark with a prefix
+						if(name!=null){
+							getPage().getDesktop().setBookmark("p_"+name);
+						}
+//					}
 				}
 			}
 		};		
@@ -83,5 +92,5 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 
 		return row;
 	}
-	
+
 }

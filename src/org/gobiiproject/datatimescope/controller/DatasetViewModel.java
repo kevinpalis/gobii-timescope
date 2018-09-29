@@ -151,7 +151,7 @@ public class DatasetViewModel {
 		isIDBoxDisabled = false; // reset
 		isNameListDisabled= false; 
 
-		if(datasetEntity.getDatasetNamesAsCommaSeparatedString()!=null && !datasetEntity.getDatasetNamesAsCommaSeparatedString().isEmpty()){
+		if(datasetEntity.getDatasetNamesAsEnterSeparatedString()!=null && !datasetEntity.getDatasetNamesAsEnterSeparatedString().isEmpty()){
 			isIDBoxDisabled = true;
 		}else if(datasetEntity.getDatasetIDStartRange() != null ){
 			if(datasetEntity.getDatasetIDStartRange() >0 ){
