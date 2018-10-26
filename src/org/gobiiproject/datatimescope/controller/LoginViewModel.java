@@ -59,7 +59,6 @@ public class LoginViewModel {
 
 	@Init
 	public void init() {
-
 	    AuthenticationService authService = new AuthenticationServiceChapter3Impl();
 	  
         UserCredential cre = authService.getUserCredential();

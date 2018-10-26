@@ -27,16 +27,16 @@
     </style>
 	<borderlayout hflex="1" vflex="max" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
 		<north height="100px" border="none" >
-			<apply templateURI="banner.zul"/>
+			<include src="banner.zul"/>
 		</north>
 		<west width="260px" collapsible="true" splittable="true" minsize="300" border="0">
-			<apply templateURI="sidebar.zul"/>
+			<include src="sidebar.zul"/>
 		</west>
-		<center id="mainContent" autoscroll="true" vflex="true" border="0">
-			<apply templateURI="mainContent.zul"/>
+		<center autoscroll="true" vflex="true" border="0">
+			<include id="mainContent" src="mainContent.zul"/>
 		</center>
 		<south height="70px" border="none">
-			<apply templateURI="footer.zul"/>
+			<include src="footer.zul"/>
 		</south>
 	</borderlayout>
 </zk>
