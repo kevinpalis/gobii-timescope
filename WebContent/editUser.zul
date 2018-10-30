@@ -32,8 +32,8 @@
 				<row>
 					<cell sclass="row-title">Username :</cell>
 					<cell>
-						<label visible="@load(not vm.superAdmin)" value="@load(vm.userAccount.username)" />
-						<textbox visible="@load(vm.superAdmin)" value="@bind(vm.userAccount.username)"
+						<label visible="@load(not vm.superAdminEditingOthers)" value="@load(vm.userAccount.username)" />
+						<textbox visible="@load(vm.superAdminEditingOthers)" value="@bind(vm.userAccount.username)"
 							constraint="no empty: Please enter your username. "
 							width="300px"  />
 					</cell>
