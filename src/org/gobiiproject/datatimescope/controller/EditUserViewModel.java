@@ -42,7 +42,7 @@ public class EditUserViewModel {
 	Window editUserWindow;
 
 
-	boolean isCreateNew = false, isSuperAdmin=false, isEditingSelf=false;
+	boolean isCreateNew = false, isSuperAdmin=false, isEditingSelf=false, isSuperAdminEditingOthers=false;
 
 	private String pageCaption, userName, password;
 
@@ -72,6 +72,7 @@ public class EditUserViewModel {
 			
 			if(cre.getAccount().equalsIgnoreCase(user.getUsername())){
 				isEditingSelf=true;
+				
 			}
 		}
 		else {
@@ -81,6 +82,7 @@ public class EditUserViewModel {
 		}
 
 		if(cre.getRole() == 1){
+			if(!isEditingSelf) isSuperAdminEditingOthers = true;
 			isSuperAdmin=true;
 		}
 	}
@@ -295,6 +297,14 @@ public class EditUserViewModel {
 
 	public void setSuperAdmin(boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public boolean isSuperAdminEditingOthers() {
+		return isSuperAdminEditingOthers;
+	}
+
+	public void setSuperAdminEditingOthers(boolean isSuperAdminEditingOthers) {
+		this.isSuperAdminEditingOthers = isSuperAdminEditingOthers;
 	}
 
 }
