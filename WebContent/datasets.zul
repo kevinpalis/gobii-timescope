@@ -98,13 +98,13 @@
 													<datebox
 														lenient="true"
 														value="@bind(vm.datasetEntity.creationDateStart)"
-														constraint="no future, no today" buttonVisible="true"
+														constraint="no future" buttonVisible="true"
 														hflex="true" />
 													to
 													<datebox
 														lenient="true"
 														value="@bind(vm.datasetEntity.creationDateEnd)"
-														constraint="no future, no today" buttonVisible="true"
+														constraint="no future" buttonVisible="true"
 														hflex="true" />
 												</hbox>
 											</cell>
