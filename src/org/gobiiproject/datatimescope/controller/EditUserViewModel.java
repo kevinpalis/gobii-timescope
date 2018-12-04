@@ -307,4 +307,11 @@ public class EditUserViewModel {
 		this.isSuperAdminEditingOthers = isSuperAdminEditingOthers;
 	}
 
+	public boolean isCreateNew() {
+		return isCreateNew;
+	}
+
+	public void setCreateNew(boolean isCreateNew) {
+		this.isCreateNew = isCreateNew;
+	}
 }
