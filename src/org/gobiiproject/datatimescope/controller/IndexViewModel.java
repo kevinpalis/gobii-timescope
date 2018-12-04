@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.PropertyConfigurator;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;
@@ -39,6 +40,7 @@ public class IndexViewModel {
 
 	private ViewModelServiceImpl viewModelService;
 	private String datawarehouseVersion;
+	private ServerInfo serverInfo;
 
 	@Init
 	public void init() {
@@ -47,6 +49,12 @@ public class IndexViewModel {
 		
 		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
 		
+		
+
+		setServerInfo(new ServerInfo());
+
+		setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
+
 	}
 
 	@Command
@@ -65,6 +73,14 @@ public class IndexViewModel {
 
 	public void setDatawarehouseVersion(String datawarehouseVersion) {
 		this.datawarehouseVersion = datawarehouseVersion;
+	}
+
+	public ServerInfo getServerInfo() {
+		return serverInfo;
+	}
+
+	public void setServerInfo(ServerInfo serverInfo) {
+		this.serverInfo = serverInfo;
 	}
 
 }

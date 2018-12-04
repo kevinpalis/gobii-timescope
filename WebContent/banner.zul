@@ -25,9 +25,19 @@
 			</hbox>
 			<hbox apply="org.zkoss.bind.BindComposer"
 				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
+				hflex="1" vflex="2" pack="end" align="end">
+
+				<label value="@load(vm.serverInfo.host)" style="font-weight:bold; font-style: italic;font-size:15px;"/>
+				port:
+				<label value="@load(vm.serverInfo.port)" style="font-weight:bold; font-style: italic;font-size:15px;"/>
+				db:
+				<label value="@load(vm.serverInfo.dbName)" style="font-weight:bold; font-style: italic;font-size:15px;"/>
+			</hbox>
+			<hbox apply="org.zkoss.bind.BindComposer"
+				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
 				hflex="1" vflex="1" pack="end" align="end">
-				Datawarehouse v. 
-				<label value="@load(vm.datawarehouseVersion)" />
+				<label value="Datawarehouse v."  style="font-size:15px;" />
+				<label value="@load(vm.datawarehouseVersion)" style="font-size:15px;" />
 			</hbox>
 			<hbox apply="org.zkoss.bind.BindComposer"
 				viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
