@@ -32,7 +32,10 @@
 				<row>
 					<cell sclass="row-title">Username :</cell>
 					<cell>
-						<label value="@load(vm.userAccount.username)" />
+						<label visible="@load(not vm.createNew)" value="@load(vm.userAccount.username)" />
+						<textbox visible="@load(vm.createNew)" value="@bind(vm.userAccount.username)"
+							constraint="no empty: Please enter your username. "
+							width="300px"  />
 						
 					</cell>
 				</row>
