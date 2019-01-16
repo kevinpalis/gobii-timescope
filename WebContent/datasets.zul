@@ -165,8 +165,8 @@
 						<div>
 							<div sclass="Container">
 								<grid id="mgrid"
-									model="@load(vm.datasetList)" mold="paging" pageSize="15"
-									pagingPosition="both">
+									model="@load(vm.datasetList)" mold="paging" pageSize="25"
+									pagingPosition="both" height="420px">
 									<columns sizable="true">
 										<column hflex="min">
 											<checkbox label="Select All"
