@@ -1,10 +1,15 @@
 package org.gobiiproject.datatimescope.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -131,6 +136,26 @@ public class LoginViewModel {
 
 				serverInfo.setUserName("dummyusername");
 				serverInfo.setPassword("dummypassword");
+				
+				System.out.println(" ==================:"+ serverInfo.getHost() +" "+ serverInfo.getPort() + " "+ serverInfo.getDbName());
+				
+					try {
+						Properties properties = new Properties();
+						properties.setProperty("db.host", serverInfo.getHost());
+						properties.setProperty("db.port", serverInfo.getPort());
+						properties.setProperty("db.name", serverInfo.getDbName());
+
+						ClassLoader classLoader = getClass().getClassLoader();
+						File file = new File(classLoader.getResource("db.properties").getFile());
+						
+						FileOutputStream fileOut = new FileOutputStream(file);
+						properties.store(fileOut, null);
+						fileOut.close();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				
 				Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
 				Executions.sendRedirect("/index.zul");
