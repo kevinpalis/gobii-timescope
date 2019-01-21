@@ -2,12 +2,18 @@ package org.gobiiproject.datatimescope.controller;
 
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
@@ -36,11 +42,13 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 public class IndexViewModel {
-
+	final static Logger log = Logger.getLogger(IndexViewModel.class.getName());
 
 	private ViewModelServiceImpl viewModelService;
 	private String datawarehouseVersion;
 	private ServerInfo serverInfo;
+
+	private String version;
 
 	@Init
 	public void init() {
@@ -49,14 +57,42 @@ public class IndexViewModel {
 		
 		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
 		
-		
-
 		setServerInfo(new ServerInfo());
 
 		setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
 
+
+		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
+		try {
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			InputStream reader = classLoader.getResourceAsStream("config.properties");
+			
+//		    FileReader reader = new FileReader(configFile);
+		    Properties props = new Properties();
+		    props.load(reader);
+		 
+		    String tsversion = props.getProperty("version");
+
+		    if(tsversion != null){
+		    reader.close();
+			setVersion(tsversion);
+			
+		    }
+		} catch (FileNotFoundException ex) {
+		    // file does not exist
+
+			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
+		} catch (IOException ex) {
+		    // I/O error
+			 log.error("i/o exception"+ ex.getMessage());
+		} catch (NullPointerException ex) {
+		    // file does not exist
+
+			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+		}
 	}
 
+	
 	@Command
 	public void openDatabaseInfoDialog() {
 		Map<String, Object> args = new HashMap<String, Object>();
@@ -81,6 +117,14 @@ public class IndexViewModel {
 
 	public void setServerInfo(ServerInfo serverInfo) {
 		this.serverInfo = serverInfo;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 }
