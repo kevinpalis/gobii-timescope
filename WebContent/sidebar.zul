@@ -1,7 +1,25 @@
-<grid hflex="1" vflex="1" sclass="sidebar" id="fnList" apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
-	<columns>
-		<column width="45px"/>
-		<column/>
-	</columns>
-	<rows/>
-</grid>
+<vbox vflex="true">
+
+	<image src="/imgs/datatimescope5.png" height="100px" />
+	<hbox vflex="2" />
+	<hbox hflex="max" vflex="25">
+		<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
+			apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
+			<columns>
+				<column width="45px" />
+				<column />
+			</columns>
+			<rows />
+		</grid>
+	</hbox>
+
+	<hbox apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
+		hflex="1" vflex="1" pack="end" align="end">
+
+		<button label="Switch Database" style="background-color:gray; font-size:14px; text-align:center; vertical-align:middle; padding: 0px;"
+			onClick="@command('openDatabaseInfoDialog')" height="25px"
+			hflex="true"/>
+	</hbox>
+
+</vbox>

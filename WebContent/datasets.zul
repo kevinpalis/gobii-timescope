@@ -4,8 +4,8 @@
 <window border="none" hflex="1" vflex="1"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
-	<caption sclass="fn-caption" label="Datasets" />
-	<tabbox style=" border: 0px;">
+	<caption sclass="fn-caption" label="Datasets"/>
+	<tabbox style="border: 0px; padding:0px;">
 		<tabs visible="false">
 			<tab id="datasetSearchTab" label="Search" />
 			<tab id="datasetSummaryTab" label="Summary"
@@ -166,7 +166,7 @@
 							<div sclass="Container">
 								<grid id="mgrid"
 									model="@load(vm.datasetList)" mold="paging" pageSize="25"
-									pagingPosition="both" height="420px">
+									pagingPosition="both" height="500px">
 									<columns sizable="true">
 										<column hflex="min">
 											<checkbox label="Select All"
