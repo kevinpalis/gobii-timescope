@@ -10,7 +10,7 @@
 		label="User Info" />
 	<hlayout>
 		<vlayout vflex="max" hflex="2">
-			<grid sclass="grid-borderless" vflex="min" hflex="1" style="border: 0;">
+			<grid sclass="grid-borderless" vflex="max" hflex="1" style="border: 0;">
 				<columns>
 					<column align="left" />
 					<column align="right" />
