@@ -41,6 +41,7 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -51,7 +52,10 @@ public class DatasetViewModel {
 
 	ViewModelService viewModelService;
 	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false;
-
+	
+	@Wire("#datasetGrid")
+	Grid datasetGrid;
+	
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
@@ -272,6 +276,16 @@ public class DatasetViewModel {
 		}
 	}
 
+	@Command("exportDatasetTable")
+	public void exportDatasetTable() {
+		
+		Map<String,Object> args = new HashMap<String,Object>();
+		args.put("gridTable", datasetGrid);
+		BindUtils.postGlobalCommand(null, null, "exportTableToFile", args);
+		
+	}
+	
+	
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}

@@ -33,6 +33,7 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -271,6 +272,15 @@ public class UserViewModel {
 		}
 	}
 
+	@GlobalCommand("exportTableToFile")
+	public void exportTableToFile(@BindingParam("gridTable")Grid grid){
+
+		Grid table = grid;
+		
+		rows = table.get
+
+	}
+	
 	public TimescoperEntity getUserAccount() {
 		return userAccount;
 	}
