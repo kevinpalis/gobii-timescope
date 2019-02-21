@@ -203,8 +203,10 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
      * User-defined Getter to get whole name
      */
     public String getWholename() {
+    	String name;
     	
-    	String name= (String) get(1) +", " + (String) get(2);
+    	if(get(2)!=null) name= (String) get(1) +", " + (String) get(2);
+    	else name= (String) get(1);
     	
         return name;
     }
