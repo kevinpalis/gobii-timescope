@@ -43,11 +43,10 @@ import org.jooq.*;
 
 import java.sql.*;
 
-
-public class UserController extends SelectorComposer<Component>{
+public class UserController extends SelectorComposer<Component> {
 	private static final long serialVersionUID = 1L;
 
-	//wire components
+	// wire components
 	@Wire
 	Label firstName;
 	@Wire
@@ -58,58 +57,58 @@ public class UserController extends SelectorComposer<Component>{
 	Label email;
 	@Wire
 	Label role;
-	
-	//services
+
+	// services
 	AuthenticationService authService = new AuthenticationServiceChapter3Impl();
 	ViewModelService userInfoService = new ViewModelServiceImpl();
-	
+
 	@Override
-	public void doAfterCompose(Component comp) throws Exception{
+	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		
+
 		ListModelList<String> roleModel = new ListModelList<String>(Utils.getRoleList());
 		role.setValue(roleModel.get(1));
 	}
-	
+
 	@Listen("onClick = #editProfile")
-	public void doEditProfile(){
+	public void doEditProfile() {
 		Clients.showNotification("@SaveProfile.");
 		UserCredential cre = authService.getUserCredential();
 		TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
-				
-//		userInfoService.updateUser(user);
-		
+
+		// userInfoService.updateUser(user);
+
 		Clients.showNotification("Your profile was updated.");
 	}
-	
+
 	@Listen("onClick = #reloadProfile")
-	public void doReloadProfile(){
+	public void doReloadProfile() {
 
 		String userName = "timescoper";
-        String password = "helloworld";
-        String url = "jdbc:postgresql://localhost:5432/timescope_db2";
-        try {
+		String password = "helloworld";
+		String url = "jdbc:postgresql://localhost:5432/timescope_db2";
+		try {
 			Class.forName("org.postgresql.Driver");
 		} catch (ClassNotFoundException e1) {
-			 //TODO Auto-generated catch block
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        try  {
-            Connection conn = DriverManager.getConnection(url, userName, password);
-            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
-            
-            for (Record r : result) {
-                Integer id = r.getValue(CV.CV_ID);
-                String term = r.getValue(CV.TERM);
+		try {
+			Connection conn = DriverManager.getConnection(url, userName, password);
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
 
-                System.out.println("CV_id: " + id + " Term: " + term );
-            }
-        } 
+			for (Record r : result) {
+				Integer id = r.getValue(CV.CV_ID);
+				String term = r.getValue(CV.TERM);
 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+				System.out.println("CV_id: " + id + " Term: " + term);
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
