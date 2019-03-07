@@ -82,7 +82,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			Connection conn = DriverManager.getConnection(url, userName, password);        
 
 			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-			Sessions.getCurrent().setAttribute("dbContext", context);
+			Sessions.getCurrent().setAttribute("contextConfiguration", context.configuration());
 			Sessions.getCurrent().setAttribute("serverInfo", serverInfo);
 
 			isConnected = true;
@@ -114,7 +114,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 			Createtimescoper createTimescoper = createTimescoperFromRecord(userAccount);
 			createTimescoper.execute(context.configuration());
@@ -134,6 +134,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return successful;
 	}
 
+
+	private DSLContext getDSLContext() {
+		// TODO Auto-generated method stub
+		
+		Configuration contextConfiguration = (Configuration) Sessions.getCurrent().getAttribute("contextConfiguration");
+		DSLContext context = DSL.using(contextConfiguration);
+		
+		return context;
+	}
 
 	private Createtimescoper createTimescoperFromRecord(TimescoperEntity userAccount) {
 		// TODO Auto-generated method stub
@@ -177,7 +186,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 			context.batchDelete(selectedUsersList).execute();
 
@@ -200,7 +209,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		Gettimescoper gettimescoper = new Gettimescoper();
 		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 			gettimescoper.set_Password(password);
 			gettimescoper.set_Username(username);
@@ -231,7 +240,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		// TODO Auto-generated method stub
 		List<CvRecord> cvRecordList = null;
 		try{
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 			//			Getcvtermsbycvgroupname getcvtermsbycvgroupname = new Getcvtermsbycvgroupname();
 			//			getcvtermsbycvgroupname.setCvgroupname(groupName);
@@ -258,7 +267,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 
 			user =  context.fetchOne("select * from timescoper where username = '"+username+"';").into(TimescoperEntity.class);
@@ -277,7 +286,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<TimescoperEntity> getAllOtherUsers(String username) {
 		// TODO Auto-generated method stub
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 		List<TimescoperEntity> userList = null;
 		try{
 
@@ -296,7 +305,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<ContactRecord> getAllContacts() {
 		// TODO Auto-generated method stub
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 		List<ContactRecord> contactList = null;
 		try{
 
@@ -314,7 +323,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	@Override
 	public List<VDatasetSummaryEntity> getAllDatasets(DatasetSummaryEntity datasetSummaryEntity) {
 		// TODO Auto-generated method stub
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{
@@ -335,7 +344,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<ContactRecord> getContactsByRoles(Integer[] role) {
 		// TODO Auto-generated method stub
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 		List<ContactRecord> contactList = null;
 		try{
 
@@ -357,7 +366,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 		try{
 
-			DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+			DSLContext context = getDSLContext();
 
 			if(userAccount.changed(4)){ // check if pswrd was changed, it's the 4th field in TimescoperEntity
 				GenSalt2 genSalt = new GenSalt2();
@@ -563,7 +572,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		boolean successful = false;
 
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		//Try to deleteDataFiles
 		List<VDatasetSummaryEntity> cannotDeleteFileDSList = new ArrayList<VDatasetSummaryEntity>();
@@ -714,7 +723,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		// TODO Auto-generated method stub
 		int queryCount =0;
 		int dsNameCount = 0;
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		List<VDatasetSummaryEntity> datasetList = null;
 		try{ //c3.lastname as pi_contact,
@@ -734,28 +743,34 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			if (datasetEntity.getCreatedByContactRecord()!=null){
 
+				if(datasetEntity.getCreatedByContactRecord().getContactId()!=0){
 				checkPreviousAppends(dsNameCount, queryCount, sb);
 				String id = Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId());
 				sbFilteringCriteria.append("\n Contact ID: "+id);
 				sb.append(" c1.contact_id="+id);
 				queryCount++;
+				}
 			}
 			if (datasetEntity.getDatasetTypeRecord()!=null){
 
+				if(datasetEntity.getDatasetTypeRecord().getCvId()!=0){
 				checkPreviousAppends(dsNameCount, queryCount, sb);
 
 				String id = Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId());
 				sbFilteringCriteria.append("\n Cv ID: "+id);
 				sb.append(" cv2.cv_id="+id);
 				queryCount++;
+				}
 			}
 			if (datasetEntity.getPiRecord()!=null){
 
+				if(datasetEntity.getPiRecord().getContactId()!=0){
 				checkPreviousAppends(dsNameCount, queryCount, sb);
 				String id = Integer.toString(datasetEntity.getPiRecord().getContactId());
 				sbFilteringCriteria.append("\n PI Contact ID: "+id);
 				sb.append(" p.pi_contact="+id);
 				queryCount++;
+				}
 			}
 			if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
 
@@ -853,7 +868,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		int queryCount =0;
 		int dsNameCount = 0;
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		List<VMarkerSummaryEntity> markerList = null;
 		try{ //c3.lastname as pi_contact,
@@ -917,7 +932,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<VMarkerSummaryEntity> getAllMarkers() {
 		// TODO Auto-generated method stub
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		List<VMarkerSummaryEntity> markerList = null;
 		try{
@@ -952,7 +967,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public List<PlatformRecord> getAllPlatforms() {
 		// TODO Auto-generated method stub
 
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 		List<PlatformRecord> platformList = null;
 		try{
 
@@ -970,7 +985,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	@Override
 	public String getDatawarehouseVersion() {
 		// TODO Auto-generated method stub
-		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
+		DSLContext context = getDSLContext();
 
 		String version = "";
 		try{
