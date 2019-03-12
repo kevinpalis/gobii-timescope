@@ -70,6 +70,8 @@ public class DatasetViewModel {
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
+		ContactRecord selectAllPI = new ContactRecord(0);
+		piList.add(0, selectAllPI);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
@@ -315,6 +317,8 @@ public class DatasetViewModel {
 
 	public void setDatasetTypes(List<CvRecord> list) {
 		this.datasetTypes = list;
+		CvRecord newRecord = new CvRecord(0);
+		datasetTypes.add(0, newRecord);
 	}
 
 	public DatasetEntity getDatasetEntity() {

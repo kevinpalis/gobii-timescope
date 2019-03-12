@@ -203,8 +203,10 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
      * User-defined Getter to get whole name
      */
     public String getWholename() {
+    	String name;
     	
-    	String name= (String) get(1) +", " + (String) get(2);
+    	if((Integer)get(0)!=0) name= (String) get(1) +", " + (String) get(2);
+    	else name= (String) get(1);
     	
         return name;
     }
@@ -686,5 +688,24 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
         set(9, modifiedDate);
         set(10, organizationId);
         set(11, username);
+    }
+    
+    public ContactRecord(Integer contactId) {
+        super(Contact.CONTACT);
+        
+        int[] roles = {1,5};
+        
+        set(0, contactId);
+        set(1, "SELECT ALL PI");
+        set(2, "All");
+        set(3, "select all");
+        set(4, "c.record@gmail.com");
+        set(5, roles);
+        set(6, 1);
+        set(7, null);
+        set(8, 1);
+        set(9, null);
+        set(10, 1);
+        set(11, "allPI");
     }
 }

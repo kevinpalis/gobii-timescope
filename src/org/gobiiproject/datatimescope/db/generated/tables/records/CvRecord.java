@@ -545,4 +545,18 @@ unique global OBO identifier for this cvterm.
         set(7, status);
         set(8, props);
     }
+    
+    public CvRecord(Integer cvId) {
+        super(Cv.CV);
+
+        set(0, cvId);
+        set(1, "SELECT ALL DATASET TYPE");
+        set(2, "select all");
+        set(3, 1);
+        set(4, 1);
+        set(5, "abbreviation");
+        set(6, 1);
+        set(7, 1);
+        set(8, null);
+    }
 }

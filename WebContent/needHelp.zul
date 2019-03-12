@@ -10,7 +10,7 @@
 		<image hflex="1" vflex="max" id="image"
 			src="/imgs/sampleLogin.png" />
 		<label style="color: #636363; font-style: bold; font-size: 18px" value="These are the sample values for logging in. For more information, please visit the timescope manual:"/>
-		<a href="http://cbsugobii05.tc.cornell.edu:6084/display/UMS/Timescope+User+Manual" label="Timescope User Manual" style="color: #636363; font-style: oblique; font-size: 17px"/>
+		<a href="https://gobiiproject.atlassian.net/wiki/spaces/TD/pages/38895617/User+Manual" label="Timescope User Manual" style="color: #636363; font-style: oblique; font-size: 17px"/>
 		<button id="okBtn" hflex="true" label="OK" />
 	</vbox>
 </window>
