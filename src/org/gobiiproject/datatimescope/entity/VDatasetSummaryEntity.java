@@ -51,7 +51,69 @@ public class VDatasetSummaryEntity extends VDatasetSummaryRecord {
 	 /**
      * Not Generated. to get Analyses values as String
      */
-    public String getAnalysesAsString(){
+	
+	 public String getAllDelimitedBy(String delim){
+	    	StringBuilder sb = new StringBuilder();
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(0))+delim); //getDatasetId()
+	    	sb.append((Utils.checkString((String)get(1))).toLowerCase()+delim); //getDatasetName()
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(2))+delim);//getExperimentId()
+	    	sb.append((Utils.checkString((String)get(3))).toLowerCase()+delim);//getExperimentName()
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(21))+delim);//getPiId()
+	    	sb.append(getPiName()+delim);
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(4))+delim);//getCallinganalysisId()
+	    	sb.append((Utils.checkString((String)get(5)))+delim);//getCallingnalysisName()
+	    	sb.append(getAnalysesAsString()+delim);
+
+	    	sb.append(Utils.checkString((String) get(7))+delim);//getDataTable()
+	    	sb.append(Utils.checkString((String) get(8))+delim);//getDataFile()
+	    	
+	    	sb.append(Utils.checkString((String) get(9))+delim);//getQualityTable()
+	    	sb.append(Utils.checkString((String) get(10))+delim);//getQualityFile()
+	    	
+	    	sb.append(Utils.checkString((String) get(12))+delim);//getCreatedByUsername()
+	    	sb.append(Utils.checkDate((Date) get(13))+delim);// getCreatedDate()
+	    	
+	    	sb.append(Utils.checkString((String) get(14))+delim);//getModifiedByUsername()
+	    	sb.append(Utils.checkDate((Date) get(15))+delim);// getModifiedDate()
+			
+
+	    	sb.append(Utils.checkString((String) get(16))+delim);//getStatusName()
+	    	sb.append(Utils.checkString((String) get(17))+delim);//getTypeName()
+	    	sb.append(Utils.checkString((String) get(18))+"\n");//getJobName()
+
+	    	return sb.toString();
+	    }
+
+	 public String getHeaderDelimitedBy(String delim){
+		 StringBuilder sb = new StringBuilder();
+		 sb.append("Dataset Id" +delim);
+		 sb.append("Dataset Name" +delim);
+		 sb.append("Experiment Id" +delim);
+		 sb.append("Experiment Name" +delim);
+		 sb.append("PI Id" +delim);
+		 sb.append("PI Name" +delim);
+		 sb.append("Calling Analysis Id" +delim);
+		 sb.append("Calling Analysis Name" +delim);
+		 sb.append("Analyses" +delim);
+		 sb.append("Data Table" +delim);
+		 sb.append("Data File" +delim);
+		 sb.append("Quality Table" +delim);
+		 sb.append("Quality File" +delim);
+		 sb.append("Created By" +delim);
+		 sb.append("Created Date" +delim);
+		 sb.append("Modified By" +delim);
+		 sb.append("Modified Date" +delim);
+		 sb.append("Status" +delim);
+		 sb.append("Type" +delim);
+		 sb.append("Job" +"\n");
+		 
+		return sb.toString();
+	 }
+	public String getAnalysesAsString(){
     	StringBuilder sb = new StringBuilder();
     	
     	Integer[] analysesList =  (Integer[]) get(6);

@@ -1,5 +1,11 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +22,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -41,7 +48,9 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Grid;
+import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -280,11 +289,36 @@ public class DatasetViewModel {
 
 	@Command("exportDatasetTable")
 	public void exportDatasetTable() {
+
+		ListIterator<VDatasetSummaryEntity> it = datasetList.listIterator();
+		StringBuffer buffMap = new StringBuffer();
 		
-		Map<String,Object> args = new HashMap<String,Object>();
-		args.put("gridTable", datasetGrid);
-		BindUtils.postGlobalCommand(null, null, "exportTableToFile", args);
+		while (it.hasNext()) {
+			
+			VDatasetSummaryEntity next = it.next();
+			
+			if(it.nextIndex()==0){
+				buffMap.append(next.getHeaderDelimitedBy(","));
+			}
+			buffMap.append(next.getAllDelimitedBy(","));
+			
+		}
 		
+		FileWriter fw;
+		try {
+			File file = new File("timescope_dataset.csv");
+			fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(buffMap.toString());
+			bw.flush();
+			bw.close();
+			
+			 InputStream is = new FileInputStream(file);
+			 Filedownload.save(is, "text/csv", file.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
