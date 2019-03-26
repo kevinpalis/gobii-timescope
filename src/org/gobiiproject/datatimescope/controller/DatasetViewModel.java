@@ -47,24 +47,27 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
+import org.zkoss.zul.Cell;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Grid;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
+import org.zkoss.zul.Rows;
 import org.zkoss.zul.Window;
 
 public class DatasetViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false;
-	
+	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false, paged=false;
+
 	@Wire("#datasetGrid")
 	Grid datasetGrid;
-	
+
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
@@ -88,19 +91,26 @@ public class DatasetViewModel {
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-        datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
-		
-        if(datasetSummary.size()>0){
-        	performedDeleteSuccesfully=true;
-        }
-		
+		datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+
+		if(datasetSummary.size()>0){
+			performedDeleteSuccesfully=true;
+		}
+
 		if(cre.getRole() == 3){
 			isIsRoleUser=true;
 		}
 	}
 
+
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		Selectors.wireComponents(view, this, false);
+	}
+
+
 	@Command("submitQuery")
-	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers"})
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void submitQuery(){
 
 		try{
@@ -111,7 +121,7 @@ public class DatasetViewModel {
 		}catch(NullPointerException e){
 
 		}
-		
+
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity,datasetSummaryEntity));
 
 		setiDBoxDisabled(false);
@@ -122,7 +132,7 @@ public class DatasetViewModel {
 	}
 
 	@Command("resetDatasetTab")
-	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled"})
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled", "paged"})
 	public void resetDatasetTab(){
 		try{
 			datasetList.clear(); //clear the list first and then just add if there are any selected
@@ -184,14 +194,14 @@ public class DatasetViewModel {
 	@Command("resetDSSummary")
 	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
 	public void resetDSSummary(){
-        datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
-		
-        
-        if(datasetSummary.size()>0){
-        	performedDeleteSuccesfully=true;
-        }
+		datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+
+
+		if(datasetSummary.size()>0){
+			performedDeleteSuccesfully=true;
+		}
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
 	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
@@ -216,7 +226,7 @@ public class DatasetViewModel {
 					// TODO Auto-generated method stub
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
-						
+
 						Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
 								"WARNING", Messagebox.YES | Messagebox.CANCEL,
 								Messagebox.EXCLAMATION,
@@ -230,7 +240,7 @@ public class DatasetViewModel {
 
 									if(selectedDsList.size() == 1){  // just one user is selected
 										successful = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
-									
+
 									}else{
 										//bulk delete
 										successful = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity);
@@ -239,12 +249,12 @@ public class DatasetViewModel {
 									if(successful){
 										BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
 
-								        Session sess = Sessions.getCurrent();
-								        sess.setAttribute("datasetSummary",datasetSummary);
-								        
-								        if(datasetSummary.size()>0){
-								        	performedDeleteSuccesfully=true;
-								        }
+										Session sess = Sessions.getCurrent();
+										sess.setAttribute("datasetSummary",datasetSummary);
+
+										if(datasetSummary.size()>0){
+											performedDeleteSuccesfully=true;
+										}
 									}
 
 								}
@@ -257,7 +267,7 @@ public class DatasetViewModel {
 	}
 
 	@GlobalCommand("retrieveDatasetList")
-	@NotifyChange({"datasetList", "selectedDsList", "allCbSelected", "cbAllUsers"})
+	@NotifyChange({"datasetList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void retrieveUserList(){
 		//...
 
@@ -292,18 +302,18 @@ public class DatasetViewModel {
 
 		ListIterator<VDatasetSummaryEntity> it = datasetList.listIterator();
 		StringBuffer buffMap = new StringBuffer();
-		
+
 		while (it.hasNext()) {
-			
+
 			VDatasetSummaryEntity next = it.next();
-			
+
 			if(it.nextIndex()==0){
 				buffMap.append(next.getHeaderDelimitedBy(","));
 			}
 			buffMap.append(next.getAllDelimitedBy(","));
-			
+
 		}
-		
+
 		FileWriter fw;
 		try {
 			File file = new File("timescope_dataset.csv");
@@ -312,16 +322,74 @@ public class DatasetViewModel {
 			bw.write(buffMap.toString());
 			bw.flush();
 			bw.close();
-			
-			 InputStream is = new FileInputStream(file);
-			 Filedownload.save(is, "text/csv", file.getName());
+
+			InputStream is = new FileInputStream(file);
+			Filedownload.save(is, "text/csv", file.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	@Command("exportCurrentDatasetTablePage")
+	public void exportCurrentDatasetTablePage() {
+
+
+		int ActivePage = datasetGrid.getActivePage();
+		int initial, last;
+		if(ActivePage==0){
+			initial=1;
+		}else{
+			initial=(ActivePage*datasetGrid.getPageSize())+1;
+		}
+
+		StringBuffer buffMap = new StringBuffer();
+
+
+		List<Integer> indices = new ArrayList<Integer>();
+
+		last = initial+datasetGrid.getPageSize();
+		//get Indices
+		for( int i = initial; i<last; i++){
+
+			indices.add(i);
+
+		}
+
+		ListIterator<VDatasetSummaryEntity> it = datasetList.listIterator();
+
+		while (it.hasNext()) {
+
+			VDatasetSummaryEntity next = it.next();
+			int nextIndex = it.nextIndex();
+
+			if(nextIndex==0){
+				buffMap.append(next.getHeaderDelimitedBy(","));
+			}
+
+			if(indices.contains(nextIndex)){
+				buffMap.append(next.getAllDelimitedBy(","));
+			}
+
+		}
+
+		FileWriter fw;
+		try {
+			File file = new File("timescope_dataset_currentpage.csv");
+			fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(buffMap.toString());
+			bw.flush();
+			bw.close();
+
+			InputStream is = new FileInputStream(file);
+			Filedownload.save(is, "text/csv", file.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -340,6 +408,10 @@ public class DatasetViewModel {
 	}
 
 	public void setDatasetList(List<VDatasetSummaryEntity> datasetList) {
+		
+		if(datasetList.size() > 25) setPaged(true);
+		else setPaged(false);
+		
 		this.datasetList = datasetList;
 	}
 
@@ -415,6 +487,16 @@ public class DatasetViewModel {
 
 	public void setDatasetSummary(List<DatasetSummaryEntity> datasetSummary) {
 		this.datasetSummary = datasetSummary;
+	}
+
+
+	public boolean isPaged() {
+		return paged;
+	}
+
+
+	public void setPaged(boolean paged) {
+		this.paged = paged;
 	}
 
 }

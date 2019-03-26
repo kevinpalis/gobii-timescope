@@ -354,11 +354,17 @@
 									value="Separate each name with a new line." />
 							</popup>
 
-
+						
+						<hbox>
 							<div align="right">
-								<button label="export" width="200px"
+								<button label="Export Current" width="200px"
+									onClick="@command('exportCurrentDatasetTablePage')" />
+							</div>
+							<div align="right" >
+								<button visible="@bind(vm.paged)" label="Export All" width="200px"
 									onClick="@command('exportDatasetTable')" />
 							</div>
+							</hbox>
 						</div>
 					</center>
 				</borderlayout>
@@ -389,7 +395,7 @@
 							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
 
 						<grid id="summarygrid"
-							model="@load(vm.datasetSummary)" mold="paging" pageSize="15"
+							model="@load(vm.datasetSummary)" mold="paging" pageSize="25"
 							pagingPosition="both" hflex="1">
 							<columns sizable="true">
 								<column label="Entity" />
