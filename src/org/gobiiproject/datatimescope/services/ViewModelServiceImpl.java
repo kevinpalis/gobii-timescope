@@ -840,7 +840,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return datasetList;
 	}
 
-	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
+	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb){
 		// TODO Auto-generated method stub
 
 		if(dsNameCount==0 && queryCount==0) sb.append(" where ");
@@ -848,7 +848,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity) {
+	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
 
 		int queryCount =0;
@@ -914,7 +914,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VMarkerSummaryEntity> getAllMarkers() {
+	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary) {
 		// TODO Auto-generated method stub
 
 		DSLContext context = (DSLContext) Sessions.getCurrent().getAttribute("dbContext");
@@ -935,14 +935,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity) {
+	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity, 
+			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
 		return false;
 
 	}
 
 	@Override
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList) {
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, 
+			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
 
 		return false;

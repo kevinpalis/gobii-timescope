@@ -56,15 +56,16 @@ public interface ViewModelService {
 
 	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity, DatasetSummaryEntity datasetSummaryEntity);
 
-	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity);
+	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity);
 
-	public List<VMarkerSummaryEntity> getAllMarkers();
+	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity);
+	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
 
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList);
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
 
 	public List<PlatformRecord> getAllPlatforms();
 
 	public String getDatawarehouseVersion();
+
 }

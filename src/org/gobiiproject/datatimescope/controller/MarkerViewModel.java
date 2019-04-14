@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
@@ -45,20 +46,32 @@ public class MarkerViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false;
+	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false;
 
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
 	private MarkerRecordEntity markerEntity;
+	private List<DatasetSummaryEntity> markerSummary;
+	private DatasetSummaryEntity markerSummaryEntity;
 
 	@Init
 	public void init() {
+
+		markerSummaryEntity= new DatasetSummaryEntity();
 		markerList = new ArrayList<VMarkerSummaryEntity>();
 		selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
 		setMarkerEntity(new MarkerRecordEntity());
-//		setMarkerList(viewModelService.getAllMarkers());
+		setMarkerList(viewModelService.getAllMarkers(markerSummary));
 		setPlatformList(viewModelService.getAllPlatforms());
+		
+		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+        markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		
+		  if(markerSummary.size()>0){
+	        	performedDeleteSuccesfully=true;
+	        }
+			
 	}
 
 	@Command("submitQuery")
@@ -71,7 +84,7 @@ public class MarkerViewModel {
 
 		}
 
-		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity));
+		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity,markerSummaryEntity));
 
 		setAllCbSelected(false);
 		setCbAllMarkers(false);
@@ -90,6 +103,7 @@ public class MarkerViewModel {
 		markerEntity = new MarkerRecordEntity();
 
 
+		setMarkerList(viewModelService.getAllMarkers(markerSummary));
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -136,6 +150,7 @@ public class MarkerViewModel {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedMarkers")
+	@NotifyChange({"markerSummary","performedDeleteSuccesfully"})
 	public void deleteMarkers(){
 
 		if(selectedMarkerList.isEmpty()){ //Nothing is selected
@@ -161,10 +176,10 @@ public class MarkerViewModel {
 						boolean successful;
 
 						if(selectedMarkerList.size() == 1){  // just one marker is selected
-							successful = viewModelService.deleteMarkers(selectedMarkerList.get(0));
+							successful = viewModelService.deleteMarkers(selectedMarkerList.get(0), markerSummary, markerSummaryEntity);
 						}else{
 							//bulk delete
-							successful = viewModelService.deleteMarkers(selectedMarkerList);
+							successful = viewModelService.deleteMarkers(selectedMarkerList, markerSummary, markerSummaryEntity);
 						}
 
 						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
@@ -180,7 +195,7 @@ public class MarkerViewModel {
 	public void retrieveMarkerList(){
 		//...
 
-		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity));
+		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity, markerSummaryEntity));
 
 		selectedMarkerList.clear();
 
@@ -206,6 +221,18 @@ public class MarkerViewModel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Command("resetMarkerSummary")
+	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
+	public void resetDSSummary(){
+		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		
+        
+        if(markerSummary.size()>0){
+        	performedDeleteSuccesfully=true;
+        }
+	}
+	
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -259,4 +286,20 @@ public class MarkerViewModel {
 		this.platformList = platformList;
 	}
 
+
+	public boolean isPerformedDeleteSuccesfully() {
+		return performedDeleteSuccesfully;
+	}
+
+	public void setPerformedDeleteSuccesfully(boolean performedDeleteSuccesfully) {
+		this.performedDeleteSuccesfully = performedDeleteSuccesfully;
+	}
+
+	public DatasetSummaryEntity getMarkerSummaryEntity() {
+		return markerSummaryEntity;
+	}
+
+	public void setMarkerSummaryEntity(DatasetSummaryEntity markerSummaryEntity) {
+		this.markerSummaryEntity = markerSummaryEntity;
+	}
 }

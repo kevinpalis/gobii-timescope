@@ -1,21 +1,3 @@
-<!-- <?link rel="stylesheet" type="text/css" href="/style.css"?>
-<zk>
-	<borderlayout hflex="1" vflex="1">
-		<north height="100px" border="none" >
-			<include src="/banner.zul"/>
-		</north>
-		<west width="260px" border="none" collapsible="true" splittable="true" minsize="300">
-			<include src="/sidebar.zul"/>
-		</west>
-		<center id="mainContent" autoscroll="true">
-			<include src="/users.zul"/>
-		</center>
-		<south height="60px" border="none">
-			<include src="/footer.zul"/>
-		</south>
-	</borderlayout>
-</zk> -->
-
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 <?link rel="shortcut icon" type="image/x-icon" href="/imgs/favicon.ico"?>
@@ -28,10 +10,10 @@
         } 
     </style>
 	<borderlayout hflex="1" vflex="max" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
-		<north height="100px" border="none" >
+		<north height="35px" border="none" >
 			<include src="banner.zul"/>
 		</north>
-		<west width="260px" collapsible="true" splittable="true" minsize="300" border="0">
+		<west width="260px" collapsible="true" splittable="true" minsize="300" border="0" vflex="true">
 			<include src="sidebar.zul"/>
 		</west>
 		<center autoscroll="true" vflex="true" border="0">

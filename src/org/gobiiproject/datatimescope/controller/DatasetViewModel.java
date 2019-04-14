@@ -180,7 +180,7 @@ public class DatasetViewModel {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Command("deleteSelectedDatasets")
 	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
-	public void deleteUsers(){
+	public void deleteSelectedDatasets(){
 
 		if(selectedDsList.isEmpty()){ //Nothing is selected
 			Messagebox.show("There are no datasets selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
