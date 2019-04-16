@@ -302,4 +302,12 @@ public class MarkerViewModel {
 	public void setMarkerSummaryEntity(DatasetSummaryEntity markerSummaryEntity) {
 		this.markerSummaryEntity = markerSummaryEntity;
 	}
+	
+	public List<DatasetSummaryEntity> getMarkerSummary() {
+		return markerSummary;
+	}
+
+	public void setMarkerSummary(List<DatasetSummaryEntity> markerSummary) {
+		this.markerSummary = markerSummary;
+	}
 }
