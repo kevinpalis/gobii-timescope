@@ -4,7 +4,7 @@
 <window border="none" hflex="1" vflex="1"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
-	<caption sclass="fn-caption" label="Datasets"/>
+	<caption sclass="fn-caption" label="Datasets" />
 	<tabbox style="border: 0px; padding:0px;">
 		<tabs visible="false">
 			<tab id="datasetSearchTab" label="Search" />
@@ -98,14 +98,12 @@
 													<datebox
 														lenient="true"
 														value="@bind(vm.datasetEntity.creationDateStart)"
-														constraint="no future" buttonVisible="true"
-														hflex="true" />
+														constraint="no future" buttonVisible="true" hflex="true" />
 													to
 													<datebox
 														lenient="true"
 														value="@bind(vm.datasetEntity.creationDateEnd)"
-														constraint="no future" buttonVisible="true"
-														hflex="true" />
+														constraint="no future" buttonVisible="true" hflex="true" />
 												</hbox>
 											</cell>
 										</row>
@@ -164,7 +162,7 @@
 					<center border="0" flex="true">
 						<div>
 							<div sclass="Container">
-								<grid id="mgrid"
+								<grid id="datasetGrid"
 									model="@load(vm.datasetList)" mold="paging" pageSize="25"
 									pagingPosition="both" height="500px">
 									<columns sizable="true">
@@ -355,6 +353,18 @@
 								<label
 									value="Separate each name with a new line." />
 							</popup>
+
+						
+						<hbox>
+							<div align="right">
+								<button label="Export Current" width="200px"
+									onClick="@command('exportCurrentDatasetTablePage')" />
+							</div>
+							<div align="right" >
+								<button visible="@bind(vm.paged)" label="Export All" width="200px"
+									onClick="@command('exportDatasetTable')" />
+							</div>
+							</hbox>
 						</div>
 					</center>
 				</borderlayout>
@@ -385,7 +395,7 @@
 							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
 
 						<grid id="summarygrid"
-							model="@load(vm.datasetSummary)" mold="paging" pageSize="15"
+							model="@load(vm.datasetSummary)" mold="paging" pageSize="25"
 							pagingPosition="both" hflex="1">
 							<columns sizable="true">
 								<column label="Entity" />

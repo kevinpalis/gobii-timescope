@@ -49,7 +49,8 @@ public class DatasetEntity implements Serializable,Cloneable {
 	}
 
 	public void setPiRecord(ContactRecord piRecord) {
-		this.piRecord = piRecord;
+		if(piRecord.get(2)!=null) this.piRecord = piRecord;
+		else this.piRecord = null;
 	}
 
 	public ContactRecord getCreatedByContactRecord() {
@@ -65,7 +66,8 @@ public class DatasetEntity implements Serializable,Cloneable {
 	}
 
 	public void setDatasetTypeRecord(CvRecord datasetTypeRecord) {
-		this.datasetTypeRecord = datasetTypeRecord;
+		if(datasetTypeRecord.get(0)!=null) this.datasetTypeRecord = datasetTypeRecord;
+		else this.datasetTypeRecord = null;
 	}
 
 	public Integer getDatasetIDStartRange() {
