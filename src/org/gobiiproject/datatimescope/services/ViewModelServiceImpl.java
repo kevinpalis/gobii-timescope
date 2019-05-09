@@ -1066,6 +1066,20 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, 
 			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
 
+		//check if Marker is not being used in a Marker Group or a Dataset
+		List<Integer> unusedInMarkersGroupsOrDataset = null;
+		
+		unusedInMarkersGroupsOrDataset = checkWhichMarkersAreUsedInAMarkerGroupOrDataset(selectedMarkerList);
+		
+		if(unusedInMarkersGroupsOrDataset.size()>0){ // If there are markers that can be deleted 
+			StringBuilder sb = new StringBuilder();
+			for(Integer marker : unusedInMarkersGroupsOrDataset){
+				sb.append(marker.toString() + "\n");
+			}
+			Messagebox.show("The following datasets can be freely deleted: "+sb.toString());		
+		}
+		
+
 		return false;
 	}
 

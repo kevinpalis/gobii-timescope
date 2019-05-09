@@ -198,7 +198,7 @@
 											<cell>
 												<checkbox
 													value="@load(marker)" checked="@load(vm.allCbSelected)"
-													onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+													onCheck="@command('updateSelectMarker', markerChecked=self.value, isChecked=self.checked)" />
 											</cell>
 											<cell>
 												<label
