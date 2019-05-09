@@ -118,11 +118,11 @@ public class VDatasetSummaryEntity extends VDatasetSummaryRecord {
     	
     	Integer[] analysesList =  (Integer[]) get(6);
 
-		sb.append("{");
+		sb.append("\"{\"");
     	for(Integer i: analysesList){
     		sb.append(i.toString()+", ");
     	}
-		sb.append("}");
+		sb.append("\"}\"");
 		
     	return sb.toString();
     }

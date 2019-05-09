@@ -307,7 +307,7 @@ public class DatasetViewModel {
 
 			VDatasetSummaryEntity next = it.next();
 
-			if(it.nextIndex()==0){
+			if(it.nextIndex()==1){
 				buffMap.append(next.getHeaderDelimitedBy(","));
 			}
 			buffMap.append(next.getAllDelimitedBy(","));
@@ -363,7 +363,7 @@ public class DatasetViewModel {
 			VDatasetSummaryEntity next = it.next();
 			int nextIndex = it.nextIndex();
 
-			if(nextIndex==0){
+			if(nextIndex==1){
 				buffMap.append(next.getHeaderDelimitedBy(","));
 			}
 

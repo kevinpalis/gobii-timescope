@@ -1,5 +1,11 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +43,8 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
+import org.zkoss.zul.Filedownload;
+import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -45,8 +53,12 @@ import org.zkoss.zul.Window;
 public class MarkerViewModel {
 	//UI component
 
+
+	@Wire("#markerGrid")
+	Grid markerGrid;
+	
 	ViewModelService viewModelService;
-	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false;
+	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false;
 
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
@@ -54,6 +66,7 @@ public class MarkerViewModel {
 	private List<DatasetSummaryEntity> markerSummary;
 	private DatasetSummaryEntity markerSummaryEntity;
 
+	@SuppressWarnings("unchecked")
 	@Init
 	public void init() {
 
@@ -66,16 +79,22 @@ public class MarkerViewModel {
 		setPlatformList(viewModelService.getAllPlatforms());
 		
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-        markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+        markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
 		
 		  if(markerSummary.size()>0){
 	        	performedDeleteSuccesfully=true;
 	        }
 			
 	}
+	
+
+	@AfterCompose
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
+		Selectors.wireComponents(view, this, false);
+	}
 
 	@Command("submitQuery")
-	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers"})
+	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
 	public void submitQuery(){
 
 		try{
@@ -92,7 +111,7 @@ public class MarkerViewModel {
 	}
 
 	@Command("resetMarkerTab")
-	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity","iDBoxDisabled","nameListDisabled"})
+	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity","iDBoxDisabled","nameListDisabled","paged"})
 	public void resetMarkerTab(){
 		try{
 			markerList.clear(); //clear the list first and then just add if there are any selected
@@ -191,7 +210,7 @@ public class MarkerViewModel {
 	}
 
 	@GlobalCommand("retrieveMarkerList")
-	@NotifyChange({"markerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers"})
+	@NotifyChange({"markerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
 	public void retrieveMarkerList(){
 		//...
 
@@ -223,14 +242,108 @@ public class MarkerViewModel {
 
 	@SuppressWarnings("unchecked")
 	@Command("resetMarkerSummary")
-	@NotifyChange({"datasetSummary","performedDeleteSuccesfully"})
+	@NotifyChange({"markerSummary","performedDeleteSuccesfully"})
 	public void resetDSSummary(){
-		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
 		
         
         if(markerSummary.size()>0){
         	performedDeleteSuccesfully=true;
         }
+	}
+	
+
+	@Command("exportMarkerTable")
+	public void exportMarkerTable() {
+
+		ListIterator<VMarkerSummaryEntity> it = markerList.listIterator();
+		StringBuffer buffMap = new StringBuffer();
+
+		while (it.hasNext()) {
+
+			VMarkerSummaryEntity next = it.next();
+
+			if(it.nextIndex()==1){
+				buffMap.append(next.getHeaderDelimitedBy(","));
+			}
+			buffMap.append(next.getAllDelimitedBy(","));
+
+		}
+
+		FileWriter fw;
+		try {
+			File file = new File("timescope_marker.csv");
+			fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(buffMap.toString());
+			bw.flush();
+			bw.close();
+
+			InputStream is = new FileInputStream(file);
+			Filedownload.save(is, "text/csv", file.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Command("exportCurrentMarkerTablePage")
+	public void exportCurrentMarkerTablePage() {
+
+
+		int ActivePage = markerGrid.getActivePage();
+		int initial, last;
+		if(ActivePage==0){
+			initial=1;
+		}else{
+			initial=(ActivePage*markerGrid.getPageSize())+1;
+		}
+
+		StringBuffer buffMap = new StringBuffer();
+
+
+		List<Integer> indices = new ArrayList<Integer>();
+
+		last = initial+markerGrid.getPageSize();
+		//get Indices
+		for( int i = initial; i<last; i++){
+
+			indices.add(i);
+
+		}
+
+		ListIterator<VMarkerSummaryEntity> it = markerList.listIterator();
+
+		while (it.hasNext()) {
+
+			VMarkerSummaryEntity next = it.next();
+			int nextIndex = it.nextIndex();
+
+			if(nextIndex==1){
+				buffMap.append(next.getHeaderDelimitedBy(","));
+			}
+
+			if(indices.contains(nextIndex)){
+				buffMap.append(next.getAllDelimitedBy(","));
+			}
+
+		}
+
+		FileWriter fw;
+		try {
+			File file = new File("timescope_marker_currentpage.csv");
+			fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(buffMap.toString());
+			bw.flush();
+			bw.close();
+
+			InputStream is = new FileInputStream(file);
+			Filedownload.save(is, "text/csv", file.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean isAllCbSelected() {
@@ -275,6 +388,10 @@ public class MarkerViewModel {
 	}
 
 	public void setMarkerList(List<VMarkerSummaryEntity> list) {
+		
+		if(list.size() > 25) setPaged(true);
+		else setPaged(false);
+		
 		this.markerList = list;
 	}
 
@@ -285,7 +402,6 @@ public class MarkerViewModel {
 	public void setPlatformList(List<PlatformRecord> platformList) {
 		this.platformList = platformList;
 	}
-
 
 	public boolean isPerformedDeleteSuccesfully() {
 		return performedDeleteSuccesfully;
@@ -309,5 +425,13 @@ public class MarkerViewModel {
 
 	public void setMarkerSummary(List<DatasetSummaryEntity> markerSummary) {
 		this.markerSummary = markerSummary;
+	}
+
+	public boolean isPaged() {
+		return paged;
+	}
+
+	public void setPaged(boolean paged) {
+		this.paged = paged;
 	}
 }

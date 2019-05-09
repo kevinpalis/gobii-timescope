@@ -354,16 +354,18 @@
 									value="Separate each name with a new line." />
 							</popup>
 
-						
-						<hbox>
-							<div align="right">
-								<button label="Export Current" width="200px"
-									onClick="@command('exportCurrentDatasetTablePage')" />
-							</div>
-							<div align="right" >
-								<button visible="@bind(vm.paged)" label="Export All" width="200px"
-									onClick="@command('exportDatasetTable')" />
-							</div>
+
+							<hbox>
+								<div align="right">
+									<button label="Export Current"
+										width="200px"
+										onClick="@command('exportCurrentDatasetTablePage')" />
+								</div>
+								<div align="right">
+									<button visible="@bind(vm.paged)"
+										label="Export All" width="200px"
+										onClick="@command('exportDatasetTable')" />
+								</div>
 							</hbox>
 						</div>
 					</center>

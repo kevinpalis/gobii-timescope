@@ -1,7 +1,7 @@
 <?page title="Manage Markers" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
-<window border="normal" hflex="1" vflex="1"
+<window border="none" hflex="1" vflex="1"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerViewModel')">
 	<caption sclass="fn-caption" label="Markers" />
@@ -117,7 +117,7 @@
 					<center border="0" flex="true">
 						<div>
 							<div sclass="Container">
-								<grid id="mgrid"
+								<grid id="markerGrid"
 									model="@load(vm.markerList)" mold="paging" pageSize="15"
 									pagingPosition="both">
 									<columns sizable="true">
@@ -284,6 +284,20 @@
 								<label
 									value="Separate each name with a new line." />
 							</popup>
+							
+							
+							<hbox>
+								<div align="right">
+									<button label="Export Current"
+										width="200px"
+										onClick="@command('exportCurrentMarkerTablePage')" />
+								</div>
+								<div align="right">
+									<button visible="@bind(vm.paged)"
+										label="Export All" width="200px"
+										onClick="@command('exportMarkerTable')" />
+								</div>
+							</hbox>
 						</div>
 					</center>
 				</borderlayout>

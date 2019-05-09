@@ -25,7 +25,9 @@ public class Utils {
 		String returnVal;
 		
 		try{
-			returnVal = value;
+			if(value==null){
+				returnVal = "";
+			}else returnVal = value;
 		}catch(NullPointerException npe){
 			returnVal = "";
 		}

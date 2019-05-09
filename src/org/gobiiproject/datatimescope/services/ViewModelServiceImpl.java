@@ -9,6 +9,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
+import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_GROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.File;
@@ -39,11 +40,13 @@ import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -953,21 +956,101 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity, 
 			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
+		
+		List<VMarkerSummaryEntity> selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
+		selectedMarkerList.add(vMarkerSummaryEntity);
+		//check if Marker is not being used in a Marker Group or a Dataset
+		List<Integer> unusedInMarkersGroupsOrDataset = null;
+		
+		unusedInMarkersGroupsOrDataset = checkWhichMarkersAreUsedInAMarkerGroupOrDataset(selectedMarkerList);
+		
+		if(unusedInMarkersGroupsOrDataset.size()>0){ // If there are markers that can be deleted 
+			
+		}
+		
 		return false;
 
+	}
+
+	private List<Integer> checkWhichMarkersAreUsedInAMarkerGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) {
+
+		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
+		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
+		DSLContext context = getDSLContext();
+		
+		boolean inMarkerGroup = false, inDataset = false;
+		MarkerDeleteResultTableEntity markerDeleteResultTableEntity = new MarkerDeleteResultTableEntity();
+		try{
+			for(VMarkerSummaryEntity marker : selectedMarkerList){
+		
+			//set initial values
+
+			inMarkerGroup = false;
+			inDataset = false;
+			markerDeleteResultTableEntity.setMarker_id(marker.getMarkerId());
+			markerDeleteResultTableEntity.setMarker_name(marker.getMarkerName());
+			
+
+			//check if the marker id is being used in a dataset
+			/*
+			 * 
+			 * 
+			 * INSERT CODE HERE
+			 * 
+			 * 
+			 */
+			
+			//check if the marker id is being used in a marker_group
+			List<MarkerGroupRecord> markerGroupList = null;
+			String query = "SELECT a.marker_group_id, a.name FROM (SELECT (jsonb_each_text(markers)).*, marker_group_id, name FROM marker_group) a  where a.key='"+Integer.toString(marker.getMarkerId())+"';";
+			markerGroupList = context.fetch(query).into(MarkerGroupRecord.class);
+			
+			if(!markerGroupList.isEmpty()){
+				inMarkerGroup = true;
+			}else{ //create display for table results
+				setMarkerGroupDetails(markerDeleteResultTableEntity,markerGroupList);
+			}
+			
+			if(!inMarkerGroup && !inDataset){
+				markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
+			}else{
+				markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+			}
+			
+			}
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve MarkerGroups", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+		
+		return markerIDsThatCanFreelyBeDeleted;
+	}
+
+	private void setMarkerGroupDetails(MarkerDeleteResultTableEntity markerDeleteResultTableEntity,
+			List<MarkerGroupRecord> markerGroupList) {
+		
+		StringBuilder sb = new StringBuilder();
+		for(MarkerGroupRecord mgr : markerGroupList){
+			
+			if(sb.length()>0) sb.append(",");
+			sb.append(mgr.getMarkerGroupId() +":" + mgr.getName());
+			
+		}
+		
+		markerDeleteResultTableEntity.setMarker_group_name(sb.toString());
+	
 	}
 
 	@Override
 	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, 
 			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
-		// TODO Auto-generated method stub
 
 		return false;
 	}
 
 	@Override
 	public List<PlatformRecord> getAllPlatforms() {
-		// TODO Auto-generated method stub
 
 		DSLContext context = getDSLContext();
 		List<PlatformRecord> platformList = null;
