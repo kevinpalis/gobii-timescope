@@ -24,7 +24,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -60,10 +62,12 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Window;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
@@ -965,9 +969,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		unusedInMarkersGroupsOrDataset = checkWhichMarkersAreUsedInAMarkerGroupOrDataset(selectedMarkerList);
 		
 		if(unusedInMarkersGroupsOrDataset.size()>0){ // If there are markers that can be deleted 
-			
+			StringBuilder sb = new StringBuilder();
+			for(Integer marker : unusedInMarkersGroupsOrDataset){
+				sb.append(marker.toString() + "\n");
+			}
+			Messagebox.show("The following datasets can be freely deleted: "+sb.toString());		
 		}
 		
+
 		return false;
 
 	}
@@ -1015,6 +1024,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
 			}else{
 				markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+				
 			}
 			
 			}
@@ -1024,6 +1034,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}
 		
+		
+		if(markerDeleteResultTableEntityList.size()>0){
+
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("markerDeleteResultTableEntityList", markerDeleteResultTableEntityList);
+
+			Window window = (Window)Executions.createComponents(
+					"/markerDeleteWarning.zul", null, args);
+			window.doModal();
+		}
 		return markerIDsThatCanFreelyBeDeleted;
 	}
 

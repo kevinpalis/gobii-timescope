@@ -1,0 +1,47 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window id="modalDialog" title="Warning" border="normal" width="460px"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDeleteWarningModel')"
+	position="center,center" closable="true"
+	action="show: slideDown;hide: slideUp">
+
+	<vlayout>
+		<grid id="markerGrid" model="@load(vm.markerDeleteResultTableEntityList)" mold="paging"
+			pageSize="15" pagingPosition="both">
+			<columns sizable="true">
+				<column hflex="min" sort="auto(markerId)">
+					<label value="Marker Id" />
+				</column>
+				<column hflex="min" sort="auto(markerName)">
+					<label value="Marker Name" />
+				</column>
+				<column hflex="min">
+					<label value="In Dataset(s)" />
+				</column>
+				<column hflex="min">
+					<label value="In Markergroup(s)" />
+				</column>
+			</columns>
+			<template name="model" var="marker">
+				<row>
+					<cell>
+						<label value="@load(marker.marker_id)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.marker_name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.dataset_name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.marker_group_name)" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+        <button id="closeBtn" hflex="1" label="close"/>
+		</div>
+	</vlayout>
+</window>
