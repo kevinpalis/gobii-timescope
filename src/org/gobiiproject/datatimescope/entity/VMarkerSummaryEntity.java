@@ -103,11 +103,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			String[] altsList =  (String[]) get(7);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(String i: altsList){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -122,11 +122,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			Object[] list =  (Object[]) get(11);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -141,11 +141,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			Object[] list =  (Object[]) get(15);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -159,11 +159,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			Object[] list =  (Object[]) get(15);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -176,11 +176,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			Object[] list =  (Object[]) get(15);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -194,11 +194,11 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			Object[] list =  (Object[]) get(15);
-			sb.append("\"{\"");
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("\"}\"");
+			sb.append("}\"");
 		}catch(NullPointerException npe){
 			return ("");
 		}

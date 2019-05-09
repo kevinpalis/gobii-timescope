@@ -178,12 +178,19 @@ public class MarkerViewModel {
 		else{
 			StringBuilder sb = new StringBuilder();
 
+			sb.append("the following markers?");
 			for(VMarkerSummaryEntity u: selectedMarkerList){
 				sb.append("\n"+u.getMarkerName());
 			}
 
+			if (selectedMarkerList.size()>10){
+				
+				sb =  new StringBuilder();
+				sb.append(Integer.toString(selectedMarkerList.size())+" markers?");
+				
+			}
 
-			Messagebox.show("Are you sure you want to delete the following markers?"+sb.toString(), 
+			Messagebox.show("Are you sure you want to delete "+sb.toString(), 
 					"Confirm Delete", Messagebox.YES | Messagebox.CANCEL,
 					Messagebox.QUESTION,
 					new org.zkoss.zk.ui.event.EventListener(){
@@ -195,7 +202,7 @@ public class MarkerViewModel {
 						boolean successful;
 
 						if(selectedMarkerList.size() == 1){  // just one marker is selected
-							successful = viewModelService.deleteMarkers(selectedMarkerList.get(0), markerSummary, markerSummaryEntity);
+							successful = viewModelService.deleteMarker(selectedMarkerList.get(0), markerSummary, markerSummaryEntity);
 						}else{
 							//bulk delete
 							successful = viewModelService.deleteMarkers(selectedMarkerList, markerSummary, markerSummaryEntity);
