@@ -32,11 +32,16 @@
 		</vbox>
 
 		<vbox hflex="1" vflex="1" align="center">
-			<label>
+		
+			<label style="font-style: italic;font-size:13px;">
+			Please have at least one backup of your data before proceeding to allow recoverability in case of user mistakes.
+			</label>
+			<label style="font-weight:bold; font-size:12px;">
 				Genomic Open-source Breeding informatics initiative
 				(GOBii) 2018
 			</label>
-			<label>Powered by ZK 8.5.0</label>
+			<label style="font-weight:bold; font-size:9px;">Powered by ZK 8.5.0</label>
+			<label style="font-weight:bold; font-size:9px;" />
 
 		</vbox>
 	</hbox>

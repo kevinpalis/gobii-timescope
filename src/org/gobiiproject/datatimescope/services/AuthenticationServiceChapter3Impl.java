@@ -44,6 +44,7 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
         List<DatasetSummaryEntity> datasetSummary = new ArrayList<DatasetSummaryEntity>(); 
         sess.setAttribute("userCredential",cre);
         sess.setAttribute("datasetSummary",datasetSummary);
+        sess.setAttribute("markerSummary",datasetSummary);
  
         return true;
     }

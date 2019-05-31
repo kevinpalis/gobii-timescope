@@ -1,6 +1,9 @@
 package org.gobiiproject.datatimescope.entity;
 
+import java.sql.Date;
+
 import org.gobiiproject.datatimescope.db.generated.tables.records.VMarkerSummaryRecord;
+import org.gobiiproject.datatimescope.utils.Utils;
 
 @SuppressWarnings("serial")
 public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
@@ -36,16 +39,75 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 		set(18, datasetVendorProtocol);
 	}
 
+	 public String getAllDelimitedBy(String delim){
+	    	StringBuilder sb = new StringBuilder();
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(0))+delim); //getMarkerId()
+	    	sb.append((Utils.checkString((String)get(4))).toLowerCase()+delim); //getMarkerName()
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(1))+delim);//PlatformId()
+	    	sb.append((Utils.checkString((String)get(2))).toLowerCase()+delim);//PlatformName()
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(3))+delim);//VariantId()
+	    	sb.append((Utils.checkString((String)get(5))).toLowerCase()+delim);//Code
+	    	
+	    	sb.append((Utils.checkString((String) get(6))).toLowerCase()+delim);//Ref
+	    	sb.append(Utils.checkString(getAltsToString())+delim);//Alts
+
+	    	sb.append(Utils.checkString((String) get(8))+delim);//Sequence
+	    	sb.append(Utils.checkInteger((Integer) get(9))+delim);//ReferenceId()
+	    	
+	    	sb.append(Utils.checkString((String) get(10))+delim);//ReferenceName()
+	    	sb.append(Utils.checkString(getPrimersToString())+delim);//Primers()
+
+	    	sb.append(Utils.checkInteger((Integer) get(12))+delim);//StrandId()
+	    	sb.append(Utils.checkString((String) get(13))+delim);// StrandName()
+
+	    	sb.append(Utils.checkInteger((Integer) get(14))+delim);//Status()
+	    	sb.append(Utils.checkString(getProbsetsToString())+delim);// Probsets()
+			
+	    	sb.append(Utils.checkString(getDatasetMarkerIdxToString())+delim);//DatasetMarkerIdx()
+	    	sb.append(Utils.checkString(getPropsToString())+delim);//Props()
+	    	sb.append(Utils.checkString(getDatasetVendorProtocolToString())+"\n");//Dataset Vendor Protocol()
+
+	    	return sb.toString();
+	    }
+
+	 public String getHeaderDelimitedBy(String delim){
+		 StringBuilder sb = new StringBuilder();
+		 sb.append("Marker Id" +delim);
+		 sb.append("Marker Name" +delim);
+		 sb.append("Platform Id" +delim);
+		 sb.append("Platform Name" +delim);
+		 sb.append("Variant Id" +delim);
+		 sb.append("Code" +delim);
+		 sb.append("Ref" +delim);
+		 sb.append("Alts" +delim);
+		 sb.append("Sequence" +delim);
+		 sb.append("Reference Id" +delim);
+		 sb.append("Reference Name" +delim);
+		 sb.append("Primers" +delim);
+		 sb.append("Strand Id" +delim);
+		 sb.append("Strand Name" +delim);
+		 sb.append("Status"+delim);
+		 sb.append("Probsets" +delim);
+		 sb.append("Dataset Marker Idx" +delim);
+		 sb.append("Props" +delim);
+		 sb.append("Dataset Vendor Protocol" +"\n");
+		 
+		return sb.toString();
+	 }
+
 	public String getAltsToString(){
 		StringBuilder sb = new StringBuilder();
 
-		String[] altsList =  (String[]) get(7);
 		try{
-			sb.append("{");
+			String[] altsList =  (String[]) get(7);
+			sb.append("\"{");
 			for(String i: altsList){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -58,13 +120,13 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 	public String getPrimersToString(){
 		StringBuilder sb = new StringBuilder();
 
-		Object[] list =  (Object[]) get(11);
 		try{
-			sb.append("{");
+			Object[] list =  (Object[]) get(11);
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -77,13 +139,13 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 	public String getProbsetsToString(){
 		StringBuilder sb = new StringBuilder();
 
-		Object[] list =  (Object[]) get(15);
 		try{
-			sb.append("{");
+			Object[] list =  (Object[]) get(15);
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
@@ -95,46 +157,48 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 	public String getDatasetMarkerIdxToString(){
 		StringBuilder sb = new StringBuilder();
 
-		Object[] list =  (Object[]) get(15);
 		try{
-			sb.append("{");
+			Object[] list =  (Object[]) get(15);
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
 		}
 		return sb.toString();
 	}
+	
 	public String getPropsToString(){
 		StringBuilder sb = new StringBuilder();
 
-		Object[] list =  (Object[]) get(15);
 		try{
-			sb.append("{");
+			Object[] list =  (Object[]) get(15);
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 
 		}catch(NullPointerException npe){
 			return ("");
 		}
 		return sb.toString();
 	}
+	
 	public String getDatasetVendorProtocolToString(){
 		StringBuilder sb = new StringBuilder();
 
-		Object[] list =  (Object[]) get(15);
 
 		try{
-			sb.append("{");
+			Object[] list =  (Object[]) get(15);
+			sb.append("\"{");
 			for(Object i: list){
 				sb.append(i.toString()+", ");
 			}
-			sb.append("}");
+			sb.append("}\"");
 		}catch(NullPointerException npe){
 			return ("");
 		}

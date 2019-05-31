@@ -9,6 +9,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
+import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_GROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 
 import java.io.File;
@@ -23,7 +24,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -39,11 +42,13 @@ import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -57,10 +62,12 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Window;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
@@ -137,10 +144,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	private DSLContext getDSLContext() {
 		// TODO Auto-generated method stub
-		
+
 		Configuration contextConfiguration = (Configuration) Sessions.getCurrent().getAttribute("contextConfiguration");
 		DSLContext context = DSL.using(contextConfiguration);
-		
+
 		return context;
 	}
 
@@ -329,7 +336,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 			String query = "select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id;";
 			datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
-			
+
 			datasetSummaryEntity.setFilter("");
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
@@ -417,28 +424,28 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 
 		try{
-			
+
 			// DB deletion starts here
 			Integer dataset_id = vDatasetSummaryRecord.getDatasetId();
 			Configuration configuration = vDatasetSummaryRecord.configuration();
 
 			int totalDeletedDatasetMarkerIndices = 0, totalDeletedDatasetDnarunIndices = 0;
-			
+
 			//delete Marker.dataset_marker_idx
 			double startTime = System.currentTimeMillis();
 			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
 			double endTime = System.currentTimeMillis();
 			double Markerseconds = (endTime - startTime) / 1000;
-			
-			
+
+
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
-			
+
 			startTime = System.currentTimeMillis();
 			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
 			endTime = System.currentTimeMillis();
 			double DNARunSeconds = (endTime - startTime) / 1000;
-			
-			
+
+
 			startTime = System.currentTimeMillis();
 			DatasetRecord dr = new DatasetRecord();
 			dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
@@ -446,7 +453,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			dr.delete();
 			endTime = System.currentTimeMillis();
 			double rowDeleteSeconds = (endTime - startTime) / 1000;
-			
+
 			successful = true;
 			Messagebox.show("1 dataset deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(Markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(DNARunSeconds)+" sec) \n", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
 
@@ -459,18 +466,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummaryEntity.setEntityName("Dataset rows");
 			datasetSummaryEntity.setRowCount("1");
 			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
-			
+
 			//dataset DNA Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
 			datasetSummaryEntity.setEntityName("DNA Run Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
 			datasetSummaryEntity.setDuration(Double.toString(DNARunSeconds)+" sec");
 			datasetSummaryEntity.setFilter("");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
-			
+
 
 			//dataset Marker Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
@@ -486,7 +493,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummaryEntity.setRowCount(" ");
 			datasetSummaryEntity.setDuration(" ");
 			datasetSummaryEntity.setFilter(" ");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
 		}
 		catch(Exception e ){
@@ -527,7 +534,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			deleteDatasetMarkerIndices.attach(configuration);
 			deleteDatasetMarkerIndices.execute();
 			deletedDatasetMarkerIndices = deleteDatasetMarkerIndices.getReturnValue();
-			
+
 			log.info("Deleted dataset marker indices for dataset id :"+ Integer.toString(dataset_id));
 		}
 		catch (Exception e){
@@ -609,7 +616,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 						if(selectedDsList.size() == cannotDeleteFileDSList.size()){
 
 							Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
-							
+
 						}else{
 							//remove error datasets from the list of dataset to be deleted.
 							selectedDsList.removeAll(cannotDeleteFileDSList);
@@ -621,7 +628,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 
 		}
-		
+
 		//move on to deletion
 		StringBuilder dsLeft = new StringBuilder();
 		StringBuilder dsIDLeft = new StringBuilder();
@@ -643,8 +650,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
 			double endTime = System.currentTimeMillis();
 			markerseconds = (endTime - startTime) / 1000;
-			
-			
+
+
 			//delete Dnarun.dataset_dnarun idx entries for that particular dataset
 			startTime = System.currentTimeMillis();
 			totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
@@ -655,16 +662,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		try{
 
 			double startTime = System.currentTimeMillis();
-			
+
 			context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList
 					.stream()
 					.map(VDatasetSummaryEntity::getDatasetId)
 					.collect(Collectors.toList())))
 			.execute();
-			
+
 			double endTime = System.currentTimeMillis();
 			rowDeleteSeconds = (endTime - startTime) / 1000;
-			
+
 
 			//set Summary
 
@@ -675,18 +682,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummaryEntity.setEntityName("Dataset rows");
 			datasetSummaryEntity.setRowCount(Integer.toString(selectedDsList.size()));
 			datasetSummaryEntity.setDuration(Double.toString(rowDeleteSeconds)+" sec");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
-			
+
 			//dataset DNA Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
 			datasetSummaryEntity.setEntityName("DNA Run Indices");
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetDnarunIndices));
 			datasetSummaryEntity.setDuration(Double.toString(dnaRunSeconds)+" sec");
 			datasetSummaryEntity.setFilter("");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
-			
+
 
 			//dataset Marker Run
 			datasetSummaryEntity = new DatasetSummaryEntity();
@@ -694,7 +701,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummaryEntity.setRowCount(Integer.toString(totalDeletedDatasetMarkerIndices));
 			datasetSummaryEntity.setDuration(Double.toString(markerseconds)+" sec");
 			datasetSummaryEntity.setFilter("");
-			
+
 			datasetSummary.add(datasetSummaryEntity);
 
 			//border
@@ -704,7 +711,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			datasetSummaryEntity.setDuration("");
 			datasetSummaryEntity.setFilter("");
 			datasetSummary.add(datasetSummaryEntity);
-			
+
 		}
 		catch(Exception e ){
 
@@ -736,7 +743,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			if (datasetEntity.getDatasetNamesAsEnterSeparatedString()!=null && !datasetEntity.getDatasetNamesAsEnterSeparatedString().isEmpty()){
 				String names = datasetEntity.getSQLReadyDatasetNames();
 				sbFilteringCriteria.append("\n Dataset name is/are: "+names);
-				
+
 				sb.append(" where LOWER(d.name) in ("+names+")");
 				dsNameCount++;	
 			}
@@ -744,32 +751,32 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			if (datasetEntity.getCreatedByContactRecord()!=null){
 
 				if(datasetEntity.getCreatedByContactRecord().getContactId()!=0){
-				checkPreviousAppends(dsNameCount, queryCount, sb);
-				String id = Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId());
-				sbFilteringCriteria.append("\n Contact ID: "+id);
-				sb.append(" c1.contact_id="+id);
-				queryCount++;
+					checkPreviousAppends(dsNameCount, queryCount, sb);
+					String id = Integer.toString(datasetEntity.getCreatedByContactRecord().getContactId());
+					sbFilteringCriteria.append("\n Contact ID: "+id);
+					sb.append(" c1.contact_id="+id);
+					queryCount++;
 				}
 			}
 			if (datasetEntity.getDatasetTypeRecord()!=null){
 
 				if(datasetEntity.getDatasetTypeRecord().getCvId()!=0){
-				checkPreviousAppends(dsNameCount, queryCount, sb);
+					checkPreviousAppends(dsNameCount, queryCount, sb);
 
-				String id = Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId());
-				sbFilteringCriteria.append("\n Cv ID: "+id);
-				sb.append(" cv2.cv_id="+id);
-				queryCount++;
+					String id = Integer.toString(datasetEntity.getDatasetTypeRecord().getCvId());
+					sbFilteringCriteria.append("\n Cv ID: "+id);
+					sb.append(" cv2.cv_id="+id);
+					queryCount++;
 				}
 			}
 			if (datasetEntity.getPiRecord()!=null){
 
 				if(datasetEntity.getPiRecord().getContactId()!=0){
-				checkPreviousAppends(dsNameCount, queryCount, sb);
-				String id = Integer.toString(datasetEntity.getPiRecord().getContactId());
-				sbFilteringCriteria.append("\n PI Contact ID: "+id);
-				sb.append(" p.pi_contact="+id);
-				queryCount++;
+					checkPreviousAppends(dsNameCount, queryCount, sb);
+					String id = Integer.toString(datasetEntity.getPiRecord().getContactId());
+					sbFilteringCriteria.append("\n PI Contact ID: "+id);
+					sb.append(" p.pi_contact="+id);
+					queryCount++;
 				}
 			}
 			if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
@@ -855,7 +862,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return datasetList;
 	}
 
-	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb) {
+	private void checkPreviousAppends(int dsNameCount, int queryCount, StringBuilder sb){
 		// TODO Auto-generated method stub
 
 		if(dsNameCount==0 && queryCount==0) sb.append(" where ");
@@ -863,7 +870,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity) {
+	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
 
 		int queryCount =0;
@@ -929,7 +936,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VMarkerSummaryEntity> getAllMarkers() {
+	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary) {
 		// TODO Auto-generated method stub
 
 		DSLContext context = getDSLContext();
@@ -949,23 +956,174 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public boolean deleteMarkers(VMarkerSummaryEntity vMarkerSummaryEntity) {
+	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, 
+			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
 		// TODO Auto-generated method stub
+
+		List<VMarkerSummaryEntity> selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
+		selectedMarkerList.add(vMarkerSummaryEntity);
+		//check if Marker is not being used in a Marker Group or a Dataset
+		List<Integer> unusedInMarkersGroupsOrDataset = null;
+
+		unusedInMarkersGroupsOrDataset = checkWhichMarkersAreUsedInAMarkerGroupOrDataset(selectedMarkerList);
+
+		if(unusedInMarkersGroupsOrDataset.size()>0){ // If there are markers that can be deleted 
+
+			Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+			"WARNING", Messagebox.YES | Messagebox.CANCEL,
+			Messagebox.EXCLAMATION,
+			new org.zkoss.zk.ui.event.EventListener(){
+				@Override
+				public void onEvent(Event event) throws Exception {
+					// TODO Auto-generated method stub
+					if(Messagebox.ON_YES.equals(event.getName())){
+						Messagebox.show("deleted", "Dummy Delete", Messagebox.OK, Messagebox.ERROR);	
+					}
+
+				}
+			});
+		}
+
+
 		return false;
 
 	}
 
-	@Override
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList) {
+	private List<Integer> checkWhichMarkersAreUsedInAMarkerGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) {
+
+		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
+		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
+
+		boolean inMarkerGroup = false, inDataset = false;
+
+		for(VMarkerSummaryEntity marker: selectedMarkerList){
+			try{
+
+				MarkerDeleteResultTableEntity markerDeleteResultTableEntity = new MarkerDeleteResultTableEntity();
+				//set initial values
+
+				inMarkerGroup = false;
+				inDataset = false;
+				markerDeleteResultTableEntity.setMarker_id(marker.getMarkerId());
+				markerDeleteResultTableEntity.setMarker_name(marker.getMarkerName());
+
+
+				//check if the marker id is being used in a dataset
+				/*
+				 * 
+				 * 
+				 * INSERT CODE HERE
+				 * 
+				 * 
+				 */
+
+				//check if the marker id is being used in a marker_group
+				List<MarkerGroupRecord> markerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
+
+				if(markerGroupList.size()>0){
+					inMarkerGroup = true;
+					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(markerGroupList));
+				}
+
+				if(!inMarkerGroup && !inDataset){
+					markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
+				}else{
+					markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+
+				}
+
+			}catch(Exception e ){
+
+				Messagebox.show("There was an error while trying to retrieve MarkerGroups", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+			}
+
+		}
+		if(markerDeleteResultTableEntityList.size()>0){
+
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("markerDeleteResultTableEntityList", markerDeleteResultTableEntityList);
+
+			Window window = (Window)Executions.createComponents(
+					"/markerDeleteWarning.zul", null, args);
+			window.doModal();
+		}
+		return markerIDsThatCanFreelyBeDeleted;
+	}
+
+	private List<MarkerGroupRecord> getMarkerGroupsThatContainsThisMarkerId(Integer markerId) {
 		// TODO Auto-generated method stub
+
+		List<MarkerGroupRecord> markerGroupList = null;
+		DSLContext context = getDSLContext();
+		String query = "SELECT a.marker_group_id, a.name FROM (SELECT (jsonb_each_text(markers)).*, marker_group_id, name FROM marker_group) a  where a.key='"+Integer.toString(markerId)+"';";
+		markerGroupList = context.fetch(query).into(MarkerGroupRecord.class);
+
+		return markerGroupList;
+	}
+
+	private String setMarkerGroupDetails(List<MarkerGroupRecord> markerGroupList) {
+
+		StringBuilder sb = new StringBuilder();
+		for(MarkerGroupRecord mgr : markerGroupList){
+
+			if(sb.length()>0) sb.append(", ");
+			sb.append(mgr.getMarkerGroupId() +":" + mgr.getName());
+
+		}
+
+		return(sb.toString());
+
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, 
+			List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity) {
+
+		//check if Marker is not being used in a Marker Group or a Dataset
+		List<Integer> unusedInMarkersGroupsOrDataset = null;
+
+		unusedInMarkersGroupsOrDataset = checkWhichMarkersAreUsedInAMarkerGroupOrDataset(selectedMarkerList);
+		StringBuilder sb = new StringBuilder();
+		for(Integer marker : unusedInMarkersGroupsOrDataset){
+			sb.append(marker.toString() + "\n");
+		}
+		
+		final int noOfMarkers = unusedInMarkersGroupsOrDataset.size();
+		final String markerNames =  sb.toString();
+		if(noOfMarkers>0){
+			// If there are markers that can be deleted 
+
+			Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n"+ Integer.toString(unusedInMarkersGroupsOrDataset.size())
+			+ " markers will be deleted. Do you want to continue?\n", 
+			"WARNING", Messagebox.YES | Messagebox.CANCEL,
+			Messagebox.EXCLAMATION,
+			new org.zkoss.zk.ui.event.EventListener(){
+				@Override
+				public void onEvent(Event event) throws Exception {
+					// TODO Auto-generated method stub
+					if(Messagebox.ON_YES.equals(event.getName())){
+
+						if(noOfMarkers<11) {
+							
+							Messagebox.show("The following markers can be freely deleted: \n"+markerNames);
+						}
+						else Messagebox.show("deleted", "Dummy Delete", Messagebox.OK, Messagebox.ERROR);	
+					}
+
+				}
+			});
+
+		}
 
 		return false;
 	}
 
 	@Override
 	public List<PlatformRecord> getAllPlatforms() {
-		// TODO Auto-generated method stub
 
 		DSLContext context = getDSLContext();
 		List<PlatformRecord> platformList = null;

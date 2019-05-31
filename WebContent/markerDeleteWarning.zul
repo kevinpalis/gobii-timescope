@@ -1,0 +1,50 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window id="modalDialog" title="Warning" border="normal" width="640px"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDeleteWarningModel')"
+	position="center,center" closable="true"
+	action="show: slideDown;show: slideUp">
+
+	<vlayout>
+	
+	<label style=" font-size: 14px" value="The following markers can't be deleted because they are being used in a dataset or a markergroup." />
+	<label style=" font-size: 14px" value="" />
+	<label style=" font-size: 14px" value="Please delete the associated datasets and markergroups first." />
+		<grid id="markerGrid" model="@load(vm.markerDeleteResultTableEntityList)" mold="paging"
+			pageSize="15" pagingPosition="both">
+			<columns sizable="true">
+				<column hflex="min" sort="auto(markerId)">
+					<label value="Marker Id" />
+				</column>
+				<column hflex="min" sort="auto(markerName)">
+					<label value="Marker Name" />
+				</column>
+				<column hflex="min">
+					<label value="In Dataset(s)" />
+				</column>
+				<column hflex="min">
+					<label value="In Markergroup(s)" />
+				</column>
+			</columns>
+			<template name="model" var="marker">
+				<row>
+					<cell>
+						<label value="@load(marker.marker_id)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.marker_name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.dataset_name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.marker_group_name)" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+        <button id="closeBtn" hflex="1" label="continue" onClick="@command('closeModalDialog')"/>
+	</vlayout>
+</window>
