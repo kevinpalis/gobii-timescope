@@ -43,6 +43,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
@@ -993,6 +994,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	private List<Integer> checkWhichMarkersAreUsedInAMarkerGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) {
 
+		int totalNumOfMarkersThatCantBeDeleted = 0;
+		
 		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
 		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
 
@@ -1011,29 +1014,32 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 
 				//check if the marker id is being used in a dataset
-				/*
-				 * 
-				 * 
-				 * INSERT CODE HERE
-				 * 
-				 * 
-				 */
+
+				List<DatasetRecord> inDatasetList = getDatasetsThatContainThisMarkerId(marker.getMarkerId());
+				if(inDatasetList.size()>0) {
+					inDataset = true;
+					markerDeleteResultTableEntity.setDataset_name(setDatasetIdDetails(inDatasetList));
+				}
+				
 
 				//check if the marker id is being used in a marker_group
-				List<MarkerGroupRecord> markerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
+				List<MarkerGroupRecord> inMarkerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
+				
 
-				if(markerGroupList.size()>0){
+				if(inMarkerGroupList.size()>0){
 					inMarkerGroup = true;
-					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(markerGroupList));
+					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(inMarkerGroupList));
 				}
 
 				if(!inMarkerGroup && !inDataset){
 					markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
 				}else{
-					markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+					if(totalNumOfMarkersThatCantBeDeleted<10) markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+					totalNumOfMarkersThatCantBeDeleted++;
 
 				}
-
+				
+				totalNumOfMarkersThatCantBeDeleted = totalNumOfMarkersThatCantBeDeleted-10;
 			}catch(Exception e ){
 
 				Messagebox.show("There was an error while trying to retrieve MarkerGroups", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -1045,12 +1051,37 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("markerDeleteResultTableEntityList", markerDeleteResultTableEntityList);
-
+			args.put("totalNumOfMarkersThatCantBeDeleted", totalNumOfMarkersThatCantBeDeleted);
 			Window window = (Window)Executions.createComponents(
 					"/markerDeleteWarning.zul", null, args);
 			window.doModal();
 		}
 		return markerIDsThatCanFreelyBeDeleted;
+	}
+
+	private String setDatasetIdDetails(List<DatasetRecord> inDatasetList) {
+		// TODO Auto-generated method stub
+
+		StringBuilder sb = new StringBuilder();
+		for(DatasetRecord mgr : inDatasetList){
+
+			if(sb.length()>0) sb.append(", ");
+			sb.append(" "+mgr.getDatasetId());
+
+		}
+
+		return(sb.toString());
+	}
+
+	private List<DatasetRecord> getDatasetsThatContainThisMarkerId(Integer markerId) {
+		// TODO Auto-generated method stub
+
+		List<DatasetRecord> datasetList = null;
+		DSLContext context = getDSLContext();
+		String query = "select key::integer as dataset_id, value::integer as hdf5_index from jsonb_each_text((select dataset_marker_idx from marker where marker_id="+markerId+"));";
+		datasetList = context.fetch(query).into(DatasetRecord.class);
+
+		return datasetList;
 	}
 
 	private List<MarkerGroupRecord> getMarkerGroupsThatContainsThisMarkerId(Integer markerId) {
@@ -1063,7 +1094,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return markerGroupList;
 	}
-
+	
 	private String setMarkerGroupDetails(List<MarkerGroupRecord> markerGroupList) {
 
 		StringBuilder sb = new StringBuilder();
