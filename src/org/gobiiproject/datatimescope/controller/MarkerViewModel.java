@@ -14,9 +14,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
@@ -62,6 +70,15 @@ public class MarkerViewModel {
 
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
+	private List<OrganizationRecord> vendorList;
+	private List<VendorProtocolRecord> vendorProtocolList;
+	private List<AnalysisRecord> callingAnalysisList, AnalysesList;
+	private List<ProjectRecord> projectList;
+	private List<ExperimentRecord> experimentList;
+	private List<DatasetRecord> datasetList;
+	private List<MapsetRecord> mapsetList;
+	private List<LinkageGroupRecord> linkageGroupList;
+	
 	private MarkerRecordEntity markerEntity;
 	private List<DatasetSummaryEntity> markerSummary;
 	private DatasetSummaryEntity markerSummaryEntity;
@@ -77,6 +94,15 @@ public class MarkerViewModel {
 		setMarkerEntity(new MarkerRecordEntity());
 		setMarkerList(viewModelService.getAllMarkers(markerSummary));
 		setPlatformList(viewModelService.getAllPlatforms());
+		setVendorList(viewModelService.getAllVendors());
+		setVendorProtocolList(viewModelService.getAllVendorProtocols());
+		setCallingAnalysisList(viewModelService.getAllCallingAnalysis());
+		setAnalysesList(viewModelService.getAllAnalyses());
+		setProjectList(viewModelService.getAllProjects());
+		setExperimentList(viewModelService.getAllExperiments());
+		setDatasetList(viewModelService.getAllDatasets());
+		setMapsetList(viewModelService.getAllMapsets());
+		setLinkageGroupList(viewModelService.getAllLinkageGroups());
 		
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
@@ -128,6 +154,7 @@ public class MarkerViewModel {
 		setAllCbSelected(false);
 		setCbAllMarkers(false);
 	}
+	
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -440,5 +467,95 @@ public class MarkerViewModel {
 
 	public void setPaged(boolean paged) {
 		this.paged = paged;
+	}
+
+
+	public List<OrganizationRecord> getVendorList() {
+		return vendorList;
+	}
+
+
+	public void setVendorList(List<OrganizationRecord> vendorList) {
+		this.vendorList = vendorList;
+	}
+
+
+	public List<VendorProtocolRecord> getVendorProtocolList() {
+		return vendorProtocolList;
+	}
+
+
+	public void setVendorProtocolList(List<VendorProtocolRecord> vendorProtocolList) {
+		this.vendorProtocolList = vendorProtocolList;
+	}
+
+
+	public List<AnalysisRecord> getCallingAnalysisList() {
+		return callingAnalysisList;
+	}
+
+
+	public void setCallingAnalysisList(List<AnalysisRecord> callingAnalysisList) {
+		this.callingAnalysisList = callingAnalysisList;
+	}
+
+
+	public List<AnalysisRecord> getAnalysesList() {
+		return AnalysesList;
+	}
+
+
+	public void setAnalysesList(List<AnalysisRecord> analysesList) {
+		AnalysesList = analysesList;
+	}
+
+
+	public List<ProjectRecord> getProjectList() {
+		return projectList;
+	}
+
+
+	public void setProjectList(List<ProjectRecord> projectList) {
+		this.projectList = projectList;
+	}
+
+
+	public List<ExperimentRecord> getExperimentList() {
+		return experimentList;
+	}
+
+
+	public void setExperimentList(List<ExperimentRecord> experimentList) {
+		this.experimentList = experimentList;
+	}
+
+
+	public List<MapsetRecord> getMapsetList() {
+		return mapsetList;
+	}
+
+
+	public void setMapsetList(List<MapsetRecord> mapsetList) {
+		this.mapsetList = mapsetList;
+	}
+
+
+	public List<LinkageGroupRecord> getLinkageGroupList() {
+		return linkageGroupList;
+	}
+
+
+	public void setLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
+		this.linkageGroupList = linkageGroupList;
+	}
+
+
+	public List<DatasetRecord> getDatasetList() {
+		return datasetList;
+	}
+
+
+	public void setDatasetList(List<DatasetRecord> datasetList) {
+		this.datasetList = datasetList;
 	}
 }

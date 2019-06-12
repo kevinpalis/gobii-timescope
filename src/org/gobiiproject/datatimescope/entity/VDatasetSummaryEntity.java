@@ -117,12 +117,12 @@ public class VDatasetSummaryEntity extends VDatasetSummaryRecord {
     	StringBuilder sb = new StringBuilder();
     	
     	Integer[] analysesList =  (Integer[]) get(6);
-
-		sb.append("\"{\"");
+    	
+    	if(analysesList.length>1)sb.append("\"");
     	for(Integer i: analysesList){
-    		sb.append(i.toString()+", ");
+    		sb.append(i.toString()+",");
     	}
-		sb.append("\"}\"");
+    	if(analysesList.length>1)sb.append("\"");
 		
     	return sb.toString();
     }

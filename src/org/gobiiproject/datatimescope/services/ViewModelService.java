@@ -5,11 +5,19 @@ package org.gobiiproject.datatimescope.services;
 
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
@@ -67,5 +75,24 @@ public interface ViewModelService {
 	public List<PlatformRecord> getAllPlatforms();
 
 	public String getDatawarehouseVersion();
+
+	public List<OrganizationRecord> getAllVendors();
+
+	public List<VendorProtocolRecord> getAllVendorProtocols();
+
+	public List<AnalysisRecord> getAllAnalyses();
+
+	public List<AnalysisRecord> getAllCallingAnalysis();
+
+	public List<ProjectRecord> getAllProjects();
+
+	public List<ExperimentRecord> getAllExperiments();
+
+	public List<MapsetRecord> getAllMapsets();
+
+	public List<LinkageGroupRecord> getAllLinkageGroups();
+
+	public List<DatasetRecord> getAllDatasets();
+
 
 }

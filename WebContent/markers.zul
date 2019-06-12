@@ -1,11 +1,17 @@
+<zk xmlns:w="client">
 <?page title="Manage Markers" contentType="text/html;charset=UTF-8"?>
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<window border="none" hflex="1" vflex="1"
+<window style="border: 0px; padding:0px;" hflex="1"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerViewModel')">
 	<caption sclass="fn-caption" label="Markers" />
-	<tabbox style="border: 0px; padding:0px;">
+	 <script><![CDATA[
+    function initCollapsedTitle(zLayout) {
+      jq(zLayout.$n('colled')).append(zLayout.getTitle());
+    }
+  ]]></script>
+	<tabbox style="border: 0px; padding:0px;" height="640px" >
 		<tabs visible="false">
 			<tab id="markerSearchTab" label="Search" />
 			<tab id="markerSummaryTab" label="Summary"
@@ -14,13 +20,12 @@
 		<tabpanels>
 			<tabpanel>
 				<borderlayout vflex="min" hflex="true">
-					<north title="Filters:" style=" border: 0px;"
-						splittable="true" collapsible="true">
-						<groupbox>
-							<caption label="Filters: " />
+					<north title="Filters:" sclass="grid-borderless"
+						splittable="true" collapsible="true" w:onBind="initCollapsedTitle(this);" vflex="1"  maxsize="150">
 							<vlayout>
 								<hlayout>
-									<grid hflex="1" vflex="1">
+									<grid hflex="1" vflex="1"
+										sclass="grid-borderless">
 										<columns>
 											<column align="left" />
 											<column align="left" />
@@ -70,34 +75,166 @@
 										</rows>
 									</grid>
 
-									<grid hflex="true">
-										<columns>
-											<column align="left"
-												width="40%" />
-											<column align="left"
-												width="60%" />
-										</columns>
-										<rows>
-											<row>
-												<cell
-													sclass="row-title">
-													Platform :
-												</cell>
-												<cell>
-													<combobox
-														autodrop="true" hflex="true"
-														model="@load(vm.platformList)"
-														selectedItem="@bind(vm.markerEntity.platform)">
-														<template
-															name="model">
-															<comboitem
-																label="@load(each.name)" value="@load(each.platformId)" />
-														</template>
-													</combobox>
-												</cell>
-											</row>
-										</rows>
-									</grid>
+
+									<tabbox id="tb" orient="left"
+										height="300px" hflex="true">
+										<tabs width="35%" id="tabs" >
+											<tab id="A"
+												label="Platform" sclass="tabstyle" style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="B"
+												label="Vendor" style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="C"
+												label="Vendor-Protcol" style="text-align: left; border-bottom: 1px solid #ECECEC;"/>
+											<tab id="D"
+												label="Calling Analysis" sclass="tabstyle" style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="E"
+												label="Analyses" sclass="tabstyle" style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="F"
+												label="Projects" style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="G"
+												label="Experiments" style="text-align: left; border-bottom: 1px solid #ECECEC;"/>
+											<tab id="H"
+												label="Datasets" sclass="tabstyle" style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											<tab id="I"
+												label="Maps" style="text-align: left; border-bottom: 1px solid #ECECEC;"/>
+											<tab id="J"
+												label="Linkage Groups" sclass="tabstyle" style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+										</tabs>
+										<tabpanels>
+											<tabpanel>
+												<listbox
+													model="@load(vm.platformList)"
+													selectedItem="@bind(vm.markerEntity.platform)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.vendorList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.vendorProtocolList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.callingAnalysisList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.analysesList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.projectList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.experimentList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.datasetList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.mapsetList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<listbox
+													model="@load(vm.linkageGroupList)" hflex="1"
+													vflex="1" multiple="true" checkmark="true" style="border: 0px; padding:0px;">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+										</tabpanels>
+									</tabbox>
+
 								</hlayout>
 
 								<div align="center" hflex="1">
@@ -109,12 +246,10 @@
 										style="background-color: red" label="Delete Selected"
 										hflex="min" onClick="@command('deleteSelectedMarkers')" />
 								</div>
-
 							</vlayout>
-						</groupbox>
 					</north>
 
-					<center border="0" flex="true">
+					<center border="0" vflex="3">
 						<div>
 							<div sclass="Container">
 								<grid id="markerGrid"
@@ -284,8 +419,8 @@
 								<label
 									value="Separate each name with a new line." />
 							</popup>
-							
-							
+
+
 							<hbox>
 								<div align="right">
 									<button label="Export Current"
@@ -365,3 +500,4 @@
 	</tabbox>
 	         
 </window>
+</zk>
