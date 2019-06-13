@@ -1,6 +1,5 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.jooq.util.derby.sys.Sys;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -24,58 +23,69 @@ public class xmlModifier {
      * @param identifier For the use cases in which tag will not return a single node, currently not in use
      * @param tags ArrayList of tags that will be modified
      * @param newContents Array of the new Content, to be filled in by the User/UI
-     * @return 0 upon successful operation, -1 upon failure
+     * @return 0 upon at least one successful modification, -1 upon failure to make any changes
+     * This function performs the modifications to the xml file according to the provided parameters
+     * It will print messages, if anything didn't fully execute specifying what went wrong
      */
     private static int modifier(String identifier, ArrayList<String> tags, String[] newContents){
+        //path?
+        //Do we want server side data validation? Or will this be covered in the UI, probably better
         String path = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/gobii-web.xml";
         //String path = "/home/fvgoldman/data/gobii_bundle/config/gobii-web.xml";
         if (tags.size() != newContents.length){
             //Something didn't line up and will definitely break the XML
+            System.out.println("The amount of tags does not line up with the amount of contents.");
             return -1;
         }
 
         //Build DOM
         Document doc = xmlModifier.retrieveFile(path);
 
-        //Create XPath
-        XPathFactory xpathfactory = XPathFactory.newInstance();
-        XPath xpath = xpathfactory.newXPath();
-
         for (int i = 0; i < tags.size(); i++) {
             String tag = tags.get(i);
             String newContent = newContents[i];
-            String expression = "//" + tag + "/text()";
-            Object result = null;
-            try {
-                XPathExpression expr = xpath.compile(expression);
-                result = expr.evaluate(doc, XPathConstants.NODESET);
-            } catch (XPathExpressionException e) {
-                e.printStackTrace();
-            }
-            NodeList nodes = (NodeList) result;
-            if (result == null||nodes.getLength() == 0) {
-                System.out.println("No results found for the given tag.");
-                return -1;
-            }
-            if (nodes.getLength() > 1) {
+            String expression = "//" + tag;
+            NodeList nodes = evaluateExpression(expression, doc);
+            if (nodes == null||nodes.getLength() == 0){
+                System.out.println("There seems to be no result for the tag: " + tag);
+
+            } else if (nodes.getLength() > 1) {
                 //We need to use another form of verification
                 if (identifier.equals("")) {
                     System.out.println("There are more than one entries that fit the given parameters, please specify more precisely which one to modify.");
                 }
                 for (int j = 0; j < nodes.getLength(); j++) {
-                    if (nodes.item(j).getNodeValue().equals(identifier)) {
-                        nodes.item(j).setNodeValue(newContent);
+                    if (nodes.item(j).getTextContent().equals(identifier)) {
+                        nodes.item(j).setTextContent(newContent);
                     }
                 }
             } else {
-                nodes.item(0).setNodeValue(newContent);
+                nodes.item(0).setTextContent(newContent);
             }
         }
 
-        xmlModifier.transform(doc, path);
+        xmlModifier.modifyDocument(doc, path);
         return 0;
     }
 
+    private static NodeList evaluateExpression(String expression, Document doc){
+        //Create XPath
+        XPathFactory xpathfactory = XPathFactory.newInstance();
+        XPath xpath = xpathfactory.newXPath();
+        Object result = null;
+        try {
+            XPathExpression expr = xpath.compile(expression);
+            result = expr.evaluate(doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        NodeList nodes = (NodeList) result;
+        if (result == null) {
+            System.out.println("No results found for the given tag.");
+            return null;
+        }
+        return nodes;
+    }
 
     private static Document retrieveFile(String path){
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -90,7 +100,7 @@ public class xmlModifier {
         return doc;
     }
     
-    private static void transform(Document doc, String path){
+    private static void modifyDocument(Document doc, String path){
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         try {
             Transformer transformer = transformerFactory.newTransformer();
@@ -154,6 +164,15 @@ public class xmlModifier {
         System.out.println("Test 5");
         String[] testContent_5 = {"SMTP", "smtp.gmail.com", "my.test@gmail.com", "MD5", "test", "666"};
         xmlModifierWrapper("Email notification",  testContent_5);
+        System.out.println("Test 6");
+        String[] testContent_6 = {"SMTP", "smtp.gmail.com", "my.test@gmail.com", "MD5", "test", "666"};
+        xmlModifierWrapper("LDAP Unit",  testContent_6);
+        System.out.println("Test 7");
+        String[] testContent_7 = {"", ""};
+        xmlModifierWrapper("LDAP Unit",  testContent_7);
+        System.out.println("Test 8");
+        String[] testContent_8 = {"user2", "dummypass"};
+        xmlModifierWrapper("LDAP Unit",  testContent_8);
     }
 }
 
