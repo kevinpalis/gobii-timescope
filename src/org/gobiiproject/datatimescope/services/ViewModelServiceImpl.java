@@ -1245,7 +1245,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		// TODO Auto-generated method stub
 
 		DSLContext context = getDSLContext();
-		List<AnalysisRecord> analysisList = null;
+		List<AnalysisRecord> analysisList = new ArrayList<AnalysisRecord>();
 		try{
 
 			analysisList = context.select().from(ANALYSIS).orderBy(ANALYSIS.NAME).fetchInto(AnalysisRecord.class);
@@ -1267,7 +1267,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<AnalysisRecord> analysisList = null;
 		try{
 
-			analysisList = context.select().from(ANALYSIS).orderBy(ANALYSIS.NAME).fetchInto(AnalysisRecord.class);
+			analysisList = context.select().from(ANALYSIS).where(ANALYSIS.ANALYSIS_ID.in(context.selectDistinct(DATASET.CALLINGANALYSIS_ID).from(DATASET))).fetchInto(AnalysisRecord.class);
 
 		}catch(Exception e ){
 

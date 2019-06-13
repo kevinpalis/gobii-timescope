@@ -26,6 +26,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.DbRecord;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
@@ -33,6 +34,7 @@ import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.impl.UpdatableRecordImpl;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -67,12 +69,12 @@ public class MarkerViewModel {
 	
 	ViewModelService viewModelService;
 	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false;
-
+	private boolean dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true, dbLinkageGroup=true;
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
 	private List<OrganizationRecord> vendorList;
 	private List<VendorProtocolRecord> vendorProtocolList;
-	private List<AnalysisRecord> callingAnalysisList, AnalysesList;
+	private List<AnalysisRecord> callingAnalysisList, analysesList;
 	private List<ProjectRecord> projectList;
 	private List<ExperimentRecord> experimentList;
 	private List<DatasetRecord> datasetList;
@@ -82,6 +84,18 @@ public class MarkerViewModel {
 	private MarkerRecordEntity markerEntity;
 	private List<DatasetSummaryEntity> markerSummary;
 	private DatasetSummaryEntity markerSummaryEntity;
+	
+	private String filterPlatform;
+	private String filterVendor;
+	private String filterVendorProtocol;
+	private String filterAnalyses;
+	private String filterProjects;
+	private String filterExperiment;
+	private String filterDataset;
+	private String filterMapset;
+	private String filterCallingAnalysis;
+	private String filterProject;
+	private String filterLinkageGroup;
 
 	@SuppressWarnings("unchecked")
 	@Init
@@ -91,8 +105,10 @@ public class MarkerViewModel {
 		markerList = new ArrayList<VMarkerSummaryEntity>();
 		selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
+		
 		setMarkerEntity(new MarkerRecordEntity());
 		setMarkerList(viewModelService.getAllMarkers(markerSummary));
+		
 		setPlatformList(viewModelService.getAllPlatforms());
 		setVendorList(viewModelService.getAllVendors());
 		setVendorProtocolList(viewModelService.getAllVendorProtocols());
@@ -103,6 +119,17 @@ public class MarkerViewModel {
 		setDatasetList(viewModelService.getAllDatasets());
 		setMapsetList(viewModelService.getAllMapsets());
 		setLinkageGroupList(viewModelService.getAllLinkageGroups());
+		
+		if(platformList.isEmpty()) dbPlatforms = false;
+		if(vendorList.isEmpty()) dbVendors = false;
+		if(vendorProtocolList.isEmpty()) dbVendorProtocols = false;		
+		if(callingAnalysisList.isEmpty()) dbCallingAnalysis = false;
+		if(analysesList.isEmpty()) dbAnalyses = false;
+		if(projectList.isEmpty()) dbProjects = false;		
+		if(experimentList.isEmpty()) dbExperiment = false;
+		if(datasetList.isEmpty()) dbDataset = false;		
+		if(mapsetList.isEmpty()) dbMapset = false;
+		if(linkageGroupList.isEmpty()) dbLinkageGroup = false;
 		
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
@@ -380,6 +407,103 @@ public class MarkerViewModel {
 		}
 	}
 	
+
+	@NotifyChange("platformList")
+	@Command
+	public void doSearchPlatform() {
+		 List<PlatformRecord> allItems = viewModelService.getAllPlatforms();
+		 filterItems(platformList, allItems, filterPlatform);
+	}
+	
+	@NotifyChange("vendorList")
+	@Command
+	public void doSearchVendor() {
+		List<OrganizationRecord> allItems = viewModelService.getAllVendors();
+		
+		filterItems(vendorList, allItems, filterVendor);
+	}
+	
+	@NotifyChange("vendorProtocolList")
+	@Command
+	public void doSearchVendorProtocol() {
+		List<VendorProtocolRecord> allItems = viewModelService.getAllVendorProtocols();
+		
+		filterItems(vendorProtocolList, allItems, filterVendorProtocol);
+	}
+	
+	@NotifyChange("callingAnalysisList")
+	@Command
+	public void doSearchCallingAnalysis() {
+		List<AnalysisRecord> allItems = viewModelService.getAllCallingAnalysis();
+		
+		filterItems(callingAnalysisList, allItems, filterCallingAnalysis);
+	}
+	
+	@NotifyChange("analysesList")
+	@Command
+	public void doSearchAnalyses() {
+		List<AnalysisRecord> allItems = viewModelService.getAllAnalyses();
+		
+		filterItems(analysesList, allItems, filterAnalyses);
+	}
+	
+	@NotifyChange("projectList")
+	@Command
+	public void doSearchProjects() {
+		List<ProjectRecord> allItems = viewModelService.getAllProjects();
+		
+		filterItems(projectList, allItems, filterProject);
+	}
+
+	@NotifyChange("experimentList")
+	@Command
+	public void doSearchExperiment() {
+		List<ExperimentRecord> allItems = viewModelService.getAllExperiments();
+		
+		filterItems(experimentList, allItems, filterExperiment);
+	}		
+	
+	@NotifyChange("datasetList")
+	@Command
+	public void doSearchDataset() {
+		List<DatasetRecord> allItems = viewModelService.getAllDatasets();
+		
+		filterItems(datasetList, allItems, filterDataset);
+	}		
+	
+	@NotifyChange("mapasetList")
+	@Command
+	public void doSearchMapset() {
+		List<MapsetRecord> allItems = viewModelService.getAllMapsets();
+		
+		filterItems(mapsetList, allItems, filterMapset);
+	}
+	
+	@NotifyChange("linkageGroupList")
+	@Command
+	public void doSearchLinkageGroup() {
+		List<LinkageGroupRecord> allItems = viewModelService.getAllLinkageGroups();
+		
+		filterItems(linkageGroupList, allItems, filterLinkageGroup);
+	}
+	
+	public <T> void filterItems( List<T> list, List<T> allItems, String filter) {
+		list.clear();
+		
+		if(filter == null || "".equals(filter)) {
+			list.addAll(allItems);
+		} else {
+			for(T item : allItems) {
+				if(((String) ((Record) item).get(1)).toLowerCase().indexOf(filter.toLowerCase()) >= 0) {
+					list.add(item);
+				}
+			}
+		}
+	}
+	
+	
+	
+	
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -501,12 +625,12 @@ public class MarkerViewModel {
 
 
 	public List<AnalysisRecord> getAnalysesList() {
-		return AnalysesList;
+		return analysesList;
 	}
 
 
 	public void setAnalysesList(List<AnalysisRecord> analysesList) {
-		AnalysesList = analysesList;
+		this.analysesList = analysesList;
 	}
 
 
@@ -557,5 +681,225 @@ public class MarkerViewModel {
 
 	public void setDatasetList(List<DatasetRecord> datasetList) {
 		this.datasetList = datasetList;
+	}
+
+
+	public String getFilterPlatform() {
+		return filterPlatform;
+	}
+
+
+	public void setFilterPlatform(String filterPlatform) {
+		this.filterPlatform = filterPlatform;
+	}
+
+
+	public String getFilterVendor() {
+		return filterVendor;
+	}
+
+
+	public void setFilterVendor(String filterVendor) {
+		this.filterVendor = filterVendor;
+	}
+
+
+	public String getFilterProjects() {
+		return filterProjects;
+	}
+
+
+	public void setFilterProjects(String filterProjects) {
+		this.filterProjects = filterProjects;
+	}
+
+
+	public String getFilterVendorProtocol() {
+		return filterVendorProtocol;
+	}
+
+
+	public void setFilterVendorProtocol(String filterVendorProtocol) {
+		this.filterVendorProtocol = filterVendorProtocol;
+	}
+
+
+	public String getFilterAnalyses() {
+		return filterAnalyses;
+	}
+
+
+	public void setFilterAnalyses(String filterAnalyses) {
+		this.filterAnalyses = filterAnalyses;
+	}
+
+
+	public String getFilterExperiment() {
+		return filterExperiment;
+	}
+
+
+	public void setFilterExperiment(String filterExperiment) {
+		this.filterExperiment = filterExperiment;
+	}
+
+
+	public String getFilterDataset() {
+		return filterDataset;
+	}
+
+
+	public void setFilterDataset(String filterDataset) {
+		this.filterDataset = filterDataset;
+	}
+
+
+	public String getFilterMapset() {
+		return filterMapset;
+	}
+
+
+	public void setFilterMapset(String filterMapset) {
+		this.filterMapset = filterMapset;
+	}
+
+
+	public String getFilterCallingAnalysis() {
+		return filterCallingAnalysis;
+	}
+
+
+	public void setFilterCallingAnalysis(String filterCallingAnalysis) {
+		this.filterCallingAnalysis = filterCallingAnalysis;
+	}
+
+
+	public String getFilterProject() {
+		return filterProject;
+	}
+
+
+	public void setFilterProject(String filterProject) {
+		this.filterProject = filterProject;
+	}
+
+
+	public String getFilterLinkageGroup() {
+		return filterLinkageGroup;
+	}
+
+
+	public void setFilterLinkageGroup(String filterLinkageGroup) {
+		this.filterLinkageGroup = filterLinkageGroup;
+	}
+
+
+	public boolean isDbPlatforms() {
+		return dbPlatforms;
+	}
+
+
+	public void setDbPlatforms(boolean dbPlatforms) {
+		this.dbPlatforms = dbPlatforms;
+	}
+
+
+	public boolean isDbVendors() {
+		return dbVendors;
+	}
+
+
+	public void setDbVendors(boolean dbVendors) {
+		this.dbVendors = dbVendors;
+	}
+
+
+	public boolean isDbVendorProtocols() {
+		return dbVendorProtocols;
+	}
+
+
+	public void setDbVendorProtocols(boolean dbVendorProtocols) {
+		this.dbVendorProtocols = dbVendorProtocols;
+	}
+
+
+	public boolean isDbAnalyses() {
+		return dbAnalyses;
+	}
+
+
+	public void setDbAnalyses(boolean dbAnalyses) {
+		this.dbAnalyses = dbAnalyses;
+	}
+
+
+	public boolean isDbProjects() {
+		return dbProjects;
+	}
+
+
+	public void setDbProjects(boolean dbProjects) {
+		this.dbProjects = dbProjects;
+	}
+
+
+	public boolean isDbExperiment() {
+		return dbExperiment;
+	}
+
+
+	public void setDbExperiment(boolean dbExperiment) {
+		this.dbExperiment = dbExperiment;
+	}
+
+
+	public boolean isDbDataset() {
+		return dbDataset;
+	}
+
+
+	public void setDbDataset(boolean dbDataset) {
+		this.dbDataset = dbDataset;
+	}
+
+
+	public boolean isDbMapset() {
+		return dbMapset;
+	}
+
+
+	public void setDbMapset(boolean dbMapset) {
+		this.dbMapset = dbMapset;
+	}
+
+
+	public boolean isDbCallingAnalysis() {
+		return dbCallingAnalysis;
+	}
+
+
+	public void setDbCallingAnalysis(boolean dbCallingAnalysis) {
+		this.dbCallingAnalysis = dbCallingAnalysis;
+	}
+
+
+	public boolean isDbFilterProject() {
+		return dbFilterProject;
+	}
+
+
+	public void setDbFilterProject(boolean dbFilterProject) {
+		this.dbFilterProject = dbFilterProject;
+	}
+
+
+	public boolean isDbLinkageGroup() {
+		return dbLinkageGroup;
+	}
+
+
+	public void setDbLinkageGroup(boolean dbLinkageGroup) {
+		this.dbLinkageGroup = dbLinkageGroup;
 	}
 }
