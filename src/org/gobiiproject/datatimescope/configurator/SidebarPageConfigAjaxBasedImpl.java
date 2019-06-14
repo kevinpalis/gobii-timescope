@@ -12,7 +12,7 @@ import org.gobiiproject.datatimescope.services.SidebarPageConfig;
 public class SidebarPageConfigAjaxBasedImpl implements SidebarPageConfig{
 	
 	HashMap<String,SidebarPage> pageMap = new LinkedHashMap<String,SidebarPage>();
-	public SidebarPageConfigAjaxBasedImpl(){		
+	public SidebarPageConfigAjaxBasedImpl(){
 
 		pageMap.put("fn1",new SidebarPage("users","Users","/imgs/user.png","/users.zul"));
 		pageMap.put("fn2",new SidebarPage("datasets","Datasets","/imgs/dataset.png","/datasets.zul"));

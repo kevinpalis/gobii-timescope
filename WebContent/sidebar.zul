@@ -2,16 +2,170 @@
 
 	<image src="/imgs/datatimescope5.png" height="100px" />
 	<hbox vflex="2" />
-	<hbox hflex="max" vflex="25">
-		<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
-			apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
-			<columns>
-				<column width="45px" />
-				<column />
-			</columns>
-			<rows />
-		</grid>
-	</hbox>
+	<tabbox id = 'tabbox'>
+		<tabs>
+			<tab id="interface"> Interface</tab>
+			<tab id="settings"> Settings</tab>
+		</tabs>
+		<tabpanels>
+			<tabpanel hflex="max" vflex="25">
+				<hbox hflex="max" vflex="25">
+					<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
+						  apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
+						<columns>
+							<column width="45px" />
+							<column />
+						</columns>
+						<rows />
+					</grid>
+				</hbox>
+			</tabpanel>
+			<tabpanel hflex="max" vflex="25">
+				<tree rows="14">
+					<treecols>
+						<treecol />
+						<treecol />
+					</treecols>
+					<treechildren>
+						<treeitem>
+							<treerow>
+								<treecell>
+									<button> Test </button>
+								</treecell>
+								<treecell label="System Credentials"> </treecell>
+							</treerow>
+							<treechildren>
+								<treeitem>
+									<treerow>
+										<treecell label="LDAP - GOBii System User">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="LDAP - Unit Test User">
+										</treecell>
+									</treerow>
+								</treeitem>
+							</treechildren>
+						</treeitem>
+						<treeitem>
+							<treerow>
+								<treecell>
+									<button> Test </button>
+								</treecell>
+								<treecell label="Notifications"> </treecell>
+							</treerow>
+							<treechildren>
+								<treeitem>
+									<treerow>
+										<treecell label="Email">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Push Notifications">
+										</treecell>
+									</treerow>
+								</treeitem>
+							</treechildren>
+						</treeitem>
+						<treeitem>
+							<treerow>
+								<treecell>
+									<button> Test </button>
+								</treecell>
+								<treecell label="Crops"> </treecell>
+							</treerow>
+							<treechildren>
+								<treeitem>
+									<treerow>
+										<treecell label="Add crop">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Delete crop">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Manage crops">
+
+										</treecell>
+									</treerow>
+								</treeitem>
+							</treechildren>
+						</treeitem>
+						<treeitem>
+							<treerow>
+								<treecell>
+									<button> Test </button>
+								</treecell>
+								<treecell label="Logging"> </treecell>
+							</treerow>
+							<treechildren>
+								<treeitem>
+									<treerow>
+										<treecell label="Logging settings">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Linkage Groups">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Marker Groups">
+
+										</treecell>
+									</treerow>
+								</treeitem>
+							</treechildren>
+						</treeitem>
+						<treeitem>
+							<treerow>
+								<treecell>
+									<button> Test </button>
+								</treecell>
+								<treecell label="Integrations"> </treecell>
+							</treerow>
+							<treechildren>
+								<treeitem>
+									<treerow>
+										<treecell label="KDCompute">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="OwnCloud">
+										</treecell>
+									</treerow>
+								</treeitem>
+								<treeitem>
+									<treerow>
+										<treecell label="Galaxy">
+
+										</treecell>
+									</treerow>
+								</treeitem>
+							</treechildren>
+						</treeitem>
+						<treeitem label="Scheduler"/>
+						<treeitem label="Import/Export Configuration"/>
+						<treeitem label="Backup/Restore"/>
+					</treechildren>
+				</tree>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
 
 	<hbox apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
