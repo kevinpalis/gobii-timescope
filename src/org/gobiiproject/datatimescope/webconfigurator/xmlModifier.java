@@ -95,12 +95,100 @@ public class xmlModifier extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_"+"pushNotifications");
     }
 
-    @Command("pushNotifications")
-    public void pushNotifications() {
+    @Command("addCrop")
+    public void addCrop() {
         Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
-        include.setSrc("/pushNotifications.zul");
-        getPage().getDesktop().setBookmark("p_"+"pushNotifications");
+        include.setSrc("/addCrop.zul");
+        getPage().getDesktop().setBookmark("p_"+"addCrop");
+    }
+
+    @Command("deleteCrop")
+    public void deleteCrop() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/deleteCrop.zul");
+        getPage().getDesktop().setBookmark("p_"+"deleteCrop");
+    }
+
+    @Command("manageCrop")
+    public void manageCrop() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/manageCrop.zul");
+        getPage().getDesktop().setBookmark("p_"+"manageCrop");
+    }
+
+    @Command("logSettings")
+    public void logSettings() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/logSettings.zul");
+        getPage().getDesktop().setBookmark("p_"+"logSettings");
+    }
+
+    @Command("linkageGroups")
+    public void linkeageGroups() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/linkageGroups.zul");
+        getPage().getDesktop().setBookmark("p_"+"linkageGroups");
+    }
+
+    @Command("markerGroups")
+    public void markerGroups() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/markerGroups.zul");
+        getPage().getDesktop().setBookmark("p_"+"markerGroups");
+    }
+
+    @Command("kdCompute")
+    public void kdCompute() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/kdCompute.zul");
+        getPage().getDesktop().setBookmark("p_"+"KDComputeIntegration");
+    }
+
+    @Command("ownCloud")
+    public void ownCloud() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/ownCloud.zul");
+        getPage().getDesktop().setBookmark("p_"+"OwnCloud");
+    }
+
+    @Command("galaxy")
+    public void galaxy() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/galaxy.zul");
+        getPage().getDesktop().setBookmark("p_"+"Galaxy");
+    }
+
+    @Command("scheduler")
+    public void scheduler() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/scheduler.zul");
+        getPage().getDesktop().setBookmark("p_"+"Scheduler");
+    }
+
+    @Command("portConfig")
+    public void portConfig() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/portConfig.zul");
+        getPage().getDesktop().setBookmark("p_"+"PortConfiguration");
+    }
+
+    @Command("backup")
+    public void backup() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/backup.zul");
+        getPage().getDesktop().setBookmark("p_"+"backup");
     }
 
     public String getldapUserForUnitTest(){
