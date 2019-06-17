@@ -1,0 +1,61 @@
+
+
+<vlayout>
+    <grid width="500px" apply="org.zkoss.bind.BindComposer"
+          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Authentification Type:</cell>
+                <cell> <textbox
+                        width="200px" value="@load(vm.gobiiAuthenticationType)">
+                        </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">User DN Pattern:</cell>
+                <cell>
+                    <textbox
+                            width="200px" value="@load(vm.ldapUserDnPattern)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">LDAP URL:</cell>
+                <cell>
+                    <textbox
+                            width="200px" value="@load(vm.ldapUrl)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Bind User DN:</cell>
+                <cell><textbox  width="200px" value="@load(vm.ldapBindUser)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Bind User Password:</cell>
+                <cell>
+                    <textbox type="password" width="200px"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">GDM User DN:</cell>
+                <cell>
+                    <textbox  width="200px" value="@load(vm.ldapUserForBackendProcs)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">GDM User Password:</cell>
+                <cell>
+                    <textbox type="password" width="200px"/>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button  label="Edit"/>
+    </div>
+</vlayout>

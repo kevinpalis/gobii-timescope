@@ -1,0 +1,119 @@
+
+<window border="0" hflex="1" vflex="1" contentStyle="overflow:auto"
+        apply="org.zkoss.bind.BindComposer"
+        viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')">
+<tree rows="14">
+    <treecols>
+        <treecol/>
+    </treecols>
+    <treechildren>
+        <treeitem open="false">
+            <treerow>
+                <treecell label="System Credentials" style="font-size:15px !important;"/>
+            </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow>
+                        <treecell>
+                            <button label="LDAP - GOBii System User" style="font-size:15px !important;"
+                                    onClick="@command('ldapSystemUser')">
+                            </button>
+                        </treecell>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="LDAP - Unit Test User" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
+        </treeitem>
+        <treeitem open="false">
+            <treerow>
+                <treecell label="Notifications" style="font-size:15px !important;"/>
+            </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Email" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Push Notifications" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
+        </treeitem>
+        <treeitem open="false">
+            <treerow>
+                <treecell label="Crops" style="font-size:15px !important;"/>
+            </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Add crop" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Delete crop" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Manage crops" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
+        </treeitem>
+        <treeitem open="false">
+            <treerow>
+                <treecell label="Logging" style="font-size:15px !important;"/>
+            </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Logging settings" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Linkage Groups" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Marker Groups" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
+        </treeitem>
+        <treeitem open="false">
+            <treerow>
+                <treecell label="Integrations" style="font-size:15px !important;"/>
+            </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow>
+                        <treecell label="KDCompute" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="OwnCloud" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow>
+                        <treecell label="Galaxy" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
+        </treeitem>
+        <treeitem label="Scheduler" style="font-size:15px !important;"/>
+        <treeitem label="Import/Export Configuration" style="font-size:15px !important;"/>
+        <treeitem label="Backup/Restore" style="font-size:15px !important;"/>
+    </treechildren>
+</tree>
+</window>
