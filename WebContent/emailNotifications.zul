@@ -24,12 +24,12 @@
                 <cell sclass="row-title">E Mail Server User:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@bind(vm.emailSvrUser) @save(vm.emailSvrUser, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                            width="200px" value="@load(vm.emailSvrUser) @save(vm.emailSvrUser, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">E Mail Server Hash Type:</cell>
-                <cell><textbox  width="200px" value="@bind(vm.emailSvrHashType) @save(vm.emailSvrHashType, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                <cell><textbox  width="200px" value="@load(vm.emailSvrHashType) @save(vm.emailSvrHashType, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
             <row>

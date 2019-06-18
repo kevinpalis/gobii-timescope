@@ -8,23 +8,27 @@
         <rows>
             <row>
                 <cell sclass="row-title">Unit Test User:</cell>
-                <cell> <textbox
-                        width="200px" value="@load(vm.ldapUserForUnitTest)">
-                </textbox>
+                <cell>
+                    <textbox
+                            width="200px" value="@load(vm.ldapUserForUnitTest) @save(vm.ldapUserForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">Unit Test Password:</cell>
                 <cell>
-                    <textbox type="password"
-                            width="200px"
-                             value="@load(vm.ldapPasswordForUnitTest)">
+                    <textbox
+                            width="200px" value="@load(vm.ldapPasswordForUnitTest) @save(vm.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
         </rows>
     </grid>
     <div align="left">
-        <button  label="Edit"/>
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('disableEdit')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
     </div>
 </vlayout>

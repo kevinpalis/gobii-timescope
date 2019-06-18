@@ -8,16 +8,17 @@
         <rows>
             <row>
                 <cell sclass="row-title">Authentification Type:</cell>
-                <cell> <textbox
-                        width="200px" value="@load(vm.gobiiAuthenticationType)">
-                        </textbox>
+                <cell>
+                    <textbox
+                        width="200px" value="@load(vm.gobiiAuthenticationType) @save(vm.gobiiAuthenticationType, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">User DN Pattern:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapUserDnPattern)">
+                            width="200px" value="@load(vm.ldapUserDnPattern) @save(vm.ldapUserDnPattern, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -25,35 +26,49 @@
                 <cell sclass="row-title">LDAP URL:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapUrl)"/>
+                            width="200px" value="@load(vm.ldapURL) @save(vm.ldapURL, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">Bind User DN:</cell>
-                <cell><textbox  width="200px" value="@load(vm.ldapBindUser)"/>
+                <cell>
+                    <textbox
+                            width="200px" value="@load(vm.ldapBindUser) @save(vm.ldapBindUser, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">Bind User Password:</cell>
                 <cell>
-                    <textbox type="password" width="200px" value="@load(vm.ldapBindPassword)"/>
+                    <textbox
+                            width="200px" value="@load(vm.ldapBindPassword) @save(vm.ldapBindPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">GDM User DN:</cell>
                 <cell>
-                    <textbox  width="200px" value="@load(vm.ldapUserForBackendProcs)"/>
+                    <textbox
+                            width="200px" value="@load(vm.ldapUserForBackendProcs) @save(vm.ldapUserForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">GDM User Password:</cell>
                 <cell>
-                    <textbox type="password" width="200px" value="@load(vm.ldapPasswordForBackendProcs)"/>
+                    <textbox
+                            width="200px" value="@load(vm.ldapPasswordForBackendProcs) @save(vm.ldapPasswordForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
                 </cell>
             </row>
         </rows>
     </grid>
     <div align="left">
-        <button  label="Edit"/>
-    </div>
+    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+    <hlayout>
+        <button id="save" label="Save" onClick="@command('disableEdit')" visible="@bind(not vm.documentLocked)" />
+        <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+    </hlayout>
+</div>
 </vlayout>
