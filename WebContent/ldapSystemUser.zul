@@ -1,6 +1,6 @@
-<vlayout>
-    <grid width="500px" apply="org.zkoss.bind.BindComposer"
-          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+<vlayout apply="org.zkoss.bind.BindComposer"
+          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')">
+    <grid width="500px" >
         <columns>
             <column align="right" hflex="min"/>
             <column/>
@@ -10,7 +10,7 @@
                 <cell sclass="row-title">Authentification Type:</cell>
                 <cell>
                     <textbox
-                        width="200px" value="@load(vm.gobiiAuthenticationType) @save(vm.gobiiAuthenticationType, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                        width="200px" value="@load(vm.xmlHandler.gobiiAuthenticationType) @save(vm.xmlHandler.gobiiAuthenticationType, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -18,7 +18,7 @@
                 <cell sclass="row-title">User DN Pattern:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapUserDnPattern) @save(vm.ldapUserDnPattern, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapUserDnPattern) @save(vm.xmlHandler.ldapUserDnPattern, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -26,7 +26,7 @@
                 <cell sclass="row-title">LDAP URL:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapURL) @save(vm.ldapURL, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapUrl) @save(vm.xmlHandler.ldapUrl, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -34,7 +34,7 @@
                 <cell sclass="row-title">Bind User DN:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapBindUser) @save(vm.ldapBindUser, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapBindUser) @save(vm.xmlHandler.ldapBindUser, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -42,7 +42,7 @@
                 <cell sclass="row-title">Bind User Password:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapBindPassword) @save(vm.ldapBindPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapBindPassword) @save(vm.xmlHandler.ldapBindPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -50,7 +50,7 @@
                 <cell sclass="row-title">GDM User DN:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapUserForBackendProcs) @save(vm.ldapUserForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapUserForBackendProcs) @save(vm.xmlHandler.ldapUserForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -58,7 +58,7 @@
                 <cell sclass="row-title">GDM User Password:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapPasswordForBackendProcs) @save(vm.ldapPasswordForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapPasswordForBackendProcs) @save(vm.xmlHandler.ldapPasswordForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>

@@ -1,4 +1,4 @@
-<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
     <grid id="emailGrid" width="500px">
         <columns>
             <column align="right" hflex="min"/>
@@ -8,7 +8,7 @@
             <row>
                 <cell sclass="row-title">E Mail Server Type:</cell>
                 <cell> <textbox disabled="@load(vm.documentLocked)"
-                        width="200px" value="@load(vm.emailSvrType) @save(vm.emailSvrType, before='disableEdit')">
+                        width="200px" value="@load(vm.xmlHandler.emailSvrType) @save(vm.xmlHandler.emailSvrType, before='disableEdit')">
                 </textbox>
                 </cell>
             </row>
@@ -16,7 +16,7 @@
                 <cell sclass="row-title">E Mail Server Domain:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.emailSvrDomain) @save(vm.emailSvrDomain, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.emailSvrDomain) @save(vm.xmlHandler.emailSvrDomain, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -24,24 +24,24 @@
                 <cell sclass="row-title">E Mail Server User:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.emailSvrUser) @save(vm.emailSvrUser, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                            width="200px" value="@load(vm.xmlHandler.emailSvrUser) @save(vm.xmlHandler.emailSvrUser, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">E Mail Server Hash Type:</cell>
-                <cell><textbox  width="200px" value="@load(vm.emailSvrHashType) @save(vm.emailSvrHashType, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                <cell><textbox  width="200px" value="@load(vm.xmlHandler.emailSvrHashType) @save(vm.xmlHandler.emailSvrHashType, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">E Mail Server Password:</cell>
                 <cell>
-                    <textbox type="password" width="200px" value="@load(vm.emailSvrPassword) @save(vm.emailSvrPassword, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                    <textbox type="password" width="200px" value="@load(vm.xmlHandler.emailSvrPassword) @save(vm.xmlHandler.emailSvrPassword, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">E Mail Server Port:</cell>
                 <cell>
-                    <textbox  width="200px" value="@load(vm.emailServerPort) @save(vm.emailServerPort, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                    <textbox  width="200px" value="@load(vm.xmlHandler.emailServerPort) @save(vm.xmlHandler.emailServerPort, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
                 </cell>
             </row>
         </rows>

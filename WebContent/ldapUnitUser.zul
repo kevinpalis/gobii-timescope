@@ -1,6 +1,6 @@
-<vlayout>
-    <grid width="500px" apply="org.zkoss.bind.BindComposer"
-          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
+    <grid width="500px">
         <columns>
             <column align="right" hflex="min"/>
             <column/>
@@ -10,7 +10,7 @@
                 <cell sclass="row-title">Unit Test User:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapUserForUnitTest) @save(vm.ldapUserForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapUserForUnitTest) @save(vm.xmlHandler.ldapUserForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -18,7 +18,7 @@
                 <cell sclass="row-title">Unit Test Password:</cell>
                 <cell>
                     <textbox
-                            width="200px" value="@load(vm.ldapPasswordForUnitTest) @save(vm.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                            width="200px" value="@load(vm.xmlHandler.ldapPasswordForUnitTest) @save(vm.xmlHandler.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
