@@ -1,5 +1,3 @@
-
-
 <vlayout>
     <grid width="500px" apply="org.zkoss.bind.BindComposer"
           viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
@@ -38,7 +36,7 @@
             <row>
                 <cell sclass="row-title">Bind User Password:</cell>
                 <cell>
-                    <textbox type="password" width="200px"/>
+                    <textbox type="password" width="200px" value="@load(vm.ldapBindPassword)"/>
                 </cell>
             </row>
             <row>
@@ -50,7 +48,7 @@
             <row>
                 <cell sclass="row-title">GDM User Password:</cell>
                 <cell>
-                    <textbox type="password" width="200px"/>
+                    <textbox type="password" width="200px" value="@load(vm.ldapPasswordForBackendProcs)"/>
                 </cell>
             </row>
         </rows>

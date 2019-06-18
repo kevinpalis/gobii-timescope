@@ -1,0 +1,56 @@
+<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+    <grid id="emailGrid" width="500px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">E Mail Server Type:</cell>
+                <cell> <textbox disabled="@load(vm.documentLocked)"
+                        width="200px" value="@load(vm.emailSvrType) @save(vm.emailSvrType, before='disableEdit')">
+                </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">E Mail Server Domain:</cell>
+                <cell>
+                    <textbox
+                            width="200px" value="@load(vm.emailSvrDomain) @save(vm.emailSvrDomain, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">E Mail Server User:</cell>
+                <cell>
+                    <textbox
+                            width="200px" value="@bind(vm.emailSvrUser) @save(vm.emailSvrUser, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">E Mail Server Hash Type:</cell>
+                <cell><textbox  width="200px" value="@bind(vm.emailSvrHashType) @save(vm.emailSvrHashType, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">E Mail Server Password:</cell>
+                <cell>
+                    <textbox type="password" width="200px" value="@load(vm.emailSvrPassword) @save(vm.emailSvrPassword, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">E Mail Server Port:</cell>
+                <cell>
+                    <textbox  width="200px" value="@load(vm.emailServerPort) @save(vm.emailServerPort, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('disableEdit')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

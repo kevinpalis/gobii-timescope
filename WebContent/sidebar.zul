@@ -20,7 +20,7 @@
 					</grid>
 				</hbox>
 			</tabpanel>
-			<tabpanel hflex="max" vflex="max">
+			<tabpanel hflex="max" vflex="25">
 				<include src="configTab.zul"/>
 			</tabpanel>
 		</tabpanels>

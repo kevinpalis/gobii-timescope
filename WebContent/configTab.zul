@@ -1,8 +1,5 @@
-
-<window border="0" hflex="1" vflex="1" contentStyle="overflow:auto"
-        apply="org.zkoss.bind.BindComposer"
-        viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')">
-<tree rows="14">
+<tree rows="14" apply="org.zkoss.bind.BindComposer"
+      viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
     <treecols>
         <treecol/>
     </treecols>
@@ -15,15 +12,19 @@
                 <treeitem>
                     <treerow>
                         <treecell>
-                            <button label="LDAP - GOBii System User" style="font-size:15px !important;"
+                            <label value="LDAP - GOBii System User" style="font-size:15px !important;"
                                     onClick="@command('ldapSystemUser')">
-                            </button>
+                            </label>
                         </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="LDAP - Unit Test User" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="LDAP - Unit Test User" style="font-size:15px !important;"
+                            onClick="@command('ldapUnitUser')">
+                            </label>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -35,7 +36,11 @@
             <treechildren>
                 <treeitem>
                     <treerow>
-                        <treecell label="Email" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="E Mail Notifications" style="font-size:15px !important;"
+                                    onClick="@command('emailNotifications')">
+                            </label>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
@@ -116,4 +121,3 @@
         <treeitem label="Backup/Restore" style="font-size:15px !important;"/>
     </treechildren>
 </tree>
-</window>

@@ -1,0 +1,30 @@
+<vlayout>
+    <grid width="500px" apply="org.zkoss.bind.BindComposer"
+          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.xmlModifier')" >
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Unit Test User:</cell>
+                <cell> <textbox
+                        width="200px" value="@load(vm.ldapUserForUnitTest)">
+                </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Unit Test Password:</cell>
+                <cell>
+                    <textbox type="password"
+                            width="200px"
+                             value="@load(vm.ldapPasswordForUnitTest)">
+                    </textbox>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button  label="Edit"/>
+    </div>
+</vlayout>
