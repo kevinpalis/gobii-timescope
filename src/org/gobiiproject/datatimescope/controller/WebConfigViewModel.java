@@ -1,12 +1,17 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
+import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
+import org.zkoss.zul.Messagebox;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
@@ -25,6 +30,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("documentLocked")
     public void enableEdit() {
         this.documentLocked = false;
+    }
+
+    @Command("warning")
+    public void warning(@ContextParam(ContextType.BINDER) Binder binder) {
+        Messagebox.show("Warning placeholder.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) throws InterruptedException {
+                if (evt.getName().equals("onOK")) {
+                    alert("Settings Saved!");
+                    binder.sendCommand("disableEdit", null);
+                } else {
+                    alert("Save Cancelled!");
+                }
+            }
+        });
     }
 
     @Command("disableEdit")
