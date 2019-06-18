@@ -44,7 +44,7 @@ public class xmlModifier extends SelectorComposer<Component> {
     //Finds the GOBII_WEB configs
     //Only the contextPath can handle different settings the rest needs to stay the same
     private static String hostForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
-    private static String contextPathlForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath]";
+    private static String contextPathlForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
     private static String portForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
 
     public String getHostForReload() {
@@ -246,25 +246,6 @@ public class xmlModifier extends SelectorComposer<Component> {
             e.printStackTrace();
         }
     }
-
-
-
-
-        /*try {
-            String host = evaluateExpression(hostForReloadXPath, doc).item(0).getTextContent();
-            String contextPath = evaluateExpression(contextPathlForReloadXPath, doc).item(0).getTextContent();
-            String port = evaluateExpression(portForReloadXPath, doc).item(0).getTextContent();
-            ReloadTask command = new ReloadTask();
-            command.setUsername("gadm");
-            command.setPassword("g0b11admin");
-            command.setUrl(host + contextPath + port);
-            //Ask about this
-            command.setPath("/gobiidatatimescope/WebContent/WEB-INF/web.xml");
-            command.execute();
-        } catch (Exception e){
-            e.printStackTrace();
-        }*/
-
 
 }
 

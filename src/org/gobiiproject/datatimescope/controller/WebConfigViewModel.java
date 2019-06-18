@@ -1,9 +1,7 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.apache.catalina.ant.ReloadTask;
-import org.apache.catalina.ant.*;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.Command;
@@ -18,26 +16,14 @@ import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.Properties;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
-    xmlModifier xmlHandler = new xmlModifier();
+    private xmlModifier xmlHandler = new xmlModifier();
     private boolean documentLocked = true;
-
-    public xmlModifier getXmlHandler(){
-        return xmlHandler;
-    }
-
-    public boolean getdocumentLocked() {
-        return documentLocked;
-    }
 
     @Command("enableEdit")
     @NotifyChange("documentLocked")
@@ -64,7 +50,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void disableEdit() {
         ReloadTask request = new ReloadTask();
         try {
-            InputStream input = new FileInputStream("/home/gadm/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/web-configurator.properties");
+            //TODO Adapt this
+            InputStream input = new FileInputStream("/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/web-configurator.properties");
             Properties prop = new Properties();
             prop.load(input);
             request.setUsername(prop.getProperty("user.username"));
@@ -84,6 +71,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         this.documentLocked = true;
     }
 
+
+    //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
     @Command("cancelChanges")
     public void cancelChanges(){
         Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
@@ -223,6 +212,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+    }
+
+    public xmlModifier getXmlHandler(){
+        return xmlHandler;
+    }
+
+    public boolean getdocumentLocked() {
+        return documentLocked;
     }
 
 }
