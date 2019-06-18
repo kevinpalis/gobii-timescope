@@ -1,6 +1,10 @@
 package org.gobiiproject.datatimescope.controller;
 
+import org.apache.catalina.ant.ReloadTask;
+import org.apache.catalina.ant.*;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -12,6 +16,15 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.util.Properties;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
@@ -49,6 +62,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("disableEdit")
     @NotifyChange("documentLocked")
     public void disableEdit() {
+        ReloadTask request = new ReloadTask();
+        try {
+            InputStream input = new FileInputStream("/home/gadm/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/web-configurator.properties");
+            Properties prop = new Properties();
+            prop.load(input);
+            request.setUsername(prop.getProperty("user.username"));
+            request.setPassword(prop.getProperty("user.password"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String host = xmlHandler.getHostForReload();
+        String port = xmlHandler.getPortForReload();
+        NodeList contextPathNodes = xmlHandler.getContextPathNodes();
+        //Reload each context
+        for (int i = 0; i < contextPathNodes.getLength(); i++) {
+            request.setPath(contextPathNodes.item(i).getTextContent());
+            request.setUrl("http://" + host + ":" + port + "/manager/text");
+            request.execute();
+        }
         this.documentLocked = true;
     }
 

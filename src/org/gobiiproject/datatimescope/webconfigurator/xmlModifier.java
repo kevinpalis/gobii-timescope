@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class xmlModifier extends SelectorComposer<Component> {
 
-    //TODO How to handle more than one outcome?
+    //If any of the below XPATH's return more than one Node only the first one will be modified
 
     private static String ldapUserForUnitTestXPath = "//ldapUserForUnitTest";
     private static String ldapPasswordForUnitTestXPath = "//ldapPasswordForUnitTest";
@@ -42,11 +42,25 @@ public class xmlModifier extends SelectorComposer<Component> {
     private static String path = "/data/gobii_bundle/config/gobii-web.xml";
 
     //Finds the GOBII_WEB configs
+    //Only the contextPath can handle different settings the rest needs to stay the same
     private static String hostForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
     private static String contextPathlForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath]";
     private static String portForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
 
-    private String pathForReload;
+    public String getHostForReload() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateExpression(hostForReloadXPath, doc).item(0).getTextContent();
+    }
+
+    public NodeList getContextPathNodes() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateExpression(contextPathlForReloadXPath, doc);
+    }
+
+    public String getPortForReload() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateExpression(portForReloadXPath, doc).item(0).getTextContent();
+    }
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
