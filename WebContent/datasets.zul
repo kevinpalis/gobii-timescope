@@ -1,10 +1,8 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<window border="none" hflex="1" vflex="1"
-	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
+<window border="none" hflex="1" vflex="1"  style="border: 0 !important; padding:0 !important; margin:0;"  apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
-	<custom-attributes org.zkoss.zul.nativebar="false"/> 
 	<caption sclass="fn-caption" label="Datasets" />
 	<script>
 
@@ -21,17 +19,16 @@
 		
 		
 		</script>
-	<tabbox style="border: 0px; padding:0px;">
+	<tabbox style="border: 0px !important; padding:0px !important; margin:0px !important;" vflex="1" hflex="1">
 		<tabs visible="false">
 			<tab id="datasetSearchTab" label="Search" />
 			<tab id="datasetSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
 		</tabs>
-		<tabpanels>
-			<tabpanel>
-				<borderlayout vflex="min" hflex="true">
-					<north title="Filters:" style=" border: 0px;"
-						splittable="true" collapsible="true">
+		<tabpanels >
+			<tabpanel style="border: 0 !important; padding:0 !important; margin:0;" >
+				<borderlayout vflex="1" hflex="true">
+					<north title="Filters:" style=" border: 0px;" collapsible="true">
 						<vlayout>
 							<hlayout>
 								<grid hflex="1" vflex="1"
@@ -77,7 +74,7 @@
 
 												</textbox>
 											</cell>
-										</row>
+										</row>	
 									</rows>
 								</grid>
 								<label value="  " />
@@ -175,17 +172,12 @@
 						</vlayout>
 					</north>
 
-					<center border="0" flex="true">
-						<div>
-							<div sclass="wrapper1">
-								<div sclass="div1" />
-							</div>
-							<div sclass="wrapper2">
-								<div sclass="div2">
-									<grid id="datasetGrid"
+					<center border="0" vflex="1" hflex="1" >
+						<div vflex="1" hflex="1">
+								<div sclass="div2" vflex="1" hflex="1" >
+									<grid id="datasetGrid" 
 										model="@load(vm.datasetList)" mold="paging" pageSize="25"
-										pagingPosition="both" >
-										 <custom-attributes org.zkoss.zul.nativebar="false"/> 
+										pagingPosition="both" vflex="1" hflex="1">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox
@@ -380,26 +372,8 @@
 									</grid>
 								</div>
 							</div>
-							<popup id="title" width="400px">
-								<label
-									value="Separate each name with a new line." />
-							</popup>
-
-
-							<hbox>
-								<div align="right">
-									<button label="Export Current"
-										width="200px"
-										onClick="@command('exportCurrentDatasetTablePage')" />
-								</div>
-								<div align="right">
-									<button visible="@bind(vm.paged)"
-										label="Export All" width="200px"
-										onClick="@command('exportDatasetTable')" />
-								</div>
-							</hbox>
-						</div>
 					</center>
+					
 				</borderlayout>
 			</tabpanel>
 			<tabpanel visible="false">

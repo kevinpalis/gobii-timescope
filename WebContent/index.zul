@@ -9,14 +9,14 @@
             font-size: 28px !important;  
         } 
     </style>
-	<borderlayout hflex="1" vflex="max" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
+	<borderlayout hflex="1" height="100%" apply="org.gobiiproject.datatimescope.controller.BookmarkChangeController">
 		<north height="35px" border="none" >
 			<include src="banner.zul"/>
 		</north>
 		<west width="260px" collapsible="true" splittable="true" minsize="300" border="0" vflex="true">
 			<include src="sidebar.zul"/>
 		</west>
-		<center autoscroll="true" vflex="true" border="0">
+		<center vflex="min" border="0">
 			<include id="mainContent" src="mainContent.zul"/>
 		</center>
 		<south height="70px" border="none">
