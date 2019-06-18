@@ -1,23 +1,18 @@
-<vbox>
-<vbox vflex="1" hflex="1" align="center" pack="center" spacing="50px" >
-
-	<label style="font-style: oblique; font-size: 20px" value="" />
-	<label style="font-style: oblique; font-size: 20px" value="" />
+<vbox align="center" pack="center" vflex="true">
+<vbox vflex="min" hflex="1" align="center" pack="center" spacing="50px" >
 	
-	<label style="color: red; font-style: oblique; font-size: 25px" value="Disclaimer:" />
+	<label style="color: red; font-style: oblique; font-size: 2em; text-size-adjust: auto;" value="Disclaimer:"  />
 
-	<label style="color: red; font-style: bold; font-size: 25px" value="It is highly recommended to back up data before proceeding, as actions performed in this tool are not reversible." />
+	<label style="color: red; font-style: bold; font-size: 1em" value="It is highly recommended to back up data before proceeding, as actions performed in this tool are not reversible." />
 
-	<label style="font-style: oblique; font-size: 20px" value="" />
-	<label style="font-style: oblique; font-size: 20px" value="" />
 </vbox>
-<vbox vflex="1" hflex="1" align="center" pack="center" spacing="20px" >
-	<label style="font-style: bold; font-size: 20px" value="MIT License:" />
-	<label style="font-style: bold; font-size: 20px" value="Genomic Open-source Breeding Informatics Initiative" />
+<vbox vflex="min" hflex="1" align="center" pack="center" spacing="1em" >
+	<label style="font-style: bold; font-size: 1em" value="MIT License:" />
+	<label style="font-style: bold; font-size: 1em" value="Genomic Open-source Breeding Informatics Initiative" />
 	
-	<label style="font-style: bold; font-size: 20px" value="Copyright (c) 2018 Cornell University    " />
-	<a href="http://gobiiproject.org" label="  http://gobiiproject.org" style="color: black; font-style: bold; font-size: 20px"/>
-	<label style="font-style: bold; font-size: 20px" value="Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &#8220;Software&#8221;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:" sclass="mainText"/>
-	<label style="font-style: bold; font-size: 20px" value="The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software." sclass="mainText"/>
+	<label style="font-style: bold; font-size: 1em" value="Copyright (c) 2018 Cornell University    " />
+	<a href="http://gobiiproject.org" label="  http://gobiiproject.org" style="color: black; font-style: bold; font-size: 1em"/>
+	<label style="font-style: bold; font-size: 1em" value="Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &#8220;Software&#8221;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:" sclass="mainText"/>
+	<label style="font-style: bold; font-size: 1em" value="The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software." sclass="mainText"/>
 </vbox>
 </vbox>

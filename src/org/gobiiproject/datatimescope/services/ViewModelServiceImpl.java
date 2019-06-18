@@ -4,13 +4,20 @@
 package org.gobiiproject.datatimescope.services;
 
 
+import static org.gobiiproject.datatimescope.db.generated.Tables.ANALYSIS;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
+import static org.gobiiproject.datatimescope.db.generated.Tables.EXPERIMENT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
+import static org.gobiiproject.datatimescope.db.generated.Tables.PROJECT;
+import static org.gobiiproject.datatimescope.db.generated.Tables.ORGANIZATION;
+import static org.gobiiproject.datatimescope.db.generated.Tables.MAPSET;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_GROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
+import static org.gobiiproject.datatimescope.db.generated.Tables.VENDOR_PROTOCOL;
+import static org.gobiiproject.datatimescope.db.generated.Tables.LINKAGE_GROUP;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,20 +46,31 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupn
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
+import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
@@ -993,6 +1011,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	private List<Integer> checkWhichMarkersAreUsedInAMarkerGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) {
 
+		int totalNumOfMarkersThatCantBeDeleted = 0;
+		
 		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
 		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
 
@@ -1011,29 +1031,32 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 
 				//check if the marker id is being used in a dataset
-				/*
-				 * 
-				 * 
-				 * INSERT CODE HERE
-				 * 
-				 * 
-				 */
+
+				List<DatasetRecord> inDatasetList = getDatasetsThatContainThisMarkerId(marker.getMarkerId());
+				if(inDatasetList.size()>0) {
+					inDataset = true;
+					markerDeleteResultTableEntity.setDataset_name(setDatasetIdDetails(inDatasetList));
+				}
+				
 
 				//check if the marker id is being used in a marker_group
-				List<MarkerGroupRecord> markerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
+				List<MarkerGroupRecord> inMarkerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
+				
 
-				if(markerGroupList.size()>0){
+				if(inMarkerGroupList.size()>0){
 					inMarkerGroup = true;
-					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(markerGroupList));
+					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(inMarkerGroupList));
 				}
 
 				if(!inMarkerGroup && !inDataset){
 					markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
 				}else{
-					markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+					if(totalNumOfMarkersThatCantBeDeleted<10) markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
+					totalNumOfMarkersThatCantBeDeleted++;
 
 				}
-
+				
+				totalNumOfMarkersThatCantBeDeleted = totalNumOfMarkersThatCantBeDeleted-10;
 			}catch(Exception e ){
 
 				Messagebox.show("There was an error while trying to retrieve MarkerGroups", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -1045,12 +1068,37 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("markerDeleteResultTableEntityList", markerDeleteResultTableEntityList);
-
+			args.put("totalNumOfMarkersThatCantBeDeleted", totalNumOfMarkersThatCantBeDeleted);
 			Window window = (Window)Executions.createComponents(
 					"/markerDeleteWarning.zul", null, args);
 			window.doModal();
 		}
 		return markerIDsThatCanFreelyBeDeleted;
+	}
+
+	private String setDatasetIdDetails(List<DatasetRecord> inDatasetList) {
+		// TODO Auto-generated method stub
+
+		StringBuilder sb = new StringBuilder();
+		for(DatasetRecord mgr : inDatasetList){
+
+			if(sb.length()>0) sb.append(", ");
+			sb.append(" "+mgr.getDatasetId());
+
+		}
+
+		return(sb.toString());
+	}
+
+	private List<DatasetRecord> getDatasetsThatContainThisMarkerId(Integer markerId) {
+		// TODO Auto-generated method stub
+
+		List<DatasetRecord> datasetList = null;
+		DSLContext context = getDSLContext();
+		String query = "select key::integer as dataset_id, value::integer as hdf5_index from jsonb_each_text((select dataset_marker_idx from marker where marker_id="+markerId+"));";
+		datasetList = context.fetch(query).into(DatasetRecord.class);
+
+		return datasetList;
 	}
 
 	private List<MarkerGroupRecord> getMarkerGroupsThatContainsThisMarkerId(Integer markerId) {
@@ -1063,7 +1111,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return markerGroupList;
 	}
-
+	
 	private String setMarkerGroupDetails(List<MarkerGroupRecord> markerGroupList) {
 
 		StringBuilder sb = new StringBuilder();
@@ -1155,6 +1203,200 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}
 		return version;
+	}
+
+	@Override
+	public List<VLinkageGroupSummaryEntity> getAllLinkageGroups(LinkageGroupSummaryEntity linkageGroupSummaryEntity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<VLinkageGroupSummaryEntity> getAllLinkageGroupsBasedOnQuery(LinkageGroupEntity linkageGroupEntity,
+			LinkageGroupSummaryEntity linkageGroupSummaryEntity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean deleteLinkageGroup(VLinkageGroupSummaryEntity vLinkageGroupSummaryEntity,
+			List<LinkageGroupSummaryEntity> linkageGroupSummary, LinkageGroupSummaryEntity linkageGroupSummaryEntity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteLinkageGroups(List<VLinkageGroupSummaryEntity> selectedDsList,
+			List<LinkageGroupSummaryEntity> linkageGroupSummary, LinkageGroupSummaryEntity linkageGroupSummaryEntity) {
+		// TODO Auto-generated method stub
+		return false;
+	}	@Override
+	public List<OrganizationRecord> getAllVendors() {
+		// TODO Auto-generated method stub
+		
+		DSLContext context = getDSLContext();
+		List<OrganizationRecord> vendorList = null;
+		try{
+
+			vendorList = context.select().from(ORGANIZATION).orderBy(ORGANIZATION.NAME).fetchInto(OrganizationRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve ORGANIZATIONS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return vendorList;
+		
+	}
+
+	@Override
+	public List<VendorProtocolRecord> getAllVendorProtocols() {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<VendorProtocolRecord> vendorProtocolList = null;
+		try{
+
+			vendorProtocolList = context.select().from(VENDOR_PROTOCOL).orderBy(VENDOR_PROTOCOL.NAME).fetchInto(VendorProtocolRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve VENDOR-PROTOCOLS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return vendorProtocolList;
+	}
+
+	@Override
+	public List<AnalysisRecord> getAllAnalyses() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<AnalysisRecord> analysisList = new ArrayList<AnalysisRecord>();
+		try{
+
+			analysisList = context.select().from(ANALYSIS).orderBy(ANALYSIS.NAME).fetchInto(AnalysisRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve CALLING ANALYSIS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return analysisList;
+	}
+
+	@Override
+	public List<AnalysisRecord> getAllCallingAnalysis() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<AnalysisRecord> analysisList = null;
+		try{
+
+			analysisList = context.select().from(ANALYSIS).where(ANALYSIS.ANALYSIS_ID.in(context.selectDistinct(DATASET.CALLINGANALYSIS_ID).from(DATASET))).fetchInto(AnalysisRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve ANALYSIS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return analysisList;
+	}
+
+	@Override
+	public List<ProjectRecord> getAllProjects() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<ProjectRecord> projectList = null;
+		try{
+
+			projectList = context.select().from(PROJECT).orderBy(PROJECT.NAME).fetchInto(ProjectRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve PROJECT", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return projectList;
+	}
+
+	@Override
+	public List<ExperimentRecord> getAllExperiments() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<ExperimentRecord> experimentList = null;
+		try{
+
+			experimentList = context.select().from(EXPERIMENT).orderBy(EXPERIMENT.NAME).fetchInto(ExperimentRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve EXPERIMENT", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return experimentList;
+	}
+
+	@Override
+	public List<MapsetRecord> getAllMapsets() {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<MapsetRecord> mapsetList = null;
+		try{
+
+			mapsetList = context.select().from(MAPSET).orderBy(MAPSET.NAME).fetchInto(MapsetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve MAPSET", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return mapsetList;
+	}
+
+	@Override
+	public List<LinkageGroupRecord> getAllLinkageGroups() {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<LinkageGroupRecord> linkageGroupList = null;
+		try{
+
+			linkageGroupList = context.select().from(LINKAGE_GROUP).orderBy(LINKAGE_GROUP.NAME).fetchInto(LinkageGroupRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve LINKAGE_GROUP", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return linkageGroupList;
+	}
+
+	@Override
+	public List<DatasetRecord> getAllDatasets() {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> datasetList = null;
+		try{
+
+			datasetList = context.select().from(DATASET).orderBy(DATASET.NAME).fetchInto(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve DATASET", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return datasetList;
 	}
 
 }
