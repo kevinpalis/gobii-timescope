@@ -393,7 +393,7 @@
 								<div sclass="Container">
 									<grid id="markerGrid"
 										model="@load(vm.markerList)" mold="paging" pageSize="15"
-										pagingPosition="both">
+										pagingPosition="both" style="overflow-x: hidden !important;">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox
