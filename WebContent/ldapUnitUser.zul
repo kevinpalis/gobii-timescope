@@ -17,7 +17,7 @@
             <row>
                 <cell sclass="row-title">Unit Test Password:</cell>
                 <cell>
-                    <textbox
+                    <textbox type="password"
                             width="200px" value="@load(vm.xmlHandler.ldapPasswordForUnitTest) @save(vm.xmlHandler.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>

@@ -41,7 +41,7 @@
             <row>
                 <cell sclass="row-title">Bind User Password:</cell>
                 <cell>
-                    <textbox
+                    <textbox type="password"
                             width="200px" value="@load(vm.xmlHandler.ldapBindPassword) @save(vm.xmlHandler.ldapBindPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
@@ -57,7 +57,7 @@
             <row>
                 <cell sclass="row-title">GDM User Password:</cell>
                 <cell>
-                    <textbox
+                    <textbox type="password"
                             width="200px" value="@load(vm.xmlHandler.ldapPasswordForBackendProcs) @save(vm.xmlHandler.ldapPasswordForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>

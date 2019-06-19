@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.apache.catalina.ant.ReloadTask;
+import org.gobiiproject.datatimescope.webconfigurator.propertyHandler;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
@@ -15,15 +16,14 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
     private xmlModifier xmlHandler = new xmlModifier();
     private boolean documentLocked = true;
+    private propertyHandler prop = new propertyHandler();
+    private ReloadTask request = new ReloadTask();
 
     @Command("enableEdit")
     @NotifyChange("documentLocked")
@@ -33,32 +33,36 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("warning")
     public void warning(@ContextParam(ContextType.BINDER) Binder binder) {
-        Messagebox.show("Warning placeholder.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
-            public void onEvent(Event evt) throws InterruptedException {
-                if (evt.getName().equals("onOK")) {
-                    alert("Settings Saved!");
-                    binder.sendCommand("disableEdit", null);
-                } else {
-                    alert("Save Cancelled!");
+        if (configureRequest()) {
+            Messagebox.show("Warning placeholder.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+                public void onEvent(Event evt) throws InterruptedException {
+                    if (evt.getName().equals("onOK")) {
+                        binder.sendCommand("disableEdit", null);
+                        executeRequest();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            binder.sendCommand("disableEdit", null);
+        }
     }
 
-    @Command("disableEdit")
-    @NotifyChange("documentLocked")
-    public void disableEdit() {
-        ReloadTask request = new ReloadTask();
+    private boolean configureRequest(){
         try {
-            //TODO Adapt this
-            InputStream input = new FileInputStream("/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/web-configurator.properties");
-            Properties prop = new Properties();
-            prop.load(input);
-            request.setUsername(prop.getProperty("user.username"));
-            request.setPassword(prop.getProperty("user.password"));
+            request.setUsername(prop.getUsername());
+            request.setPassword(prop.getPassword());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (request.getUsername() == null || request.getPassword() == null) {
+            alert("Please configure web-configurator.properties with correct credentials for the changes to be able to take place.");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void executeRequest(){
         String host = xmlHandler.getHostForReload();
         String port = xmlHandler.getPortForReload();
         NodeList contextPathNodes = xmlHandler.getContextPathNodes();
@@ -68,9 +72,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             request.setUrl("http://" + host + ":" + port + "/manager/text");
             request.execute();
         }
-        this.documentLocked = true;
     }
 
+    @Command("disableEdit")
+    @NotifyChange("documentLocked")
+    public void disableEdit() {
+        this.documentLocked = true;
+    }
 
     //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
     @Command("cancelChanges")
@@ -220,6 +228,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public boolean getdocumentLocked() {
         return documentLocked;
+    }
+
+    public propertyHandler getProp(){
+        return prop;
     }
 
 }
