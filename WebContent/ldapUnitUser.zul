@@ -1,3 +1,5 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
 <vlayout apply="org.zkoss.bind.BindComposer"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
     <grid width="500px">
@@ -9,7 +11,7 @@
             <row>
                 <cell sclass="row-title">Unit Test User:</cell>
                 <cell>
-                    <textbox
+                    <textbox constraint="no empty"
                             width="200px" value="@load(vm.xmlHandler.ldapUserForUnitTest) @save(vm.xmlHandler.ldapUserForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
@@ -17,7 +19,7 @@
             <row>
                 <cell sclass="row-title">Unit Test Password:</cell>
                 <cell>
-                    <textbox type="password"
+                    <textbox type="password" constraint="no empty"
                             width="200px" value="@load(vm.xmlHandler.ldapPasswordForUnitTest) @save(vm.xmlHandler.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>

@@ -213,6 +213,7 @@ public class xmlModifier extends SelectorComposer<Component> {
             result = expr.evaluate(doc, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             e.printStackTrace();
+            System.out.println("Malformed XPath Request.");
         }
         NodeList nodes = (NodeList) result;
         if (result == null) {
@@ -231,6 +232,7 @@ public class xmlModifier extends SelectorComposer<Component> {
             doc = builder.parse(path);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
+            System.out.println("Retrieval of gobii-web.xml failed.");
         }
         return doc;
     }
@@ -244,6 +246,7 @@ public class xmlModifier extends SelectorComposer<Component> {
             transformer.transform(source, result);
         } catch (TransformerException e) {
             e.printStackTrace();
+            System.out.println("Modification of gobii-web.xml failed.");
         }
     }
 

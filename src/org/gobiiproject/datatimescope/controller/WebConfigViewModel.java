@@ -1,15 +1,14 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.apache.catalina.ant.ReloadTask;
+import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.webconfigurator.propertyHandler;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.ContextParam;
-import org.zkoss.bind.annotation.ContextType;
-import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
@@ -24,11 +23,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private boolean documentLocked = true;
     private propertyHandler prop = new propertyHandler();
     private ReloadTask request = new ReloadTask();
+    private boolean isSuperAdmin = false;
+
+    @Init
+    public void init() {
+        UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+        if (cre.getRole() == 1){
+            isSuperAdmin = true;
+        }
+    }
+
 
     @Command("enableEdit")
     @NotifyChange("documentLocked")
     public void enableEdit() {
-        this.documentLocked = false;
+        if (isSuperAdmin) {
+            this.documentLocked = false;
+        } else {
+            alert("Only Super Admins can configure these settings.");
+        }
     }
 
     @Command("warning")
@@ -234,4 +247,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return prop;
     }
 
+    public boolean isSuperAdmin() {
+        return isSuperAdmin;
+    }
 }
