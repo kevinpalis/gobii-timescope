@@ -68,8 +68,8 @@ public class MarkerViewModel {
 	Grid markerGrid;
 	
 	ViewModelService viewModelService;
-	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false;
-	private boolean dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true, dbLinkageGroup=true;
+	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true;
+	private boolean dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
 	private List<OrganizationRecord> vendorList;
@@ -107,8 +107,6 @@ public class MarkerViewModel {
 		viewModelService = new ViewModelServiceImpl();
 		
 		setMarkerEntity(new MarkerRecordEntity());
-		setMarkerList(viewModelService.getAllMarkers(markerSummary));
-		
 		setPlatformList(viewModelService.getAllPlatforms());
 		setVendorList(viewModelService.getAllVendors());
 		setVendorProtocolList(viewModelService.getAllVendorProtocols());
@@ -119,7 +117,6 @@ public class MarkerViewModel {
 		setDatasetList(viewModelService.getAllDatasets());
 		setMapsetList(viewModelService.getAllMapsets());
 		setLinkageGroupList(viewModelService.getAllLinkageGroups());
-		
 		if(platformList.isEmpty()) dbPlatforms = false;
 		if(vendorList.isEmpty()) dbVendors = false;
 		if(vendorProtocolList.isEmpty()) dbVendorProtocols = false;		
@@ -546,7 +543,9 @@ public class MarkerViewModel {
 	}
 
 	public void setMarkerList(List<VMarkerSummaryEntity> list) {
-		
+		if(list.size()<1) setGridGroupVisible(true);
+		else setGridGroupVisible(false);
+			
 		if(list.size() > 25) setPaged(true);
 		else setPaged(false);
 		
@@ -902,4 +901,15 @@ public class MarkerViewModel {
 	public void setDbLinkageGroup(boolean dbLinkageGroup) {
 		this.dbLinkageGroup = dbLinkageGroup;
 	}
+
+
+	public boolean isGridGroupVisible() {
+		return gridGroupVisible;
+	}
+
+
+	public void setGridGroupVisible(boolean gridGroupVisible) {
+		this.gridGroupVisible = gridGroupVisible;
+	}
+
 }

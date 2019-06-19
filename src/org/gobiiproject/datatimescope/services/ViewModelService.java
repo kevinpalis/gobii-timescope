@@ -20,10 +20,13 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
+import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -75,6 +78,17 @@ public interface ViewModelService {
 	public List<PlatformRecord> getAllPlatforms();
 
 	public String getDatawarehouseVersion();
+
+	public List<VLinkageGroupSummaryEntity> getAllLinkageGroups(LinkageGroupSummaryEntity linkageGroupSummaryEntity);
+
+	public List<VLinkageGroupSummaryEntity> getAllLinkageGroupsBasedOnQuery(LinkageGroupEntity linkageGroupEntity,
+			LinkageGroupSummaryEntity linkageGroupSummaryEntity);
+
+	public boolean deleteLinkageGroup(VLinkageGroupSummaryEntity vLinkageGroupSummaryEntity,
+			List<LinkageGroupSummaryEntity> linkageGroupSummary, LinkageGroupSummaryEntity linkageGroupSummaryEntity);
+
+	public boolean deleteLinkageGroups(List<VLinkageGroupSummaryEntity> selectedDsList,
+			List<LinkageGroupSummaryEntity> linkageGroupSummary, LinkageGroupSummaryEntity linkageGroupSummaryEntity);
 
 	public List<OrganizationRecord> getAllVendors();
 

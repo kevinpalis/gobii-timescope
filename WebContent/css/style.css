@@ -1,3 +1,19 @@
+.footer_center {
+	text-align: center;;
+}
+
+body { padding: 0 0;  /* 0 padding	on top and bottom and 0 padding on right and left */ }
+
+div .z-window-content {
+    padding: 0px !important;
+    margin: 0px !important;
+    border: 0px !important;
+    background: #fff;
+    color: rgba(0,0,0,0.9);
+    overflow: hidden;
+    zoom: 1;
+}
+
 .z-initing { width: 50px !important; height: 72px !important; background-image: url('../imgs/favicon.ico') !important; }
 
 .z-north splitter {
@@ -92,12 +108,16 @@
 	font-style: oblique;
 }
 
-.Container
-{
-    overflow-y: auto;
+.div1 {
+  width:1000px;
+  height: 20px;
 }
-.Content
-{
+
+.div2 {
+  width:1000px;
+  height: 200px;
+  background-color: #88FF88;
+  overflow: auto;
 }
 
 .Flipped, .Flipped .Content
