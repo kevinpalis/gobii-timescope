@@ -47,7 +47,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("warning")
     public void warning(@ContextParam(ContextType.BINDER) Binder binder) {
         if (configureRequest()) {
-            Messagebox.show("Warning placeholder.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+            Messagebox.show("Clicking OK will restart the web application and all unsaved data will be lost.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
                 public void onEvent(Event evt) throws InterruptedException {
                     if (evt.getName().equals("onOK")) {
                         binder.sendCommand("disableEdit", null);

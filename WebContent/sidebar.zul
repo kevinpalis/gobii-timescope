@@ -4,8 +4,8 @@
 	<hbox vflex="2" />
 	<tabbox id = 'tabbox' hflex="max" vflex="25">
 		<tabs>
-			<tab id="interface"> Interface</tab>
-			<tab id="settings"> Settings</tab>
+			<tab id="Data"> Data</tab>
+			<tab id="Configuration"> Configuration</tab>
 		</tabs>
 		<tabpanels>
 			<tabpanel hflex="max" vflex="25">

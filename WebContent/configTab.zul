@@ -12,19 +12,17 @@
             </treerow>
             <treechildren>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('ldapSystemUser')">
                         <treecell>
-                            <label value="LDAP - GOBii System User" style="font-size:15px !important;"
-                                    onClick="@command('ldapSystemUser')">
+                            <label value="LDAP System" style="font-size:15px !important;">
                             </label>
                         </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('ldapUnitUser')">
                         <treecell>
-                            <label value="LDAP - Unit Test User" style="font-size:15px !important;"
-                            onClick="@command('ldapUnitUser')">
+                            <label value="LDAP Unit Test" style="font-size:15px !important;">
                             </label>
                         </treecell>
                     </treerow>
@@ -37,17 +35,19 @@
             </treerow>
             <treechildren>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('emailNotifications')">
                         <treecell>
-                            <label value="E Mail Notifications" style="font-size:15px !important;"
-                                    onClick="@command('emailNotifications')">
+                            <label value="E Mail" style="font-size:15px !important;"
+                                    >
                             </label>
                         </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Push Notifications" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Push" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -81,17 +81,17 @@
             <treechildren>
                 <treeitem>
                     <treerow>
-                        <treecell label="Logging settings" style="font-size:15px !important;"/>
+                        <treecell label="Settings" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Linkage Groups" style="font-size:15px !important;"/>
+                        <treecell label="Linkage" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Marker Groups" style="font-size:15px !important;"/>
+                        <treecell label="Marker" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -118,8 +118,20 @@
                 </treeitem>
             </treechildren>
         </treeitem>
-        <treeitem label="Scheduler" style="font-size:15px !important;"/>
-        <treeitem label="Import/Export Configuration" style="font-size:15px !important;"/>
-        <treeitem label="Backup/Restore" style="font-size:15px !important;"/>
+        <treeitem>
+            <treerow>
+                <treecell label="Scheduler" style="font-size:15px !important;"/>
+            </treerow>
+        </treeitem>
+        <treeitem>
+            <treerow>
+                <treecell label="Import/Export" style="font-size:15px !important;"/>
+            </treerow>
+        </treeitem>
+        <treeitem>
+            <treerow>
+                <treecell label="Backup/Restore" style="font-size:15px !important;"/>
+            </treerow>
+        </treeitem>
     </treechildren>
 </tree>
