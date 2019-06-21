@@ -70,26 +70,33 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("warningPostgres")
     public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder){
-        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
-        Map<String, String> params = new HashMap<>();
-        params.put("width", "500");
-        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there " +
-                "active sessions, or worse, corrupt your data. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
-                " you want to restart Postgres now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
-            public void onEvent(Event evt) throws InterruptedException {
-                if (evt.getName().equals("onOK")) {
-                    String oldUserName = xmlHandler.getPostgresUserName();
-                    binder.sendCommand("disableEdit", null);
-                    executePostgresReload(oldUserName);
+        if (configureTomcatReloadRequest()) {
+            Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+            Map<String, String> params = new HashMap<>();
+            params.put("width", "500");
+            Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there " +
+                    "active sessions, or worse, corrupt your data. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
+                    " you want to restart Postgres now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
+                public void onEvent(Event evt) throws InterruptedException {
+                    if (evt.getName().equals("onOK")) {
+                        String oldUserName = xmlHandler.getPostgresUserName();
+                        binder.sendCommand("disableEdit", null);
+                        executePostgresReload(oldUserName);
+                        executeTomcatReloadRequest();
+                    }
                 }
-            }
-        }, params);
+            }, params);
+        } else {
+            binder.sendCommand("disableEdit", null);
+        }
     }
 
     private void executePostgresReload(String oldUserName){
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
-        context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
+        if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
+            context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
+        }
         context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
         context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
     }
