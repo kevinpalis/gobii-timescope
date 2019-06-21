@@ -13,11 +13,14 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
@@ -68,9 +71,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("warningPostgres")
     public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder){
+        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+        Map<String, String> params = new HashMap<>();
+        params.put("width", "500");
         Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there " +
                 "active sessions, or worse, corrupt your data. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
-                " you want to restart Postgres now?", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+                " you want to restart Postgres now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) throws InterruptedException {
                 if (evt.getName().equals("onOK")) {
                     String oldUserName = xmlHandler.getPostgresUserName();
@@ -78,7 +84,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                     executePostgresReload(oldUserName);
                 }
             }
-        });
+        }, params);
     }
 
     private void executePostgresReload(String oldUserName){
