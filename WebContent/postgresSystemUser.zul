@@ -2,7 +2,7 @@
 
 <vlayout apply="org.zkoss.bind.BindComposer"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
-    <label>LDAP - Unit Test User</label>
+    <label>Postgres System User</label>
     <grid width="500px">
         <columns>
             <column align="right" hflex="min"/>
@@ -10,18 +10,18 @@
         </columns>
         <rows>
             <row>
-                <cell sclass="row-title">Unit Test User:</cell>
+                <cell sclass="row-title">Postgres Username:</cell>
                 <cell>
                     <textbox constraint="no empty"
-                            width="200px" value="@load(vm.xmlHandler.ldapUserForUnitTest) @save(vm.xmlHandler.ldapUserForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                             width="200px" value="@load(vm.xmlHandler.postgresUserName) @save(vm.xmlHandler.postgresUserName, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
             <row>
-                <cell sclass="row-title">Unit Test Password:</cell>
+                <cell sclass="row-title">Postgres Password:</cell>
                 <cell>
                     <textbox type="password" constraint="no empty"
-                            width="200px" value="@load(vm.xmlHandler.ldapPasswordForUnitTest) @save(vm.xmlHandler.ldapPasswordForUnitTest, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                             width="200px" value="@load(vm.xmlHandler.postgresPassword) @save(vm.xmlHandler.postgresPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>
@@ -30,7 +30,7 @@
     <div align="left">
         <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
         <hlayout>
-            <button id="save" label="Save" onClick="@command('warningTomcat')" visible="@bind(not vm.documentLocked)" />
+            <button id="save" label="Save" onClick="@command('warningPostgres')" visible="@bind(not vm.documentLocked)" />
             <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
         </hlayout>
     </div>

@@ -1,0 +1,48 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
+    <label>Scheduler - Cron Settings</label>
+    <grid width="500px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Crop Name:</cell>
+                <cell>
+                    <listbox model="@load(vm.xmlHandler.cropList)" selectedItem="@bind(vm.xmlHandler.currentCrop)"
+                             width="200px" mold="select" disabled="@load(vm.documentLocked)">
+                        <template name="model">
+                            <listitem label="@load(each)" />
+                        </template>
+                    </listbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Cron File Age (Mins):</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                             width="200px" value="@load(vm.xmlHandler.postgresUserName) @save(vm.xmlHandler.postgresUserName, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Cron Interval (Mins):</cell>
+                <cell>
+                    <textbox type="password" constraint="no empty"
+                             width="200px" value="@load(vm.xmlHandler.postgresPassword) @save(vm.xmlHandler.postgresPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('warning')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

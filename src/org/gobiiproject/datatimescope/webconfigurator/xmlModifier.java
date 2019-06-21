@@ -19,6 +19,10 @@ import java.io.File;
 import java.io.IOException;
 
 
+/**
+ * A Class that handles the gobii-web.xml file by querying data from it using XPATH and modifying it according to user input
+ */
+
 public class xmlModifier extends SelectorComposer<Component> {
 
     //If any of the below XPATH's return more than one Node only the first one will be modified
@@ -38,6 +42,10 @@ public class xmlModifier extends SelectorComposer<Component> {
     private static String emailSvrHashTypeXPath = "//emailSvrHashType";
     private static String emailSvrPasswordXPath = "//emailSvrPassword";
     private static String emailServerPortXPath = "//emailServerPort";
+    private static String postgresUserNameXPath = "//serverType[text() = 'GOBII_PGSQL']/preceding-sibling::userName";
+    private static String postgresPasswordXPath = "//serverType[text() = 'GOBII_PGSQL']/preceding-sibling::password";
+    private static String cropListXPath = "//";
+    private static String currentCrop;
 
     private static String path = "/data/gobii_bundle/config/gobii-web.xml";
 
@@ -49,161 +57,189 @@ public class xmlModifier extends SelectorComposer<Component> {
 
     public String getHostForReload() {
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(hostForReloadXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(hostForReloadXPath, doc).item(0).getTextContent();
     }
 
     public NodeList getContextPathNodes() {
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(contextPathlForReloadXPath, doc);
+        return evaluateXPathExpression(contextPathlForReloadXPath, doc);
     }
 
     public String getPortForReload() {
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(portForReloadXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(portForReloadXPath, doc).item(0).getTextContent();
     }
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
     }
 
+    public void setCurrentCrop(String currCrop){
+        currentCrop = currCrop;
+    }
+    public void setPostgresUserName(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(postgresUserNameXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setPostgresPassword(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(postgresPasswordXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
     public void setLdapUserForUnitTest(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapUserForUnitTestXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForUnitTest(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setGobiiAuthenticationType(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(gobiiAuthenticationTypeXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(gobiiAuthenticationTypeXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserDnPattern(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapUserDnPatternXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapUserDnPatternXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUrl(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapUrlXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapUrlXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindUser(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapBindUserXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapBindUserXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindPassword(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserForBackendProcs(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapUserForBackendProcsXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForBackendProcs(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrType(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailSvrTypeXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailSvrTypeXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrDomain(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailSvrDomainXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailSvrDomainXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrUser(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailSvrUserXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailSvrUserXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrHashType(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailSvrHashTypeXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrPassword(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
     public void setEmailServerPort(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateExpression(emailServerPortXPath, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(emailServerPortXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
 
+    public NodeList getCropList(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(cropListXPath, doc);
+    }
+    public String getCurrentCrop(){
+        return currentCrop;
+    }
+    public String getPostgresUserName(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
+    }
+    public String getPostgresPassword(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent();
+    }
     public String getLdapUserForUnitTest(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapUserForUnitTestXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).getTextContent();
     }
     public String getLdapPasswordForUnitTest(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent();
     }
     public String getGobiiAuthenticationType(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(gobiiAuthenticationTypeXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(gobiiAuthenticationTypeXPath, doc).item(0).getTextContent();
     }
     public String getLdapUserDnPattern(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapUserDnPatternXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapUserDnPatternXPath, doc).item(0).getTextContent();
     }
     public String getLdapUrl(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapUrlXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapUrlXPath, doc).item(0).getTextContent();
     }
     public String getLdapBindUser(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapBindUserXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapBindUserXPath, doc).item(0).getTextContent();
     }
     public String getLdapBindPassword(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapBindPasswordXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent();
     }
     public String getLdapUserForBackendProcs(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapUserForBackendProcsXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).getTextContent();
     }
     public String getLdapPasswordForBackendProcs(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrType(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailSvrTypeXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrTypeXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrDomain(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailSvrDomainXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrDomainXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrUser(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailSvrUserXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrUserXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrHashType(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailSvrHashTypeXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrPassword(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailSvrPasswordXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent();
     }
     public String getEmailServerPort(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateExpression(emailServerPortXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailServerPortXPath, doc).item(0).getTextContent();
     }
 
-    private static NodeList evaluateExpression(String expression, Document doc){
+    private static NodeList evaluateXPathExpression(String expression, Document doc){
         //Create XPath
         XPathFactory xpathfactory = XPathFactory.newInstance();
         XPath xpath = xpathfactory.newXPath();

@@ -1,6 +1,7 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
+    <label>Mailer Settings</label>
     <grid id="emailGrid" width="500px">
         <columns>
             <column align="right" hflex="min"/>
@@ -55,7 +56,7 @@
     <div align="left">
         <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
         <hlayout>
-            <button id="save" label="Save" onClick="@command('warning')" visible="@bind(not vm.documentLocked)" />
+            <button id="save" label="Save" onClick="@command('warningTomcat')" visible="@bind(not vm.documentLocked)" />
             <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
         </hlayout>
     </div>

@@ -27,6 +27,14 @@
                         </treecell>
                     </treerow>
                 </treeitem>
+                <treeitem>
+                    <treerow onClick="@command('postgresSystemUser')">
+                        <treecell>
+                            <label value="Postgres" style="font-size:15px !important;">
+                            </label>
+                        </treecell>
+                    </treerow>
+                </treeitem>
             </treechildren>
         </treeitem>
         <treeitem open="false">

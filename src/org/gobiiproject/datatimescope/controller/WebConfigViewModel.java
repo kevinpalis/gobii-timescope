@@ -4,6 +4,7 @@ import org.apache.catalina.ant.ReloadTask;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.webconfigurator.propertyHandler;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
+import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
 import java.io.IOException;
 
@@ -44,14 +46,18 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
-    @Command("warning")
-    public void warning(@ContextParam(ContextType.BINDER) Binder binder) {
-        if (configureRequest()) {
+    /**
+     * Opens a warning box and if acknowledged performs the restart of the the application process.
+     * Otherwise stages it for later and upon next restart the effects will take place
+     * */
+    @Command("warningTomcat")
+    public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder) {
+        if (configureTomcatReloadRequest()) {
             Messagebox.show("Clicking OK will restart the web application and all unsaved data will be lost.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
                 public void onEvent(Event evt) throws InterruptedException {
                     if (evt.getName().equals("onOK")) {
                         binder.sendCommand("disableEdit", null);
-                        executeRequest();
+                        executeTomcatReloadRequest();
                     }
                 }
             });
@@ -60,7 +66,34 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
-    private boolean configureRequest(){
+    @Command("warningPostgres")
+    public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder){
+        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there " +
+                "active sessions, or worse, corrupt your data. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
+                " you want to restart Postgres now?", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) throws InterruptedException {
+                if (evt.getName().equals("onOK")) {
+                    String oldUserName = xmlHandler.getPostgresUserName();
+                    binder.sendCommand("disableEdit", null);
+                    executePostgresReload(oldUserName);
+                }
+            }
+        });
+    }
+
+    private void executePostgresReload(String oldUserName){
+        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
+        DSLContext context = tmpService.getDSLContext();
+        context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
+        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
+        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
+    }
+
+    /**
+     * Sets username and password needed for the reload request for the web application specified under context path in the gobii-web.xml
+     * @return true if username and password are filled
+     */
+    private boolean configureTomcatReloadRequest(){
         try {
             request.setUsername(prop.getUsername());
             request.setPassword(prop.getPassword());
@@ -68,14 +101,19 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             e.printStackTrace();
         }
         if (request.getUsername() == null || request.getPassword() == null) {
-            alert("Please configure web-configurator.properties with correct credentials for the changes to be able to take place.");
+            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place." +
+                    "The modifications are staged and will take effect when the web application is restarted.");
             return false;
         } else {
             return true;
         }
     }
 
-    private void executeRequest(){
+
+    /**
+     * Sends the requests to reload the web application under the found context paths in the gobii-web.xml file
+     */
+    private void executeTomcatReloadRequest(){
         String host = xmlHandler.getHostForReload();
         String port = xmlHandler.getPortForReload();
         NodeList contextPathNodes = xmlHandler.getContextPathNodes();
@@ -103,12 +141,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
 
+    @Command("postgresSystemUser")
+    public void postgresSystemUser(){
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/postgresSystemUser.zul");
+        getPage().getDesktop().setBookmark("p_"+"postgresSystemUser");
+    }
+
     @Command("ldapSystemUser")
     public void ldapSystemUser() {
         Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
         include.setSrc("/ldapSystemUser.zul");
-        getPage().getDesktop().setBookmark("p_"+"ldapUSerSystem");
+        getPage().getDesktop().setBookmark("p_"+"ldapUserSystem");
     }
 
     @Command("ldapUnitUser")
