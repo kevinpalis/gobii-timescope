@@ -21,8 +21,8 @@ import org.gobiiproject.datatimescope.db.generated.tables.Dbxref;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnarun;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnasample;
+import org.gobiiproject.datatimescope.db.generated.tables.Edge;
 import org.gobiiproject.datatimescope.db.generated.tables.Experiment;
-import org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz;
 import org.gobiiproject.datatimescope.db.generated.tables.Germplasm;
 import org.gobiiproject.datatimescope.db.generated.tables.Gobiiprop;
 import org.gobiiproject.datatimescope.db.generated.tables.Job;
@@ -39,6 +39,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Protocol;
 import org.gobiiproject.datatimescope.db.generated.tables.Reference;
 import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
+import org.gobiiproject.datatimescope.db.generated.tables.TransitiveClosure;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
@@ -47,6 +48,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
+import org.gobiiproject.datatimescope.db.generated.tables.Vertex;
 import org.gobiiproject.datatimescope.db.generated.udt.DistinctSourceKeys;
 import org.gobiiproject.datatimescope.db.generated.udt.KeyvaluepairType;
 import org.gobiiproject.datatimescope.db.generated.udt.Myrowtype;
@@ -70,7 +72,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 967802927;
+    private static final long serialVersionUID = 353633789;
 
     /**
      * The reference instance of <code>public</code>
@@ -139,14 +141,14 @@ between them.
     public final Dnasample DNASAMPLE = org.gobiiproject.datatimescope.db.generated.tables.Dnasample.DNASAMPLE;
 
     /**
+     * The table <code>public.edge</code>.
+     */
+    public final Edge EDGE = org.gobiiproject.datatimescope.db.generated.tables.Edge.EDGE;
+
+    /**
      * The table <code>public.experiment</code>.
      */
     public final Experiment EXPERIMENT = org.gobiiproject.datatimescope.db.generated.tables.Experiment.EXPERIMENT;
-
-    /**
-     * The table <code>public.ft_linkage_group_2bsid4wz</code>.
-     */
-    public final FtLinkageGroup_2bsid4wz FT_LINKAGE_GROUP_2BSID4WZ = org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz.FT_LINKAGE_GROUP_2BSID4WZ;
 
     /**
      * The table <code>public.germplasm</code>.
@@ -229,6 +231,11 @@ between them.
     public final Timescoper TIMESCOPER = org.gobiiproject.datatimescope.db.generated.tables.Timescoper.TIMESCOPER;
 
     /**
+     * The table <code>public.transitive_closure</code>.
+     */
+    public final TransitiveClosure TRANSITIVE_CLOSURE = org.gobiiproject.datatimescope.db.generated.tables.TransitiveClosure.TRANSITIVE_CLOSURE;
+
+    /**
      * The table <code>public.v_dataset_summary</code>.
      */
     public final VDatasetSummary V_DATASET_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary.V_DATASET_SUMMARY;
@@ -269,6 +276,11 @@ between them.
     public final VendorProtocol VENDOR_PROTOCOL = org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol.VENDOR_PROTOCOL;
 
     /**
+     * The table <code>public.vertex</code>.
+     */
+    public final Vertex VERTEX = org.gobiiproject.datatimescope.db.generated.tables.Vertex.VERTEX;
+
+    /**
      * No further instances allowed
      */
     private Public() {
@@ -302,6 +314,7 @@ between them.
             Sequences.DISPLAY_DISPLAY_ID_SEQ,
             Sequences.DNARUN_DNARUN_ID_SEQ,
             Sequences.DNASAMPLE_DNASAMPLE_ID_SEQ,
+            Sequences.EDGE_EDGE_ID_SEQ,
             Sequences.EXPERIMENT_EXPERIMENT_ID_SEQ,
             Sequences.GERMPLASM_GERMPLASM_ID_SEQ,
             Sequences.GOBIIPROP_GOBIIPROP_ID_SEQ,
@@ -320,7 +333,8 @@ between them.
             Sequences.ROLE_ROLE_ID_SEQ,
             Sequences.TIMESCOPER_TIMESCOPER_ID_SEQ,
             Sequences.VARIANT_VARIANT_ID_SEQ,
-            Sequences.VENDOR_PROTOCOL_VENDOR_PROTOCOL_ID_SEQ);
+            Sequences.VENDOR_PROTOCOL_VENDOR_PROTOCOL_ID_SEQ,
+            Sequences.VERTEX_VERTEX_ID_SEQ);
     }
 
     @Override
@@ -343,8 +357,8 @@ between them.
             Display.DISPLAY,
             Dnarun.DNARUN,
             Dnasample.DNASAMPLE,
+            Edge.EDGE,
             Experiment.EXPERIMENT,
-            FtLinkageGroup_2bsid4wz.FT_LINKAGE_GROUP_2BSID4WZ,
             Germplasm.GERMPLASM,
             Gobiiprop.GOBIIPROP,
             Job.JOB,
@@ -361,6 +375,7 @@ between them.
             Reference.REFERENCE,
             Role.ROLE,
             Timescoper.TIMESCOPER,
+            TransitiveClosure.TRANSITIVE_CLOSURE,
             VDatasetSummary.V_DATASET_SUMMARY,
             VJobsSummary.V_JOBS_SUMMARY,
             VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY,
@@ -368,7 +383,8 @@ between them.
             VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL,
             VMarkerSummary.V_MARKER_SUMMARY,
             Variant.VARIANT,
-            VendorProtocol.VENDOR_PROTOCOL);
+            VendorProtocol.VENDOR_PROTOCOL,
+            Vertex.VERTEX);
     }
 
     @Override

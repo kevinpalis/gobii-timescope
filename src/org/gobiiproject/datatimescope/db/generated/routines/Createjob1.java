@@ -24,7 +24,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Createjob1 extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = -1213685012;
+    private static final long serialVersionUID = -48494542;
 
     /**
      * The parameter <code>public.createjob._name</code>.
@@ -32,19 +32,19 @@ public class Createjob1 extends AbstractRoutine<java.lang.Void> {
     public static final Parameter<String> _NAME = createParameter("_name", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
-     * The parameter <code>public.createjob._type_id</code>.
+     * The parameter <code>public.createjob._type</code>.
      */
-    public static final Parameter<Integer> _TYPE_ID = createParameter("_type_id", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<String> _TYPE = createParameter("_type", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
-     * The parameter <code>public.createjob._payload_type_id</code>.
+     * The parameter <code>public.createjob._payload_type</code>.
      */
-    public static final Parameter<Integer> _PAYLOAD_TYPE_ID = createParameter("_payload_type_id", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<String> _PAYLOAD_TYPE = createParameter("_payload_type", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
      * The parameter <code>public.createjob._status</code>.
      */
-    public static final Parameter<Integer> _STATUS = createParameter("_status", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<String> _STATUS = createParameter("_status", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
      * The parameter <code>public.createjob._message</code>.
@@ -68,8 +68,8 @@ public class Createjob1 extends AbstractRoutine<java.lang.Void> {
         super("createjob", Public.PUBLIC);
 
         addInParameter(_NAME);
-        addInParameter(_TYPE_ID);
-        addInParameter(_PAYLOAD_TYPE_ID);
+        addInParameter(_TYPE);
+        addInParameter(_PAYLOAD_TYPE);
         addInParameter(_STATUS);
         addInParameter(_MESSAGE);
         addInParameter(_SUBMITTED_BY);
@@ -85,23 +85,23 @@ public class Createjob1 extends AbstractRoutine<java.lang.Void> {
     }
 
     /**
-     * Set the <code>_type_id</code> parameter IN value to the routine
+     * Set the <code>_type</code> parameter IN value to the routine
      */
-    public void set_TypeId(Integer value) {
-        setValue(_TYPE_ID, value);
+    public void set_Type(String value) {
+        setValue(_TYPE, value);
     }
 
     /**
-     * Set the <code>_payload_type_id</code> parameter IN value to the routine
+     * Set the <code>_payload_type</code> parameter IN value to the routine
      */
-    public void set_PayloadTypeId(Integer value) {
-        setValue(_PAYLOAD_TYPE_ID, value);
+    public void set_PayloadType(String value) {
+        setValue(_PAYLOAD_TYPE, value);
     }
 
     /**
      * Set the <code>_status</code> parameter IN value to the routine
      */
-    public void set_Status(Integer value) {
+    public void set_Status(String value) {
         setValue(_STATUS, value);
     }
 

@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class LinkageGroup extends TableImpl<LinkageGroupRecord> {
 
-    private static final long serialVersionUID = -1592470727;
+    private static final long serialVersionUID = -624570562;
 
     /**
      * The reference instance of <code>public.linkage_group</code>
@@ -75,7 +75,7 @@ public class LinkageGroup extends TableImpl<LinkageGroupRecord> {
      * The column <code>public.linkage_group.stop</code>. The maximum position in the linkage group, ex. 200, 200000000
 
      */
-    public final TableField<LinkageGroupRecord, Integer> STOP = createField("stop", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "The maximum position in the linkage group, ex. 200, 200000000\n");
+    public final TableField<LinkageGroupRecord, Integer> STOP = createField("stop", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "The maximum position in the linkage group, ex. 200, 200000000\r\n");
 
     /**
      * The column <code>public.linkage_group.map_id</code>. Foreign key to the Map table. This defines which map the linkage group belongs to.

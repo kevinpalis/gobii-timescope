@@ -44,7 +44,9 @@ import org.gobiiproject.datatimescope.db.generated.routines.Createdataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Createdbxref;
 import org.gobiiproject.datatimescope.db.generated.routines.Createdisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Creatednarun;
-import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample;
+import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample1;
+import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample2;
+import org.gobiiproject.datatimescope.db.generated.routines.Createedge;
 import org.gobiiproject.datatimescope.db.generated.routines.Createexperiment;
 import org.gobiiproject.datatimescope.db.generated.routines.Creategermplasm;
 import org.gobiiproject.datatimescope.db.generated.routines.Createjob1;
@@ -64,6 +66,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Createrole;
 import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Createvariant;
 import org.gobiiproject.datatimescope.db.generated.routines.Createvendorprotocol;
+import org.gobiiproject.datatimescope.db.generated.routines.Createvertex;
 import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
 import org.gobiiproject.datatimescope.db.generated.routines.Dearmor;
 import org.gobiiproject.datatimescope.db.generated.routines.Decrypt;
@@ -131,6 +134,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbydatase
 import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbydatasetandmap;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbymarkerlist;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallcontactsbyrole;
+import org.gobiiproject.datatimescope.db.generated.routines.Getalldatasetsbymarker;
+import org.gobiiproject.datatimescope.db.generated.routines.Getallentryvertices;
 import org.gobiiproject.datatimescope.db.generated.routines.Getalljobsbystatus;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallmarkermetadatabydataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallmarkermetadatabydatasetandmap;
@@ -148,6 +153,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofpl
 import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofproject;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofprotocol;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallsamplemetadatabydataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Getcvgroupid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvterm;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
@@ -171,10 +177,12 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getexperimentnamesby
 import org.gobiiproject.datatimescope.db.generated.routines.Getexperimentsbyprojectid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getgermplasmpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getgermplasmpropertybyname;
+import org.gobiiproject.datatimescope.db.generated.routines.Getlinkagegroupsbymarker;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmanifestbyexperimentid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmapsetpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmapsetpropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerallmapsetinfobydataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkergroupsbymarker;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerids;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkeridsbymarkernames;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkeridsbymarkernamesandplatformlist;
@@ -253,6 +261,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Removereadtablefromr
 import org.gobiiproject.datatimescope.db.generated.routines.Removerolefromcontact;
 import org.gobiiproject.datatimescope.db.generated.routines.Removewritetablefromrole;
 import org.gobiiproject.datatimescope.db.generated.routines.Replace;
+import org.gobiiproject.datatimescope.db.generated.routines.Setdatasetjobstatusok;
 import org.gobiiproject.datatimescope.db.generated.routines.Setdatawarehouseversion;
 import org.gobiiproject.datatimescope.db.generated.routines.SplitPart;
 import org.gobiiproject.datatimescope.db.generated.routines.Strpos;
@@ -278,7 +287,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Updatedisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarun;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarunpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarunpropertybyname;
-import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample1;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample2;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednasamplepropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednasamplepropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Updateexperiment;
@@ -337,6 +347,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ManifestRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.RoleRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VertexRecord;
 import org.jooq.AggregateFunction;
 import org.jooq.Configuration;
 import org.jooq.Field;
@@ -1075,9 +1086,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.createanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis1 p = new Createanalysis1();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -1089,6 +1101,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -1101,10 +1114,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.createanalysis</code>
      */
-    @java.lang.Deprecated
-    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis2 p = new Createanalysis2();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -1116,7 +1128,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -1272,8 +1283,8 @@ public class Routines {
     /**
      * Call <code>public.creatednasample</code>
      */
-    public static Integer creatednasample(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
-        Creatednasample p = new Creatednasample();
+    public static Integer creatednasample1(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
+        Creatednasample1 p = new Creatednasample1();
         p.setDnasamplename(dnasamplename);
         p.setDnasamplecode(dnasamplecode);
         p.setDnasampleplatename(dnasampleplatename);
@@ -1287,6 +1298,44 @@ public class Routines {
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setDnasamplestatus(dnasamplestatus);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.creatednasample</code>
+     */
+    public static Integer creatednasample2(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus, String _Uuid) {
+        Creatednasample2 p = new Creatednasample2();
+        p.setDnasamplename(dnasamplename);
+        p.setDnasamplecode(dnasamplecode);
+        p.setDnasampleplatename(dnasampleplatename);
+        p.setDnasamplenum(dnasamplenum);
+        p.setWellrow(wellrow);
+        p.setWellcol(wellcol);
+        p.setProjectid(projectid);
+        p.setGermplasmid(germplasmid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+        p.setDnasamplestatus(dnasamplestatus);
+        p.set_Uuid(_Uuid);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.createedge</code>
+     */
+    public static Integer createedge(Configuration configuration, Integer _StartVertex, Integer _EndVertex, Integer _TypeId, String _Criterion) {
+        Createedge p = new Createedge();
+        p.set_StartVertex(_StartVertex);
+        p.set_EndVertex(_EndVertex);
+        p.set_TypeId(_TypeId);
+        p.set_Criterion(_Criterion);
 
         p.execute(configuration);
         return p.getId();
@@ -1336,11 +1385,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob1(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob1(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Createjob1 p = new Createjob1();
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -1352,11 +1401,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob2(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob2(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Createjob2 p = new Createjob2();
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -1619,6 +1668,24 @@ public class Routines {
         p.setPvendorid(pvendorid);
         p.setPprotocolid(pprotocolid);
         p.setPstatus(pstatus);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.createvertex</code>
+     */
+    public static Integer createvertex(Configuration configuration, String _Name, Integer _TypeId, String _TableName, String _DataLoc, String _Criterion, String _Alias, Integer _Relevance, Boolean _IsEntry) {
+        Createvertex p = new Createvertex();
+        p.set_Name(_Name);
+        p.set_TypeId(_TypeId);
+        p.set_TableName(_TableName);
+        p.set_DataLoc(_DataLoc);
+        p.set_Criterion(_Criterion);
+        p.set_Alias(_Alias);
+        p.set_Relevance(_Relevance);
+        p.set_IsEntry(_IsEntry);
 
         p.execute(configuration);
         return p.getId();
@@ -3657,6 +3724,36 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.getalldatasetsbymarker</code>
+     */
+    public static Getalldatasetsbymarker getalldatasetsbymarker(Configuration configuration, Integer _Markerid) {
+        Getalldatasetsbymarker p = new Getalldatasetsbymarker();
+        p.set_Markerid(_Markerid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getallentryvertices</code>
+     */
+    public static VertexRecord getallentryvertices(Configuration configuration) {
+        Getallentryvertices f = new Getallentryvertices();
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.getallentryvertices</code> as a field.
+     */
+    public static Field<VertexRecord> getallentryvertices() {
+        Getallentryvertices f = new Getallentryvertices();
+
+        return f.asField();
+    }
+
+    /**
      * Call <code>public.getalljobsbystatus</code>
      */
     public static Getalljobsbystatus getalljobsbystatus(Configuration configuration, String _Status) {
@@ -3845,6 +3942,18 @@ public class Routines {
 
         p.execute(configuration);
         return p;
+    }
+
+    /**
+     * Call <code>public.getcvgroupid</code>
+     */
+    public static Integer getcvgroupid(Configuration configuration, String _Groupname, Integer _Grouptype) {
+        Getcvgroupid p = new Getcvgroupid();
+        p.set_Groupname(_Groupname);
+        p.set_Grouptype(_Grouptype);
+
+        p.execute(configuration);
+        return p.getId();
     }
 
     /**
@@ -4201,6 +4310,17 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.getlinkagegroupsbymarker</code>
+     */
+    public static Getlinkagegroupsbymarker getlinkagegroupsbymarker(Configuration configuration, Integer _Markerid) {
+        Getlinkagegroupsbymarker p = new Getlinkagegroupsbymarker();
+        p.set_Markerid(_Markerid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
      * Call <code>public.getmanifestbyexperimentid</code>
      */
     public static ManifestRecord getmanifestbyexperimentid(Configuration configuration, Integer experimentid) {
@@ -4284,6 +4404,18 @@ public class Routines {
         Getmarkerallmapsetinfobydataset p = new Getmarkerallmapsetinfobydataset();
         p.setDsid(dsid);
         p.setMapid(mapid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public static Getmarkergroupsbymarker getmarkergroupsbymarker(Configuration configuration, Integer _Markerid) {
+        Getmarkergroupsbymarker p = new Getmarkergroupsbymarker();
+        p.set_Markerid(_Markerid);
 
         p.execute(configuration);
         return p;
@@ -6195,6 +6327,37 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.setdatasetjobstatusok</code>
+     */
+    public static Integer setdatasetjobstatusok(Configuration configuration, Integer datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.setdatasetjobstatusok</code> as a field.
+     */
+    public static Field<Integer> setdatasetjobstatusok(Integer datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.setdatasetjobstatusok</code> as a field.
+     */
+    public static Field<Integer> setdatasetjobstatusok(Field<Integer> datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
      * Call <code>public.setdatawarehouseversion</code>
      */
     public static Integer setdatawarehouseversion(Configuration configuration, String ver) {
@@ -6663,9 +6826,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updateanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis2 p = new Updateanalysis2();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -6678,6 +6842,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -6689,10 +6854,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updateanalysis</code>
      */
-    @java.lang.Deprecated
-    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis3 p = new Updateanalysis3();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -6705,7 +6869,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -6976,8 +7139,8 @@ public class Routines {
     /**
      * Call <code>public.updatednasample</code>
      */
-    public static void updatednasample(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
-        Updatednasample p = new Updatednasample();
+    public static void updatednasample1(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
+        Updatednasample1 p = new Updatednasample1();
         p.setId(id);
         p.setDnasamplename(dnasamplename);
         p.setDnasamplecode(dnasamplecode);
@@ -6992,6 +7155,30 @@ public class Routines {
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setDnasamplestatus(dnasamplestatus);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>public.updatednasample</code>
+     */
+    public static void updatednasample2(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus, String _Uuid) {
+        Updatednasample2 p = new Updatednasample2();
+        p.setId(id);
+        p.setDnasamplename(dnasamplename);
+        p.setDnasamplecode(dnasamplecode);
+        p.setDnasampleplatename(dnasampleplatename);
+        p.setDnasamplenum(dnasamplenum);
+        p.setWellrow(wellrow);
+        p.setWellcol(wellcol);
+        p.setProjectid(projectid);
+        p.setGermplasmid(germplasmid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+        p.setDnasamplestatus(dnasamplestatus);
+        p.set_Uuid(_Uuid);
 
         p.execute(configuration);
     }
@@ -7131,12 +7318,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob1(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob1(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Updatejob1 p = new Updatejob1();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -7147,12 +7334,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob2(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob2(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Updatejob2 p = new Updatejob2();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -7260,16 +7447,18 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updatemarkergroup</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
+    @java.lang.Deprecated
+    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup1 p = new Updatemarkergroup1();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
+        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreateddate(createddate);
+        p.setCreatedate(createdate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);
@@ -7278,18 +7467,16 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updatemarkergroup</code>
      */
-    @java.lang.Deprecated
-    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
+    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup2 p = new Updatemarkergroup2();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
-        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreatedate(createdate);
+        p.setCreateddate(createddate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);

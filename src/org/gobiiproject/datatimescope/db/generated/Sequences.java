@@ -69,6 +69,11 @@ public class Sequences {
     public static final Sequence<Long> DNASAMPLE_DNASAMPLE_ID_SEQ = new SequenceImpl<Long>("dnasample_dnasample_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
     /**
+     * The sequence <code>public.edge_edge_id_seq</code>
+     */
+    public static final Sequence<Long> EDGE_EDGE_ID_SEQ = new SequenceImpl<Long>("edge_edge_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+    /**
      * The sequence <code>public.experiment_experiment_id_seq</code>
      */
     public static final Sequence<Long> EXPERIMENT_EXPERIMENT_ID_SEQ = new SequenceImpl<Long>("experiment_experiment_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
@@ -162,4 +167,9 @@ public class Sequences {
      * The sequence <code>public.vendor_protocol_vendor_protocol_id_seq</code>
      */
     public static final Sequence<Long> VENDOR_PROTOCOL_VENDOR_PROTOCOL_ID_SEQ = new SequenceImpl<Long>("vendor_protocol_vendor_protocol_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+    /**
+     * The sequence <code>public.vertex_vertex_id_seq</code>
+     */
+    public static final Sequence<Long> VERTEX_VERTEX_ID_SEQ = new SequenceImpl<Long>("vertex_vertex_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 }

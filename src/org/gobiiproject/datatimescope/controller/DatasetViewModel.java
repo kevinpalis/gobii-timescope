@@ -86,7 +86,7 @@ public class DatasetViewModel {
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
-		ContactRecord selectAllPI = new ContactRecord(0);
+		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
 		piList.add(0, selectAllPI);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
@@ -437,7 +437,7 @@ public class DatasetViewModel {
 
 	public void setDatasetTypes(List<CvRecord> list) {
 		this.datasetTypes = list;
-		CvRecord newRecord = new CvRecord(0);
+		CvRecord newRecord = new CvRecord(0, "SELECT ALL DATASET TYPE", "select all", 1, 1, "abbreviation", 1, 1, null);
 		datasetTypes.add(0, newRecord);
 	}
 

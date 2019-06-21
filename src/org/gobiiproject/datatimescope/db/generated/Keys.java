@@ -16,6 +16,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Dbxref;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnarun;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnasample;
+import org.gobiiproject.datatimescope.db.generated.tables.Edge;
 import org.gobiiproject.datatimescope.db.generated.tables.Experiment;
 import org.gobiiproject.datatimescope.db.generated.tables.Germplasm;
 import org.gobiiproject.datatimescope.db.generated.tables.Gobiiprop;
@@ -35,6 +36,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
+import org.gobiiproject.datatimescope.db.generated.tables.Vertex;
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
@@ -45,6 +47,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.DbxrefRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DisplayRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DnarunRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DnasampleRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.EdgeRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.GermplasmRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.GobiipropRecord;
@@ -64,6 +67,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.RoleRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VariantRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VertexRecord;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.UniqueKey;
@@ -97,6 +101,7 @@ public class Keys {
     public static final Identity<DisplayRecord, Integer> IDENTITY_DISPLAY = Identities0.IDENTITY_DISPLAY;
     public static final Identity<DnarunRecord, Integer> IDENTITY_DNARUN = Identities0.IDENTITY_DNARUN;
     public static final Identity<DnasampleRecord, Integer> IDENTITY_DNASAMPLE = Identities0.IDENTITY_DNASAMPLE;
+    public static final Identity<EdgeRecord, Integer> IDENTITY_EDGE = Identities0.IDENTITY_EDGE;
     public static final Identity<ExperimentRecord, Integer> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
     public static final Identity<GermplasmRecord, Integer> IDENTITY_GERMPLASM = Identities0.IDENTITY_GERMPLASM;
     public static final Identity<GobiipropRecord, Integer> IDENTITY_GOBIIPROP = Identities0.IDENTITY_GOBIIPROP;
@@ -116,6 +121,7 @@ public class Keys {
     public static final Identity<TimescoperRecord, Integer> IDENTITY_TIMESCOPER = Identities0.IDENTITY_TIMESCOPER;
     public static final Identity<VariantRecord, Integer> IDENTITY_VARIANT = Identities0.IDENTITY_VARIANT;
     public static final Identity<VendorProtocolRecord, Integer> IDENTITY_VENDOR_PROTOCOL = Identities0.IDENTITY_VENDOR_PROTOCOL;
+    public static final Identity<VertexRecord, Integer> IDENTITY_VERTEX = Identities0.IDENTITY_VERTEX;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -136,6 +142,9 @@ public class Keys {
     public static final UniqueKey<DisplayRecord> PK_TABLE_DISPLAY = UniqueKeys0.PK_TABLE_DISPLAY;
     public static final UniqueKey<DnarunRecord> PK_DNARUN = UniqueKeys0.PK_DNARUN;
     public static final UniqueKey<DnasampleRecord> PK_DNASAMPLE = UniqueKeys0.PK_DNASAMPLE;
+    public static final UniqueKey<DnasampleRecord> UNIQUE_DNASAMPLE_UUID = UniqueKeys0.UNIQUE_DNASAMPLE_UUID;
+    public static final UniqueKey<EdgeRecord> EDGE_PKEY = UniqueKeys0.EDGE_PKEY;
+    public static final UniqueKey<EdgeRecord> EDGE_START_VERTEX_END_VERTEX_KEY = UniqueKeys0.EDGE_START_VERTEX_END_VERTEX_KEY;
     public static final UniqueKey<ExperimentRecord> PK_EXPERIMENT = UniqueKeys0.PK_EXPERIMENT;
     public static final UniqueKey<GermplasmRecord> PK_GERMPLASM = UniqueKeys0.PK_GERMPLASM;
     public static final UniqueKey<GobiipropRecord> GOBIIPROP_PKEY = UniqueKeys0.GOBIIPROP_PKEY;
@@ -161,6 +170,8 @@ public class Keys {
     public static final UniqueKey<TimescoperRecord> USERNAME_KEY = UniqueKeys0.USERNAME_KEY;
     public static final UniqueKey<VariantRecord> PK_VARIANT = UniqueKeys0.PK_VARIANT;
     public static final UniqueKey<VendorProtocolRecord> PK_VENDOR_PROTOCOL = UniqueKeys0.PK_VENDOR_PROTOCOL;
+    public static final UniqueKey<VertexRecord> VERTEX_PKEY = UniqueKeys0.VERTEX_PKEY;
+    public static final UniqueKey<VertexRecord> VERTEX_NAME_KEY = UniqueKeys0.VERTEX_NAME_KEY;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -177,6 +188,9 @@ public class Keys {
     public static final ForeignKey<DnarunRecord, DnasampleRecord> DNARUN__DNARUN_DNASAMPLE_ID_FKEY = ForeignKeys0.DNARUN__DNARUN_DNASAMPLE_ID_FKEY;
     public static final ForeignKey<DnasampleRecord, ProjectRecord> DNASAMPLE__DNASAMPLE_PROJECT_ID_FKEY = ForeignKeys0.DNASAMPLE__DNASAMPLE_PROJECT_ID_FKEY;
     public static final ForeignKey<DnasampleRecord, GermplasmRecord> DNASAMPLE__DNASAMPLE_GERMPLASM_ID_FKEY = ForeignKeys0.DNASAMPLE__DNASAMPLE_GERMPLASM_ID_FKEY;
+    public static final ForeignKey<EdgeRecord, VertexRecord> EDGE__EDGE_START_VERTEX_FKEY = ForeignKeys0.EDGE__EDGE_START_VERTEX_FKEY;
+    public static final ForeignKey<EdgeRecord, VertexRecord> EDGE__EDGE_END_VERTEX_FKEY = ForeignKeys0.EDGE__EDGE_END_VERTEX_FKEY;
+    public static final ForeignKey<EdgeRecord, CvRecord> EDGE__EDGE_TYPE_ID_FKEY = ForeignKeys0.EDGE__EDGE_TYPE_ID_FKEY;
     public static final ForeignKey<ExperimentRecord, ProjectRecord> EXPERIMENT__EXPERIMENT_PROJECT_ID_FKEY = ForeignKeys0.EXPERIMENT__EXPERIMENT_PROJECT_ID_FKEY;
     public static final ForeignKey<ExperimentRecord, ManifestRecord> EXPERIMENT__EXPERIMENT_MANIFEST_ID_FKEY = ForeignKeys0.EXPERIMENT__EXPERIMENT_MANIFEST_ID_FKEY;
     public static final ForeignKey<ExperimentRecord, VendorProtocolRecord> EXPERIMENT__EXPERIMENT_VENDOR_PROTOCOL_ID_FKEY = ForeignKeys0.EXPERIMENT__EXPERIMENT_VENDOR_PROTOCOL_ID_FKEY;
@@ -201,6 +215,7 @@ public class Keys {
     public static final ForeignKey<ProtocolRecord, PlatformRecord> PROTOCOL__PROTOCOL_PLATFORM_ID_FKEY = ForeignKeys0.PROTOCOL__PROTOCOL_PLATFORM_ID_FKEY;
     public static final ForeignKey<VendorProtocolRecord, OrganizationRecord> VENDOR_PROTOCOL__VENDOR_PROTOCOL_VENDOR_ID_FKEY = ForeignKeys0.VENDOR_PROTOCOL__VENDOR_PROTOCOL_VENDOR_ID_FKEY;
     public static final ForeignKey<VendorProtocolRecord, ProtocolRecord> VENDOR_PROTOCOL__VENDOR_PROTOCOL_PROTOCOL_ID_FKEY = ForeignKeys0.VENDOR_PROTOCOL__VENDOR_PROTOCOL_PROTOCOL_ID_FKEY;
+    public static final ForeignKey<VertexRecord, CvRecord> VERTEX__VERTEX_TYPE_ID_FKEY = ForeignKeys0.VERTEX__VERTEX_TYPE_ID_FKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -216,6 +231,7 @@ public class Keys {
         public static Identity<DisplayRecord, Integer> IDENTITY_DISPLAY = createIdentity(Display.DISPLAY, Display.DISPLAY.DISPLAY_ID);
         public static Identity<DnarunRecord, Integer> IDENTITY_DNARUN = createIdentity(Dnarun.DNARUN, Dnarun.DNARUN.DNARUN_ID);
         public static Identity<DnasampleRecord, Integer> IDENTITY_DNASAMPLE = createIdentity(Dnasample.DNASAMPLE, Dnasample.DNASAMPLE.DNASAMPLE_ID);
+        public static Identity<EdgeRecord, Integer> IDENTITY_EDGE = createIdentity(Edge.EDGE, Edge.EDGE.EDGE_ID);
         public static Identity<ExperimentRecord, Integer> IDENTITY_EXPERIMENT = createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.EXPERIMENT_ID);
         public static Identity<GermplasmRecord, Integer> IDENTITY_GERMPLASM = createIdentity(Germplasm.GERMPLASM, Germplasm.GERMPLASM.GERMPLASM_ID);
         public static Identity<GobiipropRecord, Integer> IDENTITY_GOBIIPROP = createIdentity(Gobiiprop.GOBIIPROP, Gobiiprop.GOBIIPROP.GOBIIPROP_ID);
@@ -235,6 +251,7 @@ public class Keys {
         public static Identity<TimescoperRecord, Integer> IDENTITY_TIMESCOPER = createIdentity(Timescoper.TIMESCOPER, Timescoper.TIMESCOPER.TIMESCOPER_ID);
         public static Identity<VariantRecord, Integer> IDENTITY_VARIANT = createIdentity(Variant.VARIANT, Variant.VARIANT.VARIANT_ID);
         public static Identity<VendorProtocolRecord, Integer> IDENTITY_VENDOR_PROTOCOL = createIdentity(VendorProtocol.VENDOR_PROTOCOL, VendorProtocol.VENDOR_PROTOCOL.VENDOR_PROTOCOL_ID);
+        public static Identity<VertexRecord, Integer> IDENTITY_VERTEX = createIdentity(Vertex.VERTEX, Vertex.VERTEX.VERTEX_ID);
     }
 
     private static class UniqueKeys0 extends AbstractKeys {
@@ -253,6 +270,9 @@ public class Keys {
         public static final UniqueKey<DisplayRecord> PK_TABLE_DISPLAY = createUniqueKey(Display.DISPLAY, "pk_table_display", Display.DISPLAY.DISPLAY_ID);
         public static final UniqueKey<DnarunRecord> PK_DNARUN = createUniqueKey(Dnarun.DNARUN, "pk_dnarun", Dnarun.DNARUN.DNARUN_ID);
         public static final UniqueKey<DnasampleRecord> PK_DNASAMPLE = createUniqueKey(Dnasample.DNASAMPLE, "pk_dnasample", Dnasample.DNASAMPLE.DNASAMPLE_ID);
+        public static final UniqueKey<DnasampleRecord> UNIQUE_DNASAMPLE_UUID = createUniqueKey(Dnasample.DNASAMPLE, "unique_dnasample_uuid", Dnasample.DNASAMPLE.UUID);
+        public static final UniqueKey<EdgeRecord> EDGE_PKEY = createUniqueKey(Edge.EDGE, "edge_pkey", Edge.EDGE.EDGE_ID);
+        public static final UniqueKey<EdgeRecord> EDGE_START_VERTEX_END_VERTEX_KEY = createUniqueKey(Edge.EDGE, "edge_start_vertex_end_vertex_key", Edge.EDGE.START_VERTEX, Edge.EDGE.END_VERTEX);
         public static final UniqueKey<ExperimentRecord> PK_EXPERIMENT = createUniqueKey(Experiment.EXPERIMENT, "pk_experiment", Experiment.EXPERIMENT.EXPERIMENT_ID);
         public static final UniqueKey<GermplasmRecord> PK_GERMPLASM = createUniqueKey(Germplasm.GERMPLASM, "pk_germplasm", Germplasm.GERMPLASM.GERMPLASM_ID);
         public static final UniqueKey<GobiipropRecord> GOBIIPROP_PKEY = createUniqueKey(Gobiiprop.GOBIIPROP, "gobiiprop_pkey", Gobiiprop.GOBIIPROP.GOBIIPROP_ID);
@@ -278,6 +298,8 @@ public class Keys {
         public static final UniqueKey<TimescoperRecord> USERNAME_KEY = createUniqueKey(Timescoper.TIMESCOPER, "username_key", Timescoper.TIMESCOPER.USERNAME);
         public static final UniqueKey<VariantRecord> PK_VARIANT = createUniqueKey(Variant.VARIANT, "pk_variant", Variant.VARIANT.VARIANT_ID);
         public static final UniqueKey<VendorProtocolRecord> PK_VENDOR_PROTOCOL = createUniqueKey(VendorProtocol.VENDOR_PROTOCOL, "pk_vendor_protocol", VendorProtocol.VENDOR_PROTOCOL.VENDOR_PROTOCOL_ID);
+        public static final UniqueKey<VertexRecord> VERTEX_PKEY = createUniqueKey(Vertex.VERTEX, "vertex_pkey", Vertex.VERTEX.VERTEX_ID);
+        public static final UniqueKey<VertexRecord> VERTEX_NAME_KEY = createUniqueKey(Vertex.VERTEX, "vertex_name_key", Vertex.VERTEX.NAME);
     }
 
     private static class ForeignKeys0 extends AbstractKeys {
@@ -292,6 +314,9 @@ public class Keys {
         public static final ForeignKey<DnarunRecord, DnasampleRecord> DNARUN__DNARUN_DNASAMPLE_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_DNASAMPLE, Dnarun.DNARUN, "dnarun__dnarun_dnasample_id_fkey", Dnarun.DNARUN.DNASAMPLE_ID);
         public static final ForeignKey<DnasampleRecord, ProjectRecord> DNASAMPLE__DNASAMPLE_PROJECT_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_PROJECT, Dnasample.DNASAMPLE, "dnasample__dnasample_project_id_fkey", Dnasample.DNASAMPLE.PROJECT_ID);
         public static final ForeignKey<DnasampleRecord, GermplasmRecord> DNASAMPLE__DNASAMPLE_GERMPLASM_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_GERMPLASM, Dnasample.DNASAMPLE, "dnasample__dnasample_germplasm_id_fkey", Dnasample.DNASAMPLE.GERMPLASM_ID);
+        public static final ForeignKey<EdgeRecord, VertexRecord> EDGE__EDGE_START_VERTEX_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.VERTEX_PKEY, Edge.EDGE, "edge__edge_start_vertex_fkey", Edge.EDGE.START_VERTEX);
+        public static final ForeignKey<EdgeRecord, VertexRecord> EDGE__EDGE_END_VERTEX_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.VERTEX_PKEY, Edge.EDGE, "edge__edge_end_vertex_fkey", Edge.EDGE.END_VERTEX);
+        public static final ForeignKey<EdgeRecord, CvRecord> EDGE__EDGE_TYPE_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_CV, Edge.EDGE, "edge__edge_type_id_fkey", Edge.EDGE.TYPE_ID);
         public static final ForeignKey<ExperimentRecord, ProjectRecord> EXPERIMENT__EXPERIMENT_PROJECT_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_PROJECT, Experiment.EXPERIMENT, "experiment__experiment_project_id_fkey", Experiment.EXPERIMENT.PROJECT_ID);
         public static final ForeignKey<ExperimentRecord, ManifestRecord> EXPERIMENT__EXPERIMENT_MANIFEST_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_MANIFEST, Experiment.EXPERIMENT, "experiment__experiment_manifest_id_fkey", Experiment.EXPERIMENT.MANIFEST_ID);
         public static final ForeignKey<ExperimentRecord, VendorProtocolRecord> EXPERIMENT__EXPERIMENT_VENDOR_PROTOCOL_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_VENDOR_PROTOCOL, Experiment.EXPERIMENT, "experiment__experiment_vendor_protocol_id_fkey", Experiment.EXPERIMENT.VENDOR_PROTOCOL_ID);
@@ -316,5 +341,6 @@ public class Keys {
         public static final ForeignKey<ProtocolRecord, PlatformRecord> PROTOCOL__PROTOCOL_PLATFORM_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_PLATFORM, Protocol.PROTOCOL, "protocol__protocol_platform_id_fkey", Protocol.PROTOCOL.PLATFORM_ID);
         public static final ForeignKey<VendorProtocolRecord, OrganizationRecord> VENDOR_PROTOCOL__VENDOR_PROTOCOL_VENDOR_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.ORGANIZATION_PKEY, VendorProtocol.VENDOR_PROTOCOL, "vendor_protocol__vendor_protocol_vendor_id_fkey", VendorProtocol.VENDOR_PROTOCOL.VENDOR_ID);
         public static final ForeignKey<VendorProtocolRecord, ProtocolRecord> VENDOR_PROTOCOL__VENDOR_PROTOCOL_PROTOCOL_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_PROTOCOL, VendorProtocol.VENDOR_PROTOCOL, "vendor_protocol__vendor_protocol_protocol_id_fkey", VendorProtocol.VENDOR_PROTOCOL.PROTOCOL_ID);
+        public static final ForeignKey<VertexRecord, CvRecord> VERTEX__VERTEX_TYPE_ID_FKEY = createForeignKey(org.gobiiproject.datatimescope.db.generated.Keys.PK_CV, Vertex.VERTEX, "vertex__vertex_type_id_fkey", Vertex.VERTEX.TYPE_ID);
     }
 }

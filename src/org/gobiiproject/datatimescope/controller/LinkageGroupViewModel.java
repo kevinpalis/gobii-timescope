@@ -86,7 +86,7 @@ public class LinkageGroupViewModel {
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
-		ContactRecord selectAllPI = new ContactRecord(0);
+		ContactRecord selectAllPI = new ContactRecord(0, null, null, null, null, roles, null, null, null, null, null, null);
 		piList.add(0, selectAllPI);
 		setLinkageGroupTypes(viewModelService.getCvTermsByGroupName("linkageGroup_type"));
 
@@ -443,7 +443,7 @@ public class LinkageGroupViewModel {
 
 	public void setLinkageGroupTypes(List<CvRecord> list) {
 		this.linkageGroupTypes = list;
-		CvRecord newRecord = new CvRecord(0);
+		CvRecord newRecord = new CvRecord(0, null, null, null, null, null, null, null, null);
 		linkageGroupTypes.add(0, newRecord);
 	}
 
