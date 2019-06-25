@@ -10,7 +10,7 @@
 		style="font-size: 16px; " />
 	<separator spacing="15px" />
 	<hbox hflex="1" vflex="1">
-		<vlayout hflex="1" vflex="1"
+		<vlayout 
 			visible="@load(not empty vm.markerDetailDatasetList)">
 			<label value="Datasets:"
 				style="font-size: 14px; text-align:center;" />
@@ -27,7 +27,7 @@
 				</template>
 			</grid>
 		</vlayout>
-		<vlayout hflex="1" vflex="1"
+		<vlayout 
 			visible="@load(not empty vm.markerDetailLinkageGroupList)">
 			<label value="Linkage groups:"
 				style="font-size: 14px; text-align:center;" />
@@ -44,7 +44,7 @@
 				</template>
 			</grid>
 		</vlayout>
-		<vlayout hflex="1" vflex="1"
+		<vlayout 
 			visible="@load(not empty vm.markerDetailsMarkerGroupList)" >
 			<label value="Marker groups:"
 				style="font-size: 14px; text-align:center;" />
