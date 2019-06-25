@@ -77,6 +77,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
+import org.jooq.Select;
 import org.jooq.impl.DSL;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.NotifyChange;
@@ -1397,6 +1398,64 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 
 		return datasetList;
+	}
+
+	@Override
+	public List<LinkageGroupRecord> getLinkageGroupsAssociatedToMarkerId(Integer markerId) {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<LinkageGroupRecord> list = null;
+		try{
+
+			String query = "select * from linkage_group where linkage_group_id in (select lg.linkage_group_id from getlinkagegroupsbymarker("+markerId.toString()+") lg)";
+			list = context.fetch(query).into(LinkageGroupRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve linkage groups associated to the selected marker.", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<DatasetRecord> getDatasetAssociatedToMarkerId(Integer markerId) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> list = null;
+		try{
+
+			String query = "select * from dataset where dataset_id in (select d.dataset_id from getalldatasetsbymarker("+markerId.toString()+") d)";
+			list = context.fetch(query).into(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve datasets associated to the selected marker.", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<MarkerGroupRecord> getMarkerGroupsAssociatedToMarkerId(Integer markerId) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<MarkerGroupRecord> list = null;
+		try{
+
+			String query = "select * from marker_group where marker_group_id in (select mg.marker_group_id from getmarkergroupsbymarker("+markerId.toString()+") mg)";
+			list = context.fetch(query).into(MarkerGroupRecord.class);
+			
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve marker groups associated to the selected marker.", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+		}
+
+		return list;
 	}
 
 }

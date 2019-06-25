@@ -1,5 +1,7 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +23,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
@@ -57,6 +60,7 @@ import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Popup;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
@@ -66,10 +70,12 @@ public class MarkerViewModel {
 
 	@Wire("#markerGrid")
 	Grid markerGrid;
-	
+	@Wire("#markerDetailPopup")
+	Popup markerDetailPopup;
+
 	ViewModelService viewModelService;
 	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true;
-	private boolean dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
+	private boolean markerAssociated=true, dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
 	private List<OrganizationRecord> vendorList;
@@ -77,14 +83,15 @@ public class MarkerViewModel {
 	private List<AnalysisRecord> callingAnalysisList, analysesList;
 	private List<ProjectRecord> projectList;
 	private List<ExperimentRecord> experimentList;
-	private List<DatasetRecord> datasetList;
+	private List<DatasetRecord> datasetList, markerDetailDatasetList;
 	private List<MapsetRecord> mapsetList;
-	private List<LinkageGroupRecord> linkageGroupList;
-	
-	private MarkerRecordEntity markerEntity;
+	private List<LinkageGroupRecord> linkageGroupList, markerDetailLinkageGroupList;
+	private List<MarkerGroupRecord> markerDetailsMarkerGroupList;
 	private List<DatasetSummaryEntity> markerSummary;
+
+	private MarkerRecordEntity markerEntity;
 	private DatasetSummaryEntity markerSummaryEntity;
-	
+
 	private String filterPlatform;
 	private String filterVendor;
 	private String filterVendorProtocol;
@@ -104,8 +111,11 @@ public class MarkerViewModel {
 		markerSummaryEntity= new DatasetSummaryEntity();
 		markerList = new ArrayList<VMarkerSummaryEntity>();
 		selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
+		markerDetailLinkageGroupList = new ArrayList<LinkageGroupRecord>();
+		markerDetailDatasetList = new ArrayList<DatasetRecord>();
+		markerDetailsMarkerGroupList = new ArrayList<MarkerGroupRecord>();
 		viewModelService = new ViewModelServiceImpl();
-		
+
 		setMarkerEntity(new MarkerRecordEntity());
 		setPlatformList(viewModelService.getAllPlatforms());
 		setVendorList(viewModelService.getAllVendors());
@@ -117,6 +127,7 @@ public class MarkerViewModel {
 		setDatasetList(viewModelService.getAllDatasets());
 		setMapsetList(viewModelService.getAllMapsets());
 		setLinkageGroupList(viewModelService.getAllLinkageGroups());
+
 		if(platformList.isEmpty()) dbPlatforms = false;
 		if(vendorList.isEmpty()) dbVendors = false;
 		if(vendorProtocolList.isEmpty()) dbVendorProtocols = false;		
@@ -127,21 +138,47 @@ public class MarkerViewModel {
 		if(datasetList.isEmpty()) dbDataset = false;		
 		if(mapsetList.isEmpty()) dbMapset = false;
 		if(linkageGroupList.isEmpty()) dbLinkageGroup = false;
-		
+
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-        markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
-		
-		  if(markerSummary.size()>0){
-	        	performedDeleteSuccesfully=true;
-	        }
-			
+		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
+
+		if(markerSummary.size()>0){
+			performedDeleteSuccesfully=true;
+		}
+
 	}
-	
+
 
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		Selectors.wireComponents(view, this, false);
 	}
+
+	@Command("showMarkerDetail")
+	@NotifyChange({"markerDetailDatasetList","markerDetailsMarkerGroupList", "markerDetailLinkageGroupList"})
+	public void showMarkerDetail(@BindingParam("markerId") Integer markerId, @BindingParam("markerName") String markerName){
+
+		setMarkerDetailLinkageGroupList(viewModelService.getLinkageGroupsAssociatedToMarkerId(markerId));
+		setMarkerDetailsMarkerGroupList(viewModelService.getMarkerGroupsAssociatedToMarkerId(markerId));
+		setMarkerDetailDatasetList(viewModelService.getDatasetAssociatedToMarkerId(markerId));
+
+		if(markerDetailsMarkerGroupList.size()<1 && markerDetailLinkageGroupList.size()<1 && markerDetailDatasetList.size()<1) {
+			setMarkerAssociated(false);
+		}
+		
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("markerName", markerName);
+		args.put("markerDetailsMarkerGroupList", markerDetailsMarkerGroupList);
+		args.put("markerDetailDatasetList", markerDetailDatasetList);
+		args.put("markerDetailLinkageGroupList", markerDetailLinkageGroupList);
+		args.put("markerAssociated", markerAssociated);
+
+		Window window = (Window)Executions.createComponents(
+				"/marker_detail.zul", null, args);
+		window.setPosition("center");
+		window.doPopup();
+	}
+
 
 	@Command("submitQuery")
 	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
@@ -178,7 +215,7 @@ public class MarkerViewModel {
 		setAllCbSelected(false);
 		setCbAllMarkers(false);
 	}
-	
+
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
@@ -235,10 +272,10 @@ public class MarkerViewModel {
 			}
 
 			if (selectedMarkerList.size()>10){
-				
+
 				sb =  new StringBuilder();
 				sb.append(Integer.toString(selectedMarkerList.size())+" markers?");
-				
+
 			}
 
 			Messagebox.show("Are you sure you want to delete "+sb.toString(), 
@@ -303,13 +340,13 @@ public class MarkerViewModel {
 	@NotifyChange({"markerSummary","performedDeleteSuccesfully"})
 	public void resetDSSummary(){
 		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
-		
-        
-        if(markerSummary.size()>0){
-        	performedDeleteSuccesfully=true;
-        }
+
+
+		if(markerSummary.size()>0){
+			performedDeleteSuccesfully=true;
+		}
 	}
-	
+
 
 	@Command("exportMarkerTable")
 	public void exportMarkerTable() {
@@ -403,52 +440,52 @@ public class MarkerViewModel {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	@NotifyChange("platformList")
 	@Command
 	public void doSearchPlatform() {
-		 List<PlatformRecord> allItems = viewModelService.getAllPlatforms();
-		 filterItems(platformList, allItems, filterPlatform);
+		List<PlatformRecord> allItems = viewModelService.getAllPlatforms();
+		filterItems(platformList, allItems, filterPlatform);
 	}
-	
+
 	@NotifyChange("vendorList")
 	@Command
 	public void doSearchVendor() {
 		List<OrganizationRecord> allItems = viewModelService.getAllVendors();
-		
+
 		filterItems(vendorList, allItems, filterVendor);
 	}
-	
+
 	@NotifyChange("vendorProtocolList")
 	@Command
 	public void doSearchVendorProtocol() {
 		List<VendorProtocolRecord> allItems = viewModelService.getAllVendorProtocols();
-		
+
 		filterItems(vendorProtocolList, allItems, filterVendorProtocol);
 	}
-	
+
 	@NotifyChange("callingAnalysisList")
 	@Command
 	public void doSearchCallingAnalysis() {
 		List<AnalysisRecord> allItems = viewModelService.getAllCallingAnalysis();
-		
+
 		filterItems(callingAnalysisList, allItems, filterCallingAnalysis);
 	}
-	
+
 	@NotifyChange("analysesList")
 	@Command
 	public void doSearchAnalyses() {
 		List<AnalysisRecord> allItems = viewModelService.getAllAnalyses();
-		
+
 		filterItems(analysesList, allItems, filterAnalyses);
 	}
-	
+
 	@NotifyChange("projectList")
 	@Command
 	public void doSearchProjects() {
 		List<ProjectRecord> allItems = viewModelService.getAllProjects();
-		
+
 		filterItems(projectList, allItems, filterProject);
 	}
 
@@ -456,37 +493,37 @@ public class MarkerViewModel {
 	@Command
 	public void doSearchExperiment() {
 		List<ExperimentRecord> allItems = viewModelService.getAllExperiments();
-		
+
 		filterItems(experimentList, allItems, filterExperiment);
 	}		
-	
+
 	@NotifyChange("datasetList")
 	@Command
 	public void doSearchDataset() {
 		List<DatasetRecord> allItems = viewModelService.getAllDatasets();
-		
+
 		filterItems(datasetList, allItems, filterDataset);
 	}		
-	
+
 	@NotifyChange("mapasetList")
 	@Command
 	public void doSearchMapset() {
 		List<MapsetRecord> allItems = viewModelService.getAllMapsets();
-		
+
 		filterItems(mapsetList, allItems, filterMapset);
 	}
-	
+
 	@NotifyChange("linkageGroupList")
 	@Command
 	public void doSearchLinkageGroup() {
 		List<LinkageGroupRecord> allItems = viewModelService.getAllLinkageGroups();
-		
+
 		filterItems(linkageGroupList, allItems, filterLinkageGroup);
 	}
-	
+
 	public <T> void filterItems( List<T> list, List<T> allItems, String filter) {
 		list.clear();
-		
+
 		if(filter == null || "".equals(filter)) {
 			list.addAll(allItems);
 		} else {
@@ -497,10 +534,10 @@ public class MarkerViewModel {
 			}
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -545,10 +582,10 @@ public class MarkerViewModel {
 	public void setMarkerList(List<VMarkerSummaryEntity> list) {
 		if(list.size()<1) setGridGroupVisible(true);
 		else setGridGroupVisible(false);
-			
+
 		if(list.size() > 25) setPaged(true);
 		else setPaged(false);
-		
+
 		this.markerList = list;
 	}
 
@@ -575,7 +612,7 @@ public class MarkerViewModel {
 	public void setMarkerSummaryEntity(DatasetSummaryEntity markerSummaryEntity) {
 		this.markerSummaryEntity = markerSummaryEntity;
 	}
-	
+
 	public List<DatasetSummaryEntity> getMarkerSummary() {
 		return markerSummary;
 	}
@@ -910,6 +947,46 @@ public class MarkerViewModel {
 
 	public void setGridGroupVisible(boolean gridGroupVisible) {
 		this.gridGroupVisible = gridGroupVisible;
+	}
+
+
+	public List<LinkageGroupRecord> getMarkerDetailLinkageGroupList() {
+		return markerDetailLinkageGroupList;
+	}
+
+
+	public void setMarkerDetailLinkageGroupList(List<LinkageGroupRecord> markerDetailLinkageGroupList) {
+		this.markerDetailLinkageGroupList = markerDetailLinkageGroupList;
+	}
+
+
+	public boolean isMarkerAssociated() {
+		return markerAssociated;
+	}
+
+
+	public void setMarkerAssociated(boolean markerAssociated) {
+		this.markerAssociated = markerAssociated;
+	}
+
+
+	public List<DatasetRecord> getMarkerDetailDatasetList() {
+		return markerDetailDatasetList;
+	}
+
+
+	public void setMarkerDetailDatasetList(List<DatasetRecord> markerDetailDatasetList) {
+		this.markerDetailDatasetList = markerDetailDatasetList;
+	}
+
+
+	public List<MarkerGroupRecord> getMarkerDetailsMarkerGroupList() {
+		return markerDetailsMarkerGroupList;
+	}
+
+
+	public void setMarkerDetailsMarkerGroupList(List<MarkerGroupRecord> markerDetailsMarkerGroupList) {
+		this.markerDetailsMarkerGroupList = markerDetailsMarkerGroupList;
 	}
 
 }

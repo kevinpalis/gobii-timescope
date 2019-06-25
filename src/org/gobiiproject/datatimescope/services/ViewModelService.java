@@ -12,6 +12,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
@@ -107,6 +108,12 @@ public interface ViewModelService {
 	public List<LinkageGroupRecord> getAllLinkageGroups();
 
 	public List<DatasetRecord> getAllDatasets();
+
+	public List<LinkageGroupRecord> getLinkageGroupsAssociatedToMarkerId(Integer markerId);
+
+	public List<DatasetRecord> getDatasetAssociatedToMarkerId(Integer markerId);
+
+	public List<MarkerGroupRecord> getMarkerGroupsAssociatedToMarkerId(Integer markerId);
 
 
 }

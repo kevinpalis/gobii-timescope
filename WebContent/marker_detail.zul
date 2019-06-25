@@ -1,0 +1,65 @@
+<window mode="popup" popup="true" width="650px" height="400px"
+	closable="true" apply="org.zkoss.bind.BindComposer"
+	border="normal" position="right,top"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDetailViewModel')">
+	<label visible="@load(not vm.markerAssociated)"
+		value="This marker is not associated with any linkage group, dataset, and marker groups."
+		style="font-size: 16px; " />
+	<label visible="@load(vm.markerAssociated)"
+		value="This marker is associated with the following:"
+		style="font-size: 16px; " />
+	<separator spacing="15px" />
+	<hbox hflex="1" vflex="1">
+		<vlayout hflex="1" vflex="1"
+			visible="@load(not empty vm.markerDetailDatasetList)">
+			<label value="Datasets:"
+				style="font-size: 14px; text-align:center;" />
+			<separator spacing="5px" />
+			<grid model="@load(vm.markerDetailDatasetList)"
+				mold="paging" pageSize="5" vflex="1" hflex="1">
+				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<template name="model" var="each">
+					<row>
+						<cell>
+							<label value="@load(each.name)" />
+						</cell>
+					</row>
+				</template>
+			</grid>
+		</vlayout>
+		<vlayout hflex="1" vflex="1"
+			visible="@load(not empty vm.markerDetailLinkageGroupList)">
+			<label value="Linkage groups:"
+				style="font-size: 14px; text-align:center;" />
+			<separator spacing="5px" />
+			<grid model="@load(vm.markerDetailLinkageGroupList)"
+				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
+				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<template name="model" var="each">
+					<row>
+						<cell hflex="min" vflex="min">
+							<label value="@load(each.name)" />
+						</cell>
+					</row>
+				</template>
+			</grid>
+		</vlayout>
+		<vlayout hflex="1" vflex="1"
+			visible="@load(not empty vm.markerDetailsMarkerGroupList)" >
+			<label value="Marker groups:"
+				style="font-size: 14px; text-align:center;" />
+			<separator spacing="5px" />
+			<grid model="@load(vm.markerDetailsMarkerGroupList)" 
+				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
+				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<template name="model" var="each">
+					<row>
+						<cell>
+							<label value="@load(each.name)" />
+						</cell>
+					</row>
+				</template>
+			</grid>
+		</vlayout>
+	</hbox>
+</window>

@@ -68,7 +68,7 @@
 								</grid>
 
 								<tabbox id="tb" orient="left" hflex="1"
-									height="350px" >
+									height="350px">
 									<tabs width="30%" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tabstyle"
@@ -97,32 +97,31 @@
 											label="Linkage Groups" sclass="tabstyle"
 											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
 									</tabs>
-									<tabpanels hflex="true" >
+									<tabpanels hflex="true">
 										<tabpanel>
-												<label
-													visible="@load(vm.dbPlatforms)" value="Search:" />
-												<textbox
-													visible="@load(vm.dbPlatforms)"
-													value="@bind(vm.filterPlatform)"
-													onChange="@command('doSearchPlatform')" instant="true" />
-												<separator
-													spacing="12px" />
-												<listbox
-													visible="@load(vm.dbPlatforms)"
-													model="@load(vm.platformList)" hflex="max" vflex="1"
-													multiple="true" checkmark="true"
-													style="border: 0px; padding:0px;">
-													<template
-														name="model" var="item">
-														<listitem>
-															<listcell
-																label="@load(item.name)" />
-														</listitem>
-													</template>
-												</listbox>
-												<label
-													visible="@load(not vm.dbPlatforms)"
-													value="There's nothing to see here." />
+											<label
+												visible="@load(vm.dbPlatforms)" value="Search:" />
+											<textbox
+												visible="@load(vm.dbPlatforms)"
+												value="@bind(vm.filterPlatform)"
+												onChange="@command('doSearchPlatform')" instant="true" />
+											<separator spacing="12px" />
+											<listbox
+												visible="@load(vm.dbPlatforms)"
+												model="@load(vm.platformList)" hflex="max" vflex="1"
+												multiple="true" checkmark="true"
+												style="border: 0px; padding:0px;">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbPlatforms)"
+												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
 											<label
@@ -369,80 +368,45 @@
 									model="@load(vm.markerList)" mold="paging" pageSize="25"
 									pagingPosition="both" vflex="1" hflex="1">
 									<columns sizable="true">
-										<column hflex="min">
+										<column hflex="1">
 											<checkbox label="Select All"
 												onCheck="@command('doSelectAll')"
 												checked="@bind(vm.cbAllMarkers)" />
 										</column>
-										<column hflex="min"
+										<column hflex="1"
 											sort="auto(markerId)">
 											<label value="Marker Id" />
 										</column>
-										<column hflex="min"
+										<column hflex="1"
 											sort="auto(markerName)">
 											<label value="Marker Name" />
 										</column>
-										<column hflex="min"
+										<column hflex="1"
 											sort="auto(platformId)">
 											<label value="Platform Id" />
 										</column>
-										<column hflex="min"
+										<column hflex="1"
 											sort="auto(platformName)">
 											<label
 												value="Platform Name" />
 										</column>
-										<column hflex="min">
-											<label value="Variant Id" />
-										</column>
-										<column hflex="min">
-											<label value="Code" />
-										</column>
-										<column hflex="min">
+										<column hflex="1">
 											<label value="Ref" />
 										</column>
-										<column hflex="min">
+										<column hflex="1">
 											<label value="Alts" />
 										</column>
-										<column hflex="min">
-											<label value="Sequence" />
-										</column>
-										<column hflex="min">
-											<label value="Reference Id" />
-										</column>
-										<column hflex="min">
+										<column hflex="1">
 											<label
 												value="Reference Name" />
-										</column>
-										<column hflex="min">
-											<label value="Primers" />
-										</column>
-										<column hflex="min">
-											<label value="Strand Id" />
-										</column>
-										<column hflex="min">
-											<label value="Strand Name" />
-										</column>
-										<column hflex="min">
-											<label value="Status" />
-										</column>
-										<column hflex="min">
-											<label value="Probsets" />
-										</column>
-										<column hflex="min">
-											<label
-												value="Dataset Marker Idx" />
-										</column>
-										<column hflex="min">
-											<label value="Props" />
-										</column>
-										<column hflex="min">
-											<label
-												value="Dataset Vendor Protocol" />
 										</column>
 									</columns>
 									<template name="model"
 										var="marker">
-										<row>
+										<row
+											onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
+											style="cursor:pointer"
+											tooltip="markerTooltip, position=after_pointer">
 											<cell>
 												<checkbox
 													value="@load(marker)" checked="@load(vm.allCbSelected)"
@@ -466,14 +430,6 @@
 											</cell>
 											<cell>
 												<label
-													value="@load(marker.variantId)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.code)" />
-											</cell>
-											<cell>
-												<label
 													value="@load(marker.ref)" />
 											</cell>
 											<cell>
@@ -482,56 +438,19 @@
 											</cell>
 											<cell>
 												<label
-													value="@load(marker.sequence)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.referenceId)" />
-											</cell>
-											<cell>
-												<label
 													value="@load(marker.referenceName)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.primersToString)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.strandId)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.strandName)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.status)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.probsetsToString)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.datasetMarkerIdxToString)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.propsToString)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.datasetVendorProtocolToString)" />
 											</cell>
 										</row>
 									</template>
 								</grid>
 							</div>
-
 							<popup id="title" width="400px">
 								<label
 									value="Separate each name with a new line." />
+							</popup>
+							<popup id="markerTooltip" hflex="1">
+								<label
+									value="Click to view marker details" />
 							</popup>
 						</div>
 					</center>
