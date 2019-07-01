@@ -1,7 +1,7 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <vlayout apply="org.zkoss.bind.BindComposer"
-         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
     <label>Scheduler - Cron Settings</label>
     <grid width="500px">
         <columns>
@@ -12,7 +12,7 @@
             <row>
                 <cell sclass="row-title">Crop Name:</cell>
                 <cell>
-                    <listbox model="@load(vm.xmlHandler.cropList)" selectedItem="@bind(vm.xmlHandler.currentCrop)"
+                    <listbox model="@load(vm.xmlHandler.cropList)" selectedItem="@bind(vm.currentCrop.name)"
                              width="200px" mold="select" disabled="@load(vm.documentLocked)">
                         <template name="model">
                             <listitem label="@load(each)" />
@@ -23,16 +23,16 @@
             <row>
                 <cell sclass="row-title">Cron File Age (Mins):</cell>
                 <cell>
-                    <intbox constraint="no empty"
-                             width="200px" value="-1" disabled="@load(vm.documentLocked)">
+                    <intbox constraint="no negative, no empty : Please set a value between 1 and 59"
+                             width="200px" value="@bind(vm.currentCrop.fileAge)" disabled="@load(vm.documentLocked)">
                     </intbox>
                 </cell>
             </row>
             <row>
                 <cell sclass="row-title">Cron Interval (Mins):</cell>
                 <cell>
-                    <intbox constraint="no empty"
-                             width="200px" value="-1" disabled="@load(vm.documentLocked)">
+                    <intbox constraint="no negative, no empty : Please set a value between 1 and 59"
+                             width="200px" value="@bind(vm.currentCrop.cron)" disabled="@load(vm.documentLocked)">
                     </intbox>
                 </cell>
             </row>
@@ -41,7 +41,7 @@
     <div align="left">
         <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
         <hlayout>
-            <button id="save" label="Save" onClick="@command('disableEdit')" visible="@bind(not vm.documentLocked)" />
+            <button id="save" label="Save" onClick="@command('reloadCrons')" visible="@bind(not vm.documentLocked)" />
             <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
         </hlayout>
     </div>

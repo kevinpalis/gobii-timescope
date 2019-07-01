@@ -1,7 +1,7 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <tree rows="14" apply="org.zkoss.bind.BindComposer"
-      viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')" >
+      viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
     <treecols>
         <treecol/>
     </treecols>

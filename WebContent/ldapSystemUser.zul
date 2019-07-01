@@ -1,7 +1,7 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <vlayout apply="org.zkoss.bind.BindComposer"
-          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.WebConfigViewModel')">
+          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
     <label>LDAP - GOBii System User</label>
     <grid width="500px" >
         <columns>

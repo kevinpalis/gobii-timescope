@@ -33,7 +33,7 @@
          <serverConfig>
             <decrypt>false</decrypt>
             <serverType>KDC</serverType>
-            <host>cbsugobiixvm03.biohpc.cornell.edu</host>
+            <host>cbsugobiixvm14.biohpc.cornell.edu</host>
             <contextPath>kdcompute</contextPath>
             <port>8083</port>
             <isActive>true</isActive>
@@ -116,7 +116,7 @@
                   <serverConfig>
                      <decrypt>false</decrypt>
                      <serverType>GOBII_WEB</serverType>
-                     <host>cbsugobiixvm03.biohpc.cornell.edu</host>
+                     <host>cbsugobiixvm14.biohpc.cornell.edu</host>
                      <contextPath>/gobii-dev</contextPath>
                      <port>8081</port>
                      <isActive>true</isActive>
@@ -212,7 +212,7 @@
                      <userName>appuser</userName>
                      <password>g0b11isw3s0m3</password>
                      <serverType>GOBII_PGSQL</serverType>
-                     <host>cbsugobiixvm03.biohpc.cornell.edu</host>
+                     <host>cbsugobiixvm14.biohpc.cornell.edu</host>
                      <contextPath>gobii_dev</contextPath>
                      <port>5433</port>
                      <isActive>true</isActive>
@@ -289,7 +289,7 @@
    <emailServerPort>587</emailServerPort>
    <gobiiAuthenticationType>LDAP_CONNECT_WITH_MANAGER</gobiiAuthenticationType>
    <ldapUserDnPattern>uid={0}</ldapUserDnPattern>
-   <ldapUrl>ldap://cbsugobiixvm03.biohpc.cornell.edu/dc=gobiiproject,dc=org</ldapUrl>
+   <ldapUrl>ldap://cbsugobiixvm14.biohpc.cornell.edu/dc=gobiiproject,dc=org</ldapUrl>
    <ldapBindUser>cn=admin,dc=gobiiproject,dc=org</ldapBindUser>
    <ldapBindPassword>g0b11LDAP</ldapBindPassword>
    <iflIntegrityCheck>false</iflIntegrityCheck>
