@@ -66,18 +66,18 @@
             </treerow>
             <treechildren>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('addCrop')">
                         <treecell label="Add crop" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('deleteCrop')">
                         <treecell label="Delete crop" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
                 <treeitem>
-                    <treerow>
-                        <treecell label="Manage crops" style="font-size:15px !important;"/>
+                    <treerow onClick="@command('modifyCrop')">
+                        <treecell label="Modify crops" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
             </treechildren>

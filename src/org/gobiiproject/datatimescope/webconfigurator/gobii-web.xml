@@ -228,7 +228,7 @@
         <entry>
             <string>rice</string>
             <gobiiCropConfig>
-                <gobiiCropType>test</gobiiCropType>
+                <gobiiCropType>rice</gobiiCropType>
                 <isActive>true</isActive>
                 <serversByServerType class="java.util.HashMap">
                     <entry>

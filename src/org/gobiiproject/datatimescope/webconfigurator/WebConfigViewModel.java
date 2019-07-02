@@ -7,6 +7,7 @@ import org.gobiiproject.datatimescope.webconfigurator.Crop;
 import org.gobiiproject.datatimescope.webconfigurator.propertyHandler;
 import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
 import org.jooq.DSLContext;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
@@ -22,6 +23,7 @@ import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
@@ -64,7 +66,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 public void onEvent(Event evt) {
                     if (evt.getName().equals("onOK")) {
                         binder.sendCommand("disableEdit", null);
-                        executeTomcatReloadRequest();
+                        executeTomcatReloadRequest(true);
                     }
                 }
             });
@@ -87,7 +89,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                         String oldUserName = xmlHandler.getPostgresUserName();
                         binder.sendCommand("disableEdit", null);
                         executePostgresReload(oldUserName);
-                        executeTomcatReloadRequest();
+                        executeTomcatReloadRequest(true);
                     }
                 }
             }, params);
@@ -126,27 +128,42 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
-
     /**
      * Sends the requests to reload the web application under the found context paths in the gobii-web.xml file
      */
-    private void executeTomcatReloadRequest(){
+    private void executeTomcatReloadRequest(boolean all){
         String host = xmlHandler.getHostForReload();
         String port = xmlHandler.getPortForReload();
-        NodeList contextPathNodes = xmlHandler.getContextPathNodes();
-        //Reload each context
-        for (int i = 0; i < contextPathNodes.getLength(); i++) {
-            request.setPath(contextPathNodes.item(i).getTextContent());
+        if (all) {
+            NodeList contextPathNodes = xmlHandler.getContextPathNodes();
+            //Reload each context
+            for (int i = 0; i < contextPathNodes.getLength(); i++) {
+                request.setPath(contextPathNodes.item(i).getTextContent());
+                request.setUrl("http://" + host + ":" + port + "/manager/text");
+                request.execute();
+            }
+        } else {
+            request.setPath("/" + currentCrop.getWARName());
             request.setUrl("http://" + host + ":" + port + "/manager/text");
             request.execute();
         }
     }
 
     @Command("addCropToDatabase")
-    public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder, Crop newCrop){
+    public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
+        List currentCrops = xmlHandler.getCropList();
+        if (currentCrops.contains(currentCrop.getName())){
+            alert("This crop already has a database associated with it. Please choose another crop.");
+            return;
+        }
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
-        context.fetch("CREATE DATABASE gobii_" + newCrop.getName() + " WITH OWNER '" + xmlHandler.getPostgresUserName() + "';");
+        try {
+            context.fetch("CREATE DATABASE " + currentCrop.getDatabaseName() + " WITH OWNER '" + xmlHandler.getPostgresUserName() + "';");
+        } catch (Exception e){
+            alert("This database name is already in use or the name is using invalid characters. Please choose another name.");
+            return;
+        }
         String command = "docker exec -ti gobii-web-node bash -c 'cd liquibase; " +
                 "java -jar bin/liquibase.jar" +
                 " --username=" + xmlHandler.getPostgresUserName() +
@@ -154,7 +171,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 " --url=jdbc:postgresql://" + xmlHandler.getHostForReload() +
                 ":" + xmlHandler.getPostgresPort() +
                 "//" + xmlHandler.getPostgresHost() + ":" + xmlHandler.getPostgresPort() +
-                "/gobii_" + newCrop.getName() +
+                "/gobii_" + currentCrop.getName() +
                 " --driver=org.postgresql.Driver" +
                 " --classpath=drivers/postgresql-9.4.1209.jar --changeLogFile=changelogs/db.changelog-master.xml" +
                 " --contexts=general,seed_general,seed_cbsu update'";
@@ -167,49 +184,66 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String[] duplicateWar = {
-                "sshpass",
-                "-p",
-                "g0b11Admin",
-                "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
-                "docker exec gobii-web-node bash -c 'cp /usr/local/tomcat/webapps/gobii-dev.war /usr/local/tomcat/webapps/gobii-" + newCrop.getName() + ".war'"
-        };
+        String[] dupli = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
         try {
-            proc = new ProcessBuilder(duplicateWar).start();
-            proc.destroy();
+            new ProcessBuilder(dupli).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //update xml
-        deployOnTomcat(newCrop);
+        xmlHandler.appendCrop(currentCrop);
+        if (configureTomcatReloadRequest()) {
+            executeTomcatReloadRequest(false);
+        }
+        binder.sendCommand("disableEdit", null);
     }
 
-
-    private void deployOnTomcat(Crop newCrop){
-        if (configureTomcatDeployRequest()){
-            deployer.setLocalWar("/usr/local/tomcat/webapps/gobii-" + newCrop.getName() + ".war");
-            deployer.setWar("http://" + xmlHandler.getHostForReload() + ":" + xmlHandler.getPortForReload() + newCrop.getName());
-            //Make sure gobii.xml is updated
-            configureTomcatReloadRequest();
-            executeTomcatReloadRequest();
-        }
-    }
-
-    private boolean configureTomcatDeployRequest(){
-        try {
-            deployer.setUsername(prop.getUsername());
-            deployer.setPassword(prop.getPassword());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (deployer.getUsername() == null || deployer.getPassword() == null) {
-            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place." +
-                    "The modifications are staged and will take effect when the web application is restarted.");
-            return false;
+    @Command("modifyCropActive")
+    public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
+        if (configureTomcatReloadRequest()){
+            xmlHandler.setActivity(currentCrop);
+            executeTomcatReloadRequest(false);
+            binder.sendCommand("disableEdit", null);
         } else {
-            return true;
+            binder.sendCommand("disableEdit", null);
         }
+
+    }
+
+    @Command("warningRemoval")
+    public void warningRemoval(@ContextParam(ContextType.BINDER) Binder binder){
+        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+        Map<String, String> params = new HashMap<>();
+        params.put("width", "500");
+        Messagebox.show("This operation will permanently remove this database and all its associated information." +
+                "\nPlease make sure that there are no active sessions prior to removing this database. \nAre you sure" +
+                " you want to remove the database now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) {
+                if (evt.getName().equals("onOK")) {
+                    binder.sendCommand("removeCropFromDatabase", null);
+                    binder.sendCommand("disableEdit", null);
+                }
+            }
+        }, params);
+    }
+
+
+    @Command("removeCropFromDatabase")
+    public void removeCropFromDatabase(){
+        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
+        DSLContext context = tmpService.getDSLContext();
+        try {
+            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
+        } catch (Exception e){
+            alert("The database could not be removed.");
+            return;
+        }
+        String[] removeWAR = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
+        try {
+            new ProcessBuilder(removeWAR).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        xmlHandler.removeCrop(currentCrop);
     }
 
     @Command ("reloadCrons")
@@ -255,7 +289,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         writer.close();
         //TODO Validate this
-        Runtime.getRuntime().exec(getClass().getProtectionDomain().getCodeSource().getLocation() + "/dockerCopyCron.sh");
+        Runtime.getRuntime().exec(getClass().getProtectionDomain().getCodeSource().getLocation() + "dockerCopyCron.sh");
         binder.sendCommand("disableEdit", null);
     }
 
@@ -282,9 +316,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/postgresSystemUser.zul");
         getPage().getDesktop().setBookmark("p_"+"postgresSystemUser");
-        Crop tCrop = new Crop();
-        tCrop.setName("rice");
-        xmlHandler.appendCrop(tCrop);
     }
 
     @Command("ldapSystemUser")
@@ -335,12 +366,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_"+"deleteCrop");
     }
 
-    @Command("manageCrop")
+    @Command("modifyCrop")
     public void manageCrop() {
         Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
-        include.setSrc("/manageCrop.zul");
-        getPage().getDesktop().setBookmark("p_"+"manageCrop");
+        include.setSrc("/modifyCrop.zul");
+        getPage().getDesktop().setBookmark("p_"+"modifyCrop");
     }
 
     @Command("logSettings")

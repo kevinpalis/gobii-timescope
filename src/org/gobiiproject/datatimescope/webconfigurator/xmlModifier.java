@@ -58,7 +58,7 @@ public class xmlModifier extends SelectorComposer<Component> {
     //Finds the GOBII_WEB configs
     //Only the contextPath can handle different settings the rest needs to stay the same
     private static String hostForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
-    private static String contextPathlForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
+    private static String contextPathForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
     private static String portForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
 
 
@@ -69,7 +69,7 @@ public class xmlModifier extends SelectorComposer<Component> {
 
     public NodeList getContextPathNodes() {
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(contextPathlForReloadXPath, doc);
+        return evaluateXPathExpression(contextPathForReloadXPath, doc);
     }
 
     public String getPortForReload() {
@@ -99,6 +99,12 @@ public class xmlModifier extends SelectorComposer<Component> {
         for (int n = 0; n < postgresCropNodes.getLength(); n++){
             postgresCropNodes.item(n).setTextContent(newContent);
         }
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setActivity(Crop modCrop) {
+        Document doc = xmlModifier.retrieveFile(path);
+        String expression = "//gobiiCroptype[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
+        evaluateXPathExpression(expression, doc).item(0).setTextContent(String.valueOf(modCrop.isMakeActive()));
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserForUnitTest(String newContent){
@@ -177,6 +183,12 @@ public class xmlModifier extends SelectorComposer<Component> {
         xmlModifier.modifyDocument(doc, path);
     }
 
+    public String getDatabaseName(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+
     public List getCropList(){
         Document doc = xmlModifier.retrieveFile(path);
         NodeList nl = evaluateXPathExpression(cropListXPath, doc);
@@ -187,6 +199,11 @@ public class xmlModifier extends SelectorComposer<Component> {
         return cropList;
     }
 
+    public Boolean getActivity(Crop modCrop) {
+        Document doc = xmlModifier.retrieveFile(path);
+        String expression = "//gobiiCropType[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
+        return Boolean.valueOf(evaluateXPathExpression(expression, doc).item(0).getTextContent());
+    }
     public String getCurrentCrop(){
         return currentCrop;
     }
@@ -330,6 +347,18 @@ public class xmlModifier extends SelectorComposer<Component> {
         return evaluateXPathExpression(postgresHostXPath, doc).item(0).getTextContent();
     }
 
+    public void removeCrop(Crop oldCrop){
+        Document doc = xmlModifier.retrieveFile(path);
+        Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
+        removeChildren(cropRoot);
+        modifyDocument(doc, path);
+    }
+
+    private void removeChildren(Node node){
+        while (node.hasChildNodes())
+            node.removeChild(node.getFirstChild());
+    }
+
     public void appendCrop(Crop newCrop){
         Document doc = xmlModifier.retrieveFile(path);
         Node cropConfigRoot = evaluateXPathExpression("//cropConfigs", doc).item(0);
@@ -371,7 +400,7 @@ public class xmlModifier extends SelectorComposer<Component> {
     private Node gobiiCropConfig(Document doc, Crop crop){
         Element gobiiCropConfig = doc.createElement("gobiiCropConfig");
         Element gobiiCropType = doc.createElement("gobiiCropType");
-        gobiiCropType.appendChild(doc.createTextNode("test"));
+        gobiiCropType.appendChild(doc.createTextNode(crop.getName()));
         Element isActive = doc.createElement("isActive");
         isActive.appendChild(doc.createTextNode("true"));
         gobiiCropConfig.appendChild(gobiiCropType);
@@ -455,7 +484,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         host.appendChild(doc.createTextNode(getHostForReload()));
         serverConfig.appendChild(host);
         Element contextPath = doc.createElement("contextPath");
-        contextPath.appendChild(doc.createTextNode("/gobii-" + crop.getName()));
+        contextPath.appendChild(doc.createTextNode("/" + crop.getName()));
         serverConfig.appendChild(contextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPortForReload()));
@@ -510,11 +539,11 @@ public class xmlModifier extends SelectorComposer<Component> {
         string.appendChild(doc.createTextNode(type));
         entry.appendChild(string);
         if (type.equals("ANALYSIS")){
-            boolean addPutasMethod = true;
-            entry.appendChild(restResourceMethodLimitColl(doc, addPutasMethod));
+            boolean addPutAsMethod = true;
+            entry.appendChild(restResourceMethodLimitColl(doc, addPutAsMethod));
         } else {
-            boolean addPutasMethod = false;
-            entry.appendChild(restResourceMethodLimitColl(doc, addPutasMethod));
+            boolean addPutAsMethod = false;
+            entry.appendChild(restResourceMethodLimitColl(doc, addPutAsMethod));
         }
         return entry;
     }
