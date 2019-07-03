@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.util.media.Media;
 
 public class Crop {
 
@@ -11,6 +12,8 @@ public class Crop {
     private String WARName;
     private boolean makeActive;
     private xmlModifier xmlHandler = new xmlModifier();
+    private Media contactData;
+    private boolean hideData = true;
 
     public int getCron() {
         return cron;
@@ -27,7 +30,9 @@ public class Crop {
     @NotifyChange("makeActive")
     public void setName(String name) {
         this.name = name;
-        this.makeActive = xmlHandler.getActivity(this);
+        if (xmlHandler.getCropList().contains(this.name)) {
+            this.makeActive = xmlHandler.getActivity(this);
+        }
     }
 
     public int getFileAge() {
@@ -61,4 +66,24 @@ public class Crop {
     public void setMakeActive(boolean makeActive) {
         this.makeActive = makeActive;
     }
+
+    public String getContactData() {
+        return contactData.getName();
+    }
+
+    @NotifyChange("hideData")
+    public void setContactData(Media contactData) {
+        this.contactData = contactData;
+        this.hideData = false;
+    }
+
+    public boolean isHideData() {
+        return hideData;
+    }
+
+    public void setHideData(boolean hideData) {
+        this.hideData = hideData;
+    }
+
+
 }

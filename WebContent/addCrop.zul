@@ -31,7 +31,21 @@
                     <textbox constraint="no empty : Please set a name for the new WAR."
                              width="200px" value="@save(vm.currentCrop.WARName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                     </textbox>
-                    <label value=".war" width="90px">
+                </cell>
+                <cell>
+                    .war
+                </cell>
+            </row>
+            <row>
+                <cell>
+                    <button upload="true" label="Upload Contact data" onUpload="@command('upload', upload=event)" disabled="@load(vm.documentLocked)">
+                    </button>
+                </cell>
+                <cell sclass="row-title">
+                    Selected File:
+                </cell>
+                <cell>
+                    <label value="@load(vm.currentCrop.contactData, after = 'upload')" visible="@bind(vm.currentCrop.hideData)">
                     </label>
                 </cell>
             </row>

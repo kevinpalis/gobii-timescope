@@ -12,10 +12,10 @@
             <row>
                 <cell sclass="row-title">Crop Name:</cell>
                 <cell>
-                    <listbox model="@load(vm.xmlHandler.cropList)" selectedItem="@bind(vm.currentCrop.name)"
+                    <listbox model="@bind(vm.xmlHandler.cropList)" selectedItem="@bind(vm.currentCrop.name)"
                              width="200px" mold="select" disabled="@load(vm.documentLocked)">
                         <template name="model">
-                            <listitem label="@load(each)" />
+                            <listitem label="@bind(each)" />
                         </template>
                     </listbox>
                 </cell>

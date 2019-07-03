@@ -2,6 +2,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 
@@ -204,12 +205,24 @@ public class xmlModifier extends SelectorComposer<Component> {
         String expression = "//gobiiCropType[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
         return Boolean.valueOf(evaluateXPathExpression(expression, doc).item(0).getTextContent());
     }
+
+    public String getWARName(String Cropname) {
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+
+
     public String getCurrentCrop(){
         return currentCrop;
     }
     public String getPostgresUserName(){
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
+    }
+    public int getPostgresPasswordExtrenal(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getPostgresPassword(){
         Document doc = xmlModifier.retrieveFile(path);
@@ -219,9 +232,9 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).getTextContent();
     }
-    public String getLdapPasswordForUnitTest(){
+    public int getLdapPasswordForUnitTest(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getGobiiAuthenticationType(){
         Document doc = xmlModifier.retrieveFile(path);
@@ -239,17 +252,17 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapBindUserXPath, doc).item(0).getTextContent();
     }
-    public String getLdapBindPassword(){
+    public int getLdapBindPassword(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getLdapUserForBackendProcs(){
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).getTextContent();
     }
-    public String getLdapPasswordForBackendProcs(){
+    public int getLdapPasswordForBackendProcs(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getEmailSvrType(){
         Document doc = xmlModifier.retrieveFile(path);
@@ -267,9 +280,9 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).getTextContent();
     }
-    public String getEmailSvrPassword(){
+    public int getEmailSvrPassword(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent();
+        return evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getEmailServerPort(){
         Document doc = xmlModifier.retrieveFile(path);
@@ -347,6 +360,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         return evaluateXPathExpression(postgresHostXPath, doc).item(0).getTextContent();
     }
 
+    @NotifyChange("cropList")
     public void removeCrop(Crop oldCrop){
         Document doc = xmlModifier.retrieveFile(path);
         Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);

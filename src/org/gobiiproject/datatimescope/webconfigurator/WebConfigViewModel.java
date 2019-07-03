@@ -1,19 +1,15 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.apache.catalina.ant.DeployTask;
 import org.apache.catalina.ant.ReloadTask;
 import org.gobiiproject.datatimescope.services.UserCredential;
-import org.gobiiproject.datatimescope.webconfigurator.Crop;
-import org.gobiiproject.datatimescope.webconfigurator.propertyHandler;
-import org.gobiiproject.datatimescope.webconfigurator.xmlModifier;
 import org.jooq.DSLContext;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
@@ -34,7 +30,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private ReloadTask request = new ReloadTask();
     private boolean isSuperAdmin = false;
     private Crop currentCrop = new Crop();
-    private DeployTask deployer = new DeployTask();
 
     @Init
     public void init() {
@@ -164,36 +159,44 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert("This database name is already in use or the name is using invalid characters. Please choose another name.");
             return;
         }
+        //TODO Validate Liquibase command
         String command = "docker exec -ti gobii-web-node bash -c 'cd liquibase; " +
                 "java -jar bin/liquibase.jar" +
                 " --username=" + xmlHandler.getPostgresUserName() +
                 " --password=" + xmlHandler.getPostgresPassword() +
-                " --url=jdbc:postgresql://" + xmlHandler.getHostForReload() +
-                ":" + xmlHandler.getPostgresPort() +
-                "//" + xmlHandler.getPostgresHost() + ":" + xmlHandler.getPostgresPort() +
-                "/gobii_" + currentCrop.getName() +
+                " --url=jdbc:postgresql://" + xmlHandler.getPostgresHost() + ":" + xmlHandler.getPostgresPort() +
+                "/" + currentCrop.getName() +
                 " --driver=org.postgresql.Driver" +
                 " --classpath=drivers/postgresql-9.4.1209.jar --changeLogFile=changelogs/db.changelog-master.xml" +
-                " --contexts=general,seed_general,seed_cbsu update'";
-        String[] populateDatabase = {
-                "sshpass", "-p", "g0b11Admin", "ssh", "gadm@cbsugobiixvm14.biohpc.cornell.edu", command};
-        Process proc = null;
+                " --contexts=general,seed_general update'";
+        String[] populateDatabase = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/liquibase.sh"
+                , xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()};
+        /*TODO on Deploy
+        String[] populateDatabase = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/liquibase.sh"
+                , xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getHostForReload()
+                , xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getName()};
+        */
         try {
-            proc = new ProcessBuilder(populateDatabase).start();
-            proc.destroy();
+            new ProcessBuilder(populateDatabase).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
         String[] dupli = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
+        //TODO on Deploy
+        //String[] dupli = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
         try {
             new ProcessBuilder(dupli).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
         xmlHandler.appendCrop(currentCrop);
+        /*
+        Keeping this created a race condition
         if (configureTomcatReloadRequest()) {
+
             executeTomcatReloadRequest(false);
-        }
+        } */
+        currentCrop.setHideData(true);
         binder.sendCommand("disableEdit", null);
     }
 
@@ -237,7 +240,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert("The database could not be removed.");
             return;
         }
-        String[] removeWAR = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
+        String[] removeWAR = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "0" , xmlHandler.getWARName(currentCrop.getName())};
+        //TODO on deploy
+        //String[] removeWAR = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "0" , currentCrop.getWARName()};
         try {
             new ProcessBuilder(removeWAR).start();
         } catch (IOException e) {
@@ -258,9 +263,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             return;
         }
         String[] read = {
-                "sshpass",
-                "-p",
-                "g0b11Admin",
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
                 "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
@@ -282,14 +284,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 newJobs.add(line);
             }
         }
-        proc.destroy();
         FileWriter writer = new FileWriter("newCrons.txt");
         for(String str: newJobs) {
             writer.write(str + System.lineSeparator());
         }
         writer.close();
-        //TODO Validate this
-        Runtime.getRuntime().exec(getClass().getProtectionDomain().getCodeSource().getLocation() + "dockerCopyCron.sh");
+        /*TODO on deploy
+        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh";
+        try {
+            new ProcessBuilder(dockerCopyCron).start();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        */
+        Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh");
         binder.sendCommand("disableEdit", null);
     }
 
@@ -468,6 +476,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public Crop getCurrentCrop(){
         return currentCrop;
+    }
+
+    @Command("upload")
+    public void uploaded(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
+        currentCrop.setContactData(event.getMedia());
     }
 
 }

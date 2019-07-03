@@ -210,7 +210,7 @@
                   <serverConfig>
                      <decrypt>false</decrypt>
                      <userName>appuser</userName>
-                     <password>g0b11isw3s0m3</password>
+                     <password>appuser</password>
                      <serverType>GOBII_PGSQL</serverType>
                      <host>cbsugobiixvm14.biohpc.cornell.edu</host>
                      <contextPath>gobii_dev</contextPath>
