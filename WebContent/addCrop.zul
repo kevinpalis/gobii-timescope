@@ -12,7 +12,7 @@
             <row>
                 <cell sclass="row-title">Crop Name:</cell>
                 <cell>
-                    <textbox constraint="no empty : Please set a name for the new crop."
+                    <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
                             width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
@@ -20,7 +20,7 @@
             <row>
                 <cell sclass="row-title">Database Name:</cell>
                 <cell>
-                    <textbox constraint="no empty : Please set a name for the new database."
+                    <textbox constraint="no empty : Please set a name for the new database. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores. "
                              width="200px" value="@save(vm.currentCrop.databaseName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
@@ -28,7 +28,7 @@
             <row>
                 <cell sclass="row-title">Web Application (WAR) Name:</cell>
                 <cell>
-                    <textbox constraint="no empty : Please set a name for the new WAR."
+                    <textbox constraint="no empty : Please set a name for the new WAR. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
                              width="200px" value="@save(vm.currentCrop.WARName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
@@ -45,7 +45,7 @@
                     Selected File:
                 </cell>
                 <cell>
-                    <label value="@load(vm.currentCrop.contactData, after = 'upload')" visible="@bind(vm.currentCrop.hideData)">
+                    <label value="@load(vm.currentCrop.contactData, after = 'upload')" visible="@bind(vm.currentCrop.hideContactData)">
                     </label>
                 </cell>
             </row>

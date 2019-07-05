@@ -22,11 +22,11 @@
             </row>
             <row>
                 <cell sclass="row-title">Currently Active:</cell>
-                <textbox value="@bind(vm.currentCrop.makeActive)" disabled="true"/>
+                <textbox value="@bind(vm.currentCrop.isActive)" disabled="true"/>
             </row>
             <row>
-                <cell sclass="row-title">Make Active:</cell>
-                <checkbox checked="@save(vm.currentCrop.makeActive, before='disableEdit')" disabled="@load(vm.currentCrop.makeActive)"/>
+                <cell sclass="row-title">Change Activity:</cell>
+                <checkbox checked="@load(vm.currentCrop.changeActivity) @save(vm.currentCrop.changeActivity, before='disableEdit')" disabled="@bind(vm.documentLocked)"/>
             </row>
         </rows>
     </grid>

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# 1 as flag means create, anything else remove the given war file
 x=1
 if [[ $1 == ${x} ]]
 then

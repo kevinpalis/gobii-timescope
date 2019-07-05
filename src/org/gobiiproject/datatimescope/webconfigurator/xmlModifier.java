@@ -5,6 +5,7 @@ import org.xml.sax.SAXException;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
+import org.zkoss.zul.ListModelList;
 
 import java.io.*;
 import java.lang.Object;
@@ -102,10 +103,10 @@ public class xmlModifier extends SelectorComposer<Component> {
         }
         xmlModifier.modifyDocument(doc, path);
     }
-    public void setActivity(Crop modCrop) {
+    public void setActivity(Crop modCrop, boolean activeness) {
         Document doc = xmlModifier.retrieveFile(path);
-        String expression = "//gobiiCroptype[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
-        evaluateXPathExpression(expression, doc).item(0).setTextContent(String.valueOf(modCrop.isMakeActive()));
+        String expression = "//gobiiCropType[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
+        evaluateXPathExpression(expression, doc).item(0).setTextContent(String.valueOf(activeness));
         xmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserForUnitTest(String newContent){
@@ -190,10 +191,10 @@ public class xmlModifier extends SelectorComposer<Component> {
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
 
-    public List getCropList(){
+    public ListModelList getCropList(){
         Document doc = xmlModifier.retrieveFile(path);
         NodeList nl = evaluateXPathExpression(cropListXPath, doc);
-        List<String> cropList = new ArrayList<>();
+        ListModelList<String> cropList = new ListModelList<>();
         for (int i = 0; i < nl.getLength(); i++){
             cropList.add(nl.item(i).getTextContent());
         }
@@ -365,6 +366,8 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
         removeChildren(cropRoot);
+        cropRoot.getParentNode().removeChild(cropRoot);
+        removeEmptyLines();
         modifyDocument(doc, path);
     }
 
@@ -458,7 +461,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         host.appendChild(doc.createTextNode(getPostgresHost()));
         serverConfig.appendChild(host);
         Element contextPath = doc.createElement("contextPath");
-        contextPath.appendChild(doc.createTextNode(crop.getName()));
+        contextPath.appendChild(doc.createTextNode(crop.getDatabaseName()));
         serverConfig.appendChild(contextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPostgresPort()));
@@ -498,7 +501,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         host.appendChild(doc.createTextNode(getHostForReload()));
         serverConfig.appendChild(host);
         Element contextPath = doc.createElement("contextPath");
-        contextPath.appendChild(doc.createTextNode("/" + crop.getName()));
+        contextPath.appendChild(doc.createTextNode("/" + crop.getWARName()));
         serverConfig.appendChild(contextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPortForReload()));

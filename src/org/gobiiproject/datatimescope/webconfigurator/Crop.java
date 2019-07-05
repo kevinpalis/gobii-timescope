@@ -1,5 +1,9 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.zkoss.bind.Binder;
+import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.media.Media;
 
@@ -10,10 +14,12 @@ public class Crop {
     private int fileAge;
     private String databaseName;
     private String WARName;
-    private boolean makeActive;
+    private boolean isActive;
+    private boolean changeActivity;
+    private boolean activityChanged;
     private xmlModifier xmlHandler = new xmlModifier();
     private Media contactData;
-    private boolean hideData = true;
+    private boolean hideContactData = true;
 
     public int getCron() {
         return cron;
@@ -27,11 +33,11 @@ public class Crop {
         return name;
     }
 
-    @NotifyChange("makeActive")
+    @NotifyChange("isActive")
     public void setName(String name) {
         this.name = name;
         if (xmlHandler.getCropList().contains(this.name)) {
-            this.makeActive = xmlHandler.getActivity(this);
+            this.isActive = xmlHandler.getActivity(this);
         }
     }
 
@@ -59,31 +65,57 @@ public class Crop {
         this.WARName = WARName;
     }
 
-    public boolean isMakeActive() {
-        return makeActive;
+    public boolean getIsActive() {
+        return isActive;
     }
 
-    public void setMakeActive(boolean makeActive) {
-        this.makeActive = makeActive;
+    @NotifyChange("isActive")
+    public void setIsActive(boolean makeActive) {
+        this.isActive = makeActive;
     }
 
     public String getContactData() {
         return contactData.getName();
     }
 
-    @NotifyChange("hideData")
+    @NotifyChange("hideContactData")
     public void setContactData(Media contactData) {
         this.contactData = contactData;
-        this.hideData = false;
+        this.hideContactData = false;
     }
 
-    public boolean isHideData() {
-        return hideData;
+    public boolean getHideContactData() {
+        return hideContactData;
     }
 
-    public void setHideData(boolean hideData) {
-        this.hideData = hideData;
+    public void setHideContactData(boolean hideData) {
+        this.hideContactData = hideData;
     }
 
 
+    public boolean getChangeActivity() {
+        return changeActivity;
+    }
+
+    @NotifyChange({"isActive", "changeActivity"})
+    public void setChangeActivity(boolean changeActivity){
+        if (changeActivity){
+            if (isActive) {
+                xmlHandler.setActivity(this, false);
+                isActive = false;
+            } else {
+                xmlHandler.setActivity(this, true);
+                isActive = true;
+            }
+            activityChanged = true;
+        }
+    }
+
+    public boolean isActivityChanged() {
+        return activityChanged;
+    }
+
+    public void setActivityChanged(boolean activityChanged) {
+        this.activityChanged = activityChanged;
+    }
 }

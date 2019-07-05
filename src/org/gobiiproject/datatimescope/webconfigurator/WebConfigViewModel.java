@@ -34,7 +34,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Init
     public void init() {
         UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-        if (cre.getRole() == 1){
+        if (cre.getRole() == 1) {
             isSuperAdmin = true;
         }
     }
@@ -138,7 +138,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 request.execute();
             }
         } else {
-            request.setPath("/" + currentCrop.getWARName());
+            request.setPath(xmlHandler.getWARName(currentCrop.getName()));
             request.setUrl("http://" + host + ":" + port + "/manager/text");
             request.execute();
         }
@@ -196,16 +196,28 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
             executeTomcatReloadRequest(false);
         } */
-        currentCrop.setHideData(true);
+        modifyCron("create");
+        currentCrop.setHideContactData(true);
         binder.sendCommand("disableEdit", null);
     }
 
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
         if (configureTomcatReloadRequest()){
-            xmlHandler.setActivity(currentCrop);
-            executeTomcatReloadRequest(false);
+            currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
             binder.sendCommand("disableEdit", null);
+            if (currentCrop.isActivityChanged()){
+                currentCrop.setActivityChanged(false);
+            } else {
+                alert("No changes have been made, please change a setting.");
+                return;
+            }
+            executeTomcatReloadRequest(false);
+            /*if (currentCrop.getIsActive()) {
+                modifyCron("create");
+            } else {
+                modifyCron("delete");
+            } */
         } else {
             binder.sendCommand("disableEdit", null);
         }
@@ -222,16 +234,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 " you want to remove the database now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
-                    binder.sendCommand("removeCropFromDatabase", null);
-                    binder.sendCommand("disableEdit", null);
+                    if (xmlHandler.getCropList().size() > 1) {
+                        binder.sendCommand("removeCropFromDatabase", null);
+                        binder.sendCommand("disableEdit", null);
+                    } else {
+                        alert("This the only database. Please add another crop before deleting this database.");
+                    }
                 }
             }
         }, params);
     }
 
-
+    @NotifyChange("cropList")
     @Command("removeCropFromDatabase")
-    public void removeCropFromDatabase(){
+    public void removeCropFromDatabase(@ContextParam(ContextType.BINDER) Binder binder){
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
         try {
@@ -249,26 +265,34 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             e.printStackTrace();
         }
         xmlHandler.removeCrop(currentCrop);
+        modifyCron("delete");
+        xmlHandler.getCropList();
+        binder.sendCommand("disableEdit", null);
+        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/mainContent.zul");
+        getPage().getDesktop().setBookmark("p_"+"home");
     }
 
-    @Command ("reloadCrons")
-    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder) throws IOException {
-        if (currentCrop.getName() == null){
-            alert("Please specify a crop.");
-            binder.sendCommand("disableEdit", null);
-            return;
-        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
-            alert("Please choose a valid value between 1 and 59. The default setting is 2.");
-            binder.sendCommand("disableEdit", null);
-            return;
+    private void createCron(BufferedReader stdInput) throws IOException {
+        ArrayList<String> newJobs = new ArrayList<>();
+        String line = null;
+        while ((line = stdInput.readLine()) != null) {
+            if (line.equals("")){
+                break;
+            }
+            newJobs.add(line);
         }
-        String[] read = {
-                "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
-                "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
-        };
-        Process proc = new ProcessBuilder(read).start();
-        BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        newJobs.add("*/2 * * * * /data/gobii_bundle/loaders/cronjob.sh " + currentCrop.getName() + " +2");
+        newJobs.add("*/2 * * * * /data/gobii_bundle/extractors/cronjob.sh " + currentCrop.getName() + " +2");
+        FileWriter writer = new FileWriter("newCrons.txt");
+        for(String str: newJobs) {
+            writer.write(str + System.lineSeparator());
+        }
+        writer.close();
+    }
+
+    private void updateCron(BufferedReader stdInput) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
         while ((line = stdInput.readLine()) != null) {
@@ -289,15 +313,74 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             writer.write(str + System.lineSeparator());
         }
         writer.close();
-        /*TODO on deploy
-        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh";
+    }
+
+    private void deleteCron(BufferedReader stdInput) throws IOException {
+        ArrayList<String> newJobs = new ArrayList<>();
+        String line = null;
+        while ((line = stdInput.readLine()) != null) {
+            if (line.equals("")){
+                break;
+            }
+            String [] input = line.split(" ");
+            if (!input[6].equals(currentCrop.getName())) {
+                newJobs.add(line);
+            }
+        }
+        FileWriter writer = new FileWriter("newCrons.txt");
+        for(String str: newJobs) {
+            writer.write(str + System.lineSeparator());
+        }
+        writer.close();
+    }
+
+    private void modifyCron(String modification){
+        String[] read = {
+                "ssh",
+                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
+                "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
+        };
         try {
-            new ProcessBuilder(dockerCopyCron).start();
-        } catch (Exception e){
+            Process proc = new ProcessBuilder(read).start();
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            switch (modification) {
+                case ("create"): {
+                    createCron(stdInput);
+                    break;
+                }
+                case ("update"): {
+                    updateCron(stdInput);
+                    break;
+                }
+                case ("delete"): {
+                    deleteCron(stdInput);
+                    break;
+                }
+            }
+            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh");
+        } catch (IOException e){
             e.printStackTrace();
         }
+        /*
+        TODO on deploy
+        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh";
+
+        new ProcessBuilder(dockerCopyCron).start();
         */
-        Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh");
+    }
+
+    @Command ("reloadCrons")
+    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder) throws IOException {
+        if (currentCrop.getName() == null){
+            alert("Please specify a crop.");
+            binder.sendCommand("disableEdit", null);
+            return;
+        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
+            alert("Please choose a valid value between 1 and 59. The default setting is 2.");
+            binder.sendCommand("disableEdit", null);
+            return;
+        }
+        modifyCron("update");
         binder.sendCommand("disableEdit", null);
     }
 
@@ -316,7 +399,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         include.setSrc("/mainContent.zul");
         getPage().getDesktop().setBookmark("p_"+"home");
     }
-
 
     @Command("postgresSystemUser")
     public void postgresSystemUser(){
@@ -470,7 +552,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return prop;
     }
 
-    public boolean isSuperAdmin() {
+    public boolean getisSuperAdmin() {
         return isSuperAdmin;
     }
 

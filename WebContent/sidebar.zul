@@ -2,10 +2,10 @@
 
 	<image src="/imgs/datatimescope5.png" height="100px" />
 	<hbox vflex="2" />
-	<tabbox id = 'tabbox' hflex="max" vflex="25">
+	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" vflex="25" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 		<tabs>
 			<tab id="Data"> Data</tab>
-			<tab id="Configuration"> Configuration</tab>
+			<tab id="Configuration" visible="@load(vm.isSuperAdmin)"> Configuration</tab>
 		</tabs>
 		<tabpanels>
 			<tabpanel hflex="max" vflex="25">
