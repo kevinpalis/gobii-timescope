@@ -1,9 +1,5 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.zkoss.bind.Binder;
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.ContextParam;
-import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.media.Media;
 
@@ -37,7 +33,7 @@ public class Crop {
     public void setName(String name) {
         this.name = name;
         if (xmlHandler.getCropList().contains(this.name)) {
-            this.isActive = xmlHandler.getActivity(this);
+            this.isActive = xmlHandler.getActivity(this.name);
         }
     }
 

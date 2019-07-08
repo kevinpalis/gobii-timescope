@@ -20,8 +20,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -55,29 +53,12 @@ public class xmlModifier extends SelectorComposer<Component> {
     private static String currentCrop;
 
     private static String path = "/data/gobii_bundle/config/gobii-web.xml";
-    //private static String path = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/gobii-web.xml";
 
     //Finds the GOBII_WEB configs
     //Only the contextPath can handle different settings the rest needs to stay the same
     private static String hostForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
     private static String contextPathForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
     private static String portForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
-
-
-    public String getHostForReload() {
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(hostForReloadXPath, doc).item(0).getTextContent();
-    }
-
-    public NodeList getContextPathNodes() {
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(contextPathForReloadXPath, doc);
-    }
-
-    public String getPortForReload() {
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(portForReloadXPath, doc).item(0).getTextContent();
-    }
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
@@ -185,12 +166,6 @@ public class xmlModifier extends SelectorComposer<Component> {
         xmlModifier.modifyDocument(doc, path);
     }
 
-    public String getDatabaseName(String Cropname){
-        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
-    }
-
     public ListModelList getCropList(){
         Document doc = xmlModifier.retrieveFile(path);
         NodeList nl = evaluateXPathExpression(cropListXPath, doc);
@@ -201,12 +176,17 @@ public class xmlModifier extends SelectorComposer<Component> {
         return cropList;
     }
 
-    public Boolean getActivity(Crop modCrop) {
+    //These getters are specfic to the crop that they are queried for
+    public String getDatabaseName(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
         Document doc = xmlModifier.retrieveFile(path);
-        String expression = "//gobiiCropType[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public Boolean getActivity(String Cropname) {
+        Document doc = xmlModifier.retrieveFile(path);
+        String expression = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::isActive";
         return Boolean.valueOf(evaluateXPathExpression(expression, doc).item(0).getTextContent());
     }
-
     public String getWARName(String Cropname) {
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
         Document doc = xmlModifier.retrieveFile(path);
@@ -289,6 +269,26 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailServerPortXPath, doc).item(0).getTextContent();
     }
+    public String getPostgresPort() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresPortXPath, doc).item(0).getTextContent();
+    }
+    public String getPostgresHost() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresHostXPath, doc).item(0).getTextContent();
+    }
+    public String getHostForReload() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(hostForReloadXPath, doc).item(0).getTextContent();
+    }
+    public NodeList getContextPathNodes() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(contextPathForReloadXPath, doc);
+    }
+    public String getPortForReload() {
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(portForReloadXPath, doc).item(0).getTextContent();
+    }
 
     private static NodeList evaluateXPathExpression(String expression, Document doc){
         //Create XPath
@@ -324,6 +324,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         return doc;
     }
 
+    //Creation requires tab indenture setting
     private static void modifyDocument(Document doc, String path, Boolean creation){
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         try {
@@ -351,15 +352,7 @@ public class xmlModifier extends SelectorComposer<Component> {
         }
     }
 
-    public String getPostgresPort() {
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(postgresPortXPath, doc).item(0).getTextContent();
-    }
-
-    public String getPostgresHost() {
-        Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(postgresHostXPath, doc).item(0).getTextContent();
-    }
+    //All the functions below this are simple XML Crop Creation/Deletion
 
     @NotifyChange("cropList")
     public void removeCrop(Crop oldCrop){

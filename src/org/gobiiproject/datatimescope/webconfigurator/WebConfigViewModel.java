@@ -144,6 +144,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+
+    /**
+     * Adds a new Crop to an existing database, calling the scripts in rawbase and liquibase to populate it according to
+     * http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?pageId=7833278
+     * It also duplicates the gobii-dev.war file within tomcat webapps for tomcat deployment (Happens automatically upon creation)
+     * Furthermore it modifies the XML to reflect the new Crop and configures the respective CRON jobs for the new crop
+     * using the default values of 2 and 2
+     */
     @Command("addCropToDatabase")
     public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
         List currentCrops = xmlHandler.getCropList();
@@ -159,7 +167,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert("This database name is already in use or the name is using invalid characters. Please choose another name.");
             return;
         }
-        //TODO Validate Liquibase command
+        //Purely for debugging, can be removed once validated
         String command = "docker exec -ti gobii-web-node bash -c 'cd liquibase; " +
                 "java -jar bin/liquibase.jar" +
                 " --username=" + xmlHandler.getPostgresUserName() +
@@ -201,6 +209,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         binder.sendCommand("disableEdit", null);
     }
 
+    /**
+     * Toggles the field isActive in the XML of the respective crop chosen by a dropdown menu
+     */
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
         if (configureTomcatReloadRequest()){
@@ -245,6 +256,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }, params);
     }
 
+    /**
+     * Removes the chosen crop from the database and all the associated locations (XML, Tomcat, CRON)
+     * The Crop is chosen by dropdown menu
+     */
     @NotifyChange("cropList")
     @Command("removeCropFromDatabase")
     public void removeCropFromDatabase(@ContextParam(ContextType.BINDER) Binder binder){
@@ -334,6 +349,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         writer.close();
     }
 
+    /**
+     * Wrapper that handles the different types the User can interact with CRON Jobs
+     * Creating a new CRON with default values
+     * Updating a CRON changing the values for a crops existing job
+     * Deleting both CRONS for an existing crop
+     * @param modification
+     */
     private void modifyCron(String modification){
         String[] read = {
                 "ssh",
@@ -357,20 +379,23 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                     break;
                 }
             }
-            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh");
+            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload());
         } catch (IOException e){
             e.printStackTrace();
         }
         /*
         TODO on deploy
-        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh";
+        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload;
 
         new ProcessBuilder(dockerCopyCron).start();
         */
     }
 
+    /**
+     * Validation of the modifications made
+     */
     @Command ("reloadCrons")
-    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder) throws IOException {
+    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
         if (currentCrop.getName() == null){
             alert("Please specify a crop.");
             binder.sendCommand("disableEdit", null);
@@ -389,6 +414,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("documentLocked")
     public void disableEdit() {
         this.documentLocked = true;
+    }
+
+    @Command("upload")
+    public void uploaded(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
+        currentCrop.setContactData(event.getMedia());
     }
 
     //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
@@ -536,6 +566,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_"+"backup");
     }
 
+    @Command("import_export")
+    public void import_export() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/import_export.zul");
+        getPage().getDesktop().setBookmark("p_"+"import_export");
+    }
+
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
     }
@@ -558,11 +596,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public Crop getCurrentCrop(){
         return currentCrop;
-    }
-
-    @Command("upload")
-    public void uploaded(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
-        currentCrop.setContactData(event.getMedia());
     }
 
 }

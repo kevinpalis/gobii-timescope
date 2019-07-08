@@ -128,18 +128,17 @@
         </treeitem>
         <treeitem>
             <treerow onClick="@command('scheduler')">
-                <treecell>
-                    <label value="Scheduler" style="font-size:15px !important;"/>
+                <treecell label="Scheduler" style="font-size:15px !important;">
                 </treecell>
             </treerow>
         </treeitem>
         <treeitem>
-            <treerow>
+            <treerow onClick="@command('import_export')" >
                 <treecell label="Import/Export" style="font-size:15px !important;"/>
             </treerow>
         </treeitem>
         <treeitem>
-            <treerow>
+            <treerow  onClick="@command('backup')" >
                 <treecell label="Backup/Restore" style="font-size:15px !important;"/>
             </treerow>
         </treeitem>
