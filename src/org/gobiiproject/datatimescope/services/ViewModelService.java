@@ -115,5 +115,11 @@ public interface ViewModelService {
 
 	public List<MarkerGroupRecord> getMarkerGroupsAssociatedToMarkerId(Integer markerId);
 
+	public List<VendorProtocolRecord> getVendorProtocolByPlatformId(List<PlatformRecord> list);
+
+//	public List<MapsetRecord> getMapsetsByPlatformTypeId(List<PlatformRecord> platformList);
+
+	public List<LinkageGroupRecord> getLinkageGroupByMapsetId(List<MapsetRecord> mapsetList);
+
 
 }

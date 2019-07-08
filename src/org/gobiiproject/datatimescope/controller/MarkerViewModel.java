@@ -31,6 +31,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocol
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.DbRecord;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
+import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -58,6 +59,7 @@ import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Grid;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Popup;
@@ -72,6 +74,8 @@ public class MarkerViewModel {
 	Grid markerGrid;
 	@Wire("#markerDetailPopup")
 	Popup markerDetailPopup;
+	@Wire("#lblDatasetFilter")
+	Label lblDatasetFilter;
 
 	ViewModelService viewModelService;
 	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true;
@@ -107,7 +111,7 @@ public class MarkerViewModel {
 	@SuppressWarnings("unchecked")
 	@Init
 	public void init() {
-
+		markerEntity = new MarkerRecordEntity();
 		markerSummaryEntity= new DatasetSummaryEntity();
 		markerList = new ArrayList<VMarkerSummaryEntity>();
 		selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
@@ -135,9 +139,9 @@ public class MarkerViewModel {
 		if(analysesList.isEmpty()) dbAnalyses = false;
 		if(projectList.isEmpty()) dbProjects = false;		
 		if(experimentList.isEmpty()) dbExperiment = false;
-		if(datasetList.isEmpty()) dbDataset = false;		
 		if(mapsetList.isEmpty()) dbMapset = false;
 		if(linkageGroupList.isEmpty()) dbLinkageGroup = false;
+		if(datasetList.isEmpty()) dbDataset = false;
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
@@ -165,7 +169,7 @@ public class MarkerViewModel {
 		if(markerDetailsMarkerGroupList.size()<1 && markerDetailLinkageGroupList.size()<1 && markerDetailDatasetList.size()<1) {
 			setMarkerAssociated(false);
 		}
-		
+
 		Map<String, Object> args = new HashMap<String, Object>();
 		args.put("markerName", markerName);
 		args.put("markerDetailsMarkerGroupList", markerDetailsMarkerGroupList);
@@ -179,6 +183,22 @@ public class MarkerViewModel {
 		window.doPopup();
 	}
 
+	@Command("noDatasetsSelectedAsFilter")
+	@NotifyChange({"dbDataset","lblDatasetFilter"})
+	public void noDatasetsSelectedAsFilter(@BindingParam("isChecked") Boolean isChecked){
+		if(isChecked){
+			dbDataset=false;
+			lblDatasetFilter.setValue("Will search for markers that are not associated with any dataset.");
+		}else{
+			dbDataset=true;
+		}
+	}
+
+	@Command("validatePlatformAndDataset")
+	@NotifyChange("markerEntity")
+	public void validatePlatformAndDataset(@BindingParam("isChecked") Boolean isChecked){
+
+	}
 
 	@Command("submitQuery")
 	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
@@ -189,12 +209,11 @@ public class MarkerViewModel {
 		}catch(NullPointerException e){
 
 		}
-
+//		setMarkerList(viewModelService.getAllMarkers(markerSummary));
 		setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity,markerSummaryEntity));
 
 		setAllCbSelected(false);
 		setCbAllMarkers(false);
-
 	}
 
 	@Command("resetMarkerTab")
@@ -442,6 +461,71 @@ public class MarkerViewModel {
 	}
 
 
+	/**************************************************************** Methods related to tab selection *************************************************************/ 
+	
+	@Command
+	public void selectPlatformTab() {
+//		Messagebox.show("Platform");
+	}
+	
+
+	@NotifyChange("vendorProtocolList")
+	@Command
+	public void selectVendorProtocolTab() {
+		if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getPlatformList())) {
+//			Messagebox.show("There are platforms selected");
+
+			setVendorProtocolList(viewModelService.getVendorProtocolByPlatformId(markerEntity.getPlatformList()));
+			
+		}else{
+
+			setVendorProtocolList(viewModelService.getAllVendorProtocols());
+		}
+	}
+	
+	@NotifyChange("mapsetList")
+	@Command
+	public void selectMapsetsTab() {
+		//Displaying all mapsets instead
+		setMapsetList(viewModelService.getAllMapsets());
+	}
+	
+
+	@NotifyChange("linkageGroupList")
+	@Command
+	public void selectLinkageGroupsTab() {
+		if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getMapsetList())) {
+
+			setLinkageGroupList(viewModelService.getLinkageGroupByMapsetId(markerEntity.getMapsetList()));
+		}else{
+
+			setLinkageGroupList(viewModelService.getAllLinkageGroups());
+		}
+	}
+	
+	@Command
+	public void selectProjectsTab() {
+		Messagebox.show("Vendor Protocol");
+	}
+	
+	@Command
+	public void selectExperimentsTab() {
+		Messagebox.show("Mapsets");
+	}
+	
+	@Command
+	public void selectAnalysesTab() {
+		Messagebox.show("Platform");
+	}
+	
+	@Command
+	public void selectDatasetsTab() {
+		Messagebox.show("Vendor Protocol");
+	}
+	
+	/**************************************************************** Filter Search *************************************************************/
+
+	
 	@NotifyChange("platformList")
 	@Command
 	public void doSearchPlatform() {
@@ -535,9 +619,7 @@ public class MarkerViewModel {
 		}
 	}
 
-
-
-
+	/**************************************************************** Getters and Setters *************************************************************/ 
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -580,8 +662,6 @@ public class MarkerViewModel {
 	}
 
 	public void setMarkerList(List<VMarkerSummaryEntity> list) {
-		if(list.size()<1) setGridGroupVisible(true);
-		else setGridGroupVisible(false);
 
 		if(list.size() > 25) setPaged(true);
 		else setPaged(false);

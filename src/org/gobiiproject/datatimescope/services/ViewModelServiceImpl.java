@@ -897,27 +897,64 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		DSLContext context = getDSLContext();
 
 		List<VMarkerSummaryEntity> markerList = null;
-		try{ //c3.lastname as pi_contact,
+		
+		try{ /* START building THE QUERY via StringBuilder */
 			StringBuilder sb = new StringBuilder();
+			StringBuilder sbWhere = new StringBuilder();
 
-
-			sb.append("SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id ");
-
+			sb.append("SELECT distinct on (m.marker_id) m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id,r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m ");
+			sb.append(" LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN reference r ON m.reference_id = r.reference_id LEFT JOIN cv ON m.strand_id = cv.cv_id ");
+			
+			/* ADD THE "WHERE" CONDITIONS */
+			
+			// build query for MARKER NAMES filter
 			if (markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
 
-				sb.append(" where LOWER(m.name) in ("+markerEntity.getSQLReadyMarkerNames()+")");
+				sbWhere.append(" where LOWER(m.name) in ("+markerEntity.getSQLReadyMarkerNames()+")");
 				dsNameCount++;	
 			}
-			if (markerEntity.getPlatform()!=null){
 
-				checkPreviousAppends(dsNameCount, queryCount, sb);
-				sb.append(" p.platform_id="+Integer.toString(markerEntity.getPlatform().getPlatformId()));
+			// build query for MAPSET filter
+			if (isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
+				sb.append(" LEFT JOIN mapset map ON r.reference_id = map.reference_id ");
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+				sbWhere.append(" map.mapset_id "+ getIDsToString(markerEntity.getMapsetList()));
 				queryCount++;
 			}
+			
+			// build query for LINKAGE GROUP filter
+			if (isListNotNullOrEmpty(markerEntity.getLinkageGroupList())){ 
+				
+				//check if this part of the query has not been appended yet
+				if (!isListNotNullOrEmpty(markerEntity.getMapsetList())) sb.append(" LEFT JOIN mapset map ON r.reference_id = map.reference_id ");
+				
+				sb.append(" LEFT JOIN linkage_group lg ON map.mapset_id = lg.map_id ");
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+				sbWhere.append(" lg.linkage_group_id "+ getIDsToString(markerEntity.getLinkageGroupList()));
+				queryCount++;
+			}
+			
+			// build query for PLATFORM filter
+			if (isListNotNullOrEmpty(markerEntity.getPlatformList())){
+
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+				sbWhere.append(" p.platform_id "+ getIDsToString(markerEntity.getPlatformList()));
+				queryCount++;
+			}
+			
+			// build query for PROTOCOL filter
+			if (isListNotNullOrEmpty(markerEntity.getVendorProtocolList())){
+
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+				sbWhere.append(" e.vendor_protocol_id "+ getIDsToString(markerEntity.getVendorProtocolList()));
+				queryCount++;
+			}
+			
+			// build query for given marker IDs
 			if (markerEntity.getMarkerIDStartRange()!=null || markerEntity.getMarkerIDEndRange()!=null){
 
 				//check which is not null
-				checkPreviousAppends(dsNameCount, queryCount, sb);
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
 
 				if(markerEntity.getMarkerIDStartRange()!=null && markerEntity.getMarkerIDEndRange()!=null){ //if both is not null
 					Integer lowerID = markerEntity.getMarkerIDStartRange();
@@ -928,25 +965,27 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 						higherID = markerEntity.getMarkerIDStartRange();
 					}
 
-					sb.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+					sbWhere.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
 				}else{
 					Integer ID = null;
 					if(markerEntity.getMarkerIDStartRange()!=null) ID = markerEntity.getMarkerIDStartRange();
 					else ID = markerEntity.getMarkerIDEndRange();
 
-					sb.append(" m.marker_id = "+Integer.toString(ID));
+					sbWhere.append(" m.marker_id = "+Integer.toString(ID));
 				}
 
 				queryCount++;
 			}
 
-			sb.append(";");
+			sbWhere.append(";");
+			sb.append(sbWhere.toString());
 			String query = sb.toString();
 			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+			System.out.println(query);
 
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
-
+			e.printStackTrace();
 			Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
@@ -991,9 +1030,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		if(unusedInMarkersGroupsOrDataset.size()>0){ // If there are markers that can be deleted 
 
 			Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
-			"WARNING", Messagebox.YES | Messagebox.CANCEL,
-			Messagebox.EXCLAMATION,
-			new org.zkoss.zk.ui.event.EventListener(){
+					"WARNING", Messagebox.YES | Messagebox.CANCEL,
+					Messagebox.EXCLAMATION,
+					new org.zkoss.zk.ui.event.EventListener(){
 				@Override
 				public void onEvent(Event event) throws Exception {
 					// TODO Auto-generated method stub
@@ -1013,7 +1052,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private List<Integer> checkWhichMarkersAreUsedInAMarkerGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) {
 
 		int totalNumOfMarkersThatCantBeDeleted = 0;
-		
+
 		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
 		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
 
@@ -1038,11 +1077,11 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 					inDataset = true;
 					markerDeleteResultTableEntity.setDataset_name(setDatasetIdDetails(inDatasetList));
 				}
-				
+
 
 				//check if the marker id is being used in a marker_group
 				List<MarkerGroupRecord> inMarkerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
-				
+
 
 				if(inMarkerGroupList.size()>0){
 					inMarkerGroup = true;
@@ -1056,7 +1095,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 					totalNumOfMarkersThatCantBeDeleted++;
 
 				}
-				
+
 				totalNumOfMarkersThatCantBeDeleted = totalNumOfMarkersThatCantBeDeleted-10;
 			}catch(Exception e ){
 
@@ -1112,7 +1151,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return markerGroupList;
 	}
-	
+
 	private String setMarkerGroupDetails(List<MarkerGroupRecord> markerGroupList) {
 
 		StringBuilder sb = new StringBuilder();
@@ -1140,7 +1179,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		for(Integer marker : unusedInMarkersGroupsOrDataset){
 			sb.append(marker.toString() + "\n");
 		}
-		
+
 		final int noOfMarkers = unusedInMarkersGroupsOrDataset.size();
 		final String markerNames =  sb.toString();
 		if(noOfMarkers>0){
@@ -1157,7 +1196,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 					if(Messagebox.ON_YES.equals(event.getName())){
 
 						if(noOfMarkers<11) {
-							
+
 							Messagebox.show("The following markers can be freely deleted: \n"+markerNames);
 						}
 						else Messagebox.show("deleted", "Dummy Delete", Messagebox.OK, Messagebox.ERROR);	
@@ -1234,7 +1273,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}	@Override
 	public List<OrganizationRecord> getAllVendors() {
 		// TODO Auto-generated method stub
-		
+
 		DSLContext context = getDSLContext();
 		List<OrganizationRecord> vendorList = null;
 		try{
@@ -1248,7 +1287,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		}
 
 		return vendorList;
-		
+
 	}
 
 	@Override
@@ -1448,11 +1487,102 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			String query = "select * from marker_group where marker_group_id in (select mg.marker_group_id from getmarkergroupsbymarker("+markerId.toString()+") mg)";
 			list = context.fetch(query).into(MarkerGroupRecord.class);
-			
+
 		}catch(Exception e ){
 
 			Messagebox.show("There was an error while trying to retrieve marker groups associated to the selected marker.", "ERROR", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+
+	public <T> String getIDsToString( List<T> list) {
+		if(list.isEmpty()) return null;
+		StringBuilder sb = new StringBuilder();
+
+		int ctr=0;
+		for(T item : list) {
+			if(ctr>0)sb.append(",");
+			sb.append(((Record) item).get(0).toString());
+			ctr++;
+		}
+
+		if(list.size()>1) {
+			sb.append(") ");
+			sb.insert(0, " in (");
+		}else sb.insert(0, " = ");
+
+		return sb.toString();
+	}
+	
+	public <T> Boolean isListNotNullOrEmpty( List<T> list) {
+		Boolean returnValue = false;
+		
+		if( list!=null && !list.isEmpty()) returnValue = true;
+			
+		return returnValue;
+	}
+
+	@Override
+	public List<VendorProtocolRecord> getVendorProtocolByPlatformId(List<PlatformRecord> iDlist) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<VendorProtocolRecord> list = null;
+		try{
+
+
+			String query = "select * from vendor_protocol vp left join protocol pr on vp.protocol_id = pr.protocol_id left join platform p on pr.platform_id = p.platform_id where p.platform_id "+ getIDsToString(iDlist)+";";
+			list = context.fetch(query).into(VendorProtocolRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve VENDOR-PROTOCOLS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+		}
+
+		return list;
+	}
+
+//	@Override
+//	public List<MapsetRecord> getMapsetsByPlatformTypeId(List<PlatformRecord> platformList) {
+//		// TODO Auto-generated method stub
+//		
+//		DSLContext context = getDSLContext();
+//		List<MapsetRecord> list = null;
+//		try{
+//
+//
+//			String query = "Select * from mapset map left join platform p on map.type_id = p.type_id where p.platform_id "+ getIDsToString(platformList)+";";
+//			list = context.fetch(query).into(MapsetRecord.class);
+//
+//		}catch(Exception e ){
+//
+//			Messagebox.show("There was an error while trying to retrieve MAPSETS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+//
+//		}
+//
+//		return list;
+//	}
+
+	@Override
+	public List<LinkageGroupRecord> getLinkageGroupByMapsetId(List<MapsetRecord> mapsetList) {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<LinkageGroupRecord> list = null;
+		try{
+
+
+			String query = "Select * from linkage_group lg left join mapset map on lg.map_id = map.mapset_id where map.mapset_id "+ getIDsToString(mapsetList)+";";
+			list = context.fetch(query).into(LinkageGroupRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve LINKAGE-GROUP", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
 		}
 
 		return list;

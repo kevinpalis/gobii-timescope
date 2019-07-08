@@ -1,8 +1,19 @@
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
+import org.jooq.Record;
 
 public class MarkerRecordEntity  implements Serializable,Cloneable {
 	
@@ -14,8 +25,16 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 
 	private Integer markerIDStartRange;
 	private Integer  markerIDEndRange;
-	private PlatformRecord platform;
 	private String markerNamesAsCommaSeparatedString;
+	private List<PlatformRecord> platformList;
+	private List<OrganizationRecord> vendorList;
+	private List<VendorProtocolRecord> vendorProtocolList;
+	private List<AnalysisRecord> callingAnalysisList, analysesList;
+	private List<ProjectRecord> projectList;
+	private List<ExperimentRecord> experimentList;
+	private List<DatasetRecord> datasetList;
+	private List<MapsetRecord> mapsetList;
+	private List<LinkageGroupRecord> linkageGroupList;
 	
 	public MarkerRecordEntity() {
 	}
@@ -26,14 +45,6 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 
 	public void setMarkerNamesAsCommaSeparatedString(String markerNamesAsCommaSeparatedString) {
 		this.markerNamesAsCommaSeparatedString = markerNamesAsCommaSeparatedString;
-	}
-
-	public PlatformRecord getPlatform() {
-		return platform;
-	}
-
-	public void setPlatform(PlatformRecord platform) {
-		this.platform = platform;
 	}
 
 	public String getSQLReadyMarkerNames() {
@@ -64,6 +75,86 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 
 	public void setMarkerIDEndRange(Integer markerIDEndRange) {
 		this.markerIDEndRange = markerIDEndRange;
+	}
+
+	public List<PlatformRecord> getPlatformList() {
+		return platformList;
+	}
+
+	public void setPlatformList(List<PlatformRecord> platform) {
+		this.platformList = platform;
+	}
+
+	public List<OrganizationRecord> getVendorList() {
+		return vendorList;
+	}
+
+	public void setVendorList(List<OrganizationRecord> vendorList) {
+		this.vendorList = vendorList;
+	}
+
+	public List<VendorProtocolRecord> getVendorProtocolList() {
+		return vendorProtocolList;
+	}
+
+	public void setVendorProtocolList(List<VendorProtocolRecord> vendorProtocolList) {
+		this.vendorProtocolList = vendorProtocolList;
+	}
+
+	public List<AnalysisRecord> getCallingAnalysisList() {
+		return callingAnalysisList;
+	}
+
+	public void setCallingAnalysisList(List<AnalysisRecord> callingAnalysisList) {
+		this.callingAnalysisList = callingAnalysisList;
+	}
+
+	public List<AnalysisRecord> getAnalysesList() {
+		return analysesList;
+	}
+
+	public void setAnalysesList(List<AnalysisRecord> analysesList) {
+		this.analysesList = analysesList;
+	}
+
+	public List<ProjectRecord> getProjectList() {
+		return projectList;
+	}
+
+	public void setProjectList(List<ProjectRecord> projectList) {
+		this.projectList = projectList;
+	}
+
+	public List<ExperimentRecord> getExperimentList() {
+		return experimentList;
+	}
+
+	public void setExperimentList(List<ExperimentRecord> experimentList) {
+		this.experimentList = experimentList;
+	}
+
+	public List<DatasetRecord> getDatasetList() {
+		return datasetList;
+	}
+
+	public void setDatasetList(List<DatasetRecord> datasetList) {
+		this.datasetList = datasetList;
+	}
+
+	public List<MapsetRecord> getMapsetList() {
+		return mapsetList;
+	}
+
+	public void setMapsetList(List<MapsetRecord> mapsetList) {
+		this.mapsetList = mapsetList;
+	}
+
+	public List<LinkageGroupRecord> getLinkageGroupList() {
+		return linkageGroupList;
+	}
+
+	public void setLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
+		this.linkageGroupList = linkageGroupList;
 	}
 
 }

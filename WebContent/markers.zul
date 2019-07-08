@@ -72,50 +72,51 @@
 									<tabs width="30%" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="B" label="Vendor"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" />
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
-											label="Vendor-Protcol"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="D"
-											label="Calling Analysis" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="E" label="Analyses"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="F" label="Projects"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="G" label="Experiments"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="H" label="Datasets"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
-										<tab id="I" label="Maps"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											label="Vendor-Protocol"
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectVendorProtocolTab')" />
+										<tab id="I" label="Mapsets"
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
 											label="Linkage Groups" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" />
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectLinkageGroupsTab')"/>
+										<tab id="F" label="Projects"
+											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectProjectsTab')"/>
+										<tab id="G" label="Experiments"
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectExperimentsTab')"/>
+										<tab id="E" label="Analyses"
+											sclass="tabstyle"
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectAnalysesTab')"/>
+										<tab id="H" label="Datasets"
+											sclass="tabstyle"
+											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectDatasetsTab')"/>
 									</tabs>
 									<tabpanels hflex="true">
-										<tabpanel>
-											<label
-												visible="@load(vm.dbPlatforms)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbPlatforms)"
-												value="@bind(vm.filterPlatform)"
-												onChange="@command('doSearchPlatform')" instant="true" />
+										<tabpanel> 
+											<hbox>
+												<label
+													visible="@load(vm.dbPlatforms)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbPlatforms)"
+													value="@bind(vm.filterPlatform)"
+													onChange="@command('doSearchPlatform')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png" orient="vertical" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox
 												visible="@load(vm.dbPlatforms)"
 												model="@load(vm.platformList)" hflex="max" vflex="1"
 												multiple="true" checkmark="true"
-												style="border: 0px; padding:0px;">
+												style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.platformList)">
 												<template name="model"
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"
+															onClick="@command('validatePlatformAndDataset')" />
 													</listitem>
 												</template>
 											</listbox>
@@ -124,41 +125,21 @@
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<label
-												visible="@load(vm.dbVendors)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbVendors)" value="@bind(vm.filterVendor)"
-												onChange="@command('doSearchVendor')" instant="true" />
-											<separator spacing="12px" />
-											<listbox
-												visible="@load(vm.dbVendors)" model="@load(vm.vendorList)"
-												hflex="max" vflex="1" multiple="true" checkmark="true"
-												style="border: 0px; padding:0px;">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell
-															label="@load(item.name)" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbVendors)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<label
-												visible="@load(vm.dbVendorProtocols)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbVendorProtocols)"
-												value="@bind(vm.filterVendorProtocol)"
-												onChange="@command('doSearchVendorProtocol')"
-												instant="true" />
+											<hbox>
+												<label
+													visible="@load(vm.dbVendorProtocols)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbVendorProtocols)"
+													value="@bind(vm.filterVendorProtocol)"
+													onChange="@command('doSearchVendorProtocol')"
+													instant="true" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
 												visible="@load(vm.dbVendorProtocols)" vflex="1"
 												model="@load(vm.vendorProtocolList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.vendorProtocolList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -172,18 +153,20 @@
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<label
-												visible="@load(vm.dbCallingAnalysis)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbCallingAnalysis)"
-												value="@bind(vm.filterCallingAnalysis)"
-												onChange="@command('doSearchCallingAnalysis')"
-												instant="true" />
+											<hbox>
+
+												<label
+													visible="@load(vm.dbMapset)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
+													onChange="@command('doSearchMapset')" instant="true" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
-												visible="@load(vm.dbCallingAnalysis)" vflex="1"
-												model="@load(vm.callingAnalysisList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												visible="@load(vm.dbMapset)" vflex="1"
+												model="@load(vm.mapsetList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.mapsetList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -193,21 +176,24 @@
 												</template>
 											</listbox>
 											<label
-												visible="@load(not vm.dbCallingAnalysis)"
+												visible="@load(not vm.dbMapset)"
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<label
-												visible="@load(vm.dbAnalyses)" value="Search:" />
-											<textbox
-												visible="@load( vm.dbAnalyses)"
-												value="@bind(vm.filterAnalyses)"
-												onChange="@command('doSearchAnalyses')" instant="true" />
+											<hbox>
+												<label
+													visible="@load(vm.dbLinkageGroup)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbLinkageGroup)"
+													value="@bind(vm.filterLinkageGroup)"
+													onChange="@command('doSearchLinkageGroup')" instant="true" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
-												visible="@load(vm.dbAnalyses)" vflex="1"
-												model="@load(vm.analysesList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												visible="@load(vm.dbLinkageGroup)" vflex="1"
+												model="@load(vm.linkageGroupList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.linkageGroupList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -217,21 +203,24 @@
 												</template>
 											</listbox>
 											<label
-												visible="@load(not vm.dbAnalyses)"
+												visible="@load(not vm.dbLinkageGroup)"
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<label
-												visible="@load(vm.dbProjects)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbProjects)"
-												value="@bind(vm.filterProject)"
-												onChange="@command('doSearchProject')" instant="true" />
+											<hbox>
+												<label
+													visible="@load(vm.dbProjects)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbProjects)"
+													value="@bind(vm.filterProject)"
+													onChange="@command('doSearchProject')" instant="true" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
 												visible="@load(vm.dbProjects)" vflex="1"
 												model="@load(vm.projectList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.projectList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -245,17 +234,20 @@
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<label
-												visible="@load(vm.dbExperiment)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbExperiment)"
-												value="@bind(vm.filterExperiment)"
-												onChange="@command('doSearchExperiment')" instant="true" />
+											<hbox>
+												<label
+													visible="@load(vm.dbExperiment)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbExperiment)"
+													value="@bind(vm.filterExperiment)"
+													onChange="@command('doSearchExperiment')" instant="true" />
+											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
 												visible="@load(vm.dbExperiment)" vflex="1"
 												model="@load(vm.experimentList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.experimentList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -270,18 +262,59 @@
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-
-											<label
-												visible="@load(vm.dbDataset)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbDataset)"
-												value="@bind(vm.filterDataset)"
-												onChange="@command('doSearchDataset')" instant="true" />
+											<hbox>
+												<label
+													visible="@load(vm.dbAnalyses)" value="Search:" />
+												<textbox
+													visible="@load( vm.dbAnalyses)"
+													value="@bind(vm.filterAnalyses)"
+													onChange="@command('doSearchAnalyses')" instant="true" />
+											</hbox>
 											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbAnalyses)" vflex="1"
+												model="@load(vm.analysesList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.analysesList)">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbAnalyses)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<label
+													visible="@load(vm.dbDataset)" value="Search:" />
+												<textbox
+													visible="@load(vm.dbDataset)"
+													value="@bind(vm.filterDataset)"
+													onChange="@command('doSearchDataset')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png" orient="vertical" />
+											</hbox>
+											<separator spacing="12px"
+												visible="@load(vm.dbDataset)" />
+											<checkbox id="l1"
+												label="   None" visible="@load(not empty vm.datasetList)"
+												tooltip="Search for markers that are not associated with any dataset"
+												onCheck="@command('noDatasetsSelectedAsFilter', isChecked=self.checked)"
+												Style="margin-left:7px;}" />
+											<separator spacing="12px"
+												visible="@load(not vm.dbDataset)" />
+											<separator spacing="5px"
+												visible="@load(vm.dbDataset)" />
 											<listbox hflex="max"
 												visible="@load(vm.dbDataset)" vflex="1"
 												model="@load(vm.datasetList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.datasetList)">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -291,56 +324,8 @@
 												</template>
 											</listbox>
 
-											<label
+											<label id="lblDatasetFilter"
 												visible="@load(not vm.dbDataset)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-
-											<label
-												visible="@load(vm.dbMapset)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
-												onChange="@command('doSearchMapset')" instant="true" />
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbMapset)" vflex="1"
-												model="@load(vm.mapsetList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell
-															label="@load(item.name)" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbMapset)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<label
-												visible="@load(vm.dbLinkageGroup)" value="Search:" />
-											<textbox
-												visible="@load(vm.dbLinkageGroup)"
-												value="@bind(vm.filterLinkageGroup)"
-												onChange="@command('doSearchLinkageGroup')" instant="true" />
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbLinkageGroup)" vflex="1"
-												model="@load(vm.linkageGroupList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell
-															label="@load(item.name)" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbLinkageGroup)"
 												value="There's nothing to see here." />
 										</tabpanel>
 									</tabpanels>
@@ -444,6 +429,12 @@
 									</template>
 								</grid>
 							</div>
+							<popup id="platformMessage
+							"
+								width="400px">
+								<label
+									value="Separate each name with a new line." />
+							</popup>
 							<popup id="title" width="400px">
 								<label
 									value="Separate each name with a new line." />
