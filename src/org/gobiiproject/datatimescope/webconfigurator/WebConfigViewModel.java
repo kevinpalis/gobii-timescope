@@ -6,16 +6,21 @@ import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
+import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zul.Filedownload;
+import org.zkoss.zul.Fileupload;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
+import javax.swing.*;
+import javax.swing.plaf.FileChooserUI;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +35,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private ReloadTask request = new ReloadTask();
     private boolean isSuperAdmin = false;
     private Crop currentCrop = new Crop();
+    private String newXMLPath;
+    private boolean showNewXml = false;
+    private boolean locationSet = false;
+    private String exportLocation = "";
+
 
     @Init
     public void init() {
@@ -48,6 +58,307 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } else {
             alert("Only Super Admins can configure these settings.");
         }
+    }
+
+    @Command("exportXML")
+    public void exportXML( @ContextParam(ContextType.BINDER) Binder binder){
+        String[] sec_copy_back = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "scpfrom" , exportLocation};
+        try {
+            new ProcessBuilder(sec_copy_back).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        exportLocation = "";
+        locationSet = false;
+        binder.sendCommand("cancelChanges", null);
+    }
+
+    @Command("setLocation")
+    @NotifyChange({"locationSet", "exportLocation"})
+    public void setLocation(){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = fileChooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            exportLocation = selectedFile.getAbsolutePath();
+            locationSet = true;
+        }
+    }
+
+    @Command("importXML")
+    //TODO on deploy
+    public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
+        showNewXml = true;
+        FileOutputStream fos = null;
+        try {
+            File xml = new File(event.getMedia().getName());
+            fos = new FileOutputStream(xml);
+            fos.write(event.getMedia().getStringData().getBytes());
+            fos.close();
+            newXMLPath = xml.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] sec_copy = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "scpto" , newXMLPath};
+        try {
+            new ProcessBuilder(sec_copy).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
+        if (validateGobiiConfiguration()){
+            String[] overwrite = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "passed"};
+            try {
+                new ProcessBuilder(overwrite).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            warningTomcat(binder);
+        } else {
+            xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+            String[] delete = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "failed"};
+            try {
+                new ProcessBuilder(delete).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            binder.sendCommand("disableEdit", null);
+        }
+    }
+
+    private boolean validateGeneralSettings(List<String> messages){
+        boolean returnVal = true;
+        if (isNullOrEmpty(xmlHandler.getEmailSvrDomain())) {
+            messages.add("An email server host is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getEmailServerPort())) {
+            messages.add("An email port is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getEmailSvrUser())) {
+            messages.add("An email server user id is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getEmailSvrPassword())) {
+            messages.add("An email server password is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getFileSystemRoot())) {
+            messages.add("A file system root is not defined");
+            returnVal = false;
+        } else {
+            File directoryToTest = new File(xmlHandler.getFileSystemRoot());
+            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
+                messages.add("The specified file system root does not exist or is not a directory: " + xmlHandler.getFileSystemRoot());
+                returnVal = false;
+            }
+        }
+        if (isNullOrEmpty(xmlHandler.getGobiiAuthenticationType())) {
+            messages.add("An authentication type is not specified");
+            returnVal = false;
+        }
+        if (!xmlHandler.getGobiiAuthenticationType().equals("TEST")) {
+            if (isNullOrEmpty(xmlHandler.getLdapUserDnPattern())) {
+                messages.add("The authentication type is "
+                        + xmlHandler.getGobiiAuthenticationType()
+                        + " but a user dn pattern is not specified");
+                returnVal = false;
+            }
+            if (isNullOrEmpty(xmlHandler.getLdapUrl())) {
+                messages.add("The authentication type is "
+                        + xmlHandler.getGobiiAuthenticationType()
+                        + " but an ldap url is not specified");
+                returnVal = false;
+            }
+            if (xmlHandler.getGobiiAuthenticationType().equals("LDAP_CONNECT_WITH_MANAGER") ||
+                    xmlHandler.getGobiiAuthenticationType().equals("ACTIVE_DIRECTORY_CONNECT_WITH_MANAGER")) {
+                if (isNullOrEmpty(xmlHandler.getLdapBindUser())) {
+                    messages.add("The authentication type is "
+                            + xmlHandler.getGobiiAuthenticationType()
+                            + " but an ldap bind user is not specified");
+                    returnVal = false;
+                }
+                if (isNullOrEmpty(xmlHandler.getLdapBindPassword())) {
+                    messages.add("The authentication type is "
+                            + xmlHandler.getGobiiAuthenticationType()
+                            + " but an ldap bind password is not specified");
+                    returnVal = false;
+                }
+            } // if the authentication type requires connection credentails
+        } // if the authentication type requires url and user dn pattern
+        if (isNullOrEmpty(xmlHandler.getFileSystemLog())) {
+            messages.add("A file system log directory is not defined");
+            returnVal = false;
+        } else {
+            File directoryToTest = new File(xmlHandler.getFileSystemLog());
+            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
+                messages.add("The specified file system log does not exist or is not a directory: " + xmlHandler.getFileSystemLog());
+                returnVal = false;
+            }
+        }
+        if (isNullOrEmpty(xmlHandler.getFileSysCropsParent())) {
+            messages.add("A file system crop parent directory is not defined");
+            returnVal = false;
+        } else {
+            File directoryToTest = new File(xmlHandler.getFileSysCropsParent());
+            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
+                messages.add("The specified file crop parent directory does not exist or is not a directory: " + xmlHandler.getFileSysCropsParent());
+                returnVal = false;
+            }
+        }
+        return returnVal;
+    }
+
+    private boolean validateTestCrop(List<String> messages){
+        boolean returnVal = true;
+        if (isNullOrEmpty(xmlHandler.getTestExecConfig())){
+            messages.add("No test exec configuration is defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getTestCrop())) {
+            messages.add("A test crop id is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getTestInitialConfigUrl())) {
+            messages.add("An initial configuration url for testing is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getTestConfigFileTestDirectory())) {
+            messages.add("A a directory for test files is not defined");
+            returnVal = false;
+        } else {
+            String testDirectoryPath = xmlHandler.getTestConfigFileTestDirectory();
+            File testFilePath = new File(xmlHandler.getTestConfigFileTestDirectory());
+            if (!testFilePath.exists()) {
+                messages.add("The specified test file path does not exist: "
+                        + testDirectoryPath);
+                returnVal = false;
+            }
+        }
+        if (isNullOrEmpty(xmlHandler.getTestConfigUtilCommandLineStem())) {
+            messages.add("The commandline stem of this utility for testing purposes is not defined");
+            returnVal = false;
+        }
+        return returnVal;
+    }
+
+    private boolean validateWebServer(List<String> messages, List<String> contextPathList, String Cropname) {
+        boolean returnVal = true;
+        if (isNullOrEmpty(Cropname)) {
+            messages.add("The crop type for the crop is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getWebHost(Cropname))) {
+            messages.add("The web server host for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+
+        }
+        if (isNullOrEmpty(xmlHandler.getWebContextPath(Cropname))) {
+            messages.add("The web server context path for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        } else {
+            if (!contextPathList.contains(xmlHandler.getWebContextPath(Cropname))) {
+                contextPathList.add(xmlHandler.getWebContextPath(Cropname));
+            } else {
+                messages.add("The context path for the crop occurs more than once -- context paths must be unique:" + xmlHandler.getWebContextPath(Cropname));
+                returnVal = false;
+            }
+        }
+        if (isNullOrEmpty(xmlHandler.getWebPort(Cropname))) {
+            messages.add("The web server port for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        }
+        return returnVal;
+    }
+
+    private boolean validatePostgresServer(List<String> messages, List<String> databasesList, String Cropname){
+        boolean returnVal = true;
+        if (isNullOrEmpty(xmlHandler.getDatabaseHost(Cropname))) {
+            messages.add("The postgres server host for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+
+        }
+        if (isNullOrEmpty(xmlHandler.getDatabaseName(Cropname))) {
+            messages.add("The postgres server context path for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        } else {
+            if (!databasesList.contains(xmlHandler.getDatabaseName(Cropname))) {
+                databasesList.add(xmlHandler.getDatabaseName(Cropname));
+            } else {
+                messages.add("The context path for the crop occurs more than once -- context paths must be unique:" + xmlHandler.getDatabaseName(Cropname));
+                returnVal = false;
+            }
+        }
+        if (xmlHandler.getDatabasePort(Cropname) == null) {
+            messages.add("The postgres server port for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getDatabaseUser(Cropname))){
+            messages.add("The postgres username for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        }
+        if (isNullOrEmpty(xmlHandler.getDatabasePassword(Cropname))){
+            messages.add("The postgres password for the crop (" + Cropname + ") is not defined");
+            returnVal = false;
+        }
+        return returnVal;
+    }
+
+    private boolean validateServers(List<String> messages){
+        boolean returnVal = true;
+        List<String> contextPathList = new ArrayList<>();
+        List<String> databasesList = new ArrayList<>();
+        for (int i = 0; i < xmlHandler.getCropList().size(); i++) {
+            String Cropname = String.valueOf(xmlHandler.getCropList().get(i));
+            if (xmlHandler.getPostgres(Cropname) == null) {
+                messages.add("The postgresdb for the crop (" + Cropname + ") is not defined");
+                returnVal = false;
+            } else if (xmlHandler.getWeb(Cropname) == null) {
+                messages.add("The webConfig for the crop (" + Cropname + ") is not defined");
+                returnVal = false;
+            } else {
+                returnVal = returnVal && validateWebServer(messages, contextPathList, Cropname) &&
+                        validatePostgresServer(messages, databasesList, Cropname);
+            }
+        }
+        return returnVal;
+    }
+
+    private boolean isNullOrEmpty(String value){
+        return (null == value || value.isEmpty());
+    }
+    private boolean isNullOrEmpty(int value){
+        return (value == 0);
+    }
+
+    private boolean validateGobiiConfiguration() {
+        boolean returnVal;
+        try {
+            List<String> messages = new ArrayList<>();
+            returnVal = validateGeneralSettings(messages) && validateTestCrop(messages) && validateServers(messages);
+            if (xmlHandler.getCropList().size() < 1) {
+                messages.add("No active crops are defined");
+                returnVal = false;
+            }
+            if (!returnVal && messages.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : messages)
+                {
+                    sb.append(s);
+                    sb.append("\n");
+                }
+                alert("The provided xml was invalid.\n" + sb.toString());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            alert("A mandatory XML tag is missing.");
+            returnVal = false;
+        }
+        return returnVal;
+
     }
 
     /**
@@ -189,7 +500,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String[] dupli = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
+        String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
+        String[] dupli = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName(), oldWar};
         //TODO on Deploy
         //String[] dupli = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
         try {
@@ -198,12 +510,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             e.printStackTrace();
         }
         xmlHandler.appendCrop(currentCrop);
-        /*
-        Keeping this created a race condition
-        if (configureTomcatReloadRequest()) {
-
-            executeTomcatReloadRequest(false);
-        } */
+        String[] addBundle = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))};
+        //TODO on deploy
+        //String[] addBundle = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))};
+        try {
+            new ProcessBuilder(addBundle).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         modifyCron("create");
         currentCrop.setHideContactData(true);
         binder.sendCommand("disableEdit", null);
@@ -224,11 +538,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 return;
             }
             executeTomcatReloadRequest(false);
-            /*if (currentCrop.getIsActive()) {
+            if (currentCrop.getIsActive()) {
                 modifyCron("create");
             } else {
                 modifyCron("delete");
-            } */
+            }
         } else {
             binder.sendCommand("disableEdit", null);
         }
@@ -280,6 +594,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             e.printStackTrace();
         }
         xmlHandler.removeCrop(currentCrop);
+        String[] removeBundle = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "0" , String.valueOf(xmlHandler.getCropList().get(0))};
+        //TODO on deploy
+        //String[] removeBundle = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "0" , String.valueOf(xmlHandler.getCropList().get(0))};
+        try {
+            new ProcessBuilder(removeBundle).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         modifyCron("delete");
         xmlHandler.getCropList();
         binder.sendCommand("disableEdit", null);
@@ -566,12 +888,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_"+"backup");
     }
 
-    @Command("import_export")
-    public void import_export() {
+    @Command("import")
+    public void import_settings() {
         Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
-        include.setSrc("/import_export.zul");
-        getPage().getDesktop().setBookmark("p_"+"import_export");
+        include.setSrc("/import.zul");
+        getPage().getDesktop().setBookmark("p_"+"import");
+    }
+
+    @Command("export")
+    public void export_settings() {
+        Include include = (Include)Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/export.zul");
+        getPage().getDesktop().setBookmark("p_"+"export");
     }
 
     public void doAfterCompose(Component comp) throws Exception {
@@ -598,4 +928,23 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return currentCrop;
     }
 
+    public String getNewXMLPath() {
+        return newXMLPath;
+    }
+
+    public void setNewXMLPath(String newXMLPath) {
+        this.newXMLPath = newXMLPath;
+    }
+
+    public boolean getShowNewXml() {
+        return showNewXml;
+    }
+
+    public boolean getLocationSet() {
+        return locationSet;
+    }
+
+    public String getExportLocation() {
+        return exportLocation;
+    }
 }

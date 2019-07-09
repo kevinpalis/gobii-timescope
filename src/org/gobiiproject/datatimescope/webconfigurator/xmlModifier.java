@@ -50,6 +50,22 @@ public class xmlModifier extends SelectorComposer<Component> {
     private static String postgresHostXPath = "//serverType[text() = 'GOBII_PGSQL']/following-sibling::host";
     private static String postgresPortXPath = "//serverType[text() = 'GOBII_PGSQL']/following-sibling::port";
     private static String cropListXPath = "//gobiiCropType";
+    private static String fileSystemRootXPath = "//fileSystemRoot";
+    private static String fileSystemLogXPath = "//fileSystemLog";
+    private static String fileSysCropsParentXPath = "//fileSysCropsParent";
+    private static String testExecConfigXPath = "//testExecConfig";
+    private static String testCropXPath = "//testCrop";
+    private static String testInitialConfigUrlXPath = "//initialConfigUrl";
+    private static String testConfigFileTestDirectoryXPath = "//configFileTestDirectory";
+    private static String testConfigUtilCommandLineStemXpath = "//configUtilCommandlineStem";
+    private static String kdComputeDecryptXPath = "//serverType[text() = 'KDC']/preceding-sibling::decrypt";
+    private static String kdComputeHostXPath = "//serverType[text() = 'KDC']/following-sibling::host";
+    private static String kdComputeContextPathXPath = "//serverType[text() = 'KDC']/following-sibling::contextPath";
+    private static String kdComputePortXPath = "//serverType[text() = 'KDC']/following-sibling::port";
+    private static String kdComputeIsActiveXPath = "//serverType[text() = 'KDC']/following-sibling::isActive";
+    private static String kdComputeStatusCheckIntervalSecs = "//serverType[text() = 'KDC']/following-sibling::statusCheckIntervalSecs";
+    private static String kdComputeMaxStatusCheckMins  = "//serverType[text() = 'KDC']/following-sibling::maxStatusCheckMins";
+
     private static String currentCrop;
 
     private static String path = "/data/gobii_bundle/config/gobii-web.xml";
@@ -62,6 +78,14 @@ public class xmlModifier extends SelectorComposer<Component> {
 
     public void doAfterCompose(Component comp) throws Exception {
         super.doAfterCompose(comp);
+    }
+
+    public void setPath (String newPath){
+        path = newPath;
+    }
+
+    public String getPath(){
+        return path;
     }
 
     public void setCurrentCrop(String currCrop){
@@ -165,6 +189,83 @@ public class xmlModifier extends SelectorComposer<Component> {
         evaluateXPathExpression(emailServerPortXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
+    public void setFileSystemRoot(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(fileSystemRootXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setFileSystemLog(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(fileSystemLogXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setFileSysCropParents(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(fileSysCropsParentXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setTestExecConfig(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(testExecConfigXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setTestCrop(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(testCropXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setTestInitialConfigUrl(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(testInitialConfigUrlXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setTestConfigFileTestDirectory(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(testConfigFileTestDirectoryXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setTestConfigUtilCommandLineStem(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(testConfigUtilCommandLineStemXpath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeDecrypt(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeDecryptXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeHost(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeHostXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeContextPath(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeContextPathXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputePort(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputePortXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeIsActive(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeStatusCheckInterva(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeStatusCheckIntervalSecs, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+    public void setKdComputeMaxStatusChec(String newContent){
+        Document doc = xmlModifier.retrieveFile(path);
+        evaluateXPathExpression(kdComputeMaxStatusCheckMins, doc).item(0).setTextContent(newContent);
+        xmlModifier.modifyDocument(doc, path);
+    }
+
+
 
     public ListModelList getCropList(){
         Document doc = xmlModifier.retrieveFile(path);
@@ -176,9 +277,39 @@ public class xmlModifier extends SelectorComposer<Component> {
         return cropList;
     }
 
-    //These getters are specfic to the crop that they are queried for
+    //Crop specific getters
+    public String getPostgres(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getWeb(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
     public String getDatabaseName(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getDatabaseUser(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/preceding-sibling::userName";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getDatabasePassword(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/preceding-sibling::password";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getDatabaseHost(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::host";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getDatabasePort(String Cropname){
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::port";
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
@@ -192,8 +323,83 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
+    public String getWebHost(String Cropname) {
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getWebContextPath(String Cropname) {
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getWebPort(String Cropname) {
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
+    }
 
 
+    public String getKdComputeDecrypt(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeDecryptXPath, doc).item(0).getTextContent();
+    }
+    public String getKdComputeHost(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeHostXPath, doc).item(0).getTextContent();
+    }
+    public String getKdComputeContextPath(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getKdComputePort(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputePortXPath, doc).item(0).getTextContent();
+    }
+    public String getKdComputeIsActive(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).getTextContent();
+    }
+    public String getKdComputeStatusCheckInterva(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeStatusCheckIntervalSecs, doc).item(0).getTextContent();
+    }
+    public String getKdComputeMaxStatusChec(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(kdComputeMaxStatusCheckMins, doc).item(0).getTextContent();
+    }
+    public String getFileSystemRoot(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(fileSystemRootXPath, doc).item(0).getTextContent();
+    }
+    public String getFileSystemLog(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(fileSystemLogXPath, doc).item(0).getTextContent();
+    }
+    public String getFileSysCropsParent(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(fileSysCropsParentXPath, doc).item(0).getTextContent();
+    }
+    public String getTestExecConfig(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(testExecConfigXPath, doc).item(0).getTextContent();
+    }
+    public String getTestCrop(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(testCropXPath, doc).item(0).getTextContent();
+    }
+    public String getTestInitialConfigUrl(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(testInitialConfigUrlXPath, doc).item(0).getTextContent();
+    }
+    public String getTestConfigFileTestDirectory(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(testConfigFileTestDirectoryXPath, doc).item(0).getTextContent();
+    }
+    public String getTestConfigUtilCommandLineStem(){
+        Document doc = xmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(testConfigUtilCommandLineStemXpath, doc).item(0).getTextContent();
+    }
     public String getCurrentCrop(){
         return currentCrop;
     }

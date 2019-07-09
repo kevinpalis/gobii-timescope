@@ -132,14 +132,26 @@
                 </treecell>
             </treerow>
         </treeitem>
-        <treeitem>
-            <treerow onClick="@command('import_export')" >
+        <treeitem open="false">
+            <treerow>
                 <treecell label="Import/Export" style="font-size:15px !important;"/>
             </treerow>
+            <treechildren>
+                <treeitem>
+                    <treerow onClick="@command('import')">
+                        <treecell label="Import" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+                <treeitem>
+                    <treerow onClick="@command('export')">
+                        <treecell label="Export" style="font-size:15px !important;"/>
+                    </treerow>
+                </treeitem>
+            </treechildren>
         </treeitem>
         <treeitem>
             <treerow  onClick="@command('backup')" >
-                <treecell label="Backup/Restore" style="font-size:15px !important;"/>
+                <treecell label="Backup" style="font-size:15px !important;"/>
             </treerow>
         </treeitem>
     </treechildren>
