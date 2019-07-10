@@ -1,0 +1,16 @@
+<window id="infoPopupWindow" mode="popup" popup="true" width="350px" vflex="min"
+	closable="true" apply="org.zkoss.bind.BindComposer"
+	border="normal" position="right,top"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.InfoPopupModel')">
+	
+		<vbox align="center" pack="center">
+		<hbox>
+			<image src="/imgs/info.png"  tooltip="platformMessage"/>
+			<separator spacing="10px" />
+			<label id="messageLabel" value="@load(vm.message)"
+				style="font-size: 14px; text-align:center;" />
+				</hbox>
+			<separator spacing="10px" />
+			<button label="Ok" onClick="@command('exit')" />
+		</vbox>
+</window>

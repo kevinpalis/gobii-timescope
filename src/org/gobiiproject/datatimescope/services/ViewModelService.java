@@ -121,5 +121,23 @@ public interface ViewModelService {
 
 	public List<LinkageGroupRecord> getLinkageGroupByMapsetId(List<MapsetRecord> mapsetList);
 
+	public List<ProjectRecord> getProjectsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<ProjectRecord> getProjectsByPlatformID(List<PlatformRecord> platformList);
+
+	public List<ExperimentRecord> getExperimentsByProjectID(List<ProjectRecord> projectList);
+
+	public List<ExperimentRecord> getExperimentsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<ExperimentRecord> getExperimentsByPlatformID(List<PlatformRecord> platformList);
+
+	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList);
+
+	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+
+	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<DatasetRecord> getDatasetsByPlatformID(List<PlatformRecord> platformList);
+
 
 }

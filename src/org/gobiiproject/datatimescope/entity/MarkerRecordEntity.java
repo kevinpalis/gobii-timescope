@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
@@ -37,6 +38,14 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	private List<LinkageGroupRecord> linkageGroupList;
 	
 	public MarkerRecordEntity() {
+		setPlatformList(new ArrayList<PlatformRecord>());
+		setVendorProtocolList(new ArrayList<VendorProtocolRecord>());
+		setAnalysesList(new ArrayList<AnalysisRecord>());
+		setProjectList(new ArrayList<ProjectRecord>());
+		setExperimentList(new ArrayList<ExperimentRecord>());
+		setDatasetList(new ArrayList<DatasetRecord>());
+		setMapsetList(new ArrayList<MapsetRecord>());
+		setLinkageGroupList(new ArrayList<LinkageGroupRecord>());
 	}
 
 	public String getMarkerNamesAsCommaSeparatedString() {

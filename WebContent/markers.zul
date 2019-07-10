@@ -72,28 +72,36 @@
 									<tabs width="30%" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectPlatformTab')" />
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
 											label="Vendor-Protocol"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectVendorProtocolTab')" />
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectVendorProtocolTab')" />
 										<tab id="I" label="Mapsets"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectMapsetsTab')" />
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
 											label="Linkage Groups" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectLinkageGroupsTab')"/>
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectLinkageGroupsTab')" />
 										<tab id="F" label="Projects"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectProjectsTab')"/>
+											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectProjectsTab')" />
 										<tab id="G" label="Experiments"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectExperimentsTab')"/>
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectExperimentsTab')" />
 										<tab id="E" label="Analyses"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectAnalysesTab')"/>
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectAnalysesTab')" />
 										<tab id="H" label="Datasets"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;" onSelect="@command('selectDatasetsTab')"/>
+											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											onSelect="@command('selectDatasetsTab')" />
 									</tabs>
 									<tabpanels hflex="true">
-										<tabpanel> 
+										<tabpanel>
 											<hbox>
 												<label
 													visible="@load(vm.dbPlatforms)" value="Search:" />
@@ -101,8 +109,6 @@
 													visible="@load(vm.dbPlatforms)"
 													value="@bind(vm.filterPlatform)"
 													onChange="@command('doSearchPlatform')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png" orient="vertical" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox
@@ -110,13 +116,14 @@
 												model="@load(vm.platformList)" hflex="max" vflex="1"
 												multiple="true" checkmark="true"
 												style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.platformList)">
+												selectedItems="@bind(vm.markerEntity.platformList)"
+												onSelect="@command('validateForReset', category='platform')" >
 												<template name="model"
 													var="item">
 													<listitem>
 														<listcell
 															label="@load(item.name)"
-															onClick="@command('validatePlatformAndDataset')" />
+															/>
 													</listitem>
 												</template>
 											</listbox>
@@ -139,7 +146,8 @@
 												visible="@load(vm.dbVendorProtocols)" vflex="1"
 												model="@load(vm.vendorProtocolList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.vendorProtocolList)">
+												selectedItems="@bind(vm.markerEntity.vendorProtocolList)"
+												onSelect="@command('validateForReset', category='vendorprotocol')" >
 												<template name="model"
 													var="item">
 													<listitem>
@@ -166,7 +174,8 @@
 												visible="@load(vm.dbMapset)" vflex="1"
 												model="@load(vm.mapsetList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.mapsetList)">
+												selectedItems="@bind(vm.markerEntity.mapsetList)"
+												onSelect="@command('validateForReset', category='mapset')" >
 												<template name="model"
 													var="item">
 													<listitem>
@@ -220,7 +229,8 @@
 												visible="@load(vm.dbProjects)" vflex="1"
 												model="@load(vm.projectList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.projectList)">
+												selectedItems="@bind(vm.markerEntity.projectList)"
+												onSelect="@command('validateForReset', category='project')" >
 												<template name="model"
 													var="item">
 													<listitem>
@@ -247,7 +257,8 @@
 												visible="@load(vm.dbExperiment)" vflex="1"
 												model="@load(vm.experimentList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.experimentList)">
+												selectedItems="@bind(vm.markerEntity.experimentList)"
+												onSelect="@command('validateForReset', category='experiment')" >
 												<template name="model"
 													var="item">
 													<listitem>
@@ -275,7 +286,8 @@
 												visible="@load(vm.dbAnalyses)" vflex="1"
 												model="@load(vm.analysesList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.analysesList)">
+												selectedItems="@bind(vm.markerEntity.analysesList)"
+												onSelect="@command('validateForReset', category='analyses')" >
 												<template name="model"
 													var="item">
 													<listitem>
@@ -296,8 +308,9 @@
 													visible="@load(vm.dbDataset)"
 													value="@bind(vm.filterDataset)"
 													onChange="@command('doSearchDataset')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png" orient="vertical" />
+												<image
+													src="/imgs/info.png"
+													style="padding: 5px; cursor:hand;cursor:pointer; vertical-align: middle;" />
 											</hbox>
 											<separator spacing="12px"
 												visible="@load(vm.dbDataset)" />
@@ -429,9 +442,7 @@
 									</template>
 								</grid>
 							</div>
-							<popup id="platformMessage
-							"
-								width="400px">
+							<popup id="platformMessage" width="400px">
 								<label
 									value="Separate each name with a new line." />
 							</popup>
@@ -442,6 +453,12 @@
 							<popup id="markerTooltip" hflex="1">
 								<label
 									value="Click to view marker details" />
+							</popup>
+							<popup id="tabSelectionTooltipWarning">
+								<image src="/imgs/info.png"
+									tooltip="tabSelectionTooltipWarning" />
+								<label
+									value="Lorem ipsum chever chasdjkabfjabdfkjbasdjbfiwbfdkabdnfbaiwbfsadbmsdbfiabf asdjfbaksjbf" />
 							</popup>
 						</div>
 					</center>

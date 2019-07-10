@@ -1538,7 +1538,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error while trying to retrieve VENDOR-PROTOCOLS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve getVendorProtocolByPlatformId", "ERROR", Messagebox.OK, Messagebox.ERROR);
 
 		}
 
@@ -1580,7 +1580,190 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		}catch(Exception e ){
 
-			Messagebox.show("There was an error while trying to retrieve LINKAGE-GROUP", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			Messagebox.show("There was an error while trying to retrieve getLinkageGroupByMapsetId", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<ProjectRecord> getProjectsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<ProjectRecord> list = null;
+		try{
+
+			String query = "Select * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			list = context.fetch(query).into(ProjectRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getProjectsByVendorProtocolID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<ProjectRecord> getProjectsByPlatformID(List<PlatformRecord> platformList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<ProjectRecord> list = null;
+		try{
+
+			String query = "Select * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			list = context.fetch(query).into(ProjectRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getProjectsByPlatformID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+//
+	@Override
+	public List<ExperimentRecord> getExperimentsByProjectID(List<ProjectRecord> projectList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<ExperimentRecord> list = null;
+		try{
+
+			String query = "Select * from experiment e left join project prj on e.project_id = prj.project_id where prj.project_id "+ getIDsToString(projectList)+";";
+			list = context.fetch(query).into(ExperimentRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getExperimentsByProjectID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<ExperimentRecord> getExperimentsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<ExperimentRecord> list = null;
+		try{
+
+			String query = "Select * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			list = context.fetch(query).into(ExperimentRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getExperimentsByVendorProtocolID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<ExperimentRecord> getExperimentsByPlatformID(List<PlatformRecord> platformList) {
+		// TODO Auto-generated method stub
+
+
+		DSLContext context = getDSLContext();
+		List<ExperimentRecord> list = null;
+		try{
+
+			String query = "Select * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			list = context.fetch(query).into(ExperimentRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getExperimentsByPlatformID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> list = null;
+		try{
+
+			String query = "Select * from experiment e left join project prj on e.project_id = prj.project_id where prj.project_id "+ getIDsToString(projectList)+";";
+			list = context.fetch(query).into(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getDatasetsByProjectID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> list = null;
+		try{
+
+			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join project prj on e.project_id = prj.project_id where e.experiment_id "+ getIDsToString(experimentList)+";";
+			list = context.fetch(query).into(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getDatasetsByExperimentID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList) {
+		// TODO Auto-generated method stub
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> list = null;
+		try{
+
+			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			list = context.fetch(query).into(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getDatasetsByVendorProtocolID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+			e.printStackTrace();
+
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<DatasetRecord> getDatasetsByPlatformID(List<PlatformRecord> platformList) {
+		// TODO Auto-generated method stub
+
+		DSLContext context = getDSLContext();
+		List<DatasetRecord> list = null;
+		try{
+
+			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			list = context.fetch(query).into(DatasetRecord.class);
+
+		}catch(Exception e ){
+
+			Messagebox.show("There was an error while trying to retrieve getDatasetsByPlatformID", "ERROR", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 
 		}
