@@ -63,8 +63,8 @@ public class xmlModifier extends SelectorComposer<Component> {
     private static String kdComputeContextPathXPath = "//serverType[text() = 'KDC']/following-sibling::contextPath";
     private static String kdComputePortXPath = "//serverType[text() = 'KDC']/following-sibling::port";
     private static String kdComputeIsActiveXPath = "//serverType[text() = 'KDC']/following-sibling::isActive";
-    private static String kdComputeStatusCheckIntervalSecs = "//serverType[text() = 'KDC']/following-sibling::statusCheckIntervalSecs";
-    private static String kdComputeMaxStatusCheckMins  = "//serverType[text() = 'KDC']/following-sibling::maxStatusCheckMins";
+    private static String kdComputeStatusCheckIntervalSecsXPath = "//serverType[text() = 'KDC']/following-sibling::statusCheckIntervalSecs";
+    private static String kdComputeMaxStatusCheckMinsXPath = "//serverType[text() = 'KDC']/following-sibling::maxStatusCheckMins";
 
     private static String currentCrop;
 
@@ -254,14 +254,14 @@ public class xmlModifier extends SelectorComposer<Component> {
         evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
-    public void setKdComputeStatusCheckInterva(String newContent){
+    public void setKdComputeStatusCheckIntervalSecs(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateXPathExpression(kdComputeStatusCheckIntervalSecs, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(kdComputeStatusCheckIntervalSecsXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
-    public void setKdComputeMaxStatusChec(String newContent){
+    public void setKdComputeMaxStatusCheckMins(String newContent){
         Document doc = xmlModifier.retrieveFile(path);
-        evaluateXPathExpression(kdComputeMaxStatusCheckMins, doc).item(0).setTextContent(newContent);
+        evaluateXPathExpression(kdComputeMaxStatusCheckMinsXPath, doc).item(0).setTextContent(newContent);
         xmlModifier.modifyDocument(doc, path);
     }
 
@@ -360,13 +360,13 @@ public class xmlModifier extends SelectorComposer<Component> {
         Document doc = xmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).getTextContent();
     }
-    public String getKdComputeStatusCheckInterva(){
+    public String getKdComputeStatusCheckIntervalSecs(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(kdComputeStatusCheckIntervalSecs, doc).item(0).getTextContent();
+        return evaluateXPathExpression(kdComputeStatusCheckIntervalSecsXPath, doc).item(0).getTextContent();
     }
-    public String getKdComputeMaxStatusChec(){
+    public String getKdComputeMaxStatusCheckMins(){
         Document doc = xmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(kdComputeMaxStatusCheckMins, doc).item(0).getTextContent();
+        return evaluateXPathExpression(kdComputeMaxStatusCheckMinsXPath, doc).item(0).getTextContent();
     }
     public String getFileSystemRoot(){
         Document doc = xmlModifier.retrieveFile(path);

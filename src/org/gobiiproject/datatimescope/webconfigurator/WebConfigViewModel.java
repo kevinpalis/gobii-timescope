@@ -39,6 +39,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private boolean showNewXml = false;
     private boolean locationSet = false;
     private String exportLocation = "";
+    private backupHandler bh = new backupHandler();
 
 
     @Init
@@ -60,8 +61,67 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+    @Command("saveBackup")
+    public void saveBackup(@ContextParam(ContextType.BINDER) Binder binder) {
+        binder.sendCommand("disableEdit", null);
+        if (bh.getErrors().size() > 0){
+            StringBuilder sb = new StringBuilder();
+            for (String str : bh.getErrors()){
+                sb.append(str);
+                sb.append("\n");
+            }
+            alert(sb.toString());
+            bh.readDataFromCrons();
+        } else {
+            ArrayList<String> newJobs = bh.saveDataToCrons();
+            FileWriter writer = null;
+            try {
+                writer = new FileWriter("newCrons.txt");
+                for (String str : newJobs) {
+                    writer.write(str + System.lineSeparator());
+                }
+                writer.close();
+                Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //make modifications to file
+        //call dockerCronCopy.sh for next 2
+            //send crons back
+            //rm temp cron file
+    }
+
+    @NotifyChange("documentLocked")
+    @Command("enableBackup")
+    public void enableBackup(@ContextParam(ContextType.BINDER) Binder binder) {
+        String[] read = {
+                "ssh",
+                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
+                "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
+        };
+        try {
+            Process proc = new ProcessBuilder(read).start();
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            ArrayList<String> oldJobs = new ArrayList<>();
+            String line = null;
+            while ((line = stdInput.readLine()) != null) {
+                if (line.equals("")){
+                    break;
+                }
+                oldJobs.add(line);
+            }
+            bh.setCurrentCrons(oldJobs);
+            bh.readDataFromCrons();
+            documentLocked = false;
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
     @Command("exportXML")
-    public void exportXML( @ContextParam(ContextType.BINDER) Binder binder){
+    public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
         String[] sec_copy_back = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "scpfrom" , exportLocation};
         try {
             new ProcessBuilder(sec_copy_back).start();
@@ -947,4 +1007,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public String getExportLocation() {
         return exportLocation;
     }
+
+    public backupHandler getBh() {
+        return bh;
+    }
 }
+

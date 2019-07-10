@@ -6,6 +6,7 @@
     <grid width="500px">
         <columns>
             <column align="right" hflex="min"/>
+            <column hflex="min"/>
             <column/>
         </columns>
         <rows>
@@ -27,6 +28,13 @@
                              width="200px" value="@bind(vm.currentCrop.fileAge)" disabled="@load(vm.documentLocked)">
                     </intbox>
                 </cell>
+                <cell>
+                    <image src="/home/fvgoldman/gobiidatatimescope/WebContent/imgs/gobiilogo.png" style="cursor: help" tooltip="fileAge">
+                    </image>
+                    <popup id="fileAge" width="200px">
+                        <label value="Explanation here."/>
+                    </popup>
+                </cell>
             </row>
             <row>
                 <cell sclass="row-title">Cron Interval (Mins):</cell>
@@ -35,6 +43,11 @@
                              width="200px" value="@bind(vm.currentCrop.cron)" disabled="@load(vm.documentLocked)">
                     </intbox>
                 </cell>
+                <image src="/home/fvgoldman/gobiidatatimescope/WebContent/imgs/gobiilogo.png" style="cursor: help" tooltip="interval">
+                </image>
+                <popup id="interval" width="200px">
+                    <label value="Explanation here."/>
+                </popup>
             </row>
         </rows>
     </grid>

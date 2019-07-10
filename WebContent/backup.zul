@@ -1,0 +1,61 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Backup Schedule</label>
+    <grid width="500px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Time for Daily Backup:</cell>
+                <cell>
+                    <timebox id="tb1" cols="12" format="short" value="@load(vm.bh.backupDayTime) @save(vm.bh.backupDayTime, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Day for Weekly Backup:</cell>
+                <cell>
+                    <listbox selectedItem="@load(vm.bh.backupWeekday) @save(vm.bh.backupWeekday, before='disableEdit')" mold="select" disabled="@load(vm.documentLocked)">
+                        <listitem label="Monday"/>
+                        <listitem label="Tuesday"/>
+                        <listitem label="Wednesday"/>
+                        <listitem label="Thursday"/>
+                        <listitem label="Friday"/>
+                        <listitem label="Saturday"/>
+                        <listitem label="Sunday"/>
+                    </listbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Time for Weekly Backup:</cell>
+                <cell>
+                    <timebox id="tb2" cols="12" format="short" value="@load(vm.bh.backupWeekTime) @save(vm.bh.backupWeekTime, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Date for Monthly Backup:</cell>
+                <cell>
+                    <intbox constraint="no negative, no empty, no zero: Please set a value between 1 and 31."
+                            width="200px" value="@load(vm.bh.backupMonthDay) @save(vm.bh.backupMonthDay, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </intbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Time for Monthly Backup:</cell>
+                <cell>
+                    <timebox id="tb3" cols="12" format="short" value="@load(vm.bh.backupMonthTime) @save(vm.bh.backupMonthTime, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableBackup')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('saveBackup')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

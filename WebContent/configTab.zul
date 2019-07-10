@@ -110,7 +110,7 @@
             </treerow>
             <treechildren>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="@command('kdCompute')">
                         <treecell label="KDCompute" style="font-size:15px !important;"/>
                     </treerow>
                 </treeitem>
@@ -150,7 +150,7 @@
             </treechildren>
         </treeitem>
         <treeitem>
-            <treerow  onClick="@command('backup')" >
+            <treerow onClick="@command('backup')" >
                 <treecell label="Backup" style="font-size:15px !important;"/>
             </treerow>
         </treeitem>
