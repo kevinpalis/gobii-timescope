@@ -6,21 +6,17 @@ import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
-import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zul.Filedownload;
-import org.zkoss.zul.Fileupload;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Messagebox;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
 import javax.swing.*;
-import javax.swing.plaf.FileChooserUI;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,34 +86,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         //call dockerCronCopy.sh for next 2
             //send crons back
             //rm temp cron file
-    }
-
-    @NotifyChange("documentLocked")
-    @Command("enableBackup")
-    public void enableBackup(@ContextParam(ContextType.BINDER) Binder binder) {
-        String[] read = {
-                "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
-                "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
-        };
-        try {
-            Process proc = new ProcessBuilder(read).start();
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            ArrayList<String> oldJobs = new ArrayList<>();
-            String line = null;
-            while ((line = stdInput.readLine()) != null) {
-                if (line.equals("")){
-                    break;
-                }
-                oldJobs.add(line);
-            }
-            bh.setCurrentCrons(oldJobs);
-            bh.readDataFromCrons();
-            documentLocked = false;
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
     }
 
     @Command("exportXML")
