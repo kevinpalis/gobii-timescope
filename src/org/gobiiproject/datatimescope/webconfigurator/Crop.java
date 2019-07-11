@@ -13,7 +13,7 @@ public class Crop {
     private boolean isActive;
     private boolean changeActivity;
     private boolean activityChanged;
-    private xmlModifier xmlHandler = new xmlModifier();
+    private XmlModifier xmlHandler = new XmlModifier();
     private Media contactData;
     private boolean hideContactData = true;
 

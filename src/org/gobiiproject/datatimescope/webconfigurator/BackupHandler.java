@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class backupHandler {
+public class BackupHandler {
 
-    public backupHandler(){
+    public BackupHandler(){
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",

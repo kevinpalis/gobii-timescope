@@ -1,41 +1,35 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.apache.catalina.ant.ReloadTask;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.jooq.DSLContext;
-import org.w3c.dom.NodeList;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
-import org.zkoss.zul.Messagebox;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.gobiiproject.datatimescope.webconfigurator.utilityFunctions.scriptExecutor;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
-    private xmlModifier xmlHandler = new xmlModifier();
+    private XmlModifier xmlHandler = new XmlModifier();
     private boolean documentLocked = true;
-    private propertyHandler prop = new propertyHandler();
-    private ReloadTask request = new ReloadTask();
     private boolean isSuperAdmin = false;
     private Crop currentCrop = new Crop();
     private String newXMLPath;
     private boolean showNewXml = false;
     private boolean locationSet = false;
     private String exportLocation = "";
-    private backupHandler bh = new backupHandler();
+    private BackupHandler bh = new BackupHandler();
+    private ServerHandler serverHandler = new ServerHandler(xmlHandler);
 
 
     @Init
@@ -55,6 +49,24 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } else {
             alert("Only Super Admins can configure these settings.");
         }
+    }
+
+    /**
+     * Validation of the User modifications made
+     */
+    @Command("reloadCrons")
+    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
+        if (currentCrop.getName() == null){
+            alert("Please specify a crop.");
+            binder.sendCommand("disableEdit", null);
+            return;
+        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
+            alert("Please choose a valid value between 1 and 59. The default setting is 2.");
+            binder.sendCommand("disableEdit", null);
+            return;
+        }
+        modifyCron("update");
+        binder.sendCommand("disableEdit", null);
     }
 
     @Command("saveBackup")
@@ -128,358 +140,27 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String[] sec_copy = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "scpto" , newXMLPath};
-        try {
-            new ProcessBuilder(sec_copy).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> params = new ArrayList<>(Arrays.asList("scpto", newXMLPath));
+        if (!scriptExecutor("importExportXml.sh", params)){
+            //TODO Handle failure of script
         }
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
-        if (validateGobiiConfiguration()){
-            String[] overwrite = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "passed"};
-            try {
-                new ProcessBuilder(overwrite).start();
-            } catch (IOException e) {
-                e.printStackTrace();
+        XmlValidator validator = new XmlValidator(xmlHandler);
+        if (validator.validateGobiiConfiguration()){
+            if (scriptExecutor("importExportXml.sh", Collections.singletonList("passed"))){
+                if (!serverHandler.reloadTomcatAllCrops()){
+                    //TODO Handle failure
+                }
+            } else {
+                //TODO Handle failure of script
             }
-            warningTomcat(binder);
         } else {
+            alert(validator.getErrorMessage());
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
-            String[] delete = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "failed"};
-            try {
-                new ProcessBuilder(delete).start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!scriptExecutor("importExportXml.sh", Collections.singletonList("failed"))){
+                //TODO Handle failure of script
             }
             binder.sendCommand("disableEdit", null);
-        }
-    }
-
-    private boolean validateGeneralSettings(List<String> messages){
-        boolean returnVal = true;
-        if (isNullOrEmpty(xmlHandler.getEmailSvrDomain())) {
-            messages.add("An email server host is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getEmailServerPort())) {
-            messages.add("An email port is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getEmailSvrUser())) {
-            messages.add("An email server user id is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getEmailSvrPassword())) {
-            messages.add("An email server password is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getFileSystemRoot())) {
-            messages.add("A file system root is not defined");
-            returnVal = false;
-        } else {
-            File directoryToTest = new File(xmlHandler.getFileSystemRoot());
-            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
-                messages.add("The specified file system root does not exist or is not a directory: " + xmlHandler.getFileSystemRoot());
-                returnVal = false;
-            }
-        }
-        if (isNullOrEmpty(xmlHandler.getGobiiAuthenticationType())) {
-            messages.add("An authentication type is not specified");
-            returnVal = false;
-        }
-        if (!xmlHandler.getGobiiAuthenticationType().equals("TEST")) {
-            if (isNullOrEmpty(xmlHandler.getLdapUserDnPattern())) {
-                messages.add("The authentication type is "
-                        + xmlHandler.getGobiiAuthenticationType()
-                        + " but a user dn pattern is not specified");
-                returnVal = false;
-            }
-            if (isNullOrEmpty(xmlHandler.getLdapUrl())) {
-                messages.add("The authentication type is "
-                        + xmlHandler.getGobiiAuthenticationType()
-                        + " but an ldap url is not specified");
-                returnVal = false;
-            }
-            if (xmlHandler.getGobiiAuthenticationType().equals("LDAP_CONNECT_WITH_MANAGER") ||
-                    xmlHandler.getGobiiAuthenticationType().equals("ACTIVE_DIRECTORY_CONNECT_WITH_MANAGER")) {
-                if (isNullOrEmpty(xmlHandler.getLdapBindUser())) {
-                    messages.add("The authentication type is "
-                            + xmlHandler.getGobiiAuthenticationType()
-                            + " but an ldap bind user is not specified");
-                    returnVal = false;
-                }
-                if (isNullOrEmpty(xmlHandler.getLdapBindPassword())) {
-                    messages.add("The authentication type is "
-                            + xmlHandler.getGobiiAuthenticationType()
-                            + " but an ldap bind password is not specified");
-                    returnVal = false;
-                }
-            } // if the authentication type requires connection credentails
-        } // if the authentication type requires url and user dn pattern
-        if (isNullOrEmpty(xmlHandler.getFileSystemLog())) {
-            messages.add("A file system log directory is not defined");
-            returnVal = false;
-        } else {
-            File directoryToTest = new File(xmlHandler.getFileSystemLog());
-            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
-                messages.add("The specified file system log does not exist or is not a directory: " + xmlHandler.getFileSystemLog());
-                returnVal = false;
-            }
-        }
-        if (isNullOrEmpty(xmlHandler.getFileSysCropsParent())) {
-            messages.add("A file system crop parent directory is not defined");
-            returnVal = false;
-        } else {
-            File directoryToTest = new File(xmlHandler.getFileSysCropsParent());
-            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
-                messages.add("The specified file crop parent directory does not exist or is not a directory: " + xmlHandler.getFileSysCropsParent());
-                returnVal = false;
-            }
-        }
-        return returnVal;
-    }
-
-    private boolean validateTestCrop(List<String> messages){
-        boolean returnVal = true;
-        if (isNullOrEmpty(xmlHandler.getTestExecConfig())){
-            messages.add("No test exec configuration is defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getTestCrop())) {
-            messages.add("A test crop id is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getTestInitialConfigUrl())) {
-            messages.add("An initial configuration url for testing is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getTestConfigFileTestDirectory())) {
-            messages.add("A a directory for test files is not defined");
-            returnVal = false;
-        } else {
-            String testDirectoryPath = xmlHandler.getTestConfigFileTestDirectory();
-            File testFilePath = new File(xmlHandler.getTestConfigFileTestDirectory());
-            if (!testFilePath.exists()) {
-                messages.add("The specified test file path does not exist: "
-                        + testDirectoryPath);
-                returnVal = false;
-            }
-        }
-        if (isNullOrEmpty(xmlHandler.getTestConfigUtilCommandLineStem())) {
-            messages.add("The commandline stem of this utility for testing purposes is not defined");
-            returnVal = false;
-        }
-        return returnVal;
-    }
-
-    private boolean validateWebServer(List<String> messages, List<String> contextPathList, String Cropname) {
-        boolean returnVal = true;
-        if (isNullOrEmpty(Cropname)) {
-            messages.add("The crop type for the crop is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getWebHost(Cropname))) {
-            messages.add("The web server host for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-
-        }
-        if (isNullOrEmpty(xmlHandler.getWebContextPath(Cropname))) {
-            messages.add("The web server context path for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        } else {
-            if (!contextPathList.contains(xmlHandler.getWebContextPath(Cropname))) {
-                contextPathList.add(xmlHandler.getWebContextPath(Cropname));
-            } else {
-                messages.add("The context path for the crop occurs more than once -- context paths must be unique:" + xmlHandler.getWebContextPath(Cropname));
-                returnVal = false;
-            }
-        }
-        if (isNullOrEmpty(xmlHandler.getWebPort(Cropname))) {
-            messages.add("The web server port for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        }
-        return returnVal;
-    }
-
-    private boolean validatePostgresServer(List<String> messages, List<String> databasesList, String Cropname){
-        boolean returnVal = true;
-        if (isNullOrEmpty(xmlHandler.getDatabaseHost(Cropname))) {
-            messages.add("The postgres server host for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-
-        }
-        if (isNullOrEmpty(xmlHandler.getDatabaseName(Cropname))) {
-            messages.add("The postgres server context path for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        } else {
-            if (!databasesList.contains(xmlHandler.getDatabaseName(Cropname))) {
-                databasesList.add(xmlHandler.getDatabaseName(Cropname));
-            } else {
-                messages.add("The context path for the crop occurs more than once -- context paths must be unique:" + xmlHandler.getDatabaseName(Cropname));
-                returnVal = false;
-            }
-        }
-        if (xmlHandler.getDatabasePort(Cropname) == null) {
-            messages.add("The postgres server port for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getDatabaseUser(Cropname))){
-            messages.add("The postgres username for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        }
-        if (isNullOrEmpty(xmlHandler.getDatabasePassword(Cropname))){
-            messages.add("The postgres password for the crop (" + Cropname + ") is not defined");
-            returnVal = false;
-        }
-        return returnVal;
-    }
-
-    private boolean validateServers(List<String> messages){
-        boolean returnVal = true;
-        List<String> contextPathList = new ArrayList<>();
-        List<String> databasesList = new ArrayList<>();
-        for (int i = 0; i < xmlHandler.getCropList().size(); i++) {
-            String Cropname = String.valueOf(xmlHandler.getCropList().get(i));
-            if (xmlHandler.getPostgres(Cropname) == null) {
-                messages.add("The postgresdb for the crop (" + Cropname + ") is not defined");
-                returnVal = false;
-            } else if (xmlHandler.getWeb(Cropname) == null) {
-                messages.add("The webConfig for the crop (" + Cropname + ") is not defined");
-                returnVal = false;
-            } else {
-                returnVal = returnVal && validateWebServer(messages, contextPathList, Cropname) &&
-                        validatePostgresServer(messages, databasesList, Cropname);
-            }
-        }
-        return returnVal;
-    }
-
-    private boolean isNullOrEmpty(String value){
-        return (null == value || value.isEmpty());
-    }
-    private boolean isNullOrEmpty(int value){
-        return (value == 0);
-    }
-
-    private boolean validateGobiiConfiguration() {
-        boolean returnVal;
-        try {
-            List<String> messages = new ArrayList<>();
-            returnVal = validateGeneralSettings(messages) && validateTestCrop(messages) && validateServers(messages);
-            if (xmlHandler.getCropList().size() < 1) {
-                messages.add("No active crops are defined");
-                returnVal = false;
-            }
-            if (!returnVal && messages.size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                for (String s : messages)
-                {
-                    sb.append(s);
-                    sb.append("\n");
-                }
-                alert("The provided xml was invalid.\n" + sb.toString());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            alert("A mandatory XML tag is missing.");
-            returnVal = false;
-        }
-        return returnVal;
-
-    }
-
-    /**
-     * Opens a warning box and if acknowledged performs the restart of the the application process.
-     * Otherwise stages it for later and upon next restart the effects will take place
-     * */
-    @Command("warningTomcat")
-    public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder) {
-        if (configureTomcatReloadRequest()) {
-            Messagebox.show("Clicking OK will restart the web application and all unsaved data will be lost.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
-                public void onEvent(Event evt) {
-                    if (evt.getName().equals("onOK")) {
-                        binder.sendCommand("disableEdit", null);
-                        executeTomcatReloadRequest(true);
-                    }
-                }
-            });
-        } else {
-            binder.sendCommand("disableEdit", null);
-        }
-    }
-
-    @Command("warningPostgres")
-    public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder){
-        if (configureTomcatReloadRequest()) {
-            Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
-            Map<String, String> params = new HashMap<>();
-            params.put("width", "500");
-            Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there are " +
-                    "active sessions, or worse, corrupt data being loaded. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
-                    " you want to restart Postgres now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
-                public void onEvent(Event evt) {
-                    if (evt.getName().equals("onOK")) {
-                        String oldUserName = xmlHandler.getPostgresUserName();
-                        binder.sendCommand("disableEdit", null);
-                        executePostgresReload(oldUserName);
-                        executeTomcatReloadRequest(true);
-                    }
-                }
-            }, params);
-        } else {
-            binder.sendCommand("disableEdit", null);
-        }
-    }
-
-    private void executePostgresReload(String oldUserName){
-        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-        DSLContext context = tmpService.getDSLContext();
-        if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
-            context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
-        }
-        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
-        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
-    }
-
-    /**
-     * Sets username and password needed for the reload request for the web application specified under context path in the gobii-web.xml
-     * @return true if username and password are filled
-     */
-    private boolean configureTomcatReloadRequest(){
-        try {
-            request.setUsername(prop.getUsername());
-            request.setPassword(prop.getPassword());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (request.getUsername() == null || request.getPassword() == null) {
-            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place." +
-                    "The modifications are staged and will take effect when the web application is restarted.");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Sends the requests to reload the web application under the found context paths in the gobii-web.xml file
-     */
-    private void executeTomcatReloadRequest(boolean all){
-        String host = xmlHandler.getHostForReload();
-        String port = xmlHandler.getPortForReload();
-        if (all) {
-            NodeList contextPathNodes = xmlHandler.getContextPathNodes();
-            //Reload each context
-            for (int i = 0; i < contextPathNodes.getLength(); i++) {
-                request.setPath(contextPathNodes.item(i).getTextContent());
-                request.setUrl("http://" + host + ":" + port + "/manager/text");
-                request.execute();
-            }
-        } else {
-            request.setPath(xmlHandler.getWARName(currentCrop.getName()));
-            request.setUrl("http://" + host + ":" + port + "/manager/text");
-            request.execute();
         }
     }
 
@@ -556,46 +237,20 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
-        if (configureTomcatReloadRequest()){
-            currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
-            binder.sendCommand("disableEdit", null);
-            if (currentCrop.isActivityChanged()){
-                currentCrop.setActivityChanged(false);
-            } else {
-                alert("No changes have been made, please change a setting.");
-                return;
-            }
-            executeTomcatReloadRequest(false);
-            if (currentCrop.getIsActive()) {
-                modifyCron("create");
-            } else {
-                modifyCron("delete");
-            }
+        currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
+        binder.sendCommand("disableEdit", null);
+        if (currentCrop.isActivityChanged()){
+            currentCrop.setActivityChanged(false);
         } else {
-            binder.sendCommand("disableEdit", null);
+            alert("No changes have been made, please change a setting.");
+            return;
         }
-
-    }
-
-    @Command("warningRemoval")
-    public void warningRemoval(@ContextParam(ContextType.BINDER) Binder binder){
-        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
-        Map<String, String> params = new HashMap<>();
-        params.put("width", "500");
-        Messagebox.show("This operation will permanently remove this database and all its associated information." +
-                "\nPlease make sure that there are no active sessions prior to removing this database. \nAre you sure" +
-                " you want to remove the database now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
-            public void onEvent(Event evt) {
-                if (evt.getName().equals("onOK")) {
-                    if (xmlHandler.getCropList().size() > 1) {
-                        binder.sendCommand("removeCropFromDatabase", null);
-                        binder.sendCommand("disableEdit", null);
-                    } else {
-                        alert("This the only database. Please add another crop before deleting this database.");
-                    }
-                }
-            }
-        }, params);
+        serverHandler.reloadTomcatSingleCrop(currentCrop.getName());
+        if (currentCrop.getIsActive()) {
+            modifyCron("create");
+        } else {
+            modifyCron("delete");
+        }
     }
 
     /**
@@ -639,125 +294,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_"+"home");
     }
 
-    private void createCron(BufferedReader stdInput) throws IOException {
-        ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
-        while ((line = stdInput.readLine()) != null) {
-            if (line.equals("")){
-                break;
-            }
-            newJobs.add(line);
-        }
-        newJobs.add("*/2 * * * * /data/gobii_bundle/loaders/cronjob.sh " + currentCrop.getName() + " +2");
-        newJobs.add("*/2 * * * * /data/gobii_bundle/extractors/cronjob.sh " + currentCrop.getName() + " +2");
-        FileWriter writer = new FileWriter("newCrons.txt");
-        for(String str: newJobs) {
-            writer.write(str + System.lineSeparator());
-        }
-        writer.close();
-    }
-
-    private void updateCron(BufferedReader stdInput) throws IOException {
-        ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
-        while ((line = stdInput.readLine()) != null) {
-            if (line.equals("")){
-                break;
-            }
-            String [] input = line.split(" ");
-            if (input[6].equals(currentCrop.getName())){
-                input[7] = "+" + currentCrop.getFileAge();
-                input[0] = "*/" + currentCrop.getCron();
-                newJobs.add(String.join(" ", input));
-            } else {
-                newJobs.add(line);
-            }
-        }
-        FileWriter writer = new FileWriter("newCrons.txt");
-        for(String str: newJobs) {
-            writer.write(str + System.lineSeparator());
-        }
-        writer.close();
-    }
-
-    private void deleteCron(BufferedReader stdInput) throws IOException {
-        ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
-        while ((line = stdInput.readLine()) != null) {
-            if (line.equals("")){
-                break;
-            }
-            String [] input = line.split(" ");
-            if (!input[6].equals(currentCrop.getName())) {
-                newJobs.add(line);
-            }
-        }
-        FileWriter writer = new FileWriter("newCrons.txt");
-        for(String str: newJobs) {
-            writer.write(str + System.lineSeparator());
-        }
-        writer.close();
-    }
-
-    /**
-     * Wrapper that handles the different types the User can interact with CRON Jobs
-     * Creating a new CRON with default values
-     * Updating a CRON changing the values for a crops existing job
-     * Deleting both CRONS for an existing crop
-     * @param modification
-     */
-    private void modifyCron(String modification){
-        String[] read = {
-                "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
-                "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
-        };
-        try {
-            Process proc = new ProcessBuilder(read).start();
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            switch (modification) {
-                case ("create"): {
-                    createCron(stdInput);
-                    break;
-                }
-                case ("update"): {
-                    updateCron(stdInput);
-                    break;
-                }
-                case ("delete"): {
-                    deleteCron(stdInput);
-                    break;
-                }
-            }
-            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload());
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        /*
-        TODO on deploy
-        String dockerCopyCron = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload;
-
-        new ProcessBuilder(dockerCopyCron).start();
-        */
-    }
-
-    /**
-     * Validation of the modifications made
-     */
-    @Command ("reloadCrons")
-    public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
-        if (currentCrop.getName() == null){
-            alert("Please specify a crop.");
-            binder.sendCommand("disableEdit", null);
-            return;
-        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
-            alert("Please choose a valid value between 1 and 59. The default setting is 2.");
-            binder.sendCommand("disableEdit", null);
-            return;
-        }
-        modifyCron("update");
-        binder.sendCommand("disableEdit", null);
-    }
 
 
     @Command("disableEdit")
@@ -936,16 +472,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         super.doAfterCompose(comp);
     }
 
-    public xmlModifier getXmlHandler(){
+    public XmlModifier getXmlHandler(){
         return xmlHandler;
     }
 
     public boolean getdocumentLocked() {
         return documentLocked;
-    }
-
-    public propertyHandler getProp(){
-        return prop;
     }
 
     public boolean getisSuperAdmin() {
@@ -976,7 +508,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return exportLocation;
     }
 
-    public backupHandler getBh() {
+    public BackupHandler getBh() {
         return bh;
     }
 }

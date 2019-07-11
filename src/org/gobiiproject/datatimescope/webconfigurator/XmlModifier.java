@@ -26,7 +26,7 @@ import javax.xml.xpath.*;
  * A Class that handles the gobii-web.xml file by querying data from it using XPATH and modifying it according to user input
  */
 
-public class xmlModifier extends SelectorComposer<Component> {
+public class XmlModifier extends SelectorComposer<Component> {
 
     //If any of the below XPATH's return more than one Node only the first one will be modified
 
@@ -93,182 +93,182 @@ public class xmlModifier extends SelectorComposer<Component> {
     }
 
     public void setPostgresUserName(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         NodeList postgresCropNodes = evaluateXPathExpression(postgresUserNameXPath, doc);
         for (int n = 0; n < postgresCropNodes.getLength(); n++){
             postgresCropNodes.item(n).setTextContent(newContent);
         }
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setPostgresPassword(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         NodeList postgresCropNodes = evaluateXPathExpression(postgresPasswordXPath, doc);
         for (int n = 0; n < postgresCropNodes.getLength(); n++){
             postgresCropNodes.item(n).setTextContent(newContent);
         }
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setActivity(Crop modCrop, boolean activeness) {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         String expression = "//gobiiCropType[text() = '" + modCrop.getName() + "']/following-sibling::isActive";
         evaluateXPathExpression(expression, doc).item(0).setTextContent(String.valueOf(activeness));
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserForUnitTest(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForUnitTest(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setGobiiAuthenticationType(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(gobiiAuthenticationTypeXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserDnPattern(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapUserDnPatternXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUrl(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapUrlXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindUser(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapBindUserXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindPassword(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapUserForBackendProcs(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForBackendProcs(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrType(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailSvrTypeXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrDomain(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailSvrDomainXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrUser(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailSvrUserXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrHashType(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrPassword(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailServerPort(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(emailServerPortXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setFileSystemRoot(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(fileSystemRootXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setFileSystemLog(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(fileSystemLogXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setFileSysCropParents(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(fileSysCropsParentXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setTestExecConfig(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(testExecConfigXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setTestCrop(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(testCropXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setTestInitialConfigUrl(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(testInitialConfigUrlXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setTestConfigFileTestDirectory(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(testConfigFileTestDirectoryXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setTestConfigUtilCommandLineStem(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(testConfigUtilCommandLineStemXpath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeDecrypt(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeDecryptXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeHost(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeHostXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeContextPath(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeContextPathXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputePort(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputePortXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeIsActive(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeStatusCheckIntervalSecs(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeStatusCheckIntervalSecsXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
     public void setKdComputeMaxStatusCheckMins(String newContent){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         evaluateXPathExpression(kdComputeMaxStatusCheckMinsXPath, doc).item(0).setTextContent(newContent);
-        xmlModifier.modifyDocument(doc, path);
+        XmlModifier.modifyDocument(doc, path);
     }
 
 
 
     public ListModelList getCropList(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         NodeList nl = evaluateXPathExpression(cropListXPath, doc);
         ListModelList<String> cropList = new ListModelList<>();
         for (int i = 0; i < nl.getLength(); i++){
@@ -280,219 +280,219 @@ public class xmlModifier extends SelectorComposer<Component> {
     //Crop specific getters
     public String getPostgres(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getWeb(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getDatabaseName(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getDatabaseUser(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/preceding-sibling::userName";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getDatabasePassword(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/preceding-sibling::password";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getDatabaseHost(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::host";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getDatabasePort(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::port";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public Boolean getActivity(String Cropname) {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         String expression = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::isActive";
         return Boolean.valueOf(evaluateXPathExpression(expression, doc).item(0).getTextContent());
     }
     public String getWARName(String Cropname) {
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getWebHost(String Cropname) {
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::host";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getWebContextPath(String Cropname) {
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
     public String getWebPort(String Cropname) {
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
 
 
     public String getKdComputeDecrypt(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeDecryptXPath, doc).item(0).getTextContent();
     }
     public String getKdComputeHost(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeHostXPath, doc).item(0).getTextContent();
     }
     public String getKdComputeContextPath(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeContextPathXPath, doc).item(0).getTextContent();
     }
     public String getKdComputePort(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputePortXPath, doc).item(0).getTextContent();
     }
     public String getKdComputeIsActive(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeIsActiveXPath, doc).item(0).getTextContent();
     }
     public String getKdComputeStatusCheckIntervalSecs(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeStatusCheckIntervalSecsXPath, doc).item(0).getTextContent();
     }
     public String getKdComputeMaxStatusCheckMins(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeMaxStatusCheckMinsXPath, doc).item(0).getTextContent();
     }
     public String getFileSystemRoot(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(fileSystemRootXPath, doc).item(0).getTextContent();
     }
     public String getFileSystemLog(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(fileSystemLogXPath, doc).item(0).getTextContent();
     }
     public String getFileSysCropsParent(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(fileSysCropsParentXPath, doc).item(0).getTextContent();
     }
     public String getTestExecConfig(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(testExecConfigXPath, doc).item(0).getTextContent();
     }
     public String getTestCrop(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(testCropXPath, doc).item(0).getTextContent();
     }
     public String getTestInitialConfigUrl(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(testInitialConfigUrlXPath, doc).item(0).getTextContent();
     }
     public String getTestConfigFileTestDirectory(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(testConfigFileTestDirectoryXPath, doc).item(0).getTextContent();
     }
     public String getTestConfigUtilCommandLineStem(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(testConfigUtilCommandLineStemXpath, doc).item(0).getTextContent();
     }
     public String getCurrentCrop(){
         return currentCrop;
     }
     public String getPostgresUserName(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
     }
     public int getPostgresPasswordExtrenal(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getPostgresPassword(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent();
     }
     public String getLdapUserForUnitTest(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).getTextContent();
     }
     public int getLdapPasswordForUnitTest(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getGobiiAuthenticationType(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(gobiiAuthenticationTypeXPath, doc).item(0).getTextContent();
     }
     public String getLdapUserDnPattern(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserDnPatternXPath, doc).item(0).getTextContent();
     }
     public String getLdapUrl(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUrlXPath, doc).item(0).getTextContent();
     }
     public String getLdapBindUser(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapBindUserXPath, doc).item(0).getTextContent();
     }
     public int getLdapBindPassword(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getLdapUserForBackendProcs(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).getTextContent();
     }
     public int getLdapPasswordForBackendProcs(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getEmailSvrType(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrTypeXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrDomain(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrDomainXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrUser(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrUserXPath, doc).item(0).getTextContent();
     }
     public String getEmailSvrHashType(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).getTextContent();
     }
     public int getEmailSvrPassword(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
     public String getEmailServerPort(){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailServerPortXPath, doc).item(0).getTextContent();
     }
     public String getPostgresPort() {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresPortXPath, doc).item(0).getTextContent();
     }
     public String getPostgresHost() {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresHostXPath, doc).item(0).getTextContent();
     }
     public String getHostForReload() {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(hostForReloadXPath, doc).item(0).getTextContent();
     }
     public NodeList getContextPathNodes() {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(contextPathForReloadXPath, doc);
     }
     public String getPortForReload() {
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(portForReloadXPath, doc).item(0).getTextContent();
     }
 
@@ -562,7 +562,7 @@ public class xmlModifier extends SelectorComposer<Component> {
 
     @NotifyChange("cropList")
     public void removeCrop(Crop oldCrop){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
         removeChildren(cropRoot);
         cropRoot.getParentNode().removeChild(cropRoot);
@@ -576,7 +576,7 @@ public class xmlModifier extends SelectorComposer<Component> {
     }
 
     public void appendCrop(Crop newCrop){
-        Document doc = xmlModifier.retrieveFile(path);
+        Document doc = XmlModifier.retrieveFile(path);
         Node cropConfigRoot = evaluateXPathExpression("//cropConfigs", doc).item(0);
         cropConfigRoot.appendChild(entry(doc, newCrop));
         modifyDocument(doc, path, true);
