@@ -1,5 +1,8 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.zkoss.bind.Binder;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Messagebox;
 
@@ -7,7 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WarningComposer {
+
+public class WarningComposer extends WebConfigViewModel{
 
     private boolean acceptedWarning;
     private ArrayList<String> errorMessages = new ArrayList<>();
@@ -35,27 +39,6 @@ public class WarningComposer {
         });
     }
 
-    public void warningPostgres(){
-        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
-        Map<String, String> params = new HashMap<>();
-        params.put("width", "500");
-        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there are " +
-                "active sessions, or worse, corrupt data being loaded. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
-                " you want to restart Postgres now?", "WarningComposer", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
-            public void onEvent(Event evt) {
-                if (evt.getName().equals("onOK")) {
-                    acceptedWarning = true;
-                    //TODO Make sure this behaviour is maintained
-                    /*String oldUserName = xmlHandler.getPostgresUserName();
-                    binder.sendCommand("disableEdit", null);
-                    executePostgresReload(oldUserName);
-                    executeTomcatReloadRequest(true);*/
-                } else {
-                    acceptedWarning = false;
-                }
-            }
-        }, params);
-    }
 
     public void warningRemoval(){
         Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};

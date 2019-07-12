@@ -25,7 +25,6 @@ public class ServerHandler {
 
     public boolean changePostgresCredentials(String oldUsername){
         boolean success;
-        warning.warningPostgres();
         if (warning.isAcceptedWarning()){
             executePostgresChange(oldUsername);
             executeAllTomcatReloadRequest();

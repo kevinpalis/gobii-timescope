@@ -6,11 +6,13 @@ import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.zkoss.zul.Messagebox;
 
 import javax.swing.*;
 import java.io.*;
@@ -60,15 +62,33 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert(generateAlertMessage(warningComposer.getErrorMessages()));
         } else if (warningComposer.isAcceptedWarning()){
             serverHandler.reloadTomcatAllCrops();
-            goToHome(binder);
+            binder.sendCommand("disableEdit", null);
+            goToHome();
         } else {
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
         }
     }
 
     @Command("postgresModification")
     public void postgresModification(@ContextParam(ContextType.BINDER) Binder binder){
-        warningComposer.warningPostgres();
+        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+        Map<String, String> params = new HashMap<>();
+        params.put("width", "500");
+        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there are " +
+                "active sessions, or worse, corrupt data being loaded. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
+                " you want to restart Postgres now?", "WarningComposer", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) {
+                if (evt.getName().equals("onOK")) {
+                    String oldUsername = xmlHandler.getPostgresUserName();
+                    serverHandler.changePostgresCredentials(oldUsername);
+                    serverHandler.reloadTomcatAllCrops();
+                    binder.sendCommand("disableEdit", null);
+                    goToHome();
+                } else {
+                    cancelChanges();
+                }
+            }
+        }, params);
     }
 
 
@@ -79,15 +99,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
         if (!cronHandler.reloadCrons(xmlHandler.getHostForReload())){
             generateAlertMessage(cronHandler.getErrorMessages());
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit", null);
         } else {
-            goToHome(binder);
+            binder.sendCommand("disableEdit", null);
+            goToHome();
         }
     }
 
     @Command("saveBackup")
     public void saveBackup(@ContextParam(ContextType.BINDER) Binder binder) {
-        lockAndStayOnPage(binder);
+        binder.sendCommand("disableEdit",null);
         if (backupHandler.getErrorMessages().size() > 0){
             //Reading in from user had an error
             alert(generateAlertMessage(backupHandler.getErrorMessages()));
@@ -106,12 +127,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> sec_copy_back = new ArrayList<>(Arrays.asList("scpfrom" , exportLocation));
         if (!scriptExecutor("importExportXml.sh", sec_copy_back)){
             alert("Couldn't import the file from the server.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         exportLocation = "";
         locationSet = false;
-        goToHome(binder);
+        binder.sendCommand("disableEdit", null);
+        goToHome();
     }
 
     @Command("setLocationForExport")
@@ -149,13 +171,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         showNewXml = true;
         if (!setNewXmlPath(event)){
             alert("File not found.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         List<String> params = new ArrayList<>(Arrays.asList("scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
             alert("Couldn't send the file to server for validation.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
@@ -163,13 +185,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         if (validator.validateGobiiConfiguration()){
             if (scriptExecutor("importExportXml.sh", Collections.singletonList("passed"))){
                 if (!serverHandler.reloadTomcatAllCrops()){
-                    lockAndStayOnPage(binder);
+                    binder.sendCommand("disableEdit",null);
                 } else {
-                    goToHome(binder);
+                    binder.sendCommand("disableEdit", null);
+                    goToHome();
                 }
             } else {
                 alert("Couldn't set the imported file as the new reference file.");
-                lockAndStayOnPage(binder);
+                binder.sendCommand("disableEdit",null);
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
@@ -178,7 +201,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             } else {
                 alert(validator.getErrorMessage());
             }
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
         }
     }
 
@@ -218,26 +241,27 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
         if (!scriptExecutor("liquibase.sh", populate)){
             alert("Couldn't populate the database with seed data.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
         List<String> duplicateWAR = new ArrayList<>(Arrays.asList("1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
             alert("Couldn't duplicate the WAR file for deployment.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         xmlCropHandler.appendCrop(currentCrop);
         List<String> createFiles = new ArrayList<>(Arrays.asList( currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             alert("Couldn't create the files necessary within gobii_bundle.");
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
             return;
         }
         cronHandler.modifyCron("create", xmlHandler.getHostForReload());
         currentCrop.setHideContactData(true);
-        goToHome(binder);
+        binder.sendCommand("disableEdit", null);
+        goToHome();
     }
 
     /**
@@ -246,7 +270,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
         currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
-        lockAndStayOnPage(binder);
+        binder.sendCommand("disableEdit",null);
         if (currentCrop.isActivityChanged()){
             currentCrop.setActivityChanged(false);
         } else {
@@ -283,20 +307,21 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
             if (!scriptExecutor("WARHandler.sh", removeWAR)) {
                 alert("Couldn't remove the WAR file from deployment.");
-                lockAndStayOnPage(binder);
+                binder.sendCommand("disableEdit",null);
                 return;
             }
             xmlCropHandler.removeCrop(currentCrop);
             List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
             if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
                 alert("Couldn't remove the files within gobii_bundle.");
-                lockAndStayOnPage(binder);
+                binder.sendCommand("disableEdit",null);
                 return;
             }
             cronHandler.modifyCron("delete", xmlHandler.getHostForReload());
-            goToHome(binder);
+            binder.sendCommand("disableEdit", null);
+            goToHome();
         } else {
-            lockAndStayOnPage(binder);
+            binder.sendCommand("disableEdit",null);
         }
     }
 
@@ -308,8 +333,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     @Command("cancelChanges")
-    public void cancelChanges(@ContextParam(ContextType.BINDER) Binder binder){
-        goToHome(binder);
+    @NotifyChange("documentLocked")
+    public void cancelChanges(){
+        this.documentLocked = true;
     }
 
     @Command("upload")
@@ -317,17 +343,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         currentCrop.setContactData(event.getMedia());
     }
 
-    protected void lockAndStayOnPage(@ContextParam(ContextType.BINDER) Binder binder){
-        binder.sendCommand("disableEdit", null);
-    }
-
-    protected void goToHome(@ContextParam(ContextType.BINDER) Binder binder){
-        binder.sendCommand("disableEdit", null);
+    protected void goToHome(){
         Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
         include.setSrc("/mainContent.zul");
         getPage().getDesktop().setBookmark("p_"+"home");
     }
+
 
     //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
 
