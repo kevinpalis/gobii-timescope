@@ -33,7 +33,8 @@
 
 					<vbox hflex="min" align="center" vflex="min">
 
-						<grid hflex="min" vflex="min" style="border: 0;">
+						<grid hflex="min" vflex="min"
+							style="border: 0;">
 							<columns>
 								<column align="right" hflex="min" />
 								<column />
@@ -75,7 +76,7 @@
 									</cell>
 									<cell>
 										<textbox id="account"
-											width="200px" value="@bind(vm.userAccount.username)" />
+											width="300px" value="@bind(vm.userAccount.username)" />
 									</cell>
 								</row>
 								<row>
@@ -84,16 +85,19 @@
 									</cell>
 									<cell>
 										<textbox id="password"
-											type="password" width="200px"
+											type="password" width="300px"
 											value="@bind(vm.userAccount.password)" />
 									</cell>
 								</row>
 							</rows>
 						</grid>
-						<button label="Login"
+						<separator spacing="12px" />
+						<button label="Login" width="200px"
 							onClick="@command('login')" />
-							
-						<label value="Need help?" style="font-style: oblique; color: blue; text-decoration: underline;"
+						<separator spacing="5px" />
+
+						<label value="Need help?"
+							style="font-style: oblique; color: blue; text-decoration: underline; cursor:pointer !important"
 							onClick="@command('needhelp')" />
 					</vbox>
 				</window>

@@ -126,6 +126,5 @@ public class IndexViewModel {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-
 }
 

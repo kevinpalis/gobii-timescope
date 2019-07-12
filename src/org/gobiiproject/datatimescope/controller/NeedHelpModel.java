@@ -1,7 +1,9 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.apache.log4j.Logger;
+import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -24,4 +26,9 @@ public class NeedHelpModel extends SelectorComposer<Component>{
     public void showModal(Event e) {
         modalDialog.detach();
     }
+    
+    @Listen("onClick = #timescopeLogo")
+	public void bringBackToHome(){
+		Executions.sendRedirect("/index.zul");
+	}
 }
