@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
@@ -36,6 +37,7 @@ public class BackupHandler {
         }
     }
 
+    private ArrayList<String> errorMessages = new ArrayList<>();
     private Date backupDayTime;
     private String backupWeekday;
     private Date backupWeekTime;
@@ -45,7 +47,6 @@ public class BackupHandler {
     private boolean daily = false;
     private boolean weekly = false;
     private boolean monthly = false;
-    private ArrayList<String> errors = new ArrayList<>();
     private List<String> weekdays = new ArrayList<>(List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"));
 
     public List<String> getWeekdays() {
@@ -73,14 +74,15 @@ public class BackupHandler {
     }
 
     public void setBackupWeekTime(Date backupWeekTime) {
+        errorMessages = new ArrayList<>();
         this.backupWeekTime = backupWeekTime;
         if (this.backupWeekTime.equals(backupDayTime)){
-            errors.add("Daily and weekly backups cannot overlap. Please change one of the times.");
+            errorMessages.add("Daily and weekly backups cannot overlap. Please change one of the times.");
         }
     }
 
-    public ArrayList<String> getErrors(){
-        return errors;
+    public ArrayList<String> getErrorMessages(){
+        return errorMessages;
     }
 
     public String getBackupMonthDay() {
@@ -133,7 +135,9 @@ public class BackupHandler {
         }
     }
 
-    public ArrayList<String> saveDataToCrons() {
+    public boolean saveDataToCrons(String hostFromXml) {
+        boolean success = false;
+        errorMessages = new ArrayList<>();
         ArrayList<String> retJobs = new ArrayList<>();
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         if (daily && weekly && monthly) {
@@ -181,6 +185,19 @@ public class BackupHandler {
         daily = false;
         weekly = false;
         monthly = false;
-        return retJobs;
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter("newCrons.txt");
+            for (String str : retJobs) {
+                writer.write(str + System.lineSeparator());
+            }
+            writer.close();
+            //TODO Change this on deploy
+            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + hostFromXml);
+            success = true;
+        } catch (IOException e) {
+            errorMessages.add("Something went wrong upon creating the file for the Cron Jobs.");
+        }
+        return success;
     }
 }

@@ -1,5 +1,9 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.zkoss.bind.Binder;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
+
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,6 +13,22 @@ import java.util.ArrayList;
 public class CronHandler {
 
     private Crop currentCrop;
+    private ArrayList<String> errorMessages = new ArrayList<>();
+
+
+    public boolean reloadCrons(String hostFromXml){
+        boolean success = false;
+        errorMessages = new ArrayList<>();
+        if (currentCrop.getName() == null){
+            errorMessages.add("Please specify a crop.");
+        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
+            errorMessages.add("Please choose a valid value between 1 and 59. The default setting is 2.");
+        } else {
+            modifyCron("update", hostFromXml);
+            success = true;
+        }
+        return success;
+    }
 
     /**
      * Wrapper that handles the different types the User can interact with CRON Jobs
@@ -114,5 +134,9 @@ public class CronHandler {
 
     public void setCurrentCrop(Crop currentCrop) {
         this.currentCrop = currentCrop;
+    }
+
+    public ArrayList<String> getErrorMessages() {
+        return errorMessages;
     }
 }

@@ -16,21 +16,24 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
+import static org.gobiiproject.datatimescope.webconfigurator.utilityFunctions.generateAlertMessage;
 import static org.gobiiproject.datatimescope.webconfigurator.utilityFunctions.scriptExecutor;
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
     private XmlModifier xmlHandler = new XmlModifier();
+    private BackupHandler backupHandler = new BackupHandler();
+    protected ServerHandler serverHandler = new ServerHandler(xmlHandler);
+    private CronHandler cronHandler = new CronHandler();
+    private XmlCropHandler xmlCropHandler = new XmlCropHandler();
+    private WarningComposer warningComposer = new WarningComposer(xmlHandler);
+    private Crop currentCrop = new Crop();
     private boolean documentLocked = true;
     private boolean isSuperAdmin = false;
-    private Crop currentCrop = new Crop();
     private String newXMLPath;
     private boolean showNewXml = false;
     private boolean locationSet = false;
     private String exportLocation = "";
-    private BackupHandler bh = new BackupHandler();
-    private ServerHandler serverHandler = new ServerHandler(xmlHandler);
-
 
     @Init
     public void init() {
@@ -39,7 +42,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             isSuperAdmin = true;
         }
     }
-
 
     @Command("enableEdit")
     @NotifyChange("documentLocked")
@@ -51,71 +53,70 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+    @Command("tomcatModification")
+    public void tomcatModification(@ContextParam(ContextType.BINDER) Binder binder){
+        warningComposer.warningTomcat();
+        if (warningComposer.getErrorMessages().size() > 0) {
+            alert(generateAlertMessage(warningComposer.getErrorMessages()));
+        } else if (warningComposer.isAcceptedWarning()){
+            serverHandler.reloadTomcatAllCrops();
+            goToHome(binder);
+        } else {
+            lockAndStayOnPage(binder);
+        }
+    }
+
+    @Command("postgresModification")
+    public void postgresModification(@ContextParam(ContextType.BINDER) Binder binder){
+        warningComposer.warningPostgres();
+    }
+
+
     /**
      * Validation of the User modifications made
      */
     @Command("reloadCrons")
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
-        if (currentCrop.getName() == null){
-            alert("Please specify a crop.");
-            binder.sendCommand("disableEdit", null);
-            return;
-        } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
-            alert("Please choose a valid value between 1 and 59. The default setting is 2.");
-            binder.sendCommand("disableEdit", null);
-            return;
+        if (!cronHandler.reloadCrons(xmlHandler.getHostForReload())){
+            generateAlertMessage(cronHandler.getErrorMessages());
+            lockAndStayOnPage(binder);
+        } else {
+            goToHome(binder);
         }
-        modifyCron("update");
-        binder.sendCommand("disableEdit", null);
     }
 
     @Command("saveBackup")
     public void saveBackup(@ContextParam(ContextType.BINDER) Binder binder) {
-        binder.sendCommand("disableEdit", null);
-        if (bh.getErrors().size() > 0){
-            StringBuilder sb = new StringBuilder();
-            for (String str : bh.getErrors()){
-                sb.append(str);
-                sb.append("\n");
-            }
-            alert(sb.toString());
-            bh.readDataFromCrons();
+        lockAndStayOnPage(binder);
+        if (backupHandler.getErrorMessages().size() > 0){
+            //Reading in from user had an error
+            alert(generateAlertMessage(backupHandler.getErrorMessages()));
+            //Reset back to old Data
+            backupHandler.readDataFromCrons();
         } else {
-            ArrayList<String> newJobs = bh.saveDataToCrons();
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter("newCrons.txt");
-                for (String str : newJobs) {
-                    writer.write(str + System.lineSeparator());
-                }
-                writer.close();
-                Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + xmlHandler.getHostForReload());
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!backupHandler.saveDataToCrons(xmlHandler.getHostForReload())){
+                alert(generateAlertMessage(backupHandler.getErrorMessages()));
             }
+
         }
-        //make modifications to file
-        //call dockerCronCopy.sh for next 2
-            //send crons back
-            //rm temp cron file
     }
 
     @Command("exportXML")
     public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
-        String[] sec_copy_back = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/import_export_xml.sh", "scpfrom" , exportLocation};
-        try {
-            new ProcessBuilder(sec_copy_back).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> sec_copy_back = new ArrayList<>(Arrays.asList("scpfrom" , exportLocation));
+        if (!scriptExecutor("importExportXml.sh", sec_copy_back)){
+            alert("Couldn't import the file from the server.");
+            lockAndStayOnPage(binder);
+            return;
         }
         exportLocation = "";
         locationSet = false;
-        binder.sendCommand("cancelChanges", null);
+        goToHome(binder);
     }
 
-    @Command("setLocation")
+    @Command("setLocationForExport")
     @NotifyChange({"locationSet", "exportLocation"})
-    public void setLocation(){
+    public void setLocationForExport(){
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = fileChooser.showOpenDialog(null);
@@ -126,41 +127,58 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
-    @Command("importXML")
-    //TODO on deploy
-    public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
-        showNewXml = true;
-        FileOutputStream fos = null;
+    private boolean setNewXmlPath(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
+        boolean success = false;
+        FileOutputStream fos;
         try {
             File xml = new File(event.getMedia().getName());
             fos = new FileOutputStream(xml);
             fos.write(event.getMedia().getStringData().getBytes());
             fos.close();
             newXMLPath = xml.getAbsolutePath();
+            success = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return success;
+    }
+
+
+    @Command("importXML")
+    public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
+        showNewXml = true;
+        if (!setNewXmlPath(event)){
+            alert("File not found.");
+            lockAndStayOnPage(binder);
+            return;
+        }
         List<String> params = new ArrayList<>(Arrays.asList("scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
-            //TODO Handle failure of script
+            alert("Couldn't send the file to server for validation.");
+            lockAndStayOnPage(binder);
+            return;
         }
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
         XmlValidator validator = new XmlValidator(xmlHandler);
         if (validator.validateGobiiConfiguration()){
             if (scriptExecutor("importExportXml.sh", Collections.singletonList("passed"))){
                 if (!serverHandler.reloadTomcatAllCrops()){
-                    //TODO Handle failure
+                    lockAndStayOnPage(binder);
+                } else {
+                    goToHome(binder);
                 }
             } else {
-                //TODO Handle failure of script
+                alert("Couldn't set the imported file as the new reference file.");
+                lockAndStayOnPage(binder);
             }
         } else {
-            alert(validator.getErrorMessage());
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
             if (!scriptExecutor("importExportXml.sh", Collections.singletonList("failed"))){
-                //TODO Handle failure of script
+                alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
+            } else {
+                alert(validator.getErrorMessage());
             }
-            binder.sendCommand("disableEdit", null);
+            lockAndStayOnPage(binder);
         }
     }
 
@@ -197,39 +215,29 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 " --driver=org.postgresql.Driver" +
                 " --classpath=drivers/postgresql-9.4.1209.jar --changeLogFile=changelogs/db.changelog-master.xml" +
                 " --contexts=general,seed_general update'";
-        String[] populateDatabase = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/liquibase.sh"
-                , xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()};
-        /*TODO on Deploy
-        String[] populateDatabase = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/liquibase.sh"
-                , xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getHostForReload()
-                , xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getName()};
-        */
-        try {
-            new ProcessBuilder(populateDatabase).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
+        if (!scriptExecutor("liquibase.sh", populate)){
+            alert("Couldn't populate the database with seed data.");
+            lockAndStayOnPage(binder);
+            return;
         }
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
-        String[] dupli = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName(), oldWar};
-        //TODO on Deploy
-        //String[] dupli = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "1" , currentCrop.getWARName()};
-        try {
-            new ProcessBuilder(dupli).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> duplicateWAR = new ArrayList<>(Arrays.asList("1" , currentCrop.getWARName(), oldWar));
+        if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
+            alert("Couldn't duplicate the WAR file for deployment.");
+            lockAndStayOnPage(binder);
+            return;
         }
-        xmlHandler.appendCrop(currentCrop);
-        String[] addBundle = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))};
-        //TODO on deploy
-        //String[] addBundle = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))};
-        try {
-            new ProcessBuilder(addBundle).start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        xmlCropHandler.appendCrop(currentCrop);
+        List<String> createFiles = new ArrayList<>(Arrays.asList( currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
+        if (!scriptExecutor("cropFileManagement.sh", createFiles)){
+            alert("Couldn't create the files necessary within gobii_bundle.");
+            lockAndStayOnPage(binder);
+            return;
         }
-        modifyCron("create");
+        cronHandler.modifyCron("create", xmlHandler.getHostForReload());
         currentCrop.setHideContactData(true);
-        binder.sendCommand("disableEdit", null);
+        goToHome(binder);
     }
 
     /**
@@ -238,7 +246,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
         currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
-        binder.sendCommand("disableEdit", null);
+        lockAndStayOnPage(binder);
         if (currentCrop.isActivityChanged()){
             currentCrop.setActivityChanged(false);
         } else {
@@ -247,9 +255,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         serverHandler.reloadTomcatSingleCrop(currentCrop.getName());
         if (currentCrop.getIsActive()) {
-            modifyCron("create");
+            cronHandler.modifyCron("create", xmlHandler.getHostForReload());
         } else {
-            modifyCron("delete");
+            cronHandler.modifyCron("delete", xmlHandler.getHostForReload());
         }
     }
 
@@ -260,40 +268,37 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("cropList")
     @Command("removeCropFromDatabase")
     public void removeCropFromDatabase(@ContextParam(ContextType.BINDER) Binder binder){
-        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-        DSLContext context = tmpService.getDSLContext();
-        try {
-            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
-        } catch (Exception e){
-            alert("The database could not be removed.");
-            return;
+        warningComposer.warningRemoval();
+        if (warningComposer.getErrorMessages().size() > 0){
+            alert(generateAlertMessage(warningComposer.getErrorMessages()));
+        } else if (warningComposer.isAcceptedWarning()) {
+            ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
+            DSLContext context = tmpService.getDSLContext();
+            try {
+                context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
+            } catch (Exception e) {
+                alert("The database could not be removed.");
+                return;
+            }
+            List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
+            if (!scriptExecutor("WARHandler.sh", removeWAR)) {
+                alert("Couldn't remove the WAR file from deployment.");
+                lockAndStayOnPage(binder);
+                return;
+            }
+            xmlCropHandler.removeCrop(currentCrop);
+            List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+            if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
+                alert("Couldn't remove the files within gobii_bundle.");
+                lockAndStayOnPage(binder);
+                return;
+            }
+            cronHandler.modifyCron("delete", xmlHandler.getHostForReload());
+            goToHome(binder);
+        } else {
+            lockAndStayOnPage(binder);
         }
-        String[] removeWAR = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "0" , xmlHandler.getWARName(currentCrop.getName())};
-        //TODO on deploy
-        //String[] removeWAR = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/WARHandler.sh", "0" , currentCrop.getWARName()};
-        try {
-            new ProcessBuilder(removeWAR).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        xmlHandler.removeCrop(currentCrop);
-        String[] removeBundle = {"/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "0" , String.valueOf(xmlHandler.getCropList().get(0))};
-        //TODO on deploy
-        //String[] removeBundle = {"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/cropFileManagement.sh", currentCrop.getName(), "0" , String.valueOf(xmlHandler.getCropList().get(0))};
-        try {
-            new ProcessBuilder(removeBundle).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        modifyCron("delete");
-        xmlHandler.getCropList();
-        binder.sendCommand("disableEdit", null);
-        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
-                .iterator().next();
-        include.setSrc("/mainContent.zul");
-        getPage().getDesktop().setBookmark("p_"+"home");
     }
-
 
 
     @Command("disableEdit")
@@ -302,19 +307,29 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         this.documentLocked = true;
     }
 
+    @Command("cancelChanges")
+    public void cancelChanges(@ContextParam(ContextType.BINDER) Binder binder){
+        goToHome(binder);
+    }
+
     @Command("upload")
     public void uploaded(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
         currentCrop.setContactData(event.getMedia());
     }
 
-    //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
-    @Command("cancelChanges")
-    public void cancelChanges(){
+    protected void lockAndStayOnPage(@ContextParam(ContextType.BINDER) Binder binder){
+        binder.sendCommand("disableEdit", null);
+    }
+
+    protected void goToHome(@ContextParam(ContextType.BINDER) Binder binder){
+        binder.sendCommand("disableEdit", null);
         Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
         include.setSrc("/mainContent.zul");
         getPage().getDesktop().setBookmark("p_"+"home");
     }
+
+    //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
 
     @Command("postgresSystemUser")
     public void postgresSystemUser(){
@@ -508,8 +523,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return exportLocation;
     }
 
-    public BackupHandler getBh() {
-        return bh;
+    public BackupHandler getBackupHandler() {
+        return backupHandler;
     }
 }
 
