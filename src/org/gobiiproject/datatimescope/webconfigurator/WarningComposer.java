@@ -6,7 +6,6 @@ import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zul.Messagebox;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +13,6 @@ import static org.zkoss.zk.ui.util.Clients.alert;
 
 public class WarningComposer{
 
-    private boolean acceptedWarning;
-    private ArrayList<String> errorMessages = new ArrayList<>();
-    private boolean errorFlag = false;
     private XmlModifier xmlHandler;
 
     public WarningComposer(XmlModifier xmlHandler){
@@ -72,7 +68,6 @@ public class WarningComposer{
                 " you want to remove the database now?", "WarningComposer", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
-                    acceptedWarning = true;
                     if (xmlHandler.getCropList().size() > 1) {
                         model.executeRemoval(binder);
                     } else {
@@ -84,18 +79,6 @@ public class WarningComposer{
                 }
             }
         }, params);
-    }
-
-    public boolean isAcceptedWarning() {
-        return acceptedWarning;
-    }
-
-    public boolean isErrorFlag() {
-        return errorFlag;
-    }
-
-    public ArrayList<String> getErrorMessages (){
-        return errorMessages;
     }
 
     public void warningActivityTomcat(Binder binder, WebConfigViewModel model, Crop currentCrop) {

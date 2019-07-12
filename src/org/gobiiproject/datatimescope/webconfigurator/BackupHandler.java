@@ -23,7 +23,7 @@ public class BackupHandler {
             Process proc = new ProcessBuilder(read).start();
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             ArrayList<String> oldJobs = new ArrayList<>();
-            String line = null;
+            String line;
             while ((line = stdInput.readLine()) != null) {
                 if (line.equals("")){
                     break;
@@ -185,7 +185,7 @@ public class BackupHandler {
         daily = false;
         weekly = false;
         monthly = false;
-        FileWriter writer = null;
+        FileWriter writer;
         try {
             writer = new FileWriter("newCrons.txt");
             for (String str : retJobs) {

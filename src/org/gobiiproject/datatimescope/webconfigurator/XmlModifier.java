@@ -2,7 +2,6 @@ package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zul.ListModelList;

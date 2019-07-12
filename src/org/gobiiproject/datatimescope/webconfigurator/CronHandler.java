@@ -1,9 +1,5 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.zkoss.bind.Binder;
-import org.zkoss.bind.annotation.ContextParam;
-import org.zkoss.bind.annotation.ContextType;
-
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
