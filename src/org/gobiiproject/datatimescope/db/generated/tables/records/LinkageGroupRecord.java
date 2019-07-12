@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class LinkageGroupRecord extends UpdatableRecordImpl<LinkageGroupRecord> implements Record9<Integer, String, Integer, Integer, Integer, Integer, Date, Integer, Date> {
 
-    private static final long serialVersionUID = -560774686;
+    private static final long serialVersionUID = 1918530744;
 
     /**
      * Setter for <code>public.linkage_group.linkage_group_id</code>.

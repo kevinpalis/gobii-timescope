@@ -24,7 +24,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Getsampleqcmetadatabydataset extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = 1227269537;
+    private static final long serialVersionUID = -1086534265;
 
     /**
      * The parameter <code>public.getsampleqcmetadatabydataset.datasetid</code>.
@@ -237,6 +237,11 @@ public class Getsampleqcmetadatabydataset extends AbstractRoutine<java.lang.Void
     public static final Parameter<String> DNASAMPLE_REF_SAMPLE = createParameter("dnasample_ref_sample", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
+     * The parameter <code>public.getsampleqcmetadatabydataset.dnasample_uuid</code>.
+     */
+    public static final Parameter<String> DNASAMPLE_UUID = createParameter("dnasample_uuid", org.jooq.impl.SQLDataType.CLOB, false, false);
+
+    /**
      * Create a new routine call instance
      */
     public Getsampleqcmetadatabydataset() {
@@ -284,6 +289,7 @@ public class Getsampleqcmetadatabydataset extends AbstractRoutine<java.lang.Void
         addOutParameter(DNASAMPLE_SAMPLE_TYPE);
         addOutParameter(DNASAMPLE_SAMPLE_PARENT);
         addOutParameter(DNASAMPLE_REF_SAMPLE);
+        addOutParameter(DNASAMPLE_UUID);
     }
 
     /**
@@ -578,5 +584,12 @@ public class Getsampleqcmetadatabydataset extends AbstractRoutine<java.lang.Void
      */
     public String getDnasampleRefSample() {
         return get(DNASAMPLE_REF_SAMPLE);
+    }
+
+    /**
+     * Get the <code>dnasample_uuid</code> parameter OUT value from the routine
+     */
+    public String getDnasampleUuid() {
+        return get(DNASAMPLE_UUID);
     }
 }

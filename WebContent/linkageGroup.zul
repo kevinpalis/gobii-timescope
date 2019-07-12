@@ -67,7 +67,7 @@
 								<label value="  " />
 								<label value="  " />
 								<grid hflex="true"
-									style="border: none; important!">
+									style="border: none; important!" >
 									<columns>
 										<column align="left"
 											width="40%" />

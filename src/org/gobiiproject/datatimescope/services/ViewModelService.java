@@ -12,6 +12,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
@@ -107,6 +108,36 @@ public interface ViewModelService {
 	public List<LinkageGroupRecord> getAllLinkageGroups();
 
 	public List<DatasetRecord> getAllDatasets();
+
+	public List<LinkageGroupRecord> getLinkageGroupsAssociatedToMarkerId(Integer markerId);
+
+	public List<DatasetRecord> getDatasetAssociatedToMarkerId(Integer markerId);
+
+	public List<MarkerGroupRecord> getMarkerGroupsAssociatedToMarkerId(Integer markerId);
+
+	public List<VendorProtocolRecord> getVendorProtocolByPlatformId(List<PlatformRecord> list);
+
+//	public List<MapsetRecord> getMapsetsByPlatformTypeId(List<PlatformRecord> platformList);
+
+	public List<LinkageGroupRecord> getLinkageGroupByMapsetId(List<MapsetRecord> mapsetList);
+
+	public List<ProjectRecord> getProjectsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<ProjectRecord> getProjectsByPlatformID(List<PlatformRecord> platformList);
+
+	public List<ExperimentRecord> getExperimentsByProjectID(List<ProjectRecord> projectList);
+
+	public List<ExperimentRecord> getExperimentsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<ExperimentRecord> getExperimentsByPlatformID(List<PlatformRecord> platformList);
+
+	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList);
+
+	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+
+	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
+
+	public List<DatasetRecord> getDatasetsByPlatformID(List<PlatformRecord> platformList);
 
 
 }

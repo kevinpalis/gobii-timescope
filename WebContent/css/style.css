@@ -1,3 +1,7 @@
+.footer_center {
+	text-align: center;;
+}
+
 body { padding: 0 0;  /* 0 padding	on top and bottom and 0 padding on right and left */ }
 
 div .z-window-content {
@@ -44,10 +48,11 @@ div .z-window-content {
 .sidebar a, .sidebar a:VISITED {
 	color: black;
 	text-decoration: none;
+	cursor: pointer !important;
 }
 
 .sidebar-fn {
-	cursor: pointer;
+	cursor: pointer !important;
 }
 
 .head1 {
