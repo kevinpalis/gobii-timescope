@@ -7,7 +7,6 @@ import org.w3c.dom.NodeList;
 
 import java.io.IOException;
 
-import static org.gobiiproject.datatimescope.webconfigurator.utilityFunctions.generateAlertMessage;
 import static org.zkoss.zk.ui.util.Clients.alert;
 
 public class ServerHandler {
@@ -15,59 +14,14 @@ public class ServerHandler {
     private XmlModifier xmlHandler;
     private ReloadTask reloadRequest = new ReloadTask();
     private PropertyHandler prop = new PropertyHandler();
-    private WarningComposer warning;
 
     public ServerHandler (XmlModifier xmlHandler){
         this.xmlHandler = xmlHandler;
-        this.warning = new WarningComposer(this.xmlHandler);
         configureTomcatReloadRequest();
     }
 
-    public boolean changePostgresCredentials(String oldUsername){
-        boolean success;
-        if (warning.isAcceptedWarning()){
-            executePostgresChange(oldUsername);
-            executeAllTomcatReloadRequest();
-            success = true;
-        } else {
-            success = false;
-        }
-        return success;
-    }
 
-    public boolean reloadTomcatSingleCrop(String cropname){
-        boolean success;
-        warning.warningTomcat();
-        if (warning.isErrorFlag()){
-            alert(generateAlertMessage(warning.getErrorMessages()));
-            success = false;
-        } else if (warning.isAcceptedWarning()){
-            executeSingleTomcatReloadRequest(cropname);
-            success = true;
-        } else {
-            success = false;
-        }
-        return success;
-    }
-
-
-    public boolean reloadTomcatAllCrops(){
-        boolean success;
-        warning.warningTomcat();
-        if (warning.isErrorFlag()){
-            alert(generateAlertMessage(warning.getErrorMessages()));
-            success = false;
-        } else if (warning.isAcceptedWarning()){
-            executeAllTomcatReloadRequest();
-            success = true;
-        } else {
-            success = false;
-        }
-        return success;
-    }
-
-
-    private void executePostgresChange(String oldUserName){
+    public void executePostgresChange(String oldUserName){
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
         if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
@@ -99,7 +53,7 @@ public class ServerHandler {
     /**
      * Sends a single requests to reload the web application under the found context path for the crop in the gobii-web.xml file
      */
-    private void executeSingleTomcatReloadRequest(String cropname) {
+    public void executeSingleTomcatReloadRequest(String cropname) {
         String host = xmlHandler.getHostForReload();
         String port = xmlHandler.getPortForReload();
         reloadRequest.setPath(xmlHandler.getWARName(cropname));
@@ -110,7 +64,7 @@ public class ServerHandler {
     /**
      * Sends the requests to reload the web application under the found context paths in the gobii-web.xml file
      */
-    private void executeAllTomcatReloadRequest() {
+    public void executeAllTomcatReloadRequest() {
         String host = xmlHandler.getHostForReload();
         String port = xmlHandler.getPortForReload();
         NodeList contextPathNodes = xmlHandler.getContextPathNodes();

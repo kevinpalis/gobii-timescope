@@ -12,11 +12,10 @@ import java.util.ArrayList;
 
 public class CronHandler {
 
-    private Crop currentCrop;
     private ArrayList<String> errorMessages = new ArrayList<>();
 
 
-    public boolean reloadCrons(String hostFromXml){
+    public boolean reloadCrons(String hostFromXml, Crop currentCrop){
         boolean success = false;
         errorMessages = new ArrayList<>();
         if (currentCrop.getName() == null){
@@ -24,7 +23,7 @@ public class CronHandler {
         } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
             errorMessages.add("Please choose a valid value between 1 and 59. The default setting is 2.");
         } else {
-            modifyCron("update", hostFromXml);
+            modifyCron("update", hostFromXml, currentCrop);
             success = true;
         }
         return success;
@@ -37,7 +36,7 @@ public class CronHandler {
      * Deleting both CRONS for an existing crop
      * @param modification
      */
-    public void modifyCron(String modification, String hostFromXml){
+    public void modifyCron(String modification, String hostFromXml, Crop currentCrop){
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
@@ -48,19 +47,19 @@ public class CronHandler {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             switch (modification) {
                 case ("create"): {
-                    createCron(stdInput);
+                    createCron(stdInput, currentCrop);
                     break;
                 }
                 case ("update"): {
-                    updateCron(stdInput);
+                    updateCron(stdInput, currentCrop);
                     break;
                 }
                 case ("delete"): {
-                    deleteCron(stdInput);
+                    deleteCron(stdInput, currentCrop);
                     break;
                 }
             }
-            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + hostFromXml);
+            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -72,7 +71,7 @@ public class CronHandler {
         */
     }
 
-    private void createCron(BufferedReader stdInput) throws IOException {
+    private void createCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
         while ((line = stdInput.readLine()) != null) {
@@ -90,7 +89,7 @@ public class CronHandler {
         writer.close();
     }
 
-    private void updateCron(BufferedReader stdInput) throws IOException {
+    private void updateCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
         while ((line = stdInput.readLine()) != null) {
@@ -113,7 +112,7 @@ public class CronHandler {
         writer.close();
     }
 
-    private void deleteCron(BufferedReader stdInput) throws IOException {
+    private void deleteCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
         while ((line = stdInput.readLine()) != null) {
@@ -130,10 +129,6 @@ public class CronHandler {
             writer.write(str + System.lineSeparator());
         }
         writer.close();
-    }
-
-    public void setCurrentCrop(Crop currentCrop) {
-        this.currentCrop = currentCrop;
     }
 
     public ArrayList<String> getErrorMessages() {

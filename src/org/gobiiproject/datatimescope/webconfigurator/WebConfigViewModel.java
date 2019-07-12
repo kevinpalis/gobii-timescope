@@ -26,7 +26,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private XmlModifier xmlHandler = new XmlModifier();
     private BackupHandler backupHandler = new BackupHandler();
     protected ServerHandler serverHandler = new ServerHandler(xmlHandler);
-    private CronHandler cronHandler = new CronHandler();
+    public CronHandler cronHandler = new CronHandler();
     private XmlCropHandler xmlCropHandler = new XmlCropHandler();
     private WarningComposer warningComposer = new WarningComposer(xmlHandler);
     private Crop currentCrop = new Crop();
@@ -57,38 +57,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("tomcatModification")
     public void tomcatModification(@ContextParam(ContextType.BINDER) Binder binder){
-        warningComposer.warningTomcat();
-        if (warningComposer.getErrorMessages().size() > 0) {
-            alert(generateAlertMessage(warningComposer.getErrorMessages()));
-        } else if (warningComposer.isAcceptedWarning()){
-            serverHandler.reloadTomcatAllCrops();
-            binder.sendCommand("disableEdit", null);
-            goToHome();
-        } else {
-            binder.sendCommand("disableEdit",null);
-        }
+        warningComposer.warningTomcat(binder, this);
     }
 
     @Command("postgresModification")
     public void postgresModification(@ContextParam(ContextType.BINDER) Binder binder){
-        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
-        Map<String, String> params = new HashMap<>();
-        params.put("width", "500");
-        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there are " +
-                "active sessions, or worse, corrupt data being loaded. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
-                " you want to restart Postgres now?", "WarningComposer", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
-            public void onEvent(Event evt) {
-                if (evt.getName().equals("onOK")) {
-                    String oldUsername = xmlHandler.getPostgresUserName();
-                    serverHandler.changePostgresCredentials(oldUsername);
-                    serverHandler.reloadTomcatAllCrops();
-                    binder.sendCommand("disableEdit", null);
-                    goToHome();
-                } else {
-                    cancelChanges();
-                }
-            }
-        }, params);
+        warningComposer.warningPostgres(binder, this);
     }
 
 
@@ -97,7 +71,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("reloadCrons")
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
-        if (!cronHandler.reloadCrons(xmlHandler.getHostForReload())){
+        if (!cronHandler.reloadCrons(xmlHandler.getHostForReload(), currentCrop)){
             generateAlertMessage(cronHandler.getErrorMessages());
             binder.sendCommand("disableEdit", null);
         } else {
@@ -183,20 +157,19 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
         XmlValidator validator = new XmlValidator(xmlHandler);
         if (validator.validateGobiiConfiguration()){
-            if (scriptExecutor("importExportXml.sh", Collections.singletonList("passed"))){
-                if (!serverHandler.reloadTomcatAllCrops()){
-                    binder.sendCommand("disableEdit",null);
-                } else {
-                    binder.sendCommand("disableEdit", null);
-                    goToHome();
-                }
+            ArrayList<String> param = new ArrayList<>();
+            param.add("failed");
+            if (scriptExecutor("importExportXml.sh", param)){
+                warningComposer.warningTomcat(binder, this);
             } else {
                 alert("Couldn't set the imported file as the new reference file.");
                 binder.sendCommand("disableEdit",null);
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
-            if (!scriptExecutor("importExportXml.sh", Collections.singletonList("failed"))){
+            ArrayList<String> param = new ArrayList<>();
+            param.add("failed");
+            if (!scriptExecutor("importExportXml.sh", param)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
             } else {
                 alert(validator.getErrorMessage());
@@ -258,7 +231,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             binder.sendCommand("disableEdit",null);
             return;
         }
-        cronHandler.modifyCron("create", xmlHandler.getHostForReload());
+        cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
         currentCrop.setHideContactData(true);
         binder.sendCommand("disableEdit", null);
         goToHome();
@@ -270,19 +243,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("modifyCropActive")
     public void modifyCropActive(@ContextParam(ContextType.BINDER) Binder binder){
         currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
-        binder.sendCommand("disableEdit",null);
-        if (currentCrop.isActivityChanged()){
-            currentCrop.setActivityChanged(false);
-        } else {
-            alert("No changes have been made, please change a setting.");
-            return;
-        }
-        serverHandler.reloadTomcatSingleCrop(currentCrop.getName());
-        if (currentCrop.getIsActive()) {
-            cronHandler.modifyCron("create", xmlHandler.getHostForReload());
-        } else {
-            cronHandler.modifyCron("delete", xmlHandler.getHostForReload());
-        }
+        warningComposer.warningActivityTomcat(binder, this, currentCrop);
     }
 
     /**
@@ -292,37 +253,34 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("cropList")
     @Command("removeCropFromDatabase")
     public void removeCropFromDatabase(@ContextParam(ContextType.BINDER) Binder binder){
-        warningComposer.warningRemoval();
-        if (warningComposer.getErrorMessages().size() > 0){
-            alert(generateAlertMessage(warningComposer.getErrorMessages()));
-        } else if (warningComposer.isAcceptedWarning()) {
-            ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-            DSLContext context = tmpService.getDSLContext();
-            try {
-                context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
-            } catch (Exception e) {
-                alert("The database could not be removed.");
-                return;
-            }
-            List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
-            if (!scriptExecutor("WARHandler.sh", removeWAR)) {
-                alert("Couldn't remove the WAR file from deployment.");
-                binder.sendCommand("disableEdit",null);
-                return;
-            }
-            xmlCropHandler.removeCrop(currentCrop);
-            List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
-            if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
-                alert("Couldn't remove the files within gobii_bundle.");
-                binder.sendCommand("disableEdit",null);
-                return;
-            }
-            cronHandler.modifyCron("delete", xmlHandler.getHostForReload());
-            binder.sendCommand("disableEdit", null);
-            goToHome();
-        } else {
-            binder.sendCommand("disableEdit",null);
+        warningComposer.warningRemoval(binder, this);
+    }
+
+    public void executeRemoval(@ContextParam(ContextType.BINDER) Binder binder){
+        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
+        DSLContext context = tmpService.getDSLContext();
+        try {
+            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
+        } catch (Exception e) {
+            alert("The database could not be removed.");
+            return;
         }
+        List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
+        if (!scriptExecutor("WARHandler.sh", removeWAR)) {
+            alert("Couldn't remove the WAR file from deployment.");
+            binder.sendCommand("disableEdit",null);
+            return;
+        }
+        xmlCropHandler.removeCrop(currentCrop);
+        List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+        if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
+            alert("Couldn't remove the files within gobii_bundle.");
+            binder.sendCommand("disableEdit",null);
+            return;
+        }
+        cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
+        binder.sendCommand("disableEdit", null);
+        goToHome();
     }
 
 
@@ -349,7 +307,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         include.setSrc("/mainContent.zul");
         getPage().getDesktop().setBookmark("p_"+"home");
     }
-
 
     //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
 

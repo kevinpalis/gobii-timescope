@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.zkoss.zk.ui.util.Clients.alert;
 
-public class WarningComposer extends WebConfigViewModel{
+public class WarningComposer{
 
     private boolean acceptedWarning;
     private ArrayList<String> errorMessages = new ArrayList<>();
@@ -26,21 +27,43 @@ public class WarningComposer extends WebConfigViewModel{
      * Opens a warning box and if acknowledged performs the restart of the the application process.
      * Otherwise stages it for later and upon next restart the effects will take place
      * */
-    public void warningTomcat() {
-        Messagebox.show("Clicking OK will restart the web application and all unsaved data will be lost.", "WarningComposer", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+    public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model) {
+        Messagebox.show("Clicking OK will restart all web applications and all unsaved data will be lost.", "WarningComposer", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
-                    acceptedWarning = true;
-                    //TODO Make sure this behaviour is maintained
+                    model.serverHandler.executeAllTomcatReloadRequest();
+                    binder.sendCommand("disableEdit", null);
+                    model.goToHome();
                 } else {
-                    acceptedWarning = false;
+                    model.cancelChanges();
                 }
             }
         });
     }
 
+    public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model){
+        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+        Map<String, String> params = new HashMap<>();
+        params.put("width", "500");
+        Messagebox.show("This operation requires a restart of your Postgres database. This has the potential to fail if there are " +
+                "active sessions, or worse, corrupt data being loaded. \nPlease make sure that there are no active session prior to changing these settings. \nAre you sure" +
+                " you want to restart Postgres now?", "WarningComposer", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) {
+                if (evt.getName().equals("onOK")) {
+                    String oldUsername = xmlHandler.getPostgresUserName();
+                    model.serverHandler.executePostgresChange(oldUsername);
+                    model.serverHandler.executeAllTomcatReloadRequest();
+                    binder.sendCommand("disableEdit", null);
+                    model.goToHome();
+                } else {
+                    model.cancelChanges();
+                }
+            }
+        }, params);
 
-    public void warningRemoval(){
+    }
+
+    public void warningRemoval(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model){
         Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
         Map<String, String> params = new HashMap<>();
         params.put("width", "500");
@@ -51,16 +74,13 @@ public class WarningComposer extends WebConfigViewModel{
                 if (evt.getName().equals("onOK")) {
                     acceptedWarning = true;
                     if (xmlHandler.getCropList().size() > 1) {
-                        //TODO Perform the actions
-                        /*
-                        binder.sendCommand("removeCropFromDatabase", null);
-                        binder.sendCommand("disableEdit", null);*/
+                        model.executeRemoval(binder);
                     } else {
-                        errorFlag = true;
-                        errorMessages.add("This the only database. Please add another crop before deleting this database.");
+                        alert("This the only database. Please add another crop before deleting this database.");
+                        model.cancelChanges();
                     }
                 } else {
-                    acceptedWarning = false;
+                    model.cancelChanges();
                 }
             }
         }, params);
@@ -76,5 +96,30 @@ public class WarningComposer extends WebConfigViewModel{
 
     public ArrayList<String> getErrorMessages (){
         return errorMessages;
+    }
+
+    public void warningActivityTomcat(Binder binder, WebConfigViewModel model, Crop currentCrop) {
+        Messagebox.show("Clicking OK will restart the web application of the crop " + currentCrop.getName() + " and all unsaved data will be lost.", "WarningComposer", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
+            public void onEvent(Event evt) {
+                if (evt.getName().equals("onOK")) {
+                    binder.sendCommand("disableEdit",null);
+                    if (currentCrop.isActivityChanged()){
+                        currentCrop.setActivityChanged(false);
+                    } else {
+                        alert("No changes have been made, please change a setting.");
+                        return;
+                    }
+                    if (currentCrop.getIsActive()) {
+                        model.cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
+                    } else {
+                        model.cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
+                    }
+                    model.serverHandler.executeSingleTomcatReloadRequest(currentCrop.getName());
+                    model.goToHome();
+                } else {
+                    model.cancelChanges();
+                }
+            }
+        });
     }
 }

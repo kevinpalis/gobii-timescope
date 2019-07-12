@@ -11,7 +11,7 @@
         <rows>
             <row>
                 <cell>
-                    <button label="Choose export location" onClick="@command('setLocation')" disabled="@load(vm.locationSet)">
+                    <button label="Choose export location" onClick="@command('setLocationForExport')" disabled="@load(vm.locationSet)">
                     </button>
                 </cell>
             </row>

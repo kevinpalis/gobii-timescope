@@ -193,7 +193,7 @@ public class BackupHandler {
             }
             writer.close();
             //TODO Change this on deploy
-            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/dockerCopyCron.sh " + hostFromXml);
+            Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             success = true;
         } catch (IOException e) {
             errorMessages.add("Something went wrong upon creating the file for the Cron Jobs.");
