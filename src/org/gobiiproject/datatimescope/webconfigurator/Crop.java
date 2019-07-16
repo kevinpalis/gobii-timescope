@@ -1,7 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.zkoss.bind.annotation.NotifyChange;
-import org.zkoss.util.media.Media;
 
 public class Crop {
 
@@ -14,7 +13,7 @@ public class Crop {
     private boolean changeActivity;
     private boolean activityChanged;
     private XmlModifier xmlHandler = new XmlModifier();
-    private Media contactData;
+    private String contactData;
     private boolean hideContactData = true;
 
     public int getCron() {
@@ -71,11 +70,11 @@ public class Crop {
     }
 
     public String getContactData() {
-        return contactData.getName();
+        return contactData;
     }
 
     @NotifyChange("hideContactData")
-    public void setContactData(Media contactData) {
+    public void setContactData(String contactData) {
         this.contactData = contactData;
         this.hideContactData = false;
     }

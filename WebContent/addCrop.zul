@@ -4,10 +4,11 @@
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
     <vlayout>
         <label>Crops - Add Crops</label>
-        <grid width="700px">
+        <grid width="900px">
             <columns>
                 <column align="right" hflex="min"/>
                 <column/>
+                <column align="left"/>
             </columns>
             <rows>
                 <row>
@@ -17,6 +18,7 @@
                                 width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                         </textbox>
                     </cell>
+                    <cell/>
                 </row>
                 <row>
                     <cell sclass="row-title">Database Name:</cell>
@@ -25,6 +27,7 @@
                                  width="200px" value="@save(vm.currentCrop.databaseName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                         </textbox>
                     </cell>
+                    <cell/>
                 </row>
                 <row>
                     <cell sclass="row-title">Web Application (WAR) Name:</cell>
@@ -39,14 +42,14 @@
                 </row>
                 <row>
                     <cell>
-                        <button upload="true" label="Upload Contact data" onUpload="@command('upload', upload=event)" disabled="@load(vm.documentLocked)">
+                        <button onClick="@command('setLocationForSeeddata')" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
                         </button>
                     </cell>
                     <cell sclass="row-title">
                         Selected File:
                     </cell>
                     <cell>
-                        <label value="@load(vm.currentCrop.contactData, after = 'upload')" visible="@bind(vm.currentCrop.hideContactData)">
+                        <label value="@load(vm.currentCrop.contactData, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
                         </label>
                     </cell>
                 </row>
@@ -60,9 +63,9 @@
             </hlayout>
         </div>
     </vlayout>
-    <grid model="@load(vm.xmlHandler.cropList)" width="500px">
+    <grid model="@load(vm.xmlHandler.cropList)">
         <columns>
-            <column>Current Crops</column>
+            <column hflex="min" align="center">Current Crops</column>
         </columns>
         <template name="model">
             <row>

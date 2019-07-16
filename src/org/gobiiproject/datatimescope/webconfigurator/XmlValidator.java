@@ -87,12 +87,6 @@ public class XmlValidator {
         if (isNullOrEmpty(xmlHandler.getFileSysCropsParent())) {
             messages.add("A file system crop parent directory is not defined");
             returnVal = false;
-        } else {
-            File directoryToTest = new File(xmlHandler.getFileSysCropsParent());
-            if (!directoryToTest.exists() || !directoryToTest.isDirectory()) {
-                messages.add("The specified file crop parent directory does not exist or is not a directory: " + xmlHandler.getFileSysCropsParent());
-                returnVal = false;
-            }
         }
         return returnVal;
     }

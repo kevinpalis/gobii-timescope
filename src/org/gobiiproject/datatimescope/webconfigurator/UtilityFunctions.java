@@ -3,7 +3,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 import java.io.IOException;
 import java.util.List;
 
-public class utilityFunctions {
+public class UtilityFunctions {
 
     public static String generateAlertMessage(List<String> messages){
         StringBuilder sb = new StringBuilder();
