@@ -7,7 +7,10 @@ import org.zkoss.bind.annotation.NotifyChange;
 
 import java.io.*;
 
-//All the functions below this are simple XML Crop Creation/Deletion
+/** This file exclusively handles the removal and addition of crops and all the associated tags to the gobii-web.xml
+ * It populates all mandatory tags and as well as all tags that are found in the gobii-web.xml in this project.
+ * If the specifications change so should this file.
+ */
 
 public class XmlCropHandler extends XmlModifier {
     @NotifyChange("cropList")

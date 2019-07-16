@@ -6,11 +6,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/**
+ * A class responsible for any changes made to CRON schedules for individual Crops
+ * The options being modifying existing CRONs, creating new CRONs for new or reactivated Crops or deleting CRONs for deleted or deactivated Crops
+ */
+
 public class CronHandler {
 
     private ArrayList<String> errorMessages = new ArrayList<>();
 
 
+    /**
+     * Performs a rudimentary validation to make sure the format works in a sensical way and changes the CRON of the given Crop
+     * to the user provided values
+     * @param hostFromXml
+     * @param currentCrop
+     * @return
+     */
     public boolean reloadCrons(String hostFromXml, Crop currentCrop){
         boolean success = false;
         errorMessages = new ArrayList<>();

@@ -11,6 +11,12 @@ import java.util.Map;
 
 import static org.zkoss.zk.ui.util.Clients.alert;
 
+/**
+ * A class which basically functions as a wrapper for any critical operations on postgres or Tomcat
+ * This is done by prompting the user to click OK on a generated message box outlining possible side effects of the chosen action
+ * If the user accepts the prompt the function calls the corresponding execution function
+ */
+
 public class WarningComposer{
 
     private XmlModifier xmlHandler;

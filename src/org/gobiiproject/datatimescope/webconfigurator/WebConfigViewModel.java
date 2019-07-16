@@ -4,7 +4,6 @@ import org.gobiiproject.datatimescope.services.UserCredential;
 import org.jooq.DSLContext;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
-import org.zkoss.util.Pair;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.UploadEvent;
@@ -19,6 +18,13 @@ import java.util.*;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.generateAlertMessage;
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
+
+/**
+ * The main class for the entire webconfigurator model. This class controls both the redirection upon interaction with website elements
+ * as well as functioning as the centre point to all functionality. All user interaction triggers a response in this class
+ * which then either passes on the responsibility to one of its members or works with one of its members to process the task.
+ *
+ */
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
@@ -45,6 +51,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+    /**
+     * This function controls the en/disable attribute of most textboxes and buttons within the module
+     */
     @Command("enableEdit")
     @NotifyChange("documentLocked")
     public void enableEdit() {
@@ -55,6 +64,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+    /**
+     * Creates a warning box for the user and reloads all Tomcat services upon acceptance, before routing the user to the homepage
+     * @param binder
+     */
     @Command("tomcatModification")
     public void tomcatModification(@ContextParam(ContextType.BINDER) Binder binder){
         warningComposer.warningTomcat(binder, this);
@@ -67,7 +80,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
 
     /**
-     * Validation of the User modifications made
+     * Validates and if accepted modifies the current Crops cron jobs
      */
     @Command("reloadCrons")
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
@@ -123,6 +136,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
+    /**
+     * Creates a temp file in the current execution location from which the file will be sent to the server from
+     * (and deleted from) and then validated on server side.
+     * @param event
+     * @return true if creation was successful
+     */
     private boolean setNewXmlPath(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
         boolean success = false;
         FileOutputStream fos;
@@ -140,6 +159,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
 
+    /**
+     * Imports a user provided XML file and sends it to the server via scp where it is processed and validated.
+     * If it passes validation it is assigned as the new gobii-web.xml and will reload all the context-paths, if accepted by the user
+     * @param event
+     * @param binder
+     */
     @Command("importXML")
     public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
         showNewXml = true;
@@ -182,6 +207,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     /**
      * Adds a new Crop to an existing database, calling the scripts in rawbase and liquibase to populate it according to
      * http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?pageId=7833278
+     * As specified here https://gobiiproject.atlassian.net/browse/I19-53 validation is performed before adding contact data to the new crop
+     * !Upon contact data failure it allows the user to reupload a file, without reloading the page!
      * It also duplicates the gobii-dev.war file within tomcat webapps for tomcat deployment (Happens automatically upon creation)
      * Furthermore it modifies the XML to reflect the new Crop and configures the respective CRON jobs for the new crop
      * using the default values of 2 and 2
@@ -224,6 +251,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         goToHome();
     }
 
+
+    /**
+     * Reads in the contact data from a user provided file path and adds each line to an Arraylist as a String for later processing
+     */
     private ArrayList<String> readInContactData() {
          BufferedReader buffer;
         ArrayList<String> lines = new ArrayList<>();
@@ -261,6 +292,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         warningComposer.warningRemoval(binder, this);
     }
 
+    /**
+     * Performs the actual deletion, after being warned in SeverHandler about the risks of deletion.
+     * This function should never be called by hand and instead always be called by the warning form WarningHandler
+     * The function drops the database, removes the .war, deletes the gobii_bundle directory and subdirectory,
+     * removes the CRON tasks and removes the crop from the XML.
+     * @param binder
+     */
     public void executeRemoval (@ContextParam(ContextType.BINDER) Binder binder){
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
@@ -319,7 +357,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         getPage().getDesktop().setBookmark("p_" + "home");
     }
 
-    //Switch src for tag with id = mainContent from current page to X, in this call X = mainContent.zul
+    //Switch src for tag with id = mainContent from current page to X, in this call X = postgreSystemUser.zul
 
     @Command("postgresSystemUser")
     public void postgresSystemUser () {

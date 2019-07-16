@@ -6,6 +6,21 @@ import java.util.List;
 
 public class XmlValidator {
 
+    /***
+     * A class exclusively for the validation of the user imported XML file.
+     * The functions check only for the existence of the specified attributes and not content!
+     * The validation is split into General Settings:
+     *  - Email Host, Email Port, Email Server User ID, Email Server Password, File System Root, Gobii Authentication Type
+     *      LDAP User Pattern, LDAP URL, LDAP Bind User, LDAP Bind Password, File System Log and File System Crop Parent
+     * Test Crop:
+     *  - Test Exec Configuration, Test Crop, Test Initial Configuration, Test Config File Directory and Test Configuration Command Line Stem
+     * Web Server: (For every Crop in the XML)
+     *  - Crop Name, Host, Context Path and Port
+     * Postgres:
+     *   - Host, Context Path (Database Name), Port, User and Password
+     * If all checked fields are not empty or null, the function validateGobiiConfiguration() will return true
+     */
+
     private XmlModifier xmlHandler;
     private String errorMessage;
 

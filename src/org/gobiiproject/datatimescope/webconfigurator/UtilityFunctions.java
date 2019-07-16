@@ -3,6 +3,10 @@ package org.gobiiproject.datatimescope.webconfigurator;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * A class for general small utility functions that are called multiple time within the webconfigurator package
+ *
+ */
 public class UtilityFunctions {
 
     public static String generateAlertMessage(List<String> messages){

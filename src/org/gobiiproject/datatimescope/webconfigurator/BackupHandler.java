@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * A class designated to handle any modifications made to the backup schedule of the database
+ * Furthermore it also creates the backup CRON jobs if they do not exist yet
+ */
+
 public class BackupHandler {
 
     public BackupHandler(){
@@ -109,6 +114,10 @@ public class BackupHandler {
         this.currentCrons = currentCron;
     }
 
+    /**
+     * Read in all current CRON jobs, pattern match and save the backup calls
+     */
+
     public void readDataFromCrons() {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
@@ -135,6 +144,12 @@ public class BackupHandler {
         }
     }
 
+    /**
+     * Create the CRON jobs if they don't exist, otherwise modify the values according to the user input
+     * This also calls the script to send the jobs back to the server to make them active
+     * @param hostFromXml
+     * @return
+     */
     public boolean saveDataToCrons(String hostFromXml) {
         boolean success = false;
         errorMessages = new ArrayList<>();

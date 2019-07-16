@@ -23,6 +23,8 @@ import javax.xml.xpath.*;
 
 /**
  * A Class that handles the gobii-web.xml file by querying data from it using XPATH and modifying it according to user input
+ * The functions are divided into getters querying a one-of tag and as such will on a valid xml always return one output,
+ * setters for the one-of tags and crop specific getters and setters, which require a cropname for which their settings are to be configured
  */
 
 public class XmlModifier extends SelectorComposer<Component> {
@@ -556,10 +558,6 @@ public class XmlModifier extends SelectorComposer<Component> {
             System.out.println("Modification of gobii-web.xml failed.");
         }
     }
-
-    //All the functions below this are simple XML Crop Creation/Deletion
-
-
 
 }
 

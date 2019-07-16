@@ -2,6 +2,15 @@ package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.zkoss.bind.annotation.NotifyChange;
 
+
+/**
+ * A small class that acts as a temporary way to modify aspects of an individual Crop.
+ * Usages include creation and deletion of a crop, as well as any modifications of a Crop.
+ * These currently are CRON schedules and activity of the Crop
+ * Mostly an instance of this class will be partially populated by a .zul file
+ * The exact members that are populated are dependant on the usage
+ */
+
 public class Crop {
 
     private int cron;

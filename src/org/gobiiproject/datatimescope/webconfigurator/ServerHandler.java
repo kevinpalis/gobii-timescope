@@ -4,7 +4,6 @@ import org.apache.catalina.ant.ReloadTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.w3c.dom.NodeList;
 
 import java.io.IOException;
@@ -16,6 +15,12 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.sc
 import static org.zkoss.zk.ui.util.Clients.alert;
 import org.gobiiproject.datatimescope.db.generated.Routines;
 import org.zkoss.util.Pair;
+
+/**
+ * A class designed to execute the operations on both Postgres and Tomcat
+ * These functions are generally either called directly by WebConfigViewModel or after a warning box was accepted for a critical operation
+ * Generally this class funtions as a layer of abstraction between the functions and the server operations in the background
+ */
 
 public class ServerHandler {
 
@@ -29,6 +34,10 @@ public class ServerHandler {
     }
 
 
+    /**
+     * Modify Postgres User Credentials
+     * @param oldUserName
+     */
     public void executePostgresChange(String oldUserName){
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
@@ -84,6 +93,17 @@ public class ServerHandler {
         }
     }
 
+    /**
+     * Create a database for the current Crop and populate it with basic seed data and contact data
+     * The ViewModel operations enable relative smooth switching of databases for the queries
+     * @param currentCrop
+     * @param contactData
+     * @param firstUpload A flag that allows users to retry filling the contact data if it was invalid on the first try
+     * @return
+     *  1, if the liquibase population of basic seed data failed
+     * -1, if the provided contact data had an error
+     *  0, upon complete success
+     */
     public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload){
         int success;
         if (firstUpload) {
@@ -117,12 +137,24 @@ public class ServerHandler {
         return success;
     }
 
+    /**
+     * get the gadm user ID as a query from the current database paired with the current date
+     * @param context
+     * @return
+     */
     private Pair<Integer, java.sql.Date> populateTimescopeArray(DSLContext context){
         java.util.Date utilDat = new java.util.Date();
         Integer gdmSuperID = (Integer) context.fetch("select contact_id from contact where username = 'gadm';").get(0).getValue(0);
         return new Pair<>(gdmSuperID, new java.sql.Date(utilDat.getTime()));
     }
 
+    /**
+     * Create the new database and populate it with basic seed data as described here:
+     * http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?pageId=7833278
+     * @param context
+     * @param currentCrop
+     * @return
+     */
     private boolean populateSeedData(DSLContext context, Crop currentCrop){
         boolean success = true;
         try {
@@ -139,6 +171,17 @@ public class ServerHandler {
         return success;
     }
 
+    /**
+     * Fill the contact table as specified:
+     * https://gobiiproject.atlassian.net/browse/I19-53
+     * Validation is done by querying the information directly from the database
+     * @param context
+     * @param contactData
+     * @param timescopeData
+     * @return
+     * -1 upon failure
+     *  0 upon success
+     */
     private int populateContactData(DSLContext context, ArrayList<String> contactData, Pair<Integer, Date> timescopeData){
         int success = -1;
         for (String rawData : contactData) {
