@@ -29,7 +29,7 @@
                     </intbox>
                 </cell>
                 <cell>
-                    <image src="/home/fvgoldman/gobiidatatimescope/WebContent/imgs/gobiilogo.png" style="cursor: help" tooltip="fileAge">
+                    <image src="/imgs/question.png" style="cursor: help" tooltip="fileAge">
                     </image>
                     <popup id="fileAge" width="200px">
                         <label value="Explanation here."/>
@@ -44,7 +44,7 @@
                     </intbox>
                 </cell>
                 <cell>
-                    <image src="/home/fvgoldman/gobiidatatimescope/WebContent/imgs/gobiilogo.png" style="cursor: help" tooltip="interval">
+                    <image src="/imgs/question.png" style="cursor: help" tooltip="interval">
                     </image>
                     <popup id="interval" width="200px">
                         <label value="Explanation here."/>

@@ -1,76 +1,80 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
-<hlayout apply="org.zkoss.bind.BindComposer"
-         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-    <vlayout>
-        <label>Crops - Add Crops</label>
-        <grid width="900px">
+<vlayout>
+    <label>Crops - Add Crop</label>
+    <hlayout apply="org.zkoss.bind.BindComposer"
+             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+            <vlayout>
+                <grid width="900px">
+                    <columns>
+                        <column align="right" hflex="min"/>
+                        <column/>
+                        <column align="left" />
+                    </columns>
+                    <rows>
+                        <row>
+                            <cell sclass="row-title">Crop Name:</cell>
+                            <cell>
+                                <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
+                                        width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
+                                </textbox>
+                            </cell>
+                            <cell/>
+                        </row>
+                        <row>
+                            <cell sclass="row-title">Database Name:</cell>
+                            <cell>
+                                <textbox constraint="no empty : Please set a name for the new database. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores. "
+                                         width="200px" value="@save(vm.currentCrop.databaseName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
+                                </textbox>
+                            </cell>
+                            <cell/>
+                        </row>
+                        <row>
+                            <cell sclass="row-title">Web Application (WAR) Name:</cell>
+                            <cell>
+                                <hlayout>
+                                    <textbox constraint="no empty : Please set a name for the new WAR. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
+                                             width="200px" value="@save(vm.currentCrop.WARName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
+                                    </textbox>
+                                    <label>.war</label>
+                                </hlayout>
+                            </cell>
+                            <cell>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <button onClick="@command('setLocationForSeeddata')" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
+                                </button>
+                            </cell>
+                            <cell sclass="row-title">
+                                Selected File Name:
+                            </cell>
+                            <cell>
+                                <label value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
+                                </label>
+                            </cell>
+                        </row>
+                    </rows>
+                </grid>
+                <div align="left">
+                    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+                    <hlayout>
+                        <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" />
+                        <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+                    </hlayout>
+                </div>
+            </vlayout>
+        <grid model="@load(vm.xmlHandler.cropList)">
             <columns>
-                <column align="right" hflex="min"/>
-                <column/>
-                <column align="left"/>
+                <column hflex="min" align="center">Current Crops</column>
             </columns>
-            <rows>
+            <template name="model">
                 <row>
-                    <cell sclass="row-title">Crop Name:</cell>
-                    <cell>
-                        <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
-                                width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
-                        </textbox>
-                    </cell>
-                    <cell/>
+                    <label value="@load(each)"/>
                 </row>
-                <row>
-                    <cell sclass="row-title">Database Name:</cell>
-                    <cell>
-                        <textbox constraint="no empty : Please set a name for the new database. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores. "
-                                 width="200px" value="@save(vm.currentCrop.databaseName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
-                        </textbox>
-                    </cell>
-                    <cell/>
-                </row>
-                <row>
-                    <cell sclass="row-title">Web Application (WAR) Name:</cell>
-                    <cell>
-                        <textbox constraint="no empty : Please set a name for the new WAR. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
-                                 width="200px" value="@save(vm.currentCrop.WARName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
-                        </textbox>
-                    </cell>
-                    <cell>
-                        .war
-                    </cell>
-                </row>
-                <row>
-                    <cell>
-                        <button onClick="@command('setLocationForSeeddata')" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
-                        </button>
-                    </cell>
-                    <cell sclass="row-title">
-                        Selected File:
-                    </cell>
-                    <cell>
-                        <label value="@load(vm.currentCrop.contactData, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
-                        </label>
-                    </cell>
-                </row>
-            </rows>
+            </template>
         </grid>
-        <div align="left">
-            <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
-            <hlayout>
-                <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" />
-                <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
-            </hlayout>
-        </div>
-    </vlayout>
-    <grid model="@load(vm.xmlHandler.cropList)">
-        <columns>
-            <column hflex="min" align="center">Current Crops</column>
-        </columns>
-        <template name="model">
-            <row>
-                <label value="@load(each)"/>
-            </row>
-        </template>
-    </grid>
-</hlayout>
+    </hlayout>
+</vlayout>

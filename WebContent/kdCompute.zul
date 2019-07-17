@@ -1,7 +1,7 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-    <label>KDCompute Settings</label>
+    <label>Integrations - KDCompute</label>
     <grid id="kdComputeGrid" width="800px">
         <columns>
             <column align="right" hflex="min"/>

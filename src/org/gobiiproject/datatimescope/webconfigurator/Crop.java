@@ -23,6 +23,7 @@ public class Crop {
     private boolean activityChanged;
     private XmlModifier xmlHandler = new XmlModifier();
     private String contactData;
+    private String contactDataShort;
     private boolean hideContactData = true;
 
     public int getCron() {
@@ -121,5 +122,10 @@ public class Crop {
 
     public void setActivityChanged(boolean activityChanged) {
         this.activityChanged = activityChanged;
+    }
+
+    public String getContactDataShort() {
+        String[] split = contactData.split("/");
+        return split[split.length - 1];
     }
 }

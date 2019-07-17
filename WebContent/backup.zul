@@ -2,7 +2,7 @@
 
 <vlayout apply="org.zkoss.bind.BindComposer"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-    <label>Backup Schedule</label>
+    <label>Edit Backup Schedule</label>
     <grid width="500px">
         <columns>
             <column align="right" hflex="min"/>

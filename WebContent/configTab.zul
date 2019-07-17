@@ -67,17 +67,23 @@
             <treechildren>
                 <treeitem>
                     <treerow onClick="@command('addCrop')">
-                        <treecell label="Add crop" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Add crop" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow onClick="@command('deleteCrop')">
-                        <treecell label="Delete crop" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Delete crop" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow onClick="@command('modifyCrop')">
-                        <treecell label="Modify crop" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Modify crop" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -89,17 +95,23 @@
             <treechildren>
                 <treeitem>
                     <treerow>
-                        <treecell label="Settings" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Settings" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Linkage" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Linkage" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Marker" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Marker" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -111,17 +123,23 @@
             <treechildren>
                 <treeitem>
                     <treerow onClick="@command('kdCompute')">
-                        <treecell label="KDCompute" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="KDCompute" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="OwnCloud" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Own Cloud" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow>
-                        <treecell label="Galaxy" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Galaxy" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>
@@ -139,12 +157,16 @@
             <treechildren>
                 <treeitem>
                     <treerow onClick="@command('import')">
-                        <treecell label="Import" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Import" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
                 <treeitem>
                     <treerow onClick="@command('export')">
-                        <treecell label="Export" style="font-size:15px !important;"/>
+                        <treecell>
+                            <label value="Export" style="font-size:15px !important;"/>
+                        </treecell>
                     </treerow>
                 </treeitem>
             </treechildren>

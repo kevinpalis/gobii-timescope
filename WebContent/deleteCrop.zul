@@ -2,7 +2,7 @@
 
 <vlayout apply="org.zkoss.bind.BindComposer"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-    <label>Scheduler - Cron Settings</label>
+    <label>Crops - Delete Crop</label>
     <grid width="500px">
         <columns>
             <column align="right" hflex="min"/>
