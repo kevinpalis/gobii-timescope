@@ -187,11 +187,89 @@ public class MarkerViewModel {
 	@NotifyChange({"dbDataset","lblDatasetFilter"})
 	public void noDatasetsSelectedAsFilter(@BindingParam("isChecked") Boolean isChecked){
 		if(isChecked){
+			markerEntity.setMarkerNotInDatasets(true);
 			dbDataset=false;
 			lblDatasetFilter.setValue("Will search for markers that are not associated with any dataset.");
 		}else{
 			dbDataset=true;
+			markerEntity.setMarkerNotInDatasets(false);
 		}
+	}
+
+	@Command("displayFilterDetails")
+	public void displayFilterDetails(@BindingParam("category") String category){
+		int ctr = 0;
+		String title="This list is being filtered by: ";
+		StringBuilder sb = new StringBuilder();
+		StringBuilder filterInfo = new StringBuilder();
+
+		switch(category){
+		case "experiment":
+		case "project":
+		case "vendorprotocol":
+		case "datasets":
+			if(!markerEntity.getPlatformList().isEmpty()) {
+				sb.append("\n Platform(s): \n"+ getListNamesToString(markerEntity.getPlatformList())+"\n");
+			}else {
+				filterInfo.append("platform");
+				ctr++;
+			}
+			
+			if(category.equalsIgnoreCase("vendorprotocol")) break;
+
+			if(!markerEntity.getVendorProtocolList().isEmpty()) {
+				sb.append("\n Vendor-Protocol(s): \n"+ getListNamesToString(markerEntity.getVendorProtocolList())+"\n");
+			} else {
+				ctr++;
+				filterInfo.append(checkIfCommaNeeded(filterInfo,"vendor-protocol"));
+			}
+			
+			if(category.equalsIgnoreCase("project")) break;
+
+			if(!markerEntity.getProjectList().isEmpty()) {
+				sb.append("\n Project(s): \n "+ getListNamesToString(markerEntity.getProjectList())+"\n");
+			}  else {
+				ctr++;
+				filterInfo.append(checkIfCommaNeeded(filterInfo,"project"));
+			}
+			if(category.equalsIgnoreCase("experiment")) break;
+
+			if(!markerEntity.getExperimentList().isEmpty()) {
+				sb.append("\n Experiment(s): \n "+ getListNamesToString(markerEntity.getExperimentList())+"\n");
+			} else {
+				ctr++;
+				filterInfo.append(checkIfCommaNeeded(filterInfo,"experiment"));
+			}
+			
+			if(!markerEntity.getAnalysesList().isEmpty()) {
+				sb.append("\n Anaylsis: \n"+ getListNamesToString(markerEntity.getAnalysesList())+"\n");
+			}  else {
+				ctr++;
+				filterInfo.append(checkIfCommaNeeded(filterInfo,"analysis"));
+			}
+			
+			break;
+		case "linkagegroup": 
+			if(!markerEntity.getMapsetList().isEmpty()) {
+				ctr++;
+				sb.append("\n Mapset(s): \n"+ getListNamesToString(markerEntity.getMapsetList())+"\n");
+			}else filterInfo.append("mapset");
+			break;
+		default: 
+			title=" All items are displayed.";
+			sb.append("This list is not affected by filters.");
+		}
+		
+		if(sb.toString().isEmpty()) {
+			if(ctr>1) filterInfo.insert(0, "List is not filtered. There are no filters selected in the following tabs: ");
+			else {
+				filterInfo.insert(0, "List is not filtered. There are no filters selected in the ");
+				filterInfo.append(" tab.");
+			}
+			Messagebox.show(filterInfo.toString(), "All items are displayed.", Messagebox.OK, Messagebox.NONE);
+		}
+		else Messagebox.show(sb.toString(), title, Messagebox.OK, Messagebox.NONE);
+		
 	}
 
 	@Command("validateForReset")
@@ -632,7 +710,7 @@ public class MarkerViewModel {
 
 		switch(category){
 
-		
+
 		case "platform": 
 			if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) {
 				sb.append("\n Vendor-Protocol");
@@ -662,7 +740,7 @@ public class MarkerViewModel {
 
 		if(!sb.toString().isEmpty()) {
 			shouldNextChangeResetOtherFilterValues = true;
-			sb.insert(0, "Changing the selected values here will reset the selections you already made on the  tabs: \n");
+			sb.insert(0, "Changing the selected values here will reset the selections you already made on the  tab(s): \n");
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("message", sb.toString());
 
@@ -780,6 +858,22 @@ public class MarkerViewModel {
 				}
 			}
 		}
+	}
+
+
+	public <T> String getListNamesToString( List<T> list) {
+
+		StringBuilder sb = new StringBuilder();
+
+		int ctr=0;
+
+		for(T item : list) {
+			if(ctr>0) sb.append(", "); 
+			sb.append((String) ((Record) item).get(1));
+			ctr++;
+		}
+		
+		return sb.toString();
 	}
 
 	/**************************************************************** Getters and Setters *************************************************************/ 

@@ -112,7 +112,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			Sessions.getCurrent().setAttribute("serverInfo", serverInfo);
 
 			isConnected = true;
-		} 
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			if(e.getLocalizedMessage().contains("dummy")){
@@ -899,10 +899,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		try{ /* START building THE QUERY via StringBuilder */
 			StringBuilder sb = new StringBuilder();
-			StringBuilder sbWhere = new StringBuilder();
+			StringBuilder sbWhere = new StringBuilder(); 
 
-			sb.append("SELECT distinct on (m.marker_id) m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id,r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m ");
-			sb.append(" LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_linkage_group_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id ");
+			sb.append("SELECT distinct on (m.marker_id) m.marker_id, m.platform_id, pl.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, m.reference_id,r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m ");
+			sb.append(" LEFT JOIN platform pl ON m.platform_id = pl.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_linkage_group_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id ");
 
 			/* ADD THE "WHERE" CONDITIONS */
 
@@ -913,6 +913,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				dsNameCount++;	
 			}
 
+
+			//build query for 'none' selected on dataset filter
+			if(markerEntity.isMarkerNotInDatasets()) {
+
+				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+				sbWhere.append(" m.dataset_marker_idx = '{}' ");
+				queryCount++;
+				
+			}
+			
 			// build query for MAPSET filter
 			if (isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
 				
@@ -932,7 +942,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			// build query for PLATFORM filter
 			if (isListNotNullOrEmpty(markerEntity.getPlatformList())){
 
-				sb.append(buildLeftJoin(sb,"platform"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
 				sbWhere.append(" pl.platform_id "+ getIDsToString(markerEntity.getPlatformList()));
 				queryCount++;
@@ -966,7 +975,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for DATASETS filter
-			if (isListNotNullOrEmpty(markerEntity.getDatasetList())){
+			if (isListNotNullOrEmpty(markerEntity.getDatasetList()) && !markerEntity.isMarkerNotInDatasets()){
 
 				sb.append(buildLeftJoin(sb,"dataset"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -975,7 +984,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 			
 			// build query for ANALYSES filter
-			if (isListNotNullOrEmpty(markerEntity.getAnalysesList())){
+			if (isListNotNullOrEmpty(markerEntity.getAnalysesList()) && !markerEntity.isMarkerNotInDatasets()){
 
 				sb.append(buildLeftJoin(sb,"analysis"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -1013,8 +1022,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			sbWhere.append(";");
 			sb.append(sbWhere.toString());
 			String query = sb.toString();
-			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 			System.out.println(query);
+			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
 			log.info("Submitted Query: "+query);
 		}catch(Exception e ){
@@ -1033,35 +1042,35 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		
 		switch(category){
 		case "analysis":
-			if(!sb.toString().contains("analysis")) {
+			if(!sb.toString().contains("dataset d")) {
 				returnValBuilder.append("LEFT JOIN dataset d ON jsonb_exists(m.dataset_marker_idx, d.dataset_id::text) ");
 			}
 			returnValBuilder.append(" left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) ");
 			break;
 		case "dataset":
-			if(!sb.toString().contains("dataset")) {
+			if(!sb.toString().contains("dataset d")) {
 				returnValBuilder.append("LEFT JOIN dataset d ON jsonb_exists(m.dataset_marker_idx, d.dataset_id::text) ");
 			}
 			break;
-		case "project":
-			if(!sb.toString().contains("project")) {
-				returnValBuilder.append("LEFT JOIN project prj ON e.project_id = prj.project_id ");
-			}
-		case "experiment":
-			if(!sb.toString().contains("experiment")) {
-				returnValBuilder.append("LEFT JOIN experiment e ON vp.vendor_protocol_id = e.vendor_protocol_id ");
-		}
-		case "vendorprotocol": 
-			if(!sb.toString().contains("vendor_protocol")) {
-				returnValBuilder.append("LEFT JOIN vendor_protocol vp ON vp.protocol_id = pr.protocol_id ");
-			}
-		case "protocol": 
-			if(!sb.toString().contains("protocol")) {
+		default: 
+			if(!sb.toString().contains("protocol pr")) {
 				returnValBuilder.append("LEFT JOIN protocol pr ON pl.platform_id = pr.platform_id ");
 			}
+			if(category.equals("protocol")) break;
+			if(!sb.toString().contains("vendor_protocol vp")) {
+				returnValBuilder.append("LEFT JOIN vendor_protocol vp ON vp.protocol_id = pr.protocol_id ");
+			}
+
+			if(category.equals("vendorprotocol")) break;
+			if(!sb.toString().contains("experiment e")) {
+				returnValBuilder.append("LEFT JOIN experiment e ON vp.vendor_protocol_id = e.vendor_protocol_id ");
+			}
+
+			if(category.equals("experiment")) break;
+			if(!sb.toString().contains("project prj")) {
+				returnValBuilder.append("LEFT JOIN project prj ON e.project_id = prj.project_id ");
+			}
 			break;
-		default: 
-			System.out.println("no match"); 
 		}
 		
 		return returnValBuilder.toString();
@@ -1075,7 +1084,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		List<VMarkerSummaryEntity> markerList = null;
 		try{
-			String query = "SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, r.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform p ON m.platform_id = p.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_linkage_group_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id;";
+			String query = "SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, r.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform pl ON m.platform_id = p.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_linkage_group_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id;";
 			markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
 			log.info("Submitted Query: "+query);

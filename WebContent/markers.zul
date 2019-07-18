@@ -109,6 +109,9 @@
 													visible="@load(vm.dbPlatforms)"
 													value="@bind(vm.filterPlatform)"
 													onChange="@command('doSearchPlatform')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='platform')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox
@@ -117,13 +120,12 @@
 												multiple="true" checkmark="true"
 												style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.platformList)"
-												onSelect="@command('validateForReset', category='platform')" >
+												onSelect="@command('validateForReset', category='platform')">
 												<template name="model"
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)"
-															/>
+															label="@load(item.name)" />
 													</listitem>
 												</template>
 											</listbox>
@@ -140,6 +142,10 @@
 													value="@bind(vm.filterVendorProtocol)"
 													onChange="@command('doSearchVendorProtocol')"
 													instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='vendorprotocol')"
+													tooltiptext="View Filters" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -147,7 +153,7 @@
 												model="@load(vm.vendorProtocolList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.vendorProtocolList)"
-												onSelect="@command('validateForReset', category='vendorprotocol')" >
+												onSelect="@command('validateForReset', category='vendorprotocol')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -168,6 +174,9 @@
 												<textbox
 													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
 													onChange="@command('doSearchMapset')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='mapset')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -175,7 +184,7 @@
 												model="@load(vm.mapsetList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.mapsetList)"
-												onSelect="@command('validateForReset', category='mapset')" >
+												onSelect="@command('validateForReset', category='mapset')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -196,6 +205,9 @@
 													visible="@load(vm.dbLinkageGroup)"
 													value="@bind(vm.filterLinkageGroup)"
 													onChange="@command('doSearchLinkageGroup')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='linkagegroup')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -223,6 +235,9 @@
 													visible="@load(vm.dbProjects)"
 													value="@bind(vm.filterProject)"
 													onChange="@command('doSearchProject')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='project')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -230,7 +245,7 @@
 												model="@load(vm.projectList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.projectList)"
-												onSelect="@command('validateForReset', category='project')" >
+												onSelect="@command('validateForReset', category='project')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -251,6 +266,9 @@
 													visible="@load(vm.dbExperiment)"
 													value="@bind(vm.filterExperiment)"
 													onChange="@command('doSearchExperiment')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='experiment')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -258,7 +276,7 @@
 												model="@load(vm.experimentList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.experimentList)"
-												onSelect="@command('validateForReset', category='experiment')" >
+												onSelect="@command('validateForReset', category='experiment')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -280,6 +298,9 @@
 													visible="@load( vm.dbAnalyses)"
 													value="@bind(vm.filterAnalyses)"
 													onChange="@command('doSearchAnalyses')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='analyses')" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -287,7 +308,7 @@
 												model="@load(vm.analysesList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
 												selectedItems="@bind(vm.markerEntity.analysesList)"
-												onSelect="@command('validateForReset', category='analyses')" >
+												onSelect="@command('validateForReset', category='analyses')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -308,9 +329,9 @@
 													visible="@load(vm.dbDataset)"
 													value="@bind(vm.filterDataset)"
 													onChange="@command('doSearchDataset')" instant="true" />
-												<image
-													src="/imgs/info.png"
-													style="padding: 5px; cursor:hand;cursor:pointer; vertical-align: middle;" />
+												<toolbarbutton
+													visible="@load(vm.dbDataset)" image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='datasets')" />
 											</hbox>
 											<separator spacing="12px"
 												visible="@load(vm.dbDataset)" />
@@ -364,7 +385,8 @@
 								hflex="1">
 								<grid id="markerGrid"
 									model="@load(vm.markerList)" mold="paging" pageSize="25"
-									pagingPosition="both" vflex="1" hflex="1">
+									pagingPosition="both" vflex="1" hflex="1"
+									emptyMessage="No items match your search">
 									<columns sizable="true">
 										<column hflex="1">
 											<checkbox label="Select All"
@@ -453,12 +475,6 @@
 							<popup id="markerTooltip" hflex="1">
 								<label
 									value="Click to view marker details" />
-							</popup>
-							<popup id="tabSelectionTooltipWarning">
-								<image src="/imgs/info.png"
-									tooltip="tabSelectionTooltipWarning" />
-								<label
-									value="Lorem ipsum chever chasdjkabfjabdfkjbasdjbfiwbfdkabdnfbaiwbfsadbmsdbfiabf asdjfbaksjbf" />
 							</popup>
 						</div>
 					</center>

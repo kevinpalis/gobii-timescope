@@ -23,7 +23,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-
+	private boolean markerNotInDatasets;
 	private Integer markerIDStartRange;
 	private Integer  markerIDEndRange;
 	private String markerNamesAsCommaSeparatedString;
@@ -38,6 +38,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	private List<LinkageGroupRecord> linkageGroupList;
 	
 	public MarkerRecordEntity() {
+		setMarkerNotInDatasets(false);
 		setPlatformList(new ArrayList<PlatformRecord>());
 		setVendorProtocolList(new ArrayList<VendorProtocolRecord>());
 		setAnalysesList(new ArrayList<AnalysisRecord>());
@@ -164,6 +165,14 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 
 	public void setLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
 		this.linkageGroupList = linkageGroupList;
+	}
+
+	public boolean isMarkerNotInDatasets() {
+		return markerNotInDatasets;
+	}
+
+	public void setMarkerNotInDatasets(boolean markerNotInDatasets) {
+		this.markerNotInDatasets = markerNotInDatasets;
 	}
 
 }

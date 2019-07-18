@@ -5,12 +5,12 @@
 	
 		<vbox align="center" pack="center">
 		<hbox>
-			<image src="/imgs/info.png"  tooltip="platformMessage"/>
+			<image src="/imgs/info.png"/>
 			<separator spacing="10px" />
 			<label id="messageLabel" value="@load(vm.message)"
 				style="font-size: 14px; text-align:center;" />
 				</hbox>
 			<separator spacing="10px" />
-			<button label="Ok" onClick="@command('exit')" />
+			<button label="OK" onClick="@command('exit')" />
 		</vbox>
 </window>

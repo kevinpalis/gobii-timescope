@@ -48,16 +48,19 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 	    	sb.append(Utils.checkInteger((Integer) get(1))+delim);//PlatformId()
 	    	sb.append((Utils.checkString((String)get(2))).toLowerCase()+delim);//PlatformName()
 	    	
-	    	sb.append(Utils.checkInteger((Integer) get(3))+delim);//VariantId()
-	    	sb.append((Utils.checkString((String)get(5))).toLowerCase()+delim);//Code
-	    	
-	    	sb.append((Utils.checkString((String) get(6))).toLowerCase()+delim);//Ref
-	    	sb.append(Utils.checkString(getAltsToString())+delim);//Alts
 
-	    	sb.append(Utils.checkString((String) get(8))+delim);//Sequence
-	    	sb.append(Utils.checkInteger((Integer) get(9))+delim);//ReferenceId()
+	    	sb.append((Utils.checkString((String) get(4))).toLowerCase()+delim);//Ref
+	    	sb.append(Utils.checkString(getAltsToString())+delim);//Alts
 	    	
-	    	sb.append(Utils.checkString((String) get(10))+delim);//ReferenceName()
+
+	    	sb.append(Utils.checkInteger((Integer) get(6))+delim);//ReferenceId()
+	    	sb.append(Utils.checkString((String) get(7))+delim);//ReferenceName()
+	    	
+	    	sb.append(Utils.checkInteger((Integer) get(8))+delim);//VariantId()
+	    	sb.append((Utils.checkString((String)get(9))).toLowerCase()+delim);//Code
+	    	
+
+	    	sb.append(Utils.checkString((String) get(10))+delim);//Sequence
 	    	sb.append(Utils.checkString(getPrimersToString())+delim);//Primers()
 
 	    	sb.append(Utils.checkInteger((Integer) get(12))+delim);//StrandId()
@@ -79,13 +82,13 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 		 sb.append("Marker Name" +delim);
 		 sb.append("Platform Id" +delim);
 		 sb.append("Platform Name" +delim);
-		 sb.append("Variant Id" +delim);
-		 sb.append("Code" +delim);
 		 sb.append("Ref" +delim);
 		 sb.append("Alts" +delim);
-		 sb.append("Sequence" +delim);
 		 sb.append("Reference Id" +delim);
 		 sb.append("Reference Name" +delim);
+		 sb.append("Variant Id" +delim);
+		 sb.append("Code" +delim);
+		 sb.append("Sequence" +delim);
 		 sb.append("Primers" +delim);
 		 sb.append("Strand Id" +delim);
 		 sb.append("Strand Name" +delim);
@@ -102,7 +105,7 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 		StringBuilder sb = new StringBuilder();
 
 		try{
-			String[] altsList =  (String[]) get(7);
+			String[] altsList =  (String[]) get(5);
 			sb.append("\"");
 			for(String i: altsList){
 				sb.append(i.toString()+",");
