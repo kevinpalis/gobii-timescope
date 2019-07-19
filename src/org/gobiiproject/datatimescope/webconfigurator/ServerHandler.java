@@ -16,6 +16,8 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.sc
 import static org.zkoss.zk.ui.util.Clients.alert;
 import org.gobiiproject.datatimescope.db.generated.Routines;
 import org.zkoss.util.Pair;
+import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Window;
 
 /**
  * A class designed to execute the operations on both Postgres and Tomcat
@@ -54,16 +56,14 @@ public class ServerHandler {
      * @return true if username and password are filled
      */
     private void configureTomcatReloadRequest(){
-        try {
-            reloadRequest.setUsername(prop.getUsername());
-            reloadRequest.setPassword(prop.getPassword());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (reloadRequest.getUsername() == null || reloadRequest.getPassword() == null) {
-            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place." +
-                    "The modifications are staged and will take effect when the web application is restarted.");
-            //TODO Basically block this module until anything is filled in
+        boolean usernameSet = false;
+        boolean passwordSet = false;
+        reloadRequest.setUsername(prop.getUsername());
+        reloadRequest.setPassword(prop.getPassword());
+        while (prop.getUsername() == null || prop.getPassword() == null){
+            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place.");
+            Window window = (Window)Executions.createComponents("/setConfigCreds.zul", null, null);
+            window.doModal();
         }
     }
 
@@ -204,7 +204,7 @@ public class ServerHandler {
             alert("The database couldn't be created due to following error: \n" + e.toString());
             success = false;
         }
-        List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
+        List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
         if (!scriptExecutor("liquibase.sh", populate)){
             success = false;
         }

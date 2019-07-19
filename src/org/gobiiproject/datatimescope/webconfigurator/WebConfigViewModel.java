@@ -9,6 +9,7 @@ import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
+import org.zkoss.zul.Window;
 
 import javax.swing.*;
 import java.io.*;
@@ -32,6 +33,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public CronHandler cronHandler = new CronHandler();
     private XmlCropHandler xmlCropHandler = new XmlCropHandler();
     private WarningComposer warningComposer = new WarningComposer(xmlHandler);
+    public PropertyHandler propertyHandler = new PropertyHandler();
     private Crop currentCrop = new Crop();
     private boolean documentLocked = true;
     private boolean isSuperAdmin = false;
@@ -109,7 +111,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("exportXML")
     public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
-        List<String> sec_copy_back = new ArrayList<>(Arrays.asList("scpfrom" , exportLocation));
+        List<String> sec_copy_back = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "scpfrom" , exportLocation));
         if (!scriptExecutor("importExportXml.sh", sec_copy_back)){
             binder.sendCommand("disableEdit",null);
             return;
@@ -170,7 +172,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             binder.sendCommand("disableEdit",null);
             return;
         }
-        List<String> params = new ArrayList<>(Arrays.asList("scpto", newXMLPath));
+        List<String> params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
             binder.sendCommand("disableEdit",null);
             return;
@@ -178,18 +180,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
         XmlValidator validator = new XmlValidator(xmlHandler);
         if (validator.validateGobiiConfiguration()){
-            ArrayList<String> param = new ArrayList<>();
-            param.add("failed");
-            if (scriptExecutor("importExportXml.sh", param)){
+            params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "passed"));
+            if (scriptExecutor("importExportXml.sh", params)){
                 warningComposer.warningTomcat(binder, this);
             } else {
                 binder.sendCommand("disableEdit",null);
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
-            ArrayList<String> param = new ArrayList<>();
-            param.add("failed");
-            if (!scriptExecutor("importExportXml.sh", param)){
+            params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "failed"));
+            if (!scriptExecutor("importExportXml.sh", params)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
             } else {
                 alert(validator.getErrorMessage());
@@ -227,13 +227,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         firstUpload = true;
         xmlCropHandler.appendCrop(currentCrop);
-        List<String> createFiles = new ArrayList<>(Arrays.asList( currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
+        List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             binder.sendCommand("disableEdit",null);
             return;
         }
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
-        List<String> duplicateWAR = new ArrayList<>(Arrays.asList("1" , currentCrop.getWARName(), oldWar));
+        List<String> duplicateWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
             binder.sendCommand("disableEdit",null);
             return;
@@ -296,7 +296,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         if (!serverHandler.undeployFromTomcat(currentCrop)){
             alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ", undeploying forcibly instead.");
         } else {
-            List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
+            List<String> removeWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "0", xmlHandler.getWARName(currentCrop.getName())));
             if (!scriptExecutor("WARHandler.sh", removeWAR)) {
                 binder.sendCommand("disableEdit", null);
                 return;
@@ -306,7 +306,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             return;
         }
         xmlCropHandler.removeCrop(currentCrop);
-        List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+        List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
             binder.sendCommand("disableEdit", null);
             return;
@@ -327,6 +327,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("documentLocked")
     public void cancelChanges () {
         this.documentLocked = true;
+    }
+
+    @Command("saveConfigCreds")
+    public void saveConfigCreds(@BindingParam("win") Window x){
+        x.detach();
+    }
+
+    @Command("cancelConfigCreds")
+    public void cancelConfigCreds(@BindingParam("win") Window x){
+        x.detach();
     }
 
     @Command("setLocationForSeeddata")
@@ -539,6 +549,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public BackupHandler getBackupHandler () {
         return backupHandler;
+    }
+
+    public PropertyHandler getPropertyHandler() {
+        return propertyHandler;
     }
 }
 

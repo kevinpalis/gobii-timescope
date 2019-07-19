@@ -5,9 +5,9 @@
 # $3 is the to be copied file, is prefixed by /
 
 x=1
-if [[ $1 == ${x} ]]
+if [[ $2 == ${x} ]]
 then
-    ssh gadm@cbsugobiixvm14.biohpc.cornell.edu "docker exec gobii-web-node bash -c 'cp /usr/local/tomcat/webapps$3.war /usr/local/tomcat/webapps/$2.war'"
+    ssh gadm@$1 "docker exec gobii-web-node bash -c 'cp /usr/local/tomcat/webapps$4.war /usr/local/tomcat/webapps/$3.war'"
 else
-    ssh gadm@cbsugobiixvm14.biohpc.cornell.edu "docker exec gobii-web-node bash -c 'rm /usr/local/tomcat/webapps/$2.war'"
+    ssh gadm@$1 "docker exec gobii-web-node bash -c 'rm /usr/local/tomcat/webapps/$3.war'"
 fi
