@@ -383,86 +383,102 @@
 						<div vflex="1" hflex="1">
 							<div sclass="Container" vflex="1"
 								hflex="1">
-								<grid id="markerGrid"
-									model="@load(vm.markerList)" mold="paging" pageSize="25"
-									pagingPosition="both" vflex="1" hflex="1"
-									emptyMessage="No items match your search">
-									<columns sizable="true">
-										<column hflex="1">
-											<checkbox label="Select All"
-												onCheck="@command('doSelectAll')"
-												checked="@bind(vm.cbAllMarkers)" />
-										</column>
-										<column hflex="1"
-											sort="auto(markerId)">
-											<label value="Marker Id" />
-										</column>
-										<column hflex="1"
-											sort="auto(markerName)">
-											<label value="Marker Name" />
-										</column>
-										<column hflex="1"
-											sort="auto(platformId)">
-											<label value="Platform Id" />
-										</column>
-										<column hflex="1"
-											sort="auto(platformName)">
-											<label
-												value="Platform Name" />
-										</column>
-										<column hflex="1">
-											<label value="Ref" />
-										</column>
-										<column hflex="1">
-											<label value="Alts" />
-										</column>
-										<column hflex="1">
-											<label
-												value="Reference Name" />
-										</column>
-									</columns>
-									<template name="model"
-										var="marker">
-										<row
-											onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
-											style="cursor:pointer"
-											tooltip="markerTooltip, position=after_pointer">
-											<cell>
+								<vbox vflex="1" hflex="1">
+									<grid id="markerGrid"
+										model="@load(vm.markerList)" mold="paging" pageSize="25"
+										pagingPosition="both" vflex="1" hflex="1"
+										emptyMessage="No items match your search">
+										<columns sizable="true">
+											<column hflex="1">
 												<checkbox
-													value="@load(marker)" checked="@load(vm.allCbSelected)"
-													onCheck="@command('updateSelectMarker', markerChecked=self.value, isChecked=self.checked)" />
-											</cell>
-											<cell>
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllMarkers)" />
+											</column>
+											<column hflex="1"
+												sort="auto(markerId)">
 												<label
-													value="@load(marker.markerId)" />
-											</cell>
-											<cell>
+													value="Marker Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(markerName)">
 												<label
-													value="@load(marker.markerName)" />
-											</cell>
-											<cell>
+													value="Marker Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(platformId)">
 												<label
-													value="@load(marker.platformId)" />
-											</cell>
-											<cell>
+													value="Platform Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(platformName)">
 												<label
-													value="@load(marker.platformName)" />
-											</cell>
-											<cell>
+													value="Platform Name" />
+											</column>
+											<column hflex="1">
+												<label value="Ref" />
+											</column>
+											<column hflex="1">
+												<label value="Alts" />
+											</column>
+											<column hflex="1">
 												<label
-													value="@load(marker.ref)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.altsToString)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(marker.referenceName)" />
-											</cell>
-										</row>
-									</template>
-								</grid>
+													value="Reference Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="marker">
+											<row
+												onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
+												style="cursor:pointer"
+												tooltip="markerTooltip, position=after_pointer">
+												<cell>
+													<checkbox
+														value="@load(marker)" checked="@load(vm.allCbSelected)"
+														onCheck="@command('updateSelectMarker', markerChecked=self.value, isChecked=self.checked)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.markerId)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.markerName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.platformId)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.platformName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.ref)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.altsToString)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(marker.referenceName)" />
+												</cell>
+											</row>
+										</template>
+									</grid>
+
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:"
+											style="font-style: oblique; font-size: 15px" />
+										:
+										<label
+											value="@bind(vm.sizeMarkerList)"
+											style="font-style: oblique; font-size: 15px" />
+									</hbox>
+								</vbox>
 							</div>
 							<popup id="platformMessage" width="400px">
 								<label

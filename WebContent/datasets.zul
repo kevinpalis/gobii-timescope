@@ -1,20 +1,26 @@
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<window border="none" hflex="1" vflex="1"  style="border: 0 !important; padding:0 !important; margin:0;" apply="org.zkoss.bind.BindComposer"
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DatasetViewModel')">
 	<caption sclass="fn-caption" label="Datasets" />
-	
-	<tabbox style="border: 0px !important; padding:0px !important; margin:0px !important;" vflex="1" hflex="1">
+
+	<tabbox
+		style="border: 0px !important; padding:0px !important; margin:0px !important;"
+		vflex="1" hflex="1">
 		<tabs visible="false">
 			<tab id="datasetSearchTab" label="Search" />
 			<tab id="datasetSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
 		</tabs>
-		<tabpanels >
-			<tabpanel style="border: 0 !important; padding:0 !important; margin:0;" >
+		<tabpanels>
+			<tabpanel
+				style="border: 0 !important; padding:0 !important; margin:0;">
 				<borderlayout vflex="1" hflex="true">
-					<north title="Filters:" style=" border: 0px;" collapsible="true">
+					<north title="Filters:" style=" border: 0px;"
+						collapsible="true">
 						<vlayout>
 							<hlayout>
 								<grid hflex="1" vflex="1"
@@ -60,7 +66,7 @@
 
 												</textbox>
 											</cell>
-										</row>	
+										</row>
 									</rows>
 								</grid>
 								<label value="  " />
@@ -158,10 +164,11 @@
 						</vlayout>
 					</north>
 
-					<center border="0" vflex="1" hflex="1" >
+					<center border="0" vflex="1" hflex="1">
 						<div vflex="1" hflex="1">
-								<div sclass="div2" vflex="1" hflex="1" >
-									<grid id="datasetGrid" 
+							<div sclass="div2" vflex="1" hflex="1">
+								<vbox vflex="1" hflex="1">
+									<grid id="datasetGrid"
 										model="@load(vm.datasetList)" mold="paging" pageSize="25"
 										pagingPosition="both" vflex="1" hflex="1">
 										<columns sizable="true">
@@ -356,15 +363,26 @@
 											</row>
 										</template>
 									</grid>
-								</div>
-								<popup id="title" width="400px">
-									<label
-										value="Separate each name with a new line." />
-								</popup>
-								
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:"
+											style="font-style: oblique; font-size: 15px" />
+										:
+										<label
+											value="@bind(vm.sizeDatasetList)"
+											style="font-style: oblique; font-size: 15px" />
+									</hbox>
+								</vbox>
 							</div>
+							<popup id="title" width="400px">
+								<label
+									value="Separate each name with a new line." />
+							</popup>
+
+						</div>
 					</center>
-					
+
 				</borderlayout>
 			</tabpanel>
 			<tabpanel visible="false">
