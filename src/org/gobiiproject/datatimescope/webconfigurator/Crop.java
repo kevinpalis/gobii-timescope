@@ -38,12 +38,18 @@ public class Crop {
         return name;
     }
 
-    @NotifyChange("isActive")
+    @NotifyChange({"isActive", "databaseName", "WARName"})
     public void setName(String name) {
         this.name = name;
+        this.WARName = ("gobii-" + name);
+        this.databaseName = ("gobii_" + name);
         if (xmlHandler.getCropList().contains(this.name)) {
             this.isActive = xmlHandler.getActivity(this.name);
         }
+    }
+
+    public String getContextPath(){
+        return WARName;
     }
 
     public int getFileAge() {
@@ -63,7 +69,11 @@ public class Crop {
     }
 
     public String getWARName() {
-        return WARName;
+        if (WARName != null) {
+            return WARName + ".war";
+        } else {
+            return WARName;
+        }
     }
 
     public void setWARName(String WARName) {

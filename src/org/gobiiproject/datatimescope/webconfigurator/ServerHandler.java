@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.apache.catalina.ant.ReloadTask;
+import org.apache.catalina.ant.UndeployTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;
@@ -94,6 +95,46 @@ public class ServerHandler {
     }
 
     /**
+     * Sends the request to undeploy the web application under the found context path in the gobii-web.xml file
+     */
+    public boolean undeployFromTomcat(Crop currCrop) {
+        boolean success = true;
+        try {
+            UndeployTask undeploy = new UndeployTask();
+            undeploy.setUsername(prop.getUsername());
+            undeploy.setPassword(prop.getPassword());
+            String host = xmlHandler.getHostForReload();
+            String port = xmlHandler.getPortForReload();
+            undeploy.setPath(xmlHandler.getWebContextPath(currCrop.getName()));
+            undeploy.setUrl("http://" + host + ":" + port + "/manager/text");
+            undeploy.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            success = false;
+        }
+        return success;
+    }
+
+    /**
+     * Removes the database of the given crop
+     * @param cropName
+     * @return true upon success
+     */
+    public boolean postgresRemoveCrop(String cropName){
+        boolean success = true;
+        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
+        DSLContext context = tmpService.getDSLContext();
+        try {
+            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(cropName) + ";");
+        } catch (Exception e) {
+            alert("The database could not be remove. Stacktrace of the error: \n" + e.toString());
+            e.printStackTrace();
+            success = false;
+        }
+        return success;
+    }
+
+    /**
      * Create a database for the current Crop and populate it with basic seed data and contact data
      * The ViewModel operations enable relative smooth switching of databases for the queries
      * @param currentCrop
@@ -116,10 +157,10 @@ public class ServerHandler {
                 success = 1;
                 return success;
             }
-            //Connecting to the database created a race condition, through trial and error I found 6 seconds to be the lower
+            //Connecting to the database created a race condition, through trial and error I found 7 seconds to be the lower
             //bound by seconds so that the program runs correctly.
             try {
-                TimeUnit.SECONDS.sleep(6);
+                TimeUnit.SECONDS.sleep(7);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -160,12 +201,11 @@ public class ServerHandler {
         try {
             context.fetch("CREATE DATABASE " + currentCrop.getDatabaseName() + " WITH OWNER '" + xmlHandler.getPostgresUserName() + "';");
         } catch (Exception e){
-            alert("This database name is already in use or the name is using invalid characters. Please choose another name.");
+            alert("The database couldn't be created due to following error: \n" + e.toString());
             success = false;
         }
         List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
         if (!scriptExecutor("liquibase.sh", populate)){
-            alert("Couldn't populate the database with seed data.");
             success = false;
         }
         return success;
@@ -212,8 +252,7 @@ public class ServerHandler {
                         timescopeData.getX(), timescopeData.getY(), timescopeData.getX(), timescopeData.getY(), organizationID, splitData[6]
                 );
             } catch (Exception e) {
-                e.printStackTrace();
-                alert("Something went wrong when filling in the contact data.");
+                alert("Contact data could not be filled in correctly, with following error: \n" + e.toString());
                 return success;
             }
         }

@@ -39,7 +39,6 @@ public class XmlCropHandler extends XmlModifier {
     private void removeEmptyLines() {
         String oldFileName = path;
         String tmpFileName = path.replace("xml", "dat");
-
         try (BufferedReader br = new BufferedReader(new FileReader(oldFileName)); BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFileName))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -152,7 +151,7 @@ public class XmlCropHandler extends XmlModifier {
         host.appendChild(doc.createTextNode(getHostForReload()));
         serverConfig.appendChild(host);
         Element contextPath = doc.createElement("contextPath");
-        contextPath.appendChild(doc.createTextNode("/" + crop.getWARName()));
+        contextPath.appendChild(doc.createTextNode("/" + crop.getContextPath()));
         serverConfig.appendChild(contextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPortForReload()));

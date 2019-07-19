@@ -1,7 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.gobiiproject.datatimescope.services.UserCredential;
-import org.jooq.DSLContext;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
@@ -10,7 +9,6 @@ import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Include;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 
 import javax.swing.*;
 import java.io.*;
@@ -113,7 +111,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
         List<String> sec_copy_back = new ArrayList<>(Arrays.asList("scpfrom" , exportLocation));
         if (!scriptExecutor("importExportXml.sh", sec_copy_back)){
-            alert("Couldn't import the file from the server.");
             binder.sendCommand("disableEdit",null);
             return;
         }
@@ -175,7 +172,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         List<String> params = new ArrayList<>(Arrays.asList("scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
-            alert("Couldn't send the file to server for validation.");
             binder.sendCommand("disableEdit",null);
             return;
         }
@@ -187,7 +183,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             if (scriptExecutor("importExportXml.sh", param)){
                 warningComposer.warningTomcat(binder, this);
             } else {
-                alert("Couldn't set the imported file as the new reference file.");
                 binder.sendCommand("disableEdit",null);
             }
         } else {
@@ -231,17 +226,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             return;
         }
         firstUpload = true;
-        String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
-        List<String> duplicateWAR = new ArrayList<>(Arrays.asList("1" , currentCrop.getWARName(), oldWar));
-        if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
-            alert("Couldn't duplicate the WAR file for deployment.");
-            binder.sendCommand("disableEdit",null);
-            return;
-        }
         xmlCropHandler.appendCrop(currentCrop);
         List<String> createFiles = new ArrayList<>(Arrays.asList( currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
-            alert("Couldn't create the files necessary within gobii_bundle.");
+            binder.sendCommand("disableEdit",null);
+            return;
+        }
+        String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
+        List<String> duplicateWAR = new ArrayList<>(Arrays.asList("1" , currentCrop.getWARName(), oldWar));
+        if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
             binder.sendCommand("disableEdit",null);
             return;
         }
@@ -300,24 +293,21 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * @param binder
      */
     public void executeRemoval (@ContextParam(ContextType.BINDER) Binder binder){
-        ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-        DSLContext context = tmpService.getDSLContext();
-        try {
-            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(currentCrop.getName()) + ";");
-        } catch (Exception e) {
-            alert("The database could not be removed.");
-            return;
+        if (!serverHandler.undeployFromTomcat(currentCrop)){
+            alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ", undeploying forcibly instead.");
+        } else {
+            List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
+            if (!scriptExecutor("WARHandler.sh", removeWAR)) {
+                binder.sendCommand("disableEdit", null);
+                return;
+            }
         }
-        List<String> removeWAR = new ArrayList<>(Arrays.asList("0", xmlHandler.getWARName(currentCrop.getName())));
-        if (!scriptExecutor("WARHandler.sh", removeWAR)) {
-            alert("Couldn't remove the WAR file from deployment.");
-            binder.sendCommand("disableEdit", null);
+        if (!serverHandler.postgresRemoveCrop(currentCrop.getName())) {
             return;
         }
         xmlCropHandler.removeCrop(currentCrop);
         List<String> removeBundle = new ArrayList<>(Arrays.asList(currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
-            alert("Couldn't remove the files within gobii_bundle.");
             binder.sendCommand("disableEdit", null);
             return;
         }

@@ -1,7 +1,11 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
+
+import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
  * A class for general small utility functions that are called multiple time within the webconfigurator package
@@ -18,17 +22,18 @@ public class UtilityFunctions {
         return sb.toString();
     }
 
+
     public static boolean scriptExecutor(String scriptName, List<String> scriptParameters){
         boolean success;
-        //TODO on deploy
-        String scriptPath = "/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
+        String scriptPath = "/usr/locat/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
+        //String scriptPath = "/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
         try {
             new ProcessBuilder(fullCommand).start();
             success = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            alert("Script " + scriptName + "execution failed with following error: \n" + e.toString());
             success = false;
         }
         return success;

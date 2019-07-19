@@ -5,7 +5,7 @@
     <hlayout apply="org.zkoss.bind.BindComposer"
              viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
             <vlayout>
-                <grid width="900px">
+                <grid width="800px">
                     <columns>
                         <column align="right" hflex="min"/>
                         <column/>
@@ -15,7 +15,7 @@
                         <row>
                             <cell sclass="row-title">Crop Name:</cell>
                             <cell>
-                                <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
+                                <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_-]+$/: Please only use alphanumeric characters, hyphens and underscores."
                                         width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
                                 </textbox>
                             </cell>
@@ -24,8 +24,8 @@
                         <row>
                             <cell sclass="row-title">Database Name:</cell>
                             <cell>
-                                <textbox constraint="no empty : Please set a name for the new database. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores. "
-                                         width="200px" value="@save(vm.currentCrop.databaseName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
+                                <textbox
+                                    width="200px" value="@bind(vm.currentCrop.databaseName)" disabled="true">
                                 </textbox>
                             </cell>
                             <cell/>
@@ -33,12 +33,8 @@
                         <row>
                             <cell sclass="row-title">Web Application (WAR) Name:</cell>
                             <cell>
-                                <hlayout>
-                                    <textbox constraint="no empty : Please set a name for the new WAR. , /^[a-zA-Z0-9_]+$/: Please only use alphanumeric characters and underscores."
-                                             width="200px" value="@save(vm.currentCrop.WARName, before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
+                                    <textbox width="200px" value="@load(vm.currentCrop.WARName)" disabled="true">
                                     </textbox>
-                                    <label>.war</label>
-                                </hlayout>
                             </cell>
                             <cell>
                             </cell>
@@ -61,7 +57,7 @@
                 <div align="left">
                     <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
                     <hlayout>
-                        <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" />
+                        <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" disabled="@bind(not vm.currentCrop.hideContactData)"/>
                         <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
                     </hlayout>
                 </div>

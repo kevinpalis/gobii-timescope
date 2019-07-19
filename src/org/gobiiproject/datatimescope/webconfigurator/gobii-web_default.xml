@@ -289,13 +289,13 @@
    <emailServerPort>587</emailServerPort>
    <gobiiAuthenticationType>LDAP_CONNECT_WITH_MANAGER</gobiiAuthenticationType>
    <ldapUserDnPattern>uid={0}</ldapUserDnPattern>
-   <ldapUrl>ldap://cbsugobiixvm14.biohpc.cornell.edu/dc=gobiiproject,dc=org</ldapUrl>
+   <ldapUrl>ldap://cbsugobiixvm06.biohpc.cornell.edu/dc=gobiiproject,dc=org</ldapUrl>
    <ldapBindUser>cn=admin,dc=gobiiproject,dc=org</ldapBindUser>
    <ldapBindPassword>g0b11LDAP</ldapBindPassword>
    <iflIntegrityCheck>false</iflIntegrityCheck>
    <fileSystemRoot>/data/gobii_bundle</fileSystemRoot>
    <fileSysCropsParent>crops/</fileSysCropsParent>
-   <fileSystemLog>/data/gobii_bundle/logoso</fileSystemLog>
+   <fileSystemLog>/data/gobii_bundle/logs</fileSystemLog>
    <isDecrypt>false</isDecrypt>
    <ldapUserForBackendProcs>gadm</ldapUserForBackendProcs>
    <ldapPasswordForBackendProcs>g0b11Admin</ldapPasswordForBackendProcs>
