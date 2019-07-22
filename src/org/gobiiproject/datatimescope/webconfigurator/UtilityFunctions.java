@@ -1,8 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import static org.zkoss.zk.ui.util.Clients.alert;

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
-
 /**
  * A class designated to handle any modifications made to the backup schedule of the database
  * Furthermore it also creates the backup CRON jobs if they do not exist yet
@@ -209,7 +207,6 @@ public class BackupHandler {
                 writer.write(str + System.lineSeparator());
             }
             writer.close();
-            //TODO Change this on deploy
             Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh" + hostFromXml);
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             success = true;

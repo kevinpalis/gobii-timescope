@@ -13,6 +13,7 @@ import java.io.*;
  */
 
 public class XmlCropHandler extends XmlModifier {
+
     @NotifyChange("cropList")
     public void removeCrop(Crop oldCrop){
         Document doc = XmlModifier.retrieveFile(XmlModifier.path);

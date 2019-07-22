@@ -3,14 +3,14 @@
 # OPTIONS: 1 copies to remote, 2 overwrites old xml (after validation), 3 removes new one (failed validation), 4 copies from remote
 case $2 in
     scpto)
-        scp $3 gadm@$1:/data/gobii_bundle/config/gobii-web-tmp.xml
+        scp $3 gadm@1:/data/gobii_bundle/config/gobii-web-tmp.xml
         rm $3
         ;;
     passed)
-        ssh gadm@$1 "mv /data/gobii_bundle/config/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web.xml"
+        mv /data/gobii_bundle/config/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web.xml
         ;;
     failed)
-        ssh gadm@$1 "rm /data/gobii_bundle/config/gobii-web-tmp.xml"
+        rm /data/gobii_bundle/config/gobii-web-tmp.xml
         ;;
     scpfrom)
         scp gadm@$1:/data/gobii_bundle/config/gobii-web.xml $3

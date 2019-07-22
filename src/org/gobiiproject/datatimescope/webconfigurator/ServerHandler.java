@@ -7,7 +7,6 @@ import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 
-import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -56,8 +55,6 @@ public class ServerHandler {
      * @return true if username and password are filled
      */
     private void configureTomcatReloadRequest(){
-        boolean usernameSet = false;
-        boolean passwordSet = false;
         reloadRequest.setUsername(prop.getUsername());
         reloadRequest.setPassword(prop.getPassword());
         while (prop.getUsername() == null || prop.getPassword() == null){

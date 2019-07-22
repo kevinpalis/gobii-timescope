@@ -7,24 +7,24 @@
 x=1
 if [[ $3 == ${x} ]]
 then
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir /data/gobii_bundle/crops/$2'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/extractor'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/extractor/done'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/extractor/inprogress'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/extractor/instructions'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/extractor/output'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/files'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/hdf5'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader/digest'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader/done'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader/inprogress'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader/instructions'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/loader/qc'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'mkdir gobii_bundle/crops/$2/notices'"
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'cp gobii_bundle/crops/$4/notices/confidentiality.txt gobii_bundle/crops/$2/notices/confidentiality.txt'"
+    mkdir /data/gobii_bundle/crops/$2
+    mkdir /data/gobii_bundle/crops/$2/extractor
+    mkdir /data/gobii_bundle/crops/$2/extractor/done
+    mkdir /data/gobii_bundle/crops/$2/extractor/inprogress
+    mkdir /data/gobii_bundle/crops/$2/extractor/instructions
+    mkdir /data/gobii_bundle/crops/$2/extractor/output
+    mkdir /data/gobii_bundle/crops/$2/files
+    mkdir /data/gobii_bundle/crops/$2/hdf5
+    mkdir /data/gobii_bundle/crops/$2/loader
+    mkdir /data/gobii_bundle/crops/$2/loader/digest
+    mkdir /data/gobii_bundle/crops/$2/loader/done
+    mkdir /data/gobii_bundle/crops/$2/loader/inprogress
+    mkdir /data/gobii_bundle/crops/$2/loader/instructions
+    mkdir /data/gobii_bundle/crops/$2/loader/qc
+    mkdir /data/gobii_bundle/crops/$2/notices
+    cp /data/gobii_bundle/crops/$4/notices/confidentiality.txt/data/gobii_bundle/crops/$2/notices/confidentiality.txt
 else
-    ssh gadm@$1 "docker exec gobii-web-node bash -c 'rm -r gobii_bundle/crops/$2'"
+    rm -r /data/gobii_bundle/crops/$2
 fi
 
 
