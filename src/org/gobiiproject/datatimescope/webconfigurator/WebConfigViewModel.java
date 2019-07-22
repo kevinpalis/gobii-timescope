@@ -85,7 +85,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("reloadCrons")
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
         if (!cronHandler.reloadCrons(xmlHandler.getHostForReload(), currentCrop)){
-            generateAlertMessage(cronHandler.getErrorMessages());
+            alert(generateAlertMessage(cronHandler.getErrorMessages()));
             binder.sendCommand("disableEdit", null);
         } else {
             binder.sendCommand("disableEdit", null);
@@ -157,6 +157,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         return success;
     }
 
+    @Command("selectFileForImport")
+    @NotifyChange({"locationSet" , "newXMLShort"})
+    public void selectFileForImport(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
+        if (!setNewXmlPath(event)){
+            alert("File not found.");
+            binder.sendCommand("disableEdit",null);
+            return;
+        }
+        locationSet = true;
+    }
 
     /**
      * Imports a user provided XML file and sends it to the server via scp where it is processed and validated.
@@ -166,7 +176,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("importXML")
     public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
-        showNewXml = true;
         if (!setNewXmlPath(event)){
             alert("File not found.");
             binder.sendCommand("disableEdit",null);
@@ -196,6 +205,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             }
             binder.sendCommand("disableEdit",null);
         }
+        locationSet = false;
     }
 
 
@@ -213,6 +223,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List currentCrops = xmlHandler.getCropList();
         if (currentCrops.contains(currentCrop.getName())){
             alert("This crop already has a database associated with it. Please choose another crop.");
+            return;
+        }
+        if (currentCrop.getContactData() == null){
+            alert("Please upload a contact data file, otherwise the database cannot be created.");
+            binder.sendCommand("disableEdit",null);
             return;
         }
         ArrayList<String> contacts = readInContactData();
@@ -249,7 +264,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * Reads in the contact data from a user provided file path and adds each line to an Arraylist as a String for later processing
      */
     private ArrayList<String> readInContactData() {
-         BufferedReader buffer;
+        BufferedReader buffer;
         ArrayList<String> lines = new ArrayList<>();
         try {
             File fileName = new File(currentCrop.getContactData());
@@ -330,12 +345,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     @Command("saveConfigCreds")
-    public void saveConfigCreds(@BindingParam("win") Window x){
+    public void saveConfigCreds(@BindingParam("windowConfig") Window x){
         x.detach();
     }
 
     @Command("cancelConfigCreds")
-    public void cancelConfigCreds(@BindingParam("win") Window x){
+    public void cancelConfigCreds(@BindingParam("windowConfig") Window x){
         x.detach();
     }
 
@@ -532,7 +547,17 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     public String getNewXMLPath () {
+
         return newXMLPath;
+    }
+
+    public String getNewXMLShort() {
+        if (newXMLPath == null){
+            return null;
+        } else {
+            String[] split = newXMLPath.split("/");
+            return split[split.length - 1];
+        }
     }
 
     public boolean getShowNewXml () {

@@ -1,6 +1,6 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
-<window apply="org.zkoss.bind.BindComposer" id="win"
+<window apply="org.zkoss.bind.BindComposer" id="windowConfig"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
     <label>LDAP - Unit Test User</label>
     <grid width="500px">

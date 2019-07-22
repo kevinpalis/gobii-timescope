@@ -11,20 +11,22 @@
         <rows>
             <row>
                 <cell>
-                    <button upload="true" label="Load file" onUpload="@command('importXML', upload=event)" disabled="@load(vm.documentLocked)">
+                    <button upload="true" label="Choose File" onUpload="@command('selectFileForImport', upload=event)" disabled="@load(vm.locationSet)">
                     </button>
                 </cell>
+            </row>
+            <row visible="@bind(vm.locationSet)">
                 <cell sclass="row-title">
                     Selected File:
                 </cell>
                 <cell>
-                    <label value="@load(vm.newXMLPath, after = 'importXML')" visible="@bind(vm.showNewXml)">
+                    <label value="@bind(vm.newXMLShort)">
                     </label>
                 </cell>
             </row>
         </rows>
     </grid>
     <div align="left">
-        <button id="edit" label="Import" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <button id="import" label="Import" onClick="@command('importXML')" visible="@bind(vm.locationSet)" />
     </div>
 </vlayout>

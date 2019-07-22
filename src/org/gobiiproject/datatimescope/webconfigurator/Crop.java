@@ -69,11 +69,7 @@ public class Crop {
     }
 
     public String getWARName() {
-        if (WARName != null) {
-            return WARName + ".war";
-        } else {
-            return WARName;
-        }
+        return WARName;
     }
 
     public void setWARName(String WARName) {
