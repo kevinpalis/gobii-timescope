@@ -19,6 +19,13 @@ import java.util.List;
 public class BackupHandler {
 
     public BackupHandler(){
+        weekdays.add("Monday");
+        weekdays.add("Tuesday");
+        weekdays.add("Wednesday");
+        weekdays.add("Thursday");
+        weekdays.add("Friday");
+        weekdays.add("Saturday");
+        weekdays.add("Sunday");
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
@@ -52,7 +59,7 @@ public class BackupHandler {
     private boolean daily = false;
     private boolean weekly = false;
     private boolean monthly = false;
-    private List<String> weekdays = new ArrayList<>(List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"));
+    private List<String> weekdays = new ArrayList<>();
 
     public List<String> getWeekdays() {
         return weekdays;

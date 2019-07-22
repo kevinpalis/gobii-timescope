@@ -236,7 +236,9 @@ public class ServerHandler {
                 alert("The role '" + lastRole + "' is not a valid role. Please verify the spelling and make sure that the uploaded file follows the expected tab-delimited format.");
                 return success;
             }
-            Integer[] roleID = tmpRoleID.toArray(Integer[]::new);
+            Integer[] roleID = new Integer[tmpRoleID.size()];
+            for (int i =0; i < tmpRoleID.size(); i++)
+                roleID[i] = tmpRoleID.get(i);
             Integer organizationID;
             try {
                 organizationID = (Integer) context.fetch("select organization_id from organization where name = '" + splitData[5] + "';").getValue(0, 0);

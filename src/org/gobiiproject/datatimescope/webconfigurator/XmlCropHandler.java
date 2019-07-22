@@ -7,6 +7,8 @@ import org.zkoss.bind.annotation.NotifyChange;
 
 import java.io.*;
 
+import static org.zkoss.lang.Strings.isBlank;
+
 /** This file exclusively handles the removal and addition of crops and all the associated tags to the gobii-web.xml
  * It populates all mandatory tags and as well as all tags that are found in the gobii-web.xml in this project.
  * If the specifications change so should this file.
@@ -43,7 +45,7 @@ public class XmlCropHandler extends XmlModifier {
         try (BufferedReader br = new BufferedReader(new FileReader(oldFileName)); BufferedWriter bw = new BufferedWriter(new FileWriter(tmpFileName))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.isBlank()){
+                if (!isBlank(line)){
                     bw.write(line + "\n");
                 }
             }
