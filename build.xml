@@ -62,7 +62,7 @@
   	            <fileset dir="build/classes">
   	            <include name="**/*.class"/>
   	  			<include name="*.properties" />
-				<include name="*.sh" />
+				<include name="**/*.sh" />
   	            </fileset>
   	    </copy>
   	     
