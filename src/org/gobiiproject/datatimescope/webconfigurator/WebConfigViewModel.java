@@ -8,10 +8,10 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.Window;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
@@ -38,9 +38,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private boolean documentLocked = true;
     private boolean isSuperAdmin = false;
     private String newXMLPath;
-    private boolean showNewXml = false;
     private boolean locationSet = false;
-    private String exportLocation = "";
     private boolean firstUpload = true;
 
     @Init
@@ -111,28 +109,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("exportXML")
     public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
-        List<String> sec_copy_back = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "scpfrom" , exportLocation));
-        if (!scriptExecutor("importExportXml.sh", sec_copy_back)){
-            binder.sendCommand("disableEdit",null);
-            return;
+        try {
+            InputStream is = new FileInputStream("/data/gobii_bundle/config/gobii-web.xml");
+            Filedownload.save(is, "text/xml", "gobii-web.xml");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            alert("File not found.");
         }
-        exportLocation = "";
-        locationSet = false;
         binder.sendCommand("disableEdit", null);
         goToHome();
-    }
-
-    @Command("setLocationForExport")
-    @NotifyChange({"locationSet", "exportLocation"})
-    public void setLocationForExport(){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = fileChooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            exportLocation = selectedFile.getAbsolutePath();
-            locationSet = true;
-        }
     }
 
     /**
@@ -141,26 +126,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * @param event
      * @return true if creation was successful
      */
-    private boolean setNewXmlPath(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
-        boolean success = false;
+    private String createTmpCopyOfUpload(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event){
         FileOutputStream fos;
         try {
             File xml = new File(event.getMedia().getName());
             fos = new FileOutputStream(xml);
             fos.write(event.getMedia().getStringData().getBytes());
             fos.close();
-            newXMLPath = xml.getAbsolutePath();
-            success = true;
+            return xml.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return success;
+        return null;
     }
 
     @Command("selectFileForImport")
     @NotifyChange({"locationSet" , "newXMLShort"})
     public void selectFileForImport(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
-        if (!setNewXmlPath(event)){
+        newXMLPath = createTmpCopyOfUpload(event);
+        if (newXMLPath == null){
             alert("File not found.");
             binder.sendCommand("disableEdit",null);
             return;
@@ -171,16 +155,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     /**
      * Imports a user provided XML file and sends it to the server via scp where it is processed and validated.
      * If it passes validation it is assigned as the new gobii-web.xml and will reload all the context-paths, if accepted by the user
-     * @param event
      * @param binder
      */
     @Command("importXML")
-    public void importXML(@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder){
-        if (!setNewXmlPath(event)){
-            alert("File not found.");
-            binder.sendCommand("disableEdit",null);
-            return;
-        }
+    public void importXML(@ContextParam(ContextType.BINDER) Binder binder){
         List<String> params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
             binder.sendCommand("disableEdit",null);
@@ -354,15 +332,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         x.detach();
     }
 
+    //TODO rename this to more accurate name
     @Command("setLocationForSeeddata")
-    public void setLocationForSeeddata () {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int returnVal = fileChooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            currentCrop.setContactData(selectedFile.getAbsolutePath());
-        }
+    public void setLocationForSeeddata (@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder) {
+        currentCrop.setContactData(createTmpCopyOfUpload(event));
     }
 
     protected void goToHome () {
@@ -547,7 +520,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     public String getNewXMLPath () {
-
         return newXMLPath;
     }
 
@@ -560,16 +532,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
     }
 
-    public boolean getShowNewXml () {
-        return showNewXml;
-    }
-
     public boolean getLocationSet () {
         return locationSet;
-    }
-
-    public String getExportLocation () {
-        return exportLocation;
     }
 
     public BackupHandler getBackupHandler () {

@@ -6,26 +6,13 @@
     <grid width="700px">
         <columns>
             <column align="right" hflex="min"/>
-            <column/>
         </columns>
         <rows>
             <row>
                 <cell>
-                    <button label="Choose export location" onClick="@command('setLocationForExport')" disabled="@load(vm.locationSet)">
-                    </button>
-                </cell>
-            </row>
-            <row visible="@bind(vm.locationSet)">
-                <cell sclass="row-title">
-                    Selected Location:
-                </cell>
-                <cell>
-                    <label value="@bind(vm.exportLocation)"></label>
+                    <button id="export" label="Export Current gobii-web.xml to Downloads folder" onClick="@command('exportXML')" />
                 </cell>
             </row>
         </rows>
     </grid>
-    <div align="left">
-        <button id="export" label="Export" onClick="@command('exportXML')" visible="@bind(vm.locationSet)" />
-    </div>
 </vlayout>

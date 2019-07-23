@@ -41,7 +41,7 @@
                         </row>
                         <row>
                             <cell>
-                                <button onClick="@command('setLocationForSeeddata')" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
+                                <button upload="true" onUpload="@command('setLocationForSeeddata', upload=event)" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
                                 </button>
                             </cell>
                             <cell sclass="row-title">
