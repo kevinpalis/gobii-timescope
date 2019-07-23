@@ -13,6 +13,8 @@ import org.zkoss.zul.Include;
 import org.zkoss.zul.Window;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.generateAlertMessage;
@@ -40,12 +42,21 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private String newXMLPath;
     private boolean locationSet = false;
     private boolean firstUpload = true;
+    private boolean isKeySet = true;
 
     @Init
     public void init() {
         UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         if (cre.getRole() == 1) {
             isSuperAdmin = true;
+            keygen();
+        }
+    }
+
+    private void keygen() {
+        if (!new File("/home/gadm/.ssh/id_rsa.pub").exists()) {
+            alert("Please do keygen for the docker instance to the host by hand.");
+            isKeySet = false;
         }
     }
 
@@ -512,7 +523,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     public boolean getisSuperAdmin () {
-        return isSuperAdmin;
+        return isSuperAdmin && isKeySet;
     }
 
     public Crop getCurrentCrop () {

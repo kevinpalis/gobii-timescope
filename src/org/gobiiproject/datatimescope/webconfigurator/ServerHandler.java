@@ -201,7 +201,7 @@ public class ServerHandler {
             alert("The database couldn't be created due to following error: \n" + e.toString());
             success = false;
         }
-        List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
+        List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresHost(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
         if (!scriptExecutor("liquibase.sh", populate)){
             success = false;
         }
