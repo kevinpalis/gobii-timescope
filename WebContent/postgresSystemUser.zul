@@ -21,7 +21,7 @@
                 <cell sclass="row-title">Postgres Password:</cell>
                 <cell>
                     <textbox type="password" constraint="no empty"
-                             width="200px" value="@load(vm.xmlHandler.postgresPassword) @save(vm.xmlHandler.postgresPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                             width="200px" value="@load(vm.xmlHandler.postgresPasswordExternal) @save(vm.xmlHandler.postgresPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
                     </textbox>
                 </cell>
             </row>

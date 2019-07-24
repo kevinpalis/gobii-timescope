@@ -13,15 +13,15 @@ import java.util.ArrayList;
 
 public class CronHandler {
 
-    private ArrayList<String> errorMessages = new ArrayList<>();
 
+    private ArrayList<String> errorMessages = new ArrayList<>();
 
     /**
      * Performs a rudimentary validation to make sure the format works in a sensical way and changes the CRON of the given Crop
      * to the user provided values
-     * @param hostFromXml
-     * @param currentCrop
-     * @return
+     * @param hostFromXml Currently web-node host pulled from the XML file, should be changed to compute host once known
+     * @param currentCrop The crop we are modifying the CRON jobs for
+     * @return true, if successful change was made.
      */
     public boolean reloadCrons(String hostFromXml, Crop currentCrop){
         boolean success = false;
@@ -40,18 +40,20 @@ public class CronHandler {
     /**
      * Wrapper that handles the different types the User can interact with CRON Jobs
      * Creating a new CRON with default values
-     * Updating a CRON changing the values for a crops existing job
+     * Updating a CRON changing the values for a crops existing job with user values
      * Deleting both CRONS for an existing crop
-     * @param modification
+     * @param modification switch for what to do, options are create, delete or update
+     * @param hostFromXml Currently web-node host pulled from the XML file, should be changed to compute host once known
+     * @param currentCrop The crop we are applying the CRON job change to
      */
     public void modifyCron(String modification, String hostFromXml, Crop currentCrop){
-
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
                 "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
         };
         try {
+            //Read the current crontab into a Buffer
             Process proc = new ProcessBuilder(read).start();
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             switch (modification) {
@@ -68,6 +70,7 @@ public class CronHandler {
                     break;
                 }
             }
+            //Send the new CRONs back to the server
             Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
         } catch (IOException e){
@@ -75,6 +78,11 @@ public class CronHandler {
         }
     }
 
+    /**
+     * Appends the new CRON jobs for the new Crop to the Crontab using the default values of 2
+     * @param stdInput A buffer containing all the current CRONs
+     * @param currentCrop The new Crop for which we are adding the jobs
+     */
     private void createCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
@@ -93,6 +101,11 @@ public class CronHandler {
         writer.close();
     }
 
+    /**
+     * Modifies the current CRON jobs for the provided Crop to the values from the user
+     * @param stdInput A buffer containing all the current CRONs
+     * @param currentCrop The Crop for which we are changing the jobs
+     */
     private void updateCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;
@@ -116,6 +129,11 @@ public class CronHandler {
         writer.close();
     }
 
+    /**
+     * Removes the CRON jobs for the provided Crop
+     * @param stdInput A buffer containing all the current CRONs
+     * @param currentCrop The Crop for which we are deleting the jobs
+     */
     private void deleteCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
         String line = null;

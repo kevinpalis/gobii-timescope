@@ -26,7 +26,7 @@ public class WarningComposer{
     }
 
     /**
-     * Opens a warning box and if acknowledged performs the restart of the the application process.
+     * Opens a warning box and if acknowledged performs the restart of all web-applications.
      * Otherwise stages it for later and upon next restart the effects will take place
      * */
     public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model) {
@@ -43,6 +43,10 @@ public class WarningComposer{
         });
     }
 
+    /**
+     * Opens a warning box and if acknowledged performs the restart of all the web-applications and modifies the postgres credentials as input by the user.
+     * Otherwise stages it for later and upon next restart the effects will take place
+     * */
     public void warningPostgres(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model){
         Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
         Map<String, String> params = new HashMap<>();
@@ -52,8 +56,8 @@ public class WarningComposer{
                 " you want to restart Postgres now?", "Warning", buttons, null, Messagebox.EXCLAMATION, null, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
-                    binder.sendCommand("disableEdit", null);
                     String oldUsername = xmlHandler.getPostgresUserName();
+                    binder.sendCommand("disableEdit", null); //Now XML contains new name
                     model.serverHandler.executePostgresChange(oldUsername);
                     model.serverHandler.executeAllTomcatReloadRequest();
                     model.goToHome();
@@ -65,6 +69,10 @@ public class WarningComposer{
 
     }
 
+    /**
+     * Opens a warning box and if acknowledged performs the deletion of the database of the chosen crop
+     * If this is the only database left this operation will fail as that would leave the system in a weird state
+     * */
     public void warningRemoval(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model){
         Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
         Map<String, String> params = new HashMap<>();
@@ -87,6 +95,11 @@ public class WarningComposer{
         }, params);
     }
 
+
+    /**
+     * Opens a warning box and if acknowledged performs the restart of only the web-application associated with the crop
+     * Otherwise stages it for later and upon next restart the effects will take place
+     * */
     public void warningActivityTomcat(Binder binder, WebConfigViewModel model, Crop currentCrop) {
         Messagebox.show("Clicking OK will restart the web application of the crop " + currentCrop.getName() + " and all unsaved data will be lost.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {

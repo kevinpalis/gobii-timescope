@@ -18,6 +18,10 @@ import java.util.List;
 
 public class BackupHandler {
 
+    /**
+     * Sets up the weekday array for the dropdown menu of weekday selection
+     * Reads in the current Crontabs, puts them into a temporary file, and reads that file to display the current information back to the user
+     */
     public BackupHandler(){
         weekdays.add("Monday");
         weekdays.add("Tuesday");
@@ -122,7 +126,7 @@ public class BackupHandler {
     }
 
     /**
-     * Read in all current CRON jobs, pattern match and save the backup calls
+     * Read in all current CRON jobs, pattern match for the backup calls and save them to local members for display and modification
      */
 
     public void readDataFromCrons() {
@@ -152,9 +156,9 @@ public class BackupHandler {
     }
 
     /**
-     * Create the CRON jobs if they don't exist, otherwise modify the values according to the user input
+     * Create the CRON jobs if it doesn't exist yet, otherwise modify the values according to the user input
      * This also calls the script to send the jobs back to the server to make them active
-     * @param hostFromXml
+     * @param hostFromXml web-node host read in from the gobii-web.xml, should be changed to compute-node host once known
      * @return
      */
     public boolean saveDataToCrons(String hostFromXml) {

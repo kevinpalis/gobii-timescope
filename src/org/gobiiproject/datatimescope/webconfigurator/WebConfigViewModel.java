@@ -55,7 +55,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     private void keygen() {
         if (!new File("/home/gadm/.ssh/id_rsa.pub").exists()) {
-            alert("Please do keygen for the docker instance to the host by hand.");
+            alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: PLACEHOLDER");
             isKeySet = false;
         }
     }

@@ -66,6 +66,13 @@ public class XmlModifier extends SelectorComposer<Component> {
     private static String kdComputeIsActiveXPath = "//serverType[text() = 'KDC']/following-sibling::isActive";
     private static String kdComputeStatusCheckIntervalSecsXPath = "//serverType[text() = 'KDC']/following-sibling::statusCheckIntervalSecs";
     private static String kdComputeMaxStatusCheckMinsXPath = "//serverType[text() = 'KDC']/following-sibling::maxStatusCheckMins";
+    private static String ownCloudDecryptXPath = "//serverType[text() = 'OWN_CLOUD']/preceding-sibling::decrypt";
+    private static String ownCloudHostXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::host";
+    private static String ownCloudContextPathXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::contextPath";
+    private static String ownCloudPortXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::port";
+    private static String ownCloudIsActiveXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::isActive";
+    private static String ownCloudStatusCheckIntervalSecsXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::statusCheckIntervalSecs";
+    private static String ownCloudMaxStatusCheckMinsXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::maxStatusCheckMins";
 
     private static String currentCrop;
 
@@ -121,9 +128,11 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForUnitTest(String newContent){
-        Document doc = XmlModifier.retrieveFile(path);
-        evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
-        XmlModifier.modifyDocument(doc, path);
+        if (newContent.hashCode() != this.getLdapPasswordForUnitTest()){ //Password actually changed
+            Document doc = XmlModifier.retrieveFile(path);
+            evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
+            XmlModifier.modifyDocument(doc, path);
+        }
     }
     public void setGobiiAuthenticationType(String newContent){
         Document doc = XmlModifier.retrieveFile(path);
@@ -146,9 +155,11 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindPassword(String newContent){
-        Document doc = XmlModifier.retrieveFile(path);
-        evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
-        XmlModifier.modifyDocument(doc, path);
+        if (newContent.hashCode() != this.getLdapBindPassword()) {
+            Document doc = XmlModifier.retrieveFile(path);
+            evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
+            XmlModifier.modifyDocument(doc, path);
+        }
     }
     public void setLdapUserForBackendProcs(String newContent){
         Document doc = XmlModifier.retrieveFile(path);
@@ -156,9 +167,11 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForBackendProcs(String newContent){
-        Document doc = XmlModifier.retrieveFile(path);
-        evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
-        XmlModifier.modifyDocument(doc, path);
+        if (newContent.hashCode() != this.getLdapPasswordForBackendProcs()) {
+            Document doc = XmlModifier.retrieveFile(path);
+            evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
+            XmlModifier.modifyDocument(doc, path);
+        }
     }
     public void setEmailSvrType(String newContent){
         Document doc = XmlModifier.retrieveFile(path);
@@ -181,9 +194,11 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrPassword(String newContent){
-        Document doc = XmlModifier.retrieveFile(path);
-        evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
-        XmlModifier.modifyDocument(doc, path);
+        if (newContent.hashCode() != this.getEmailSvrPassword()) {
+            Document doc = XmlModifier.retrieveFile(path);
+            evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
+            XmlModifier.modifyDocument(doc, path);
+        }
     }
     public void setEmailServerPort(String newContent){
         Document doc = XmlModifier.retrieveFile(path);
@@ -265,6 +280,41 @@ public class XmlModifier extends SelectorComposer<Component> {
         evaluateXPathExpression(kdComputeMaxStatusCheckMinsXPath, doc).item(0).setTextContent(newContent);
         XmlModifier.modifyDocument(doc, path);
     }
+    public void setOwnCloudDecrypt(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudDecryptXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudHost(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudHostXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudContextPath(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudContextPathXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudPort(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudPortXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudIsActive(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudIsActiveXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudStatusCheckIntervalSecs(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudStatusCheckIntervalSecsXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
+    public void setOwnCloudMaxStatusCheckMins(String newContent){
+        Document doc = XmlModifier.retrieveFile(path);
+        evaluateXPathExpression(ownCloudMaxStatusCheckMinsXPath, doc).item(0).setTextContent(newContent);
+        XmlModifier.modifyDocument(doc, path);
+    }
 
 
 
@@ -278,7 +328,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         return cropList;
     }
 
-    //Crop specific getters
+    //-----------------------------------------Crop specific getters----------------------------------------------------
     public String getPostgres(String Cropname){
         String postgresContextPathXPath = "//gobiiCropType[text() = '" + Cropname + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']";
         Document doc = XmlModifier.retrieveFile(path);
@@ -339,8 +389,36 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresContextPathXPath, doc).item(0).getTextContent();
     }
+    //------------------------------------------------------------------------------------------------------------------
 
-
+    public String getOwnCloudDecrypt(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudDecryptXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudHost(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudHostXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudContextPath(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudContextPathXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudPort(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudPortXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudIsActive(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudIsActiveXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudStatusCheckIntervalSecs(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudStatusCheckIntervalSecsXPath, doc).item(0).getTextContent();
+    }
+    public String getOwnCloudMaxStatusCheckMins(){
+        Document doc = XmlModifier.retrieveFile(path);
+        return evaluateXPathExpression(ownCloudMaxStatusCheckMinsXPath, doc).item(0).getTextContent();
+    }
     public String getKdComputeDecrypt(){
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(kdComputeDecryptXPath, doc).item(0).getTextContent();
@@ -408,7 +486,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
     }
-    public int getPostgresPasswordExtrenal(){
+    public int getPostgresPasswordExternal(){
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
@@ -531,8 +609,8 @@ public class XmlModifier extends SelectorComposer<Component> {
         return doc;
     }
 
-    //Creation requires tab indenture setting
-    protected static void modifyDocument(Document doc, String path, Boolean creation){
+    //When adding to the xml need a different setting requires tab indenture setting, this is toggled be the boolean creation
+    protected static void modifyDocument(Document doc, String path, boolean creation){
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         try {
             Transformer transformer = transformerFactory.newTransformer();

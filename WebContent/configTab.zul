@@ -129,7 +129,7 @@
                     </treerow>
                 </treeitem>
                 <treeitem>
-                    <treerow>
+                    <treerow onClick="=@command('ownCloud')">
                         <treecell>
                             <label value="Own Cloud" style="font-size:15px !important;"/>
                         </treecell>
