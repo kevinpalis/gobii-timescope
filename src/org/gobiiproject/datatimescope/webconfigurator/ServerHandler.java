@@ -124,7 +124,7 @@ public class ServerHandler {
         try {
             context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(cropName) + ";");
         } catch (Exception e) {
-            alert("The database could not be remove. Stacktrace of the error: \n" + e.toString());
+            alert("The database could not be removed. Stacktrace of the error: \n" + e.toString());
             e.printStackTrace();
             success = false;
         }

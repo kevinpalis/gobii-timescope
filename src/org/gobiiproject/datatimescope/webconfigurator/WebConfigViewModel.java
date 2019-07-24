@@ -206,6 +206,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * It also duplicates the gobii-dev.war file within tomcat webapps for tomcat deployment (Happens automatically upon creation)
      * Furthermore it modifies the XML to reflect the new Crop and configures the respective CRON jobs for the new crop
      * using the default values of 2 and 2
+     * If ANY step EXCEPT the CRON creation fails the entire operation will be aborted and reverted to the previous state.
      */
     @Command("addCropToDatabase")
     public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
@@ -221,8 +222,9 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         ArrayList<String> contacts = readInContactData();
         int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
-        if (seedData == 1){ //Liquibase failed
+        if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             binder.sendCommand("disableEdit", null);
+            serverHandler.postgresRemoveCrop(currentCrop.getName());
             return;
         } else if (seedData == -1){
             //Remember if upload was tried already
@@ -234,12 +236,18 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             binder.sendCommand("disableEdit",null);
+            xmlCropHandler.removeCrop(currentCrop);
+            serverHandler.postgresRemoveCrop(currentCrop.getName());
             return;
         }
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
         List<String> duplicateWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
             binder.sendCommand("disableEdit",null);
+            xmlCropHandler.removeCrop(currentCrop);
+            List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+            scriptExecutor("cropFileManagement.sh", removeBundle);
+            serverHandler.postgresRemoveCrop(currentCrop.getName());
             return;
         }
         cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);

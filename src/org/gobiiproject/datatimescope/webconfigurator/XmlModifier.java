@@ -486,7 +486,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
     }
-    public int getPostgresPasswordExternal(){
+    public int getPostgresPasswordExtrenal(){
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode();
     }
