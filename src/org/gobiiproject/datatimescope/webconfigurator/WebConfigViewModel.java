@@ -29,12 +29,12 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.sc
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
-    private XmlModifier xmlHandler = new XmlModifier();
+    public XmlModifier xmlHandler = new XmlModifier();
     private BackupHandler backupHandler = new BackupHandler();
     protected ServerHandler serverHandler = new ServerHandler(xmlHandler);
     public CronHandler cronHandler = new CronHandler();
     private XmlCropHandler xmlCropHandler = new XmlCropHandler();
-    private WarningComposer warningComposer = new WarningComposer(xmlHandler);
+    public WarningComposer warningComposer = new WarningComposer(xmlHandler);
     public PropertyHandler propertyHandler = new PropertyHandler();
     private Crop currentCrop = new Crop();
     private boolean documentLocked = true;
@@ -55,7 +55,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     private void keygen() {
         if (!new File("/home/gadm/.ssh/id_rsa.pub").exists()) {
-            alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: PLACEHOLDER");
+            alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: \n" +
+                    "http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?spaceKey=IN19&title=Webconfigurator");
             isKeySet = false;
         }
     }
@@ -223,8 +224,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         ArrayList<String> contacts = readInContactData();
         int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
-            binder.sendCommand("disableEdit", null);
             serverHandler.postgresRemoveCrop(currentCrop.getName());
+            binder.sendCommand("disableEdit", null);
             return;
         } else if (seedData == -1){
             //Remember if upload was tried already
@@ -235,19 +236,19 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         xmlCropHandler.appendCrop(currentCrop);
         List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
-            binder.sendCommand("disableEdit",null);
             xmlCropHandler.removeCrop(currentCrop);
             serverHandler.postgresRemoveCrop(currentCrop.getName());
+            binder.sendCommand("disableEdit",null);
             return;
         }
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
         List<String> duplicateWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
-            binder.sendCommand("disableEdit",null);
             xmlCropHandler.removeCrop(currentCrop);
             List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
             scriptExecutor("cropFileManagement.sh", removeBundle);
             serverHandler.postgresRemoveCrop(currentCrop.getName());
+            binder.sendCommand("disableEdit",null);
             return;
         }
         cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
@@ -549,6 +550,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             String[] split = newXMLPath.split("/");
             return split[split.length - 1];
         }
+    }
+
+    public WarningComposer getWarningComposer(){
+        return warningComposer;
     }
 
     public boolean getLocationSet () {

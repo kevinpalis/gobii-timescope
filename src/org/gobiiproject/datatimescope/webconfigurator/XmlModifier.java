@@ -128,7 +128,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForUnitTest(String newContent){
-        if (newContent.hashCode() != this.getLdapPasswordForUnitTest()){ //Password actually changed
+        if (!String.valueOf(newContent.hashCode()).equals(this.getLdapPasswordForUnitTest())) {
             Document doc = XmlModifier.retrieveFile(path);
             evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).setTextContent(newContent);
             XmlModifier.modifyDocument(doc, path);
@@ -155,7 +155,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapBindPassword(String newContent){
-        if (newContent.hashCode() != this.getLdapBindPassword()) {
+        if (!String.valueOf(newContent.hashCode()).equals(this.getLdapBindPassword())) {
             Document doc = XmlModifier.retrieveFile(path);
             evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).setTextContent(newContent);
             XmlModifier.modifyDocument(doc, path);
@@ -167,7 +167,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setLdapPasswordForBackendProcs(String newContent){
-        if (newContent.hashCode() != this.getLdapPasswordForBackendProcs()) {
+        if (!String.valueOf(newContent.hashCode()).equals(this.getLdapPasswordForBackendProcs())) {
             Document doc = XmlModifier.retrieveFile(path);
             evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).setTextContent(newContent);
             XmlModifier.modifyDocument(doc, path);
@@ -194,7 +194,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         XmlModifier.modifyDocument(doc, path);
     }
     public void setEmailSvrPassword(String newContent){
-        if (newContent.hashCode() != this.getEmailSvrPassword()) {
+        if (!String.valueOf(newContent.hashCode()).equals(this.getEmailSvrPassword())) {
             Document doc = XmlModifier.retrieveFile(path);
             evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).setTextContent(newContent);
             XmlModifier.modifyDocument(doc, path);
@@ -486,9 +486,9 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(postgresUserNameXPath, doc).item(0).getTextContent();
     }
-    public int getPostgresPasswordExtrenal(){
+    public String getPostgresPasswordExternal(){
         Document doc = XmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode();
+        return String.valueOf(evaluateXPathExpression(postgresPasswordXPath, doc).item(0).getTextContent().hashCode());
     }
     public String getPostgresPassword(){
         Document doc = XmlModifier.retrieveFile(path);
@@ -498,9 +498,9 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForUnitTestXPath, doc).item(0).getTextContent();
     }
-    public int getLdapPasswordForUnitTest(){
+    public String getLdapPasswordForUnitTest(){
         Document doc = XmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent().hashCode();
+        return String.valueOf(evaluateXPathExpression(ldapPasswordForUnitTestXPath, doc).item(0).getTextContent().hashCode());
     }
     public String getGobiiAuthenticationType(){
         Document doc = XmlModifier.retrieveFile(path);
@@ -518,17 +518,17 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapBindUserXPath, doc).item(0).getTextContent();
     }
-    public int getLdapBindPassword(){
+    public String getLdapBindPassword(){
         Document doc = XmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent().hashCode();
+        return String.valueOf(evaluateXPathExpression(ldapBindPasswordXPath, doc).item(0).getTextContent().hashCode());
     }
     public String getLdapUserForBackendProcs(){
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(ldapUserForBackendProcsXPath, doc).item(0).getTextContent();
     }
-    public int getLdapPasswordForBackendProcs(){
+    public String getLdapPasswordForBackendProcs(){
         Document doc = XmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent().hashCode();
+        return String.valueOf(evaluateXPathExpression(ldapPasswordForBackendProcsXPath, doc).item(0).getTextContent().hashCode());
     }
     public String getEmailSvrType(){
         Document doc = XmlModifier.retrieveFile(path);
@@ -546,9 +546,9 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         return evaluateXPathExpression(emailSvrHashTypeXPath, doc).item(0).getTextContent();
     }
-    public int getEmailSvrPassword(){
+    public String getEmailSvrPassword(){
         Document doc = XmlModifier.retrieveFile(path);
-        return evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent().hashCode();
+        return String.valueOf(evaluateXPathExpression(emailSvrPasswordXPath, doc).item(0).getTextContent().hashCode());
     }
     public String getEmailServerPort(){
         Document doc = XmlModifier.retrieveFile(path);
