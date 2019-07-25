@@ -26,7 +26,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = -762851234;
+    private static final long serialVersionUID = 1747500236;
 
     /**
      * The parameter <code>public.updatemarkergroup.id</code>.
@@ -44,6 +44,12 @@ public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
     public static final Parameter<String> MARKERGROUPCODE = createParameter("markergroupcode", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public static final Parameter<Object> MARKERGROUPMARKERS = createParameter("markergroupmarkers", org.jooq.impl.DefaultDataType.getDefaultDataType("jsonb"), false, false);
+
+    /**
      * The parameter <code>public.updatemarkergroup.germplasmgroup</code>.
      */
     public static final Parameter<String> GERMPLASMGROUP = createParameter("germplasmgroup", org.jooq.impl.SQLDataType.CLOB, false, false);
@@ -54,14 +60,14 @@ public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
     public static final Parameter<Integer> CREATEDBY = createParameter("createdby", org.jooq.impl.SQLDataType.INTEGER, false, false);
 
     /**
-     * The parameter <code>public.updatemarkergroup.createddate</code>.
+     * The parameter <code>public.updatemarkergroup.createdate</code>.
      */
-    public static final Parameter<Date> CREATEDDATE = createParameter("createddate", org.jooq.impl.SQLDataType.DATE, false, false);
+    public static final Parameter<Date> CREATEDATE = createParameter("createdate", org.jooq.impl.SQLDataType.DATE, false, false);
 
     /**
      * The parameter <code>public.updatemarkergroup.modifiedby</code>.
      */
-    public static final Parameter<Integer> MODIFIEDBY = createParameter("modifiedby", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<String> MODIFIEDBY = createParameter("modifiedby", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
      * The parameter <code>public.updatemarkergroup.modifieddate</code>.
@@ -82,9 +88,10 @@ public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
         addInParameter(ID);
         addInParameter(MARKERGROUPNAME);
         addInParameter(MARKERGROUPCODE);
+        addInParameter(MARKERGROUPMARKERS);
         addInParameter(GERMPLASMGROUP);
         addInParameter(CREATEDBY);
-        addInParameter(CREATEDDATE);
+        addInParameter(CREATEDATE);
         addInParameter(MODIFIEDBY);
         addInParameter(MODIFIEDDATE);
         addInParameter(MARKERGROUPSTATUS);
@@ -113,6 +120,13 @@ public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
     }
 
     /**
+     * Set the <code>markergroupmarkers</code> parameter IN value to the routine
+     */
+    public void setMarkergroupmarkers(Object value) {
+        setValue(MARKERGROUPMARKERS, value);
+    }
+
+    /**
      * Set the <code>germplasmgroup</code> parameter IN value to the routine
      */
     public void setGermplasmgroup(String value) {
@@ -127,16 +141,16 @@ public class Updatemarkergroup1 extends AbstractRoutine<java.lang.Void> {
     }
 
     /**
-     * Set the <code>createddate</code> parameter IN value to the routine
+     * Set the <code>createdate</code> parameter IN value to the routine
      */
-    public void setCreateddate(Date value) {
-        setValue(CREATEDDATE, value);
+    public void setCreatedate(Date value) {
+        setValue(CREATEDATE, value);
     }
 
     /**
      * Set the <code>modifiedby</code> parameter IN value to the routine
      */
-    public void setModifiedby(Integer value) {
+    public void setModifiedby(String value) {
         setValue(MODIFIEDBY, value);
     }
 

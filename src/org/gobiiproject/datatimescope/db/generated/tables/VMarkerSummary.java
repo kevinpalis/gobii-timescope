@@ -30,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VMarkerSummary extends TableImpl<VMarkerSummaryRecord> {
 
-    private static final long serialVersionUID = -1442484965;
+    private static final long serialVersionUID = -736743807;
 
     /**
      * The reference instance of <code>public.v_marker_summary</code>
@@ -51,6 +51,11 @@ public class VMarkerSummary extends TableImpl<VMarkerSummaryRecord> {
     public final TableField<VMarkerSummaryRecord, Integer> MARKER_ID = createField("marker_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
+     * The column <code>public.v_marker_summary.marker_name</code>.
+     */
+    public final TableField<VMarkerSummaryRecord, String> MARKER_NAME = createField("marker_name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
      * The column <code>public.v_marker_summary.platform_id</code>.
      */
     public final TableField<VMarkerSummaryRecord, Integer> PLATFORM_ID = createField("platform_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
@@ -59,21 +64,6 @@ public class VMarkerSummary extends TableImpl<VMarkerSummaryRecord> {
      * The column <code>public.v_marker_summary.platform_name</code>.
      */
     public final TableField<VMarkerSummaryRecord, String> PLATFORM_NAME = createField("platform_name", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.v_marker_summary.variant_id</code>.
-     */
-    public final TableField<VMarkerSummaryRecord, Integer> VARIANT_ID = createField("variant_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
-     * The column <code>public.v_marker_summary.marker_name</code>.
-     */
-    public final TableField<VMarkerSummaryRecord, String> MARKER_NAME = createField("marker_name", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
-     * The column <code>public.v_marker_summary.code</code>.
-     */
-    public final TableField<VMarkerSummaryRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>public.v_marker_summary.ref</code>.
@@ -86,11 +76,6 @@ public class VMarkerSummary extends TableImpl<VMarkerSummaryRecord> {
     public final TableField<VMarkerSummaryRecord, String[]> ALTS = createField("alts", org.jooq.impl.SQLDataType.CLOB.getArrayDataType(), this, "");
 
     /**
-     * The column <code>public.v_marker_summary.sequence</code>.
-     */
-    public final TableField<VMarkerSummaryRecord, String> SEQUENCE = createField("sequence", org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
      * The column <code>public.v_marker_summary.reference_id</code>.
      */
     public final TableField<VMarkerSummaryRecord, Integer> REFERENCE_ID = createField("reference_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
@@ -99,6 +84,21 @@ public class VMarkerSummary extends TableImpl<VMarkerSummaryRecord> {
      * The column <code>public.v_marker_summary.reference_name</code>.
      */
     public final TableField<VMarkerSummaryRecord, String> REFERENCE_NAME = createField("reference_name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.v_marker_summary.variant_id</code>.
+     */
+    public final TableField<VMarkerSummaryRecord, Integer> VARIANT_ID = createField("variant_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
+    /**
+     * The column <code>public.v_marker_summary.code</code>.
+     */
+    public final TableField<VMarkerSummaryRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.v_marker_summary.sequence</code>.
+     */
+    public final TableField<VMarkerSummaryRecord, String> SEQUENCE = createField("sequence", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.

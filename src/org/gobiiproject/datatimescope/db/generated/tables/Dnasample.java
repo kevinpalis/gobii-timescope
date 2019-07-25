@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dnasample extends TableImpl<DnasampleRecord> {
 
-    private static final long serialVersionUID = 1825976245;
+    private static final long serialVersionUID = -1709960693;
 
     /**
      * The reference instance of <code>public.dnasample</code>
@@ -132,6 +132,11 @@ public class Dnasample extends TableImpl<DnasampleRecord> {
     public final TableField<DnasampleRecord, Object> PROPS = createField("props", org.jooq.impl.DefaultDataType.getDefaultDataType("jsonb"), this, "");
 
     /**
+     * The column <code>public.dnasample.uuid</code>.
+     */
+    public final TableField<DnasampleRecord, String> UUID = createField("uuid", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
      * Create a <code>public.dnasample</code> table reference
      */
     public Dnasample() {
@@ -173,7 +178,7 @@ public class Dnasample extends TableImpl<DnasampleRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.IDX_DNASAMPLE_NAME, Indexes.IDX_DNASAMPLE_NUM, Indexes.IDX_DNASAMPLE_PLATENAME, Indexes.IDX_DNASAMPLE_PROPS, Indexes.IDX_DNASAMPLE_WELLROW_WELLCOL, Indexes.PK_DNASAMPLE);
+        return Arrays.<Index>asList(Indexes.IDX_DNASAMPLE_NAME, Indexes.IDX_DNASAMPLE_NUM, Indexes.IDX_DNASAMPLE_PLATENAME, Indexes.IDX_DNASAMPLE_PROPS, Indexes.IDX_DNASAMPLE_WELLROW_WELLCOL, Indexes.PK_DNASAMPLE, Indexes.UNIQUE_DNASAMPLE_UUID);
     }
 
     /**
@@ -197,7 +202,7 @@ public class Dnasample extends TableImpl<DnasampleRecord> {
      */
     @Override
     public List<UniqueKey<DnasampleRecord>> getKeys() {
-        return Arrays.<UniqueKey<DnasampleRecord>>asList(Keys.PK_DNASAMPLE);
+        return Arrays.<UniqueKey<DnasampleRecord>>asList(Keys.PK_DNASAMPLE, Keys.UNIQUE_DNASAMPLE_UUID);
     }
 
     /**

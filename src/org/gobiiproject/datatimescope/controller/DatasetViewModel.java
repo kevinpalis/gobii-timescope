@@ -67,7 +67,9 @@ public class DatasetViewModel {
 
 	@Wire("#datasetGrid")
 	Grid datasetGrid;
-
+	
+	private Integer sizeDatasetList=0;
+	
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
@@ -86,7 +88,7 @@ public class DatasetViewModel {
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
-		ContactRecord selectAllPI = new ContactRecord(0);
+		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
 		piList.add(0, selectAllPI);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
@@ -110,7 +112,7 @@ public class DatasetViewModel {
 
 
 	@Command("submitQuery")
-	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers","paged", "sizeDatasetList"})
 	public void submitQuery(){
 
 		try{
@@ -132,7 +134,7 @@ public class DatasetViewModel {
 	}
 
 	@Command("resetDatasetTab")
-	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled", "paged"})
+	@NotifyChange({"datasetList", "sizeDatasetList", "selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled", "paged"})
 	public void resetDatasetTab(){
 		try{
 			datasetList.clear(); //clear the list first and then just add if there are any selected
@@ -267,7 +269,7 @@ public class DatasetViewModel {
 	}
 
 	@GlobalCommand("retrieveDatasetList")
-	@NotifyChange({"datasetList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@NotifyChange({"datasetList", "sizeDatasetList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void retrieveUserList(){
 		//...
 
@@ -437,7 +439,7 @@ public class DatasetViewModel {
 
 	public void setDatasetTypes(List<CvRecord> list) {
 		this.datasetTypes = list;
-		CvRecord newRecord = new CvRecord(0);
+		CvRecord newRecord = new CvRecord(0, "SELECT ALL DATASET TYPE", "select all", 1, 1, "abbreviation", 1, 1, null);
 		datasetTypes.add(0, newRecord);
 	}
 
@@ -497,6 +499,21 @@ public class DatasetViewModel {
 
 	public void setPaged(boolean paged) {
 		this.paged = paged;
+	}
+
+
+	public Integer getSizeDatasetList() {
+
+		sizeDatasetList = datasetList.size();
+		
+		if(datasetList.size()<1) sizeDatasetList = 0;
+		
+		return sizeDatasetList;
+	}
+
+
+	public void setSizeDatasetList(Integer sizeDatasetList) {
+		this.sizeDatasetList = sizeDatasetList;
 	}
 
 }

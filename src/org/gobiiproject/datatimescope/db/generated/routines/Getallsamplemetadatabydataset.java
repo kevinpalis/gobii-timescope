@@ -24,7 +24,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Getallsamplemetadatabydataset extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = 2088258785;
+    private static final long serialVersionUID = 345063339;
 
     /**
      * The parameter <code>public.getallsamplemetadatabydataset.datasetid</code>.
@@ -40,6 +40,11 @@ public class Getallsamplemetadatabydataset extends AbstractRoutine<java.lang.Voi
      * The parameter <code>public.getallsamplemetadatabydataset.sample_name</code>.
      */
     public static final Parameter<String> SAMPLE_NAME = createParameter("sample_name", org.jooq.impl.SQLDataType.CLOB, false, false);
+
+    /**
+     * The parameter <code>public.getallsamplemetadatabydataset.sample_uuid</code>.
+     */
+    public static final Parameter<String> SAMPLE_UUID = createParameter("sample_uuid", org.jooq.impl.SQLDataType.CLOB, false, false);
 
     /**
      * The parameter <code>public.getallsamplemetadatabydataset.germplasm_name</code>.
@@ -90,6 +95,7 @@ public class Getallsamplemetadatabydataset extends AbstractRoutine<java.lang.Voi
         addInParameter(DATASETID);
         addOutParameter(DNARUN_NAME);
         addOutParameter(SAMPLE_NAME);
+        addOutParameter(SAMPLE_UUID);
         addOutParameter(GERMPLASM_NAME);
         addOutParameter(EXTERNAL_CODE);
         addOutParameter(GERMPLASM_TYPE);
@@ -119,6 +125,13 @@ public class Getallsamplemetadatabydataset extends AbstractRoutine<java.lang.Voi
      */
     public String getSampleName() {
         return get(SAMPLE_NAME);
+    }
+
+    /**
+     * Get the <code>sample_uuid</code> parameter OUT value from the routine
+     */
+    public String getSampleUuid() {
+        return get(SAMPLE_UUID);
     }
 
     /**

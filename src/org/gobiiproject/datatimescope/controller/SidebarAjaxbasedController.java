@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.gobiiproject.datatimescope.configurator.SidebarPageConfigAjaxBasedImpl;
 import org.gobiiproject.datatimescope.services.SidebarPage;
 import org.gobiiproject.datatimescope.services.SidebarPageConfig;
+import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
@@ -51,6 +52,7 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 		image.setWidth("27px");
 		image.setHeight("27px");
 		Label lab = new Label(label);
+		lab.setStyle("cursor:pointer !important;");
 
 		row.appendChild(image);
 		row.appendChild(lab);
@@ -92,5 +94,5 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 
 		return row;
 	}
-
+	
 }
