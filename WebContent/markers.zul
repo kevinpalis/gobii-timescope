@@ -24,13 +24,13 @@
 								<grid hflex="1" vflex="1"
 									style="border: none; important!">
 									<columns>
-										<column align="left" />
+										<column align="left" width="30%"/>
 										<column align="left" />
 									</columns>
 									<rows>
 										<row>
 											<cell sclass="row-title">
-												Marker ID :
+												Marker ID:
 											</cell>
 											<cell>
 												<hbox hflex="true">
@@ -50,16 +50,32 @@
 										</row>
 										<row>
 											<cell sclass="row-title">
-												Marker Names :
+												Marker Names:
 											</cell>
 											<cell>
-												<textbox rows="8"
+												<textbox rows="4"
 													cols="40" hflex="true" vflex="true"
 													tooltiptext="Separate marker names with comma"
 													value="@bind(vm.markerEntity.markerNamesAsCommaSeparatedString)"
 													popup="title, position=start_before"
 													disabled="@bind(vm.nameListDisabled)"
-													onChange="@command('changeEnabled')">
+													onChange="@command('changeEnabled')"
+													style="resize:none;">
+
+												</textbox>
+											</cell>
+										</row>
+										
+										<row>
+											<cell sclass="row-title">
+												Current Filters:
+											</cell>
+											<cell>
+												<textbox  rows="8"
+													cols="40" hflex="true" vflex="true" multiline="true" 
+													value="@bind(vm.currentFiltersAsText)"
+													readonly="true"
+													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
 
 												</textbox>
 											</cell>
@@ -67,9 +83,9 @@
 									</rows>
 								</grid>
 
-								<tabbox id="tb" orient="left" hflex="1"
+								<tabbox id="tb" orient="left" hflex="2"
 									height="350px">
-									<tabs width="30%" id="tabs">
+									<tabs width="230px" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tabstyle"
 											style="text-align: left; border-bottom: 1px solid #ECECEC;"
@@ -124,7 +140,7 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell
+														<listcell sclass="list-row"
 															label="@load(item.name)" />
 													</listitem>
 												</template>
@@ -156,9 +172,9 @@
 												onSelect="@command('validateForReset', category='vendorprotocol')">
 												<template name="model"
 													var="item">
-													<listitem>
+													<listitem >
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load(item.name)"/>
 													</listitem>
 												</template>
 											</listbox>
@@ -214,7 +230,8 @@
 												visible="@load(vm.dbLinkageGroup)" vflex="1"
 												model="@load(vm.linkageGroupList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.linkageGroupList)">
+												selectedItems="@bind(vm.markerEntity.linkageGroupList)"
+												onSelect="@command('validateForReset', category='lg')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -348,7 +365,8 @@
 												visible="@load(vm.dbDataset)" vflex="1"
 												model="@load(vm.datasetList)" multiple="true"
 												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.datasetList)">
+												selectedItems="@bind(vm.markerEntity.datasetList)"
+												onSelect="@command('validateForReset', category='dataset')">
 												<template name="model"
 													var="item">
 													<listitem>
@@ -383,10 +401,10 @@
 						<div vflex="1" hflex="1">
 							<div sclass="Container" vflex="1"
 								hflex="1">
-								<grid id="markerGrid"
-									model="@load(vm.markerList)" mold="paging" pageSize="25"
-									pagingPosition="both" vflex="1" hflex="1"
-									emptyMessage="No items match your search">
+									<grid id="markerGrid"
+										model="@load(vm.markerList)" mold="paging" pageSize="25"
+										emptyMessage="No items match your search"
+										pagingPosition="both" vflex="1" hflex="1">
 									<columns sizable="true">
 										<column hflex="1">
 											<checkbox label="Select All"

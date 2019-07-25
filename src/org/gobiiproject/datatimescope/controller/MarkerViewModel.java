@@ -107,6 +107,7 @@ public class MarkerViewModel {
 	private String filterCallingAnalysis;
 	private String filterProject;
 	private String filterLinkageGroup;
+	private String currentFiltersAsText;
 
 	@SuppressWarnings("unchecked")
 	@Init
@@ -273,45 +274,45 @@ public class MarkerViewModel {
 	}
 
 	@Command("validateForReset")
-	@NotifyChange("markerEntity")
+	@NotifyChange({"markerEntity", "currentFiltersAsText"})
 	public void validateForReset(@BindingParam("category") String category){
 
-		if(shouldNextChangeResetOtherFilterValues) { //if reset required
+		//if reset required then: if(shouldNextChangeResetOtherFilterValues)  
 
 			switch(category){
 
 			case "platform": 
 				if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) {
 
-					markerEntity.getVendorProtocolList().clear();
+					if(shouldNextChangeResetOtherFilterValues) markerEntity.getVendorProtocolList().clear();
 				}
 			case "vendorprotocol": 
 				if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getProjectList())) {
 
-					markerEntity.getProjectList().clear();
+					if(shouldNextChangeResetOtherFilterValues) markerEntity.getProjectList().clear();
 				} 
 			case "project":
 				if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getExperimentList())) {
 
-					markerEntity.getExperimentList().clear();
+					if(shouldNextChangeResetOtherFilterValues) markerEntity.getExperimentList().clear();
 				}
 			case "experiment":
 			case "analyses":
 				if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getDatasetList())) {
-					markerEntity.getDatasetList().clear();
+					if(shouldNextChangeResetOtherFilterValues) markerEntity.getDatasetList().clear();
 				}
 				break;
 			case "mapset": 
 				if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(markerEntity.getLinkageGroupList())) {
-					markerEntity.getLinkageGroupList().clear();
+					if(shouldNextChangeResetOtherFilterValues) markerEntity.getLinkageGroupList().clear();
 				}
 				break; 
 			default: 
-				System.out.println("no match"); 
+				break; 
 			}
 			//once resets are done, update boolean
 			shouldNextChangeResetOtherFilterValues=false;
-		}
+			currentFiltersAsText = markerEntity.getFiltersAsText();
 	}
 
 	@Command("submitQuery")
@@ -735,7 +736,7 @@ public class MarkerViewModel {
 			}
 			break; 
 		default: 
-			System.out.println("no match"); 
+			break; 
 		} 
 
 		if(!sb.toString().isEmpty()) {
@@ -747,7 +748,8 @@ public class MarkerViewModel {
 			Window window = (Window)Executions.createComponents(
 					"/info_popup.zul", null, args);
 			window.setPosition("center");
-			window.doPopup();
+			window.setClosable(true);
+			window.doModal();
 		}
 		else shouldNextChangeResetOtherFilterValues = false;
 	}
@@ -1324,6 +1326,16 @@ public class MarkerViewModel {
 
 	public void setMarkerDetailsMarkerGroupList(List<MarkerGroupRecord> markerDetailsMarkerGroupList) {
 		this.markerDetailsMarkerGroupList = markerDetailsMarkerGroupList;
+	}
+
+
+	public String getCurrentFiltersAsText() {
+		return currentFiltersAsText;
+	}
+
+
+	public void setCurrentFiltersAsText(String currentFiltersAsText) {
+		this.currentFiltersAsText = currentFiltersAsText;
 	}
 
 }
