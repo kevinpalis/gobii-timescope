@@ -14,6 +14,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRe
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.Record;
 
 public class MarkerRecordEntity  implements Serializable,Cloneable {
@@ -173,6 +174,73 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 
 	public void setMarkerNotInDatasets(boolean markerNotInDatasets) {
 		this.markerNotInDatasets = markerNotInDatasets;
+	}
+
+	public String getFiltersAsText() {
+		// TODO Auto-generated method stub
+		StringBuilder sb = new StringBuilder();
+		ViewModelServiceImpl vms = new ViewModelServiceImpl();
+		
+		if(vms.isListNotNullOrEmpty(getPlatformList())){
+			sb.append("Platform(s):");
+			sb.append(getListNamesToString(getPlatformList(), 1));
+		}
+		
+		if(vms.isListNotNullOrEmpty(getVendorProtocolList())){
+			sb.append("Vendor-protocol(s):");
+			sb.append(getListNamesToString(getVendorProtocolList(), 1));
+		}
+		
+		if(vms.isListNotNullOrEmpty(getMapsetList())){
+			sb.append("Mapset(s):");
+			sb.append(getListNamesToString(getMapsetList(), 1));
+		}
+
+		if(vms.isListNotNullOrEmpty(getLinkageGroupList())){
+			sb.append("Linkage group(s):");
+			sb.append(getListNamesToString(getLinkageGroupList(), 1));
+		}
+
+		if(vms.isListNotNullOrEmpty(getProjectList())){
+			sb.append("Project(s):");
+			sb.append(getListNamesToString(getProjectList(), 1));
+		}
+
+		if(vms.isListNotNullOrEmpty(getExperimentList())){
+			sb.append("Experiment(s):");
+			sb.append(getListNamesToString(getExperimentList(), 1));
+		}
+		
+		if(vms.isListNotNullOrEmpty(getAnalysesList())){
+			sb.append("Analyses:");
+			sb.append(getListNamesToString(getAnalysesList(), 1));
+		}
+		
+		if(vms.isListNotNullOrEmpty(getDatasetList())){
+			sb.append("Dataset(s):");
+			sb.append(getListNamesToString(getDatasetList(), 15));
+		}
+		
+//		private Integer markerIDStartRange;
+//		private Integer  markerIDEndRange;
+//		private String markerNamesAsCommaSeparatedString;
+		
+		return sb.toString();
+	}
+	
+	public <T> String getListNamesToString( List<T> list, int index) {
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(System.getProperty("line.separator"));
+		sb.append(System.getProperty("line.separator"));
+		for(T item : list) {
+			sb.append((String) ((Record) item).get(index));
+			sb.append(System.getProperty("line.separator"));
+		}
+		sb.append(System.getProperty("line.separator"));
+		sb.append(System.getProperty("line.separator"));
+		return sb.toString();
 	}
 
 }
