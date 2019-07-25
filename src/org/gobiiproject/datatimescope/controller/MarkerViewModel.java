@@ -78,6 +78,8 @@ public class MarkerViewModel {
 	Label lblDatasetFilter;
 
 	ViewModelService viewModelService;
+	
+	private Integer sizeMarkerList=0;
 	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
 	private boolean markerAssociated=true, dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
@@ -315,7 +317,7 @@ public class MarkerViewModel {
 	}
 
 	@Command("submitQuery")
-	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
+	@NotifyChange({"markerList","sizeMarkerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
 	public void submitQuery(){
 
 		try{
@@ -331,7 +333,7 @@ public class MarkerViewModel {
 	}
 
 	@Command("resetMarkerTab")
-	@NotifyChange({"markerList","selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity","iDBoxDisabled","nameListDisabled","paged"})
+	@NotifyChange({"markerList","sizeMarkerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity","iDBoxDisabled","nameListDisabled","paged"})
 	public void resetMarkerTab(){
 		try{
 			markerList.clear(); //clear the list first and then just add if there are any selected
@@ -438,7 +440,7 @@ public class MarkerViewModel {
 	}
 
 	@GlobalCommand("retrieveMarkerList")
-	@NotifyChange({"markerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
+	@NotifyChange({"markerList", "sizeMarkerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers","paged"})
 	public void retrieveMarkerList(){
 		//...
 
@@ -1324,6 +1326,21 @@ public class MarkerViewModel {
 
 	public void setMarkerDetailsMarkerGroupList(List<MarkerGroupRecord> markerDetailsMarkerGroupList) {
 		this.markerDetailsMarkerGroupList = markerDetailsMarkerGroupList;
+	}
+
+
+	public Integer getSizeMarkerList() {
+		
+		sizeMarkerList = markerList.size();
+		
+		if(sizeMarkerList<1) sizeMarkerList = 0;
+		
+		return sizeMarkerList;
+	}
+
+
+	public void setSizeMarkerList(Integer sizeMarkerList) {
+		this.sizeMarkerList = sizeMarkerList;
 	}
 
 }
