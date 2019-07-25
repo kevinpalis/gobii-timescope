@@ -115,7 +115,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             if (!backupHandler.saveDataToCrons(xmlHandler.getHostForReload())){
                 alert(generateAlertMessage(backupHandler.getErrorMessages()));
             }
-
+            goToHome();
         }
     }
 
