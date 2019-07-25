@@ -50,6 +50,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         if (cre.getRole() == 1) {
             isSuperAdmin = true;
             keygen();
+            try {
+                Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -187,12 +192,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+            String oldPGname = xmlHandler.getPostgresUserName();
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "failed"));
             if (!scriptExecutor("importExportXml.sh", params)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
             } else {
                 alert(validator.getErrorMessage());
             }
+            serverHandler.executePostgresChange(oldPGname);
             binder.sendCommand("disableEdit",null);
         }
         locationSet = false;
@@ -295,6 +302,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("cropList")
     @Command("removeCropFromDatabase")
     public void removeCropFromDatabase (@ContextParam(ContextType.BINDER) Binder binder){
+        if (!currentCrop.getName().equals(currentCrop.getTypedName())){
+            alert("The typed name does not match the selection made. The database was not removed. Please try again.");
+            return;
+        }
         warningComposer.warningRemoval(binder, this);
     }
 

@@ -20,6 +20,12 @@
                     </listbox>
                 </cell>
             </row>
+            <row>
+                <cell sclass="row-title">Type the name of the crop to be removed:</cell>
+                <cell>
+                    <textbox constraint="no empty" value="@save(vm.currentCrop.typedName, before='removeCropFromDatabase')"></textbox>
+                </cell>
+            </row>
         </rows>
     </grid>
     <div align="left">

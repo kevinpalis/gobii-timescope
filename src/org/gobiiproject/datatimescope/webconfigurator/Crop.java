@@ -24,6 +24,7 @@ public class Crop {
     private XmlModifier xmlHandler = new XmlModifier();
     private String contactData;
     private String contactDataShort;
+    private String typedName;
     private boolean hideContactData = true;
 
     public int getCron() {
@@ -133,5 +134,13 @@ public class Crop {
     public String getContactDataShort() {
         String[] split = contactData.split("/");
         return split[split.length - 1];
+    }
+
+    public void setTypedName(String typedName) {
+        this.typedName = typedName;
+    }
+
+    public String getTypedName() {
+        return typedName;
     }
 }

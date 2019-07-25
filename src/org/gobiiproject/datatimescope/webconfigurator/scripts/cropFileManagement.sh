@@ -22,7 +22,7 @@ then
     mkdir /data/gobii_bundle/crops/$2/loader/instructions
     mkdir /data/gobii_bundle/crops/$2/loader/qc
     mkdir /data/gobii_bundle/crops/$2/notices
-    cp /data/gobii_bundle/crops/$4/notices/confidentiality.txt/data/gobii_bundle/crops/$2/notices/confidentiality.txt
+    cp /data/gobii_bundle/crops/$4/notices/confidentiality.txt /data/gobii_bundle/crops/$2/notices/confidentiality.txt
 else
     rm -r /data/gobii_bundle/crops/$2
 fi
