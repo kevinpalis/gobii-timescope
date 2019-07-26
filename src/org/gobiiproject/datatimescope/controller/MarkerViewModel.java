@@ -29,7 +29,6 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
-import org.gobiiproject.datatimescope.entity.DbRecord;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
