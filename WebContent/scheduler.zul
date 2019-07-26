@@ -32,7 +32,7 @@
                     <image src="/imgs/question.png" style="cursor: help" tooltip="fileAge">
                     </image>
                     <popup id="fileAge" width="200px">
-                        <label value="Explanation here."/>
+                        <label value="The amount of minutes to wait after the creation of a file."/>
                     </popup>
                 </cell>
             </row>
@@ -47,7 +47,7 @@
                     <image src="/imgs/question.png" style="cursor: help" tooltip="interval">
                     </image>
                     <popup id="interval" width="200px">
-                        <label value="Explanation here."/>
+                        <label value="The amount of minutes between each run of the CRON jobs."/>
                     </popup>
                 </cell>
             </row>
