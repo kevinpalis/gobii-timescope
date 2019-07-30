@@ -233,10 +233,9 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(System.getProperty("line.separator"));
-		sb.append(System.getProperty("line.separator"));
 		for(T item : list) {
+
 			sb.append((String) ((Record) item).get(index));
-			sb.append(System.getProperty("line.separator"));
 		}
 		sb.append(System.getProperty("line.separator"));
 		sb.append(System.getProperty("line.separator"));

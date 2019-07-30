@@ -1047,26 +1047,27 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 			returnValBuilder.append(" left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) ");
 			break;
-		case "dataset":
+		default:
+			
+			//dataset
 			if(!sb.toString().contains("dataset d")) {
 				returnValBuilder.append("LEFT JOIN dataset d ON jsonb_exists(m.dataset_marker_idx, d.dataset_id::text) ");
 			}
-			break;
-		default: 
-			if(!sb.toString().contains("protocol pr")) {
-				returnValBuilder.append("LEFT JOIN protocol pr ON pl.platform_id = pr.platform_id ");
-			}
-			if(category.equals("protocol")) break;
-			if(!sb.toString().contains("vendor_protocol vp")) {
-				returnValBuilder.append("LEFT JOIN vendor_protocol vp ON vp.protocol_id = pr.protocol_id ");
-			}
-
-			if(category.equals("vendorprotocol")) break;
+			if (category.equalsIgnoreCase("dataset")) break;
+			
+			//experiment
 			if(!sb.toString().contains("experiment e")) {
-				returnValBuilder.append("LEFT JOIN experiment e ON vp.vendor_protocol_id = e.vendor_protocol_id ");
+				returnValBuilder.append("LEFT JOIN experiment e ON d.experiment_id = e.experiment_id ");
 			}
-
 			if(category.equals("experiment")) break;
+			
+			//vendor-protocol
+			if(!sb.toString().contains("vendor_protocol vp")) {
+				returnValBuilder.append("LEFT JOIN vendor_protocol vp ON e.vendor_protocol_id = vp.vendor_protocol_id ");
+			}
+			if(category.equals("vendorprotocol")) break;
+			
+			//project
 			if(!sb.toString().contains("project prj")) {
 				returnValBuilder.append("LEFT JOIN project prj ON e.project_id = prj.project_id ");
 			}
@@ -1268,7 +1269,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			// If there are markers that can be deleted 
 
 			Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n"+ Integer.toString(unusedInMarkersGroupsOrDataset.size())
-			+ " markers will be deleted. Do you want to continue?\n", 
+			+ " markers can still be deleted. Do you want to continue?\n", 
 			"WARNING", Messagebox.YES | Messagebox.CANCEL,
 			Messagebox.EXCLAMATION,
 			new org.zkoss.zk.ui.event.EventListener(){
@@ -1677,7 +1678,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<ProjectRecord> list = null;
 		try{
 
-			String query = "Select * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			String query = "Select distinct on (prj.project_id) * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
 			list = context.fetch(query).into(ProjectRecord.class);
 
 		}catch(Exception e ){
@@ -1697,7 +1698,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<ProjectRecord> list = null;
 		try{
 
-			String query = "Select * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			String query = "Select distinct on (prj.project_id) * from project prj left join experiment e on prj.project_id = e.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
 			list = context.fetch(query).into(ProjectRecord.class);
 
 		}catch(Exception e ){
@@ -1737,7 +1738,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<ExperimentRecord> list = null;
 		try{
 
-			String query = "Select * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			String query = "Select distinct on (e.experiment_id) * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
 			list = context.fetch(query).into(ExperimentRecord.class);
 
 		}catch(Exception e ){
@@ -1759,7 +1760,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<ExperimentRecord> list = null;
 		try{
 
-			String query = "Select * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			String query = "Select distinct on (e.experiment_id) * from experiment e left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
 			list = context.fetch(query).into(ExperimentRecord.class);
 
 		}catch(Exception e ){
@@ -1819,7 +1820,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<DatasetRecord> list = null;
 		try{
 
-			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
+			String query = "Select distinct on (d.dataset_id) * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+";";
 			list = context.fetch(query).into(DatasetRecord.class);
 
 		}catch(Exception e ){
@@ -1840,7 +1841,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<DatasetRecord> list = null;
 		try{
 
-			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
+			String query = "Select distinct on (d.dataset_id) * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+";";
 			list = context.fetch(query).into(DatasetRecord.class);
 
 		}catch(Exception e ){

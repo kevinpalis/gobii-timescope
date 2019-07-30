@@ -267,7 +267,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"/>
 													</listitem>
 												</template>
 											</listbox>
@@ -298,7 +298,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load('Project ID: '.concat(item.projectId))"/>
 													</listitem>
 												</template>
 											</listbox>
@@ -371,7 +371,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load('Experiment ID: '.concat(item.experimentId))"/>
 													</listitem>
 												</template>
 											</listbox>
