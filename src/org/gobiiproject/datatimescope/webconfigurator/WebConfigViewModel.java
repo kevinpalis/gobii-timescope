@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.gobiiproject.datatimescope.services.UserCredential;
+import org.jooq.Log;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
@@ -13,12 +14,12 @@ import org.zkoss.zul.Include;
 import org.zkoss.zul.Window;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
-import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.generateAlertMessage;
-import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.*;
 
 /**
  * The main class for the entire webconfigurator model. This class controls both the redirection upon interaction with website elements
@@ -29,41 +30,73 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.sc
 
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
-    public XmlModifier xmlHandler = new XmlModifier();
-    private BackupHandler backupHandler = new BackupHandler();
-    protected ServerHandler serverHandler = new ServerHandler(xmlHandler);
-    public CronHandler cronHandler = new CronHandler();
-    private XmlCropHandler xmlCropHandler = new XmlCropHandler();
-    public WarningComposer warningComposer = new WarningComposer(xmlHandler);
-    public PropertyHandler propertyHandler = new PropertyHandler();
-    private Crop currentCrop = new Crop();
+    public ServerHandler serverHandler;
+    public CronHandler cronHandler;
+    private XmlModifier xmlHandler;
+    private BackupHandler backupHandler;
+    private XmlCropHandler xmlCropHandler;
+    private WarningComposer warningComposer;
+    private PropertyHandler propertyHandler;
+    private Crop currentCrop;
+
+    private String newXMLPath;
     private boolean documentLocked = true;
     private boolean isSuperAdmin = false;
-    private String newXMLPath;
     private boolean locationSet = false;
     private boolean firstUpload = true;
     private boolean isKeySet = true;
+
+    private String username;
 
     @Init
     public void init() {
         UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         if (cre.getRole() == 1) {
             isSuperAdmin = true;
+            username = cre.getAccount();
             keygen();
+            instantiate();
+            copySettings();
             try {
                 Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
             } catch (IOException e) {
+                writeToLog("WebConfigViewModel.init()", "Scripts were not enabled", username);
                 e.printStackTrace();
             }
+            writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
         }
+        writeToLog("WebConfigViewModel.init()", "User is not SuperAdmin", username);
     }
 
+    private void instantiate(){
+        xmlHandler = new XmlModifier(username);
+        backupHandler = new BackupHandler(username);
+        serverHandler = new ServerHandler(xmlHandler, username);
+        cronHandler = new CronHandler(username);
+        xmlCropHandler = new XmlCropHandler(username);
+        warningComposer = new WarningComposer(xmlHandler, username);
+        propertyHandler = new PropertyHandler(username);
+        currentCrop = new Crop(username);
+    }
+
+    /**
+     * A function to create a copy of the current gobii-web.xml to enable a button to revert changes made.
+     */
+    private void copySettings(){
+
+    }
+
+    /**
+     * This function checks if keygen has been run for later ssh commands which are needed in the backend
+     */
     private void keygen() {
         if (!new File("/home/gadm/.ssh/id_rsa.pub").exists()) {
             alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: \n" +
                     "http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?spaceKey=IN19&title=Webconfigurator");
             isKeySet = false;
+            writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
         }
+        writeToLog("WebConfigViewModel.keygen()", "The ssh Key has previously been set", username);
     }
 
     /**
@@ -74,8 +107,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void enableEdit() {
         if (isSuperAdmin) {
             this.documentLocked = false;
+            writeToLog("WebConfigViewModel.enableEdit()", "Document is unlocked.", username);
         } else {
             alert("Only Super Admins can configure these settings.");
+            writeToLog("WebConfigViewModel.enableEdit()", "User is not SuperAdmin", username);
         }
     }
 
@@ -102,8 +137,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         if (!cronHandler.reloadCrons(xmlHandler.getHostForReload(), currentCrop)){
             alert(generateAlertMessage(cronHandler.getErrorMessages()));
             binder.sendCommand("disableEdit", null);
+            writeToLog("WebConfigViewModel.reloadCrons()", generateAlertMessage(cronHandler.getErrorMessages()), username);
         } else {
             binder.sendCommand("disableEdit", null);
+            alert("All CRON jobs have successfully modified and been transmitted to the server.");
+            writeToLog("WebConfigViewModel.reloadCrons()", "All CRON jobs have successfully modified and been transmitted to the server.", username);
             goToHome();
         }
     }
@@ -116,9 +154,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert(generateAlertMessage(backupHandler.getErrorMessages()));
             //Reset back to old Data
             backupHandler.readDataFromCrons();
+            writeToLog("WebConfigViewModel.saveBackup()", generateAlertMessage(backupHandler.getErrorMessages()), username);
         } else {
             if (!backupHandler.saveDataToCrons(xmlHandler.getHostForReload())){
                 alert(generateAlertMessage(backupHandler.getErrorMessages()));
+                writeToLog("WebConfigViewModel.saveBackup()", generateAlertMessage(backupHandler.getErrorMessages()), username);
+            } else {
+                alert("Backups preferences have been modified and saved.");
+                writeToLog("WebConfigViewModel.saveBackup()", "Backups preferences have been modified and saved.", username);
             }
             goToHome();
         }
@@ -132,7 +175,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             alert("File not found.");
+            writeToLog("WebConfigViewModel.exportXML()", "File for download not found.", username);
+            binder.sendCommand("disableEdit", null);
+            return;
         }
+        alert("gobii-web.xml exported successfully.");
+        writeToLog("WebConfigViewModel.exportXML()", "gobii-web.xml exported successfully.", username);
         binder.sendCommand("disableEdit", null);
         goToHome();
     }
@@ -150,9 +198,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             fos = new FileOutputStream(xml);
             fos.write(event.getMedia().getStringData().getBytes());
             fos.close();
+            writeToLog("WebConfigViewModel.createTmpCopyOfUpload()", "Successfully created a temporary copy of the imported file.", username);
             return xml.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
+            writeToLog("WebConfigViewModel.createTmpCopyOfUpload()", "File for import not found.", username);
         }
         return null;
     }
@@ -164,9 +214,11 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         if (newXMLPath == null){
             alert("File not found.");
             binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.selectFileForImport()", "File for import was not found.", username);
             return;
         }
         locationSet = true;
+        writeToLog("WebConfigViewModel.selectFileForImport()", "Location of import file successfully set.", username);
     }
 
     /**
@@ -179,16 +231,22 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "scpto", newXMLPath));
         if (!scriptExecutor("importExportXml.sh", params)){
             binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.importXML()", "Scp to server failed.", username);
             return;
         }
+        writeToLog("WebConfigViewModel.importXML()", "Imported file successfully sent to server.", username);
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
-        XmlValidator validator = new XmlValidator(xmlHandler);
+        XmlValidator validator = new XmlValidator(xmlHandler, username);
         if (validator.validateGobiiConfiguration()){
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "passed"));
+            writeToLog("WebConfigViewModel.importXML()", "Imported file is valid.", username);
             if (scriptExecutor("importExportXml.sh", params)){
                 warningComposer.warningTomcat(binder, this);
+                alert("Imported XML is now being used.");
+                writeToLog("WebConfigViewModel.importXML()", "Imported XML is now being used.", username);
             } else {
                 binder.sendCommand("disableEdit",null);
+                writeToLog("WebConfigViewModel.importXML()", "After successful validation script for renaming failed.", username);
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
@@ -196,8 +254,10 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "failed"));
             if (!scriptExecutor("importExportXml.sh", params)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
+                writeToLog("WebConfigViewModel.importXML()", "After failing validation removing user imported file failed.", username);
             } else {
                 alert(validator.getErrorMessage());
+                writeToLog("WebConfigViewModel.importXML()", "Validation of the XML failed.", username);
             }
             serverHandler.executePostgresChange(oldPGname);
             binder.sendCommand("disableEdit",null);
@@ -221,33 +281,42 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List currentCrops = xmlHandler.getCropList();
         if (currentCrops.contains(currentCrop.getName())){
             alert("This crop already has a database associated with it. Please choose another crop.");
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "This crop already has a database associated with it. Please choose another crop.", username);
             return;
         }
         if (currentCrop.getContactData() == null){
             alert("Please upload a contact data file, otherwise the database cannot be created.");
             binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
             return;
         }
         ArrayList<String> contacts = readInContactData();
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
         int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName());
             binder.sendCommand("disableEdit", null);
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Liquibase failed and database of the new crop was removed.", username);
             return;
         } else if (seedData == -1){
             //Remember if upload was tried already
             firstUpload = false;
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Contact Data was malformed.", username);
             return;
         }
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "The database for the crop " + currentCrop.getName() + " has successfully been created and populated.", username);
         firstUpload = true;
         xmlCropHandler.appendCrop(currentCrop);
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "The crop " + currentCrop.getName() + " has successfully been added to the XML.", username);
         List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             xmlCropHandler.removeCrop(currentCrop);
             serverHandler.postgresRemoveCrop(currentCrop.getName());
             binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Creating the file structure for the new crop failed, database creation has been reverted.", username);
             return;
         }
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "The files for the crop " + currentCrop.getName() + " have successfully been created.", username);
         String oldWar = xmlHandler.getContextPathNodes().item(0).getTextContent();
         List<String> duplicateWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
@@ -256,17 +325,21 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             scriptExecutor("cropFileManagement.sh", removeBundle);
             serverHandler.postgresRemoveCrop(currentCrop.getName());
             binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Copying the WAR file failed, all changes have been reverted.", username);
             return;
         }
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "The crop " + currentCrop.getName() + "war file was successfully copied and deployed.", username);
         cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
         currentCrop.setHideContactData(true);
+        alert("You have successfully created a new crop " + currentCrop.getName());
+        writeToLog("WebConfigViewModel.addCropToDatabase()", "You have successfully created a new crop " + currentCrop.getName(), username);
         binder.sendCommand("disableEdit", null);
         goToHome();
     }
 
 
     /**
-     * Reads in the contact data from a user provided file path and adds each line to an Arraylist as a String for later processing
+     * Reads in the contact data from a user provided file path and adds each line to an ArrayList as a String for later processing
      */
     private ArrayList<String> readInContactData() {
         BufferedReader buffer;
@@ -282,6 +355,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         } catch (IOException e) {
             e.printStackTrace();
             alert("The uploaded File could not be found.");
+            writeToLog("WebConfigViewModel.readInContactData()", "The file with the contact data could not be found.", username);
         }
         return lines;
     }
@@ -304,6 +378,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void removeCropFromDatabase (@ContextParam(ContextType.BINDER) Binder binder){
         if (!currentCrop.getName().equals(currentCrop.getTypedName())){
             alert("The typed name does not match the selection made. The database was not removed. Please try again.");
+            writeToLog("WebConfigViewModel.removeCropFromDatabase()", "The crop name for removal was not typed correctly.", username);
             return;
         }
         warningComposer.warningRemoval(binder, this);
@@ -319,24 +394,32 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void executeRemoval (@ContextParam(ContextType.BINDER) Binder binder){
         if (!serverHandler.undeployFromTomcat(currentCrop)){
             alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ", undeploying forcibly instead.");
+            writeToLog("WebConfigViewModel.executeRemoval()", "Undeployment of the war file failed.", username);
         } else {
             List<String> removeWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "0", xmlHandler.getWARName(currentCrop.getName())));
             if (!scriptExecutor("WARHandler.sh", removeWAR)) {
                 binder.sendCommand("disableEdit", null);
+                writeToLog("WebConfigViewModel.executeRemoval()", "Removal of the .war file failed.", username);
                 return;
             }
         }
+        writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " .war file has been removed.", username);
         if (!serverHandler.postgresRemoveCrop(currentCrop.getName())) {
+            writeToLog("WebConfigViewModel.executeRemoval()", "Removal of the database was unsuccessful.", username);
             return;
         }
+        writeToLog("WebConfigViewModel.executeRemoval()", "The database for the crop " + currentCrop.getName() + " has been removed.", username);
         xmlCropHandler.removeCrop(currentCrop);
+        writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed from the XML.", username);
         List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
             binder.sendCommand("disableEdit", null);
+            writeToLog("WebConfigViewModel.executeRemoval()", "Removing the crop files failed.", username);
             return;
         }
         cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
         binder.sendCommand("disableEdit", null);
+        writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed.", username);
         goToHome();
     }
 
@@ -345,12 +428,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @NotifyChange("documentLocked")
     public void disableEdit () {
         this.documentLocked = true;
+        writeToLog("WebConfigViewModel.disableEdit()", "The current settings page is now locked.", username);
     }
 
     @Command("cancelChanges")
     @NotifyChange("documentLocked")
     public void cancelChanges () {
         this.documentLocked = true;
+        writeToLog("WebConfigViewModel.cancelChanges()", "The current settings page is now locked.", username);
     }
 
     @Command("saveConfigCreds")
@@ -374,6 +459,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/mainContent.zul");
         getPage().getDesktop().setBookmark("p_" + "home");
+        writeToLog("WebConfigViewModel.goToHome()", "Navigated to home.", username);
     }
 
     //Switch src for tag with id = mainContent from current page to X, in this call X = postgreSystemUser.zul
@@ -384,6 +470,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/postgresSystemUser.zul");
         getPage().getDesktop().setBookmark("p_" + "postgresSystemUser");
+        writeToLog("WebConfigViewModel.postgresSystemUser()", "Navigated to postgresSystemUser.", username);
     }
 
     @Command("ldapSystemUser")
@@ -392,6 +479,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/ldapSystemUser.zul");
         getPage().getDesktop().setBookmark("p_" + "ldapUserSystem");
+        writeToLog("WebConfigViewModel.ldapSystemUser()", "Navigated to ldapSystemUser.", username);
     }
 
     @Command("ldapUnitUser")
@@ -400,6 +488,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/ldapUnitUser.zul");
         getPage().getDesktop().setBookmark("p_" + "ldapUnitUser");
+        writeToLog("WebConfigViewModel.ldapUnitUser()", "Navigated to ldapUnitUser.", username);
     }
 
     @Command("emailNotifications")
@@ -408,6 +497,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/emailNotifications.zul");
         getPage().getDesktop().setBookmark("p_" + "emailNotifications");
+        writeToLog("WebConfigViewModel.emailNotifications()", "Navigated to emailNotifications.", username);
     }
 
     @Command("pushNotifications")
@@ -416,6 +506,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/pushNotifications.zul");
         getPage().getDesktop().setBookmark("p_" + "pushNotifications");
+        writeToLog("WebConfigViewModel.pushNotifications()", "Navigated to pushNotifications.", username);
     }
 
     @Command("addCrop")
@@ -424,6 +515,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/addCrop.zul");
         getPage().getDesktop().setBookmark("p_" + "addCrop");
+        writeToLog("WebConfigViewModel.addCrop()", "Navigated to addCrop.", username);
     }
 
     @Command("deleteCrop")
@@ -432,6 +524,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/deleteCrop.zul");
         getPage().getDesktop().setBookmark("p_" + "deleteCrop");
+        writeToLog("WebConfigViewModel.deleteCrop()", "Navigated to deleteCrop.", username);
     }
 
     @Command("modifyCrop")
@@ -440,6 +533,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/modifyCrop.zul");
         getPage().getDesktop().setBookmark("p_" + "modifyCrop");
+        writeToLog("WebConfigViewModel.manageCrop()", "Navigated to manageCrop.", username);
     }
 
     @Command("logSettings")
@@ -448,6 +542,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/logSettings.zul");
         getPage().getDesktop().setBookmark("p_" + "logSettings");
+        writeToLog("WebConfigViewModel.logSettings()", "Navigated to logSettings.", username);
     }
 
     @Command("linkageGroups")
@@ -456,6 +551,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/linkageGroups.zul");
         getPage().getDesktop().setBookmark("p_" + "linkageGroups");
+        writeToLog("WebConfigViewModel.linkeageGroups()", "Navigated to linkeageGroups.", username);
     }
 
     @Command("markerGroups")
@@ -464,6 +560,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/markerGroups.zul");
         getPage().getDesktop().setBookmark("p_" + "markerGroups");
+        writeToLog("WebConfigViewModel.markerGroups()", "Navigated to markerGroups.", username);
     }
 
     @Command("kdCompute")
@@ -472,6 +569,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/kdCompute.zul");
         getPage().getDesktop().setBookmark("p_" + "KDComputeIntegration");
+        writeToLog("WebConfigViewModel.kdCompute()", "Navigated to kdCompute.", username);
     }
 
     @Command("ownCloud")
@@ -480,6 +578,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/ownCloud.zul");
         getPage().getDesktop().setBookmark("p_" + "OwnCloud");
+        writeToLog("WebConfigViewModel.ownCloud()", "Navigated to ownCloud.", username);
     }
 
     @Command("galaxy")
@@ -488,6 +587,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/galaxy.zul");
         getPage().getDesktop().setBookmark("p_" + "Galaxy");
+        writeToLog("WebConfigViewModel.galaxy()", "Navigated to galaxy.", username);
     }
 
     @Command("scheduler")
@@ -496,6 +596,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/scheduler.zul");
         getPage().getDesktop().setBookmark("p_" + "Scheduler");
+        writeToLog("WebConfigViewModel.scheduler()", "Navigated to scheduler.", username);
     }
 
     @Command("portConfig")
@@ -504,6 +605,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/portConfig.zul");
         getPage().getDesktop().setBookmark("p_" + "PortConfiguration");
+        writeToLog("WebConfigViewModel.portConfig()", "Navigated to portConfig.", username);
     }
 
     @Command("backup")
@@ -512,6 +614,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/backup.zul");
         getPage().getDesktop().setBookmark("p_" + "backup");
+        writeToLog("WebConfigViewModel.backup()", "Navigated to backup.", username);
     }
 
     @Command("import")
@@ -520,6 +623,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/import.zul");
         getPage().getDesktop().setBookmark("p_" + "import");
+        writeToLog("WebConfigViewModel.import_settings()", "Navigated to import_settings.", username);
     }
 
     @Command("export")
@@ -528,6 +632,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 .iterator().next();
         include.setSrc("/export.zul");
         getPage().getDesktop().setBookmark("p_" + "export");
+        writeToLog("WebConfigViewModel.export_settings()", "Navigated to export_settings.", username);
     }
 
     public void doAfterCompose (Component comp) throws Exception {

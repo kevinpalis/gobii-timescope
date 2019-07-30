@@ -16,6 +16,10 @@ import static org.zkoss.lang.Strings.isBlank;
 
 public class XmlCropHandler extends XmlModifier {
 
+    public XmlCropHandler(String name) {
+        super(name);
+    }
+
     @NotifyChange("cropList")
     public void removeCrop(Crop oldCrop){
         Document doc = XmlModifier.retrieveFile(XmlModifier.path);

@@ -8,6 +8,7 @@ import org.zkoss.zul.ListModelList;
 
 import java.io.*;
 import java.lang.Object;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +20,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
+
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 
 
 /**
@@ -75,6 +78,12 @@ public class XmlModifier extends SelectorComposer<Component> {
     private static String ownCloudMaxStatusCheckMinsXPath = "//serverType[text() = 'OWN_CLOUD']/following-sibling::maxStatusCheckMins";
 
     private static String currentCrop;
+    private static String username;
+
+
+    public XmlModifier(String name){
+        username = name;
+    }
 
     protected static String path = "/data/gobii_bundle/config/gobii-web.xml";
 
@@ -575,7 +584,7 @@ public class XmlModifier extends SelectorComposer<Component> {
         return evaluateXPathExpression(portForReloadXPath, doc).item(0).getTextContent();
     }
 
-    protected static NodeList evaluateXPathExpression(String expression, Document doc){
+    protected NodeList evaluateXPathExpression(String expression, Document doc){
         //Create XPath
         XPathFactory xpathfactory = XPathFactory.newInstance();
         XPath xpath = xpathfactory.newXPath();
@@ -585,11 +594,11 @@ public class XmlModifier extends SelectorComposer<Component> {
             result = expr.evaluate(doc, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             e.printStackTrace();
-            System.out.println("Malformed XPath Request.");
+            writeToLog("xmlModifier.evaluateXPathExpression()", "Malformed XPath request.", username);
         }
         NodeList nodes = (NodeList) result;
         if (result == null) {
-            System.out.println("No results found for the given tag.");
+            writeToLog("xmlModifier.evaluateXPathExpression()", "No results found for the given tag.", username);
             return null;
         }
         return nodes;
@@ -604,13 +613,13 @@ public class XmlModifier extends SelectorComposer<Component> {
             doc = builder.parse(path);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
-            System.out.println("Retrieval of gobii-web.xml failed.");
+            writeToLog("xmlModifier.retrieveFile()", "Retrieval of gobii-web.xml failed.", username);
         }
         return doc;
     }
 
     //When adding to the xml need a different setting requires tab indenture setting, this is toggled be the boolean creation
-    protected static void modifyDocument(Document doc, String path, boolean creation){
+    protected void modifyDocument(Document doc, String path, boolean creation){
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         try {
             Transformer transformer = transformerFactory.newTransformer();
@@ -620,7 +629,7 @@ public class XmlModifier extends SelectorComposer<Component> {
             transformer.transform(source, result);
         } catch (TransformerException e) {
             e.printStackTrace();
-            System.out.println("Modification of gobii-web.xml failed.");
+            writeToLog("xmlModifier.modifyDocument(with boolean)", "Modification of gobii-web.xml failed.", username);
         }
     }
 
@@ -633,7 +642,7 @@ public class XmlModifier extends SelectorComposer<Component> {
             transformer.transform(source, result);
         } catch (TransformerException e) {
             e.printStackTrace();
-            System.out.println("Modification of gobii-web.xml failed.");
+            writeToLog( "xmlModifier.modifyDocument()", "Modification of gobii-web.xml failed.", username);
         }
     }
 

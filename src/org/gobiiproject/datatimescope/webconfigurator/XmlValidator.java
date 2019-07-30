@@ -1,8 +1,13 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.jooq.Log;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 
 public class XmlValidator {
 
@@ -23,8 +28,10 @@ public class XmlValidator {
 
     private XmlModifier xmlHandler;
     private String errorMessage;
+    private String username;
 
-    public XmlValidator(XmlModifier xmlHandler){
+    public XmlValidator(XmlModifier xmlHandler, String name){
+        username  = name;
         this.xmlHandler = xmlHandler;
     }
 
@@ -257,6 +264,7 @@ public class XmlValidator {
     }
 
     public String getErrorMessage() {
+        writeToLog("XmlValidator.getErrorMessage()", errorMessage, username);
         return errorMessage;
     }
 }

@@ -3,7 +3,7 @@
 <vlayout apply="org.zkoss.bind.BindComposer"
          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
     <label>Crops - Delete Crop</label>
-    <grid width="500px">
+    <grid width="600px">
         <columns>
             <column align="right" hflex="min"/>
             <column/>

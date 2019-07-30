@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
+
 /**
  * A class responsible for any changes made to CRON schedules for individual Crops
  * The options being modifying existing CRONs, creating new CRONs for new or reactivated Crops or deleting CRONs for deleted or deactivated Crops
@@ -13,8 +15,13 @@ import java.util.ArrayList;
 
 public class CronHandler {
 
+    private String username;
 
     private ArrayList<String> errorMessages = new ArrayList<>();
+
+    public CronHandler(String name){
+        username = name;
+    }
 
     /**
      * Performs a rudimentary validation to make sure the format works in a sensical way and changes the CRON of the given Crop
@@ -28,10 +35,13 @@ public class CronHandler {
         errorMessages = new ArrayList<>();
         if (currentCrop.getName() == null){
             errorMessages.add("Please specify a crop.");
+            writeToLog("CronHandler.reloadCrons()", "No crop was chosen.", username);
         } else if (currentCrop.getFileAge() > 59 || currentCrop.getFileAge() < 1 || currentCrop.getCron() > 59 || currentCrop.getCron() < 1){
             errorMessages.add("Please choose a valid value between 1 and 59. The default setting is 2.");
+            writeToLog("CronHandler.reloadCrons()", "Invalid minute selection for the crop " + currentCrop.getName() + ".", username);
         } else {
             modifyCron("update", hostFromXml, currentCrop);
+            writeToLog("CronHandler.reloadCrons()", "CRON jobs for the crop " + currentCrop.getName() + " have been adjusted.", username);
             success = true;
         }
         return success;
@@ -72,9 +82,11 @@ public class CronHandler {
             }
             //Send the new CRONs back to the server
             Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
+            writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server succeeded.", username);
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
         } catch (IOException e){
             e.printStackTrace();
+            writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed.", username);
         }
     }
 

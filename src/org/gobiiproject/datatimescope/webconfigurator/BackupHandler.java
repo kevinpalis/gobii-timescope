@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
+
 /**
  * A class designated to handle any modifications made to the backup schedule of the database
  * Furthermore it also creates the backup CRON jobs if they do not exist yet
@@ -18,11 +20,13 @@ import java.util.List;
 
 public class BackupHandler {
 
+    private String username;
+
     /**
      * Sets up the weekday array for the dropdown menu of weekday selection
      * Reads in the current Crontabs, puts them into a temporary file, and reads that file to display the current information back to the user
      */
-    public BackupHandler(){
+    public BackupHandler(String name){
         weekdays.add("Monday");
         weekdays.add("Tuesday");
         weekdays.add("Wednesday");
@@ -30,6 +34,7 @@ public class BackupHandler {
         weekdays.add("Friday");
         weekdays.add("Saturday");
         weekdays.add("Sunday");
+        username = name;
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
@@ -49,6 +54,7 @@ public class BackupHandler {
             setCurrentCrons(oldJobs);
             readDataFromCrons();
         } catch (IOException e){
+            writeToLog("BackUpHandler()", "Reading in old CRON jobs failed.", username);
             e.printStackTrace();
         }
     }
@@ -93,6 +99,7 @@ public class BackupHandler {
         errorMessages = new ArrayList<>();
         this.backupWeekTime = backupWeekTime;
         if (this.backupWeekTime.equals(backupDayTime)){
+            writeToLog("BackUpHandler.setBackupWeekTime()", "Daily and weekly backups cannot overlap.", username);
             errorMessages.add("Daily and weekly backups cannot overlap. Please change one of the times.");
         }
     }
@@ -150,7 +157,9 @@ public class BackupHandler {
                     monthly = true;
                 }
             }
+            writeToLog("BackUpHandler.readDataFromCrons()", "Successfully read in the old BackUp preferences.", username);
         } catch (ParseException e){
+            writeToLog("BackUpHandler.readDataFromCrons()", "Error while trying to parse the time.", username);
             e.printStackTrace();
         }
     }
@@ -192,6 +201,7 @@ public class BackupHandler {
                     retJobs.add(line);
                 }
             }
+            writeToLog("BackUpHandler.saveDataToCrons()", "Updated daily, weekly and monthly backup preferences.", username);
         } else {
             retJobs = currentCrons;
             if (!daily){
@@ -207,6 +217,7 @@ public class BackupHandler {
                 String[] tm = formatter.format(backupMonthTime).split(":");
                 retJobs.add(tm[1] + " " + tm[0] + " " + backupMonthDay + " * * tar -cvjf /shared_data/bamboo_gobii_backups/qa_test_incremental/monthly/monthly_$(date +%Y%m%d).tar.bz2 /shared_data/bamboo_gobii_backups/qa_test_incremental/daily/");
             }
+            writeToLog("BackUpHandler.saveDataToCrons()", "Created daily, weekly and monthly backup preferences.", username);
         }
         daily = false;
         weekly = false;
@@ -221,8 +232,10 @@ public class BackupHandler {
             Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             success = true;
+            writeToLog("BackUpHandler.saveDataToCrons()", "New Backup preferences transferred to the server succesfully correctly.", username);
         } catch (IOException e) {
             errorMessages.add("Something went wrong upon creating the file for the Cron Jobs.");
+            writeToLog("BackUpHandler.saveDataToCrons()", "New Backup preferences weren't transferred correctly.", username);
         }
         return success;
     }

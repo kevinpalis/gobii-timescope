@@ -8,7 +8,9 @@ import org.zkoss.zul.Messagebox;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
@@ -20,8 +22,10 @@ import static org.zkoss.zk.ui.util.Clients.alert;
 public class WarningComposer{
 
     private XmlModifier xmlHandler;
+    private String username;
 
-    public WarningComposer(XmlModifier xmlHandler){
+    public WarningComposer(XmlModifier xmlHandler, String name){
+        username = name;
         this.xmlHandler = xmlHandler;
     }
 
@@ -37,6 +41,7 @@ public class WarningComposer{
                     binder.sendCommand("disableEdit", null);
                     model.goToHome();
                 } else {
+                    writeToLog("WarningComposer.warningTomcat()", "Didn't accept warning box.", username);
                     model.cancelChanges();
                 }
             }
@@ -60,8 +65,11 @@ public class WarningComposer{
                     binder.sendCommand("disableEdit", null); //Now XML contains new name
                     model.serverHandler.executePostgresChange(oldUsername);
                     model.serverHandler.executeAllTomcatReloadRequest();
+                    alert("You have successfully reloaded all web-applications.");
+                    writeToLog("WarningComposer.warningPostgres()", "You have successfully reloaded all web-applications.", username);
                     model.goToHome();
                 } else {
+                    writeToLog("WarningComposer.warningPostgres()", "Didn't accept warning box.", username);
                     model.cancelChanges();
                 }
             }
@@ -86,9 +94,11 @@ public class WarningComposer{
                         model.executeRemoval(binder);
                     } else {
                         alert("This the only database. Please add another crop before deleting this database.");
+                        writeToLog("WarningComposer.warningRemoval()", "Tried to remove only database.", username);
                         model.cancelChanges();
                     }
                 } else {
+                    writeToLog("WarningComposer.warningRemoval()", "Didn't accept warning box.", username);
                     model.cancelChanges();
                 }
             }
@@ -107,18 +117,24 @@ public class WarningComposer{
                     binder.sendCommand("disableEdit",null);
                     if (currentCrop.isActivityChanged()){
                         currentCrop.setActivityChanged(false);
+                        alert("Activity for the crop" + currentCrop.getName() + " has been changed.");
+                        writeToLog("WarningComposer.warningActivityTomcat()", "Activity for the crop" + currentCrop.getName() + " has been changed.", username);
                     } else {
                         alert("No changes have been made, please change a setting.");
+                        writeToLog("WarningComposer.warningActivityTomcat()", "No changes made.", username);
                         return;
                     }
                     if (currentCrop.getIsActive()) {
                         model.cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
+                        writeToLog("WarningComposer.warningActivityTomcat()", "CRONs for the crop" + currentCrop.getName() + " have been activated.", username);
                     } else {
                         model.cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
+                        writeToLog("WarningComposer.warningActivityTomcat()", "CRONs for the crop" + currentCrop.getName() + " have been deactivated.", username);
                     }
                     model.serverHandler.executeSingleTomcatReloadRequest(currentCrop.getName());
                     model.goToHome();
                 } else {
+                    writeToLog("WarningComposer.warningActivityTomcat()", "Didn't accept warning box.", username);
                     model.cancelChanges();
                 }
             }

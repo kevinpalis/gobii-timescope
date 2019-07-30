@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
 import org.gobiiproject.datatimescope.db.generated.Routines;
 import org.zkoss.util.Pair;
@@ -21,17 +22,20 @@ import org.zkoss.zul.Window;
 /**
  * A class designed to execute the operations on both Postgres and Tomcat
  * These functions are generally either called directly by WebConfigViewModel or after a warning box was accepted for a critical operation
- * Generally this class funtions as a layer of abstraction between the functions and the server operations in the background
+ * Generally this class functions as a layer of abstraction between the functions and the server operations in the background
  */
 
 public class ServerHandler {
 
     private XmlModifier xmlHandler;
     private ReloadTask reloadRequest = new ReloadTask();
-    private PropertyHandler prop = new PropertyHandler();
+    private PropertyHandler prop;
+    private String username;
 
-    public ServerHandler (XmlModifier xmlHandler){
+    public ServerHandler (XmlModifier xmlHandler, String name){
         this.xmlHandler = xmlHandler;
+        username = name;
+        prop = new PropertyHandler(username);
         configureTomcatReloadRequest();
     }
 
@@ -45,9 +49,16 @@ public class ServerHandler {
         DSLContext context = tmpService.getDSLContext();
         if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
             context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
+            context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
+            context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
+            writeToLog("ServerHandler.executePostgresChange()", "You have successfully changed the username from " + oldUserName + " to " + xmlHandler.getPostgresUserName() + "and updated the password.", username);
+            alert("You have successfully changed the username from " + oldUserName + " to " + xmlHandler.getPostgresUserName() + " and updated the password.");
+        } else {
+            context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
+            context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
+            alert("You have successfully changed the password for the account " + xmlHandler.getPostgresUserName() + ".");
+            writeToLog("ServerHandler.executePostgresChange()", "You have successfully changed the password for the account " + xmlHandler.getPostgresUserName() + ".", username);
         }
-        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
-        context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
     }
 
     /**
@@ -58,10 +69,12 @@ public class ServerHandler {
         reloadRequest.setUsername(prop.getUsername());
         reloadRequest.setPassword(prop.getPassword());
         while (prop.getUsername() == null || prop.getPassword() == null){
+            writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are not set.", username);
             alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place.");
             Window window = (Window)Executions.createComponents("/setConfigCreds.zul", null, null);
             window.doModal();
         }
+        writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are set.", username);
     }
 
 
@@ -74,6 +87,7 @@ public class ServerHandler {
         reloadRequest.setPath(xmlHandler.getWARName(cropname));
         reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
         reloadRequest.execute();
+        writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "You have successfully reloaded the web-application for the crop " + cropname + ".", username);
     }
 
     /**
@@ -89,6 +103,8 @@ public class ServerHandler {
             reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
             reloadRequest.execute();
         }
+        writeToLog("ServerHandler.executeAllTomcatReloadRequest()", "You have successfully reloaded all the web-applications.", username);
+
     }
 
     /**
@@ -105,8 +121,10 @@ public class ServerHandler {
             undeploy.setPath(xmlHandler.getWebContextPath(currCrop.getName()));
             undeploy.setUrl("http://" + host + ":" + port + "/manager/text");
             undeploy.execute();
+            writeToLog("ServerHandler.undeployFromTomcat()", "You have successfully undeployed the crop " + currCrop.getName() + ".", username);
         } catch (Exception e) {
             e.printStackTrace();
+            writeToLog("ServerHandler.undeployFromTomcat()", "Undeployment for the crop " + currCrop.getName() + " has failed.", username);
             success = false;
         }
         return success;
@@ -123,8 +141,10 @@ public class ServerHandler {
         DSLContext context = tmpService.getDSLContext();
         try {
             context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(cropName) + ";");
+            writeToLog("ServerHandler.postgresRemoveCrop()", "You have successfully removed database for the crop " + cropName + ".", username);
         } catch (Exception e) {
             alert("The database could not be removed. Stacktrace of the error: \n" + e.toString());
+            writeToLog("ServerHandler.postgresRemoveCrop()", "The database for the crop " + cropName + " failed to be removed.", username);
             e.printStackTrace();
             success = false;
         }
@@ -152,8 +172,10 @@ public class ServerHandler {
             DSLContext context = tmpService.getDSLContext();
             if (!populateSeedData(context, currentCrop)) {
                 success = 1;
+                writeToLog("ServerHandler.postgresAddCrop()", "Populating the the liquibase data failed.", username);
                 return success;
             }
+            writeToLog("ServerHandler.postgresAddCrop()", "The liquibase data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
             //Connecting to the database created a race condition, through trial and error I found 7 seconds to be the lower
             //bound by seconds so that the program runs correctly.
             try {
@@ -172,6 +194,7 @@ public class ServerHandler {
         info = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), "gobii_dev",
                 xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
         newService.connectToDB(info.getUserName(), info.getPassword(), info);
+        writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
         return success;
     }
 
@@ -198,11 +221,14 @@ public class ServerHandler {
         try {
             context.fetch("CREATE DATABASE " + currentCrop.getDatabaseName() + " WITH OWNER '" + xmlHandler.getPostgresUserName() + "';");
         } catch (Exception e){
-            alert("The database couldn't be created due to following error: \n" + e.toString());
+            writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + "couldn't be created.", username);
+            alert("The database for the crop " + currentCrop.getName() + "couldn't be created due to following error: \n" + e.toString());
             success = false;
         }
+        writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + " was successfully created.", username);
         List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresHost(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
         if (!scriptExecutor("liquibase.sh", populate)){
+            writeToLog("ServerHandler.populateSeedData()", "The database couldn't be populated with liquibase data.", username);
             success = false;
         }
         return success;
@@ -233,9 +259,11 @@ public class ServerHandler {
                     tmpRoleID.add((Integer) context.fetch("select role_id from role where role_name = '" + role + "';").getValue(0,0));
                 }
             } catch (IndexOutOfBoundsException e){
+                writeToLog("ServerHandler.populateContactData()", "The role " + lastRole + " is not a valid role.", username);
                 alert("The role '" + lastRole + "' is not a valid role. Please verify the spelling and make sure that the uploaded file follows the expected tab-delimited format.");
                 return success;
             }
+            writeToLog("ServerHandler.populateContactData()", "The roles have been correctly been read in.", username);
             Integer[] roleID = new Integer[tmpRoleID.size()];
             for (int i =0; i < tmpRoleID.size(); i++)
                 roleID[i] = tmpRoleID.get(i);
@@ -243,14 +271,17 @@ public class ServerHandler {
             try {
                 organizationID = (Integer) context.fetch("select organization_id from organization where name = '" + splitData[5] + "';").getValue(0, 0);
             } catch (Exception e){
+                writeToLog("ServerHandler.populateContactData()", "The organization " + splitData[5] + " is not a valid organization.", username);
                 alert("The organization '" + splitData[5] + "' is not a valid organization. Please verify the spelling and make sure that the uploaded file follows the expected tab-delimited format.");
                 return success;
             }
+            writeToLog("ServerHandler.populateContactData()", "The organization have been correctly read in.", username);
             try {
                 Routines.createcontact(context.configuration(), splitData[0], splitData[1], splitData[2], splitData[3], roleID,
                         timescopeData.getX(), timescopeData.getY(), timescopeData.getX(), timescopeData.getY(), organizationID, splitData[6]
                 );
             } catch (Exception e) {
+                writeToLog("ServerHandler.populateContactData()", "Contact data could not be filled in.", username);
                 alert("Contact data could not be filled in correctly, with following error: \n" + e.toString());
                 return success;
             }

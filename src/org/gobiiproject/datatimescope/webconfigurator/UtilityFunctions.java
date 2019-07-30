@@ -1,7 +1,11 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.zkoss.zk.ui.util.Clients.alert;
 
@@ -45,6 +49,12 @@ public class UtilityFunctions {
             success = false;
         }
         return success;
+    }
+
+    public static void writeToLog(String context, String message, String username){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        System.out.println(dateFormat.format(date) + " " + username + ": Within the context " + context  + ":\n\t" + message);
     }
 
 }

@@ -21,11 +21,17 @@ public class Crop {
     private boolean isActive;
     private boolean changeActivity;
     private boolean activityChanged;
-    private XmlModifier xmlHandler = new XmlModifier();
+    private XmlModifier xmlHandler;
     private String contactData;
     private String contactDataShort;
     private String typedName;
     private boolean hideContactData = true;
+    private String username;
+
+    public Crop(String name){
+        username = name;
+        xmlHandler = new XmlModifier(username);
+    }
 
     public int getCron() {
         return cron;

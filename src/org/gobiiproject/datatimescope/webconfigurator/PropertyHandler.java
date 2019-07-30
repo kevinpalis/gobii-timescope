@@ -3,6 +3,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 import java.io.*;
 import java.util.Properties;
 
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
@@ -12,6 +13,11 @@ import static org.zkoss.zk.ui.util.Clients.alert;
 public class PropertyHandler {
 
     private Properties prop = new Properties();
+    private String username;
+
+    public PropertyHandler(String name){
+        username = name;
+    }
 
     public String getUsername(){
         try {
@@ -21,6 +27,7 @@ public class PropertyHandler {
             return prop.getProperty("username");
         } catch (IOException e) {
             e.printStackTrace();
+            writeToLog("PropertyHandler.getUsername()", "Property file not found.", username);
             return null;
         }
     }
@@ -31,8 +38,11 @@ public class PropertyHandler {
             //OutputStream output = new FileOutputStream("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/gobii-configurator.properties");
             prop.setProperty("username" , username);
             prop.store(output, null);
+            writeToLog("PropertyHandler.setPassword()", "Tomcat username credential set.", username);
+
         } catch (IOException e) {
             e.printStackTrace();
+            writeToLog("PropertyHandler.setUsername()", "Property file not found.", username);
         }
     }
 
@@ -45,6 +55,7 @@ public class PropertyHandler {
             return prop.getProperty("password");
         } catch (IOException e) {
             e.printStackTrace();
+            writeToLog("PropertyHandler.getPassword()", "Property file not found.", username);
             return null;
         }
     }
@@ -55,8 +66,10 @@ public class PropertyHandler {
             //OutputStream output = new FileOutputStream("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/gobii-configurator.properties");
             prop.setProperty("password" , password);
             prop.store(output, null);
+            writeToLog("PropertyHandler.setPassword()", "Tomcat password credential set.", username);
         } catch (IOException e) {
             e.printStackTrace();
+            writeToLog("PropertyHandler.setPassword()", "Property file not found.", username);
         }
     }
 
