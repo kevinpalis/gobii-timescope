@@ -11,6 +11,7 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Include;
+import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Window;
 
 import java.io.*;
@@ -56,7 +57,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             username = cre.getAccount();
             keygen();
             instantiate();
-            copySettings();
+            copyCurrentSettings();
             try {
                 Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
             } catch (IOException e) {
@@ -82,9 +83,49 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     /**
      * A function to create a copy of the current gobii-web.xml to enable a button to revert changes made.
      */
-    private void copySettings(){
-
+    private void copyCurrentSettings(){
+        try {
+            Runtime.getRuntime().exec("cp /data/gobii_bundle/config/gobii-web.xml /usr/local/tomcat/temp/gobii-web-tmp.xml");
+            writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully created temporary copy of gobii-web.xml.", username);
+        } catch (IOException e) {
+            e.printStackTrace();
+            writeToLog("WebConfigViewModel.copyCurrentSettings()", "Creation of temporary copy of gobii-web.xml failed.", username);
+        }
     }
+
+    /**
+     * Revert all gobii-web.xml changes made during this session. This excludes crop addition, deletion, crop CRON jobs and backup configuration
+     */
+    private void revertAllSessionChanges(){
+        ListModelList oldCrops = xmlHandler.getCropList();
+        try {
+            Runtime.getRuntime().exec("cp /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
+            writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully copied temporary copy of gobii-web.xml.", username);
+        } catch (IOException e) {
+            e.printStackTrace();
+            writeToLog("WebConfigViewModel.copyCurrentSettings()", "Copying of temporary copy of gobii-web.xml failed.", username);
+        }
+        String oldPostgresName = xmlHandler.getPostgresUserName();
+        xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
+        ListModelList newCrops = xmlHandler.getCropList();
+        if (!oldCrops.equals(newCrops)){
+            alert("Can't revert changes as a crop has been added or deleted during this session.");
+            writeToLog("WebConfigViewModel.copyCurrentSettings()", "Can't revert changes as a crop has been added or deleted during this session.", username);
+        } else {
+            try {
+                Runtime.getRuntime().exec("mv /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web.xml");
+                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                serverHandler.executePostgresChange(oldPostgresName);
+                alert("You have successfully reverted the changes made this session. The settings changed for the BackUp schedule and the Scheduler modifications have NOT been reverted.");
+                writeToLog("WebConfigViewModel.copyCurrentSettings()", "You have successfully reverted the changes made this session. The settings changed for the BackUp schedule and the Scheduler modifications have NOT been reverted.", username);
+            } catch (IOException e) {
+                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                e.printStackTrace();
+                writeToLog("WebConfigViewModel.copyCurrentSettings()", "Making temporary gobii-web.xml the main gobii-web.xml failed.", username);
+            }
+        }
+    }
+
 
     /**
      * This function checks if keygen has been run for later ssh commands which are needed in the backend
@@ -633,6 +674,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         include.setSrc("/export.zul");
         getPage().getDesktop().setBookmark("p_" + "export");
         writeToLog("WebConfigViewModel.export_settings()", "Navigated to export_settings.", username);
+    }
+
+    @Command("revert")
+    public void revert () {
+        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                .iterator().next();
+        include.setSrc("/revert.zul");
+        getPage().getDesktop().setBookmark("p_" + "revert");
+        writeToLog("WebConfigViewModel.revert()", "Navigated to revert.", username);
     }
 
     public void doAfterCompose (Component comp) throws Exception {

@@ -198,6 +198,11 @@
                     <treecell label="Backup" style="font-size:15px !important;"/>
                 </treerow>
             </treeitem>
+            <treeitem>
+                <treerow onClick="@command('revert')" >
+                    <treecell label="Revert" style="font-size:15px !important;"/>
+                </treerow>
+            </treeitem>
         </treechildren>
     </tree>
 </zk>
