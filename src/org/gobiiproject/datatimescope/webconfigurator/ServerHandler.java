@@ -16,8 +16,8 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.wr
 import static org.zkoss.zk.ui.util.Clients.alert;
 import org.gobiiproject.datatimescope.db.generated.Routines;
 import org.zkoss.util.Pair;
-import org.zkoss.zk.ui.Executions;
-import org.zkoss.zul.Window;
+import org.zkoss.zul.Messagebox;
+
 
 /**
  * A class designed to execute the operations on both Postgres and Tomcat
@@ -51,7 +51,7 @@ public class ServerHandler {
             context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
             context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
             context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " VALID UNTIL 'infinity';");
-            writeToLog("ServerHandler.executePostgresChange()", "You have successfully changed the username from " + oldUserName + " to " + xmlHandler.getPostgresUserName() + "and updated the password.", username);
+            writeToLog("ServerHandler.executePostgresChange()", "You have successfully changed the username from " + oldUserName + " to " + xmlHandler.getPostgresUserName() + " and updated the password.", username);
             alert("You have successfully changed the username from " + oldUserName + " to " + xmlHandler.getPostgresUserName() + " and updated the password.");
         } else {
             context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
@@ -68,12 +68,6 @@ public class ServerHandler {
     private void configureTomcatReloadRequest(){
         reloadRequest.setUsername(prop.getUsername());
         reloadRequest.setPassword(prop.getPassword());
-        while (prop.getUsername() == null || prop.getPassword() == null){
-            writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are not set.", username);
-            alert("Please configure gobii-configurator.properties with correct credentials for the changes to be able to take place.");
-            Window window = (Window)Executions.createComponents("/setConfigCreds.zul", null, null);
-            window.doModal();
-        }
         writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are set.", username);
     }
 
@@ -87,6 +81,7 @@ public class ServerHandler {
         reloadRequest.setPath(xmlHandler.getWARName(cropname));
         reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
         reloadRequest.execute();
+        alert("You have successfully reloaded the web-application for the crop " + cropname + ".");
         writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "You have successfully reloaded the web-application for the crop " + cropname + ".", username);
     }
 
@@ -104,7 +99,6 @@ public class ServerHandler {
             reloadRequest.execute();
         }
         writeToLog("ServerHandler.executeAllTomcatReloadRequest()", "You have successfully reloaded all the web-applications.", username);
-
     }
 
     /**
@@ -121,6 +115,7 @@ public class ServerHandler {
             undeploy.setPath(xmlHandler.getWebContextPath(currCrop.getName()));
             undeploy.setUrl("http://" + host + ":" + port + "/manager/text");
             undeploy.execute();
+            Messagebox.show(("You have successfully undeployed the crop " + currCrop.getName() + "."));
             writeToLog("ServerHandler.undeployFromTomcat()", "You have successfully undeployed the crop " + currCrop.getName() + ".", username);
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,9 +216,9 @@ public class ServerHandler {
         try {
             context.fetch("CREATE DATABASE " + currentCrop.getDatabaseName() + " WITH OWNER '" + xmlHandler.getPostgresUserName() + "';");
         } catch (Exception e){
-            writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + "couldn't be created.", username);
+            writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + " couldn't be created.", username);
             alert("The database for the crop " + currentCrop.getName() + "couldn't be created due to following error: \n" + e.toString());
-            success = false;
+            return false;
         }
         writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + " was successfully created.", username);
         List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresHost(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));

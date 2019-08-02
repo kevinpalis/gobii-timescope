@@ -1,11 +1,8 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 import static org.zkoss.zk.ui.util.Clients.alert;
 
@@ -14,6 +11,10 @@ import static org.zkoss.zk.ui.util.Clients.alert;
  *
  */
 public class UtilityFunctions {
+
+
+    private static final Logger log = Logger.getLogger("../logs/ConfigManager");
+    private static boolean configured = false;
 
     /**
      * @param messages List of messages to be concatenated into one Alert error message
@@ -52,9 +53,20 @@ public class UtilityFunctions {
     }
 
     public static void writeToLog(String context, String message, String username){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date date = new Date();
-        System.out.println(dateFormat.format(date) + " " + username + ": Within the context " + context  + ":\n\t" + message);
+        if (!configured){
+            try {
+                ConsoleHandler consoleHandler = new ConsoleHandler();
+                SimpleFormatter simpleFormatter = new SimpleFormatter();
+                FileHandler fileHandler = new FileHandler("../logs/ConfigManager.log");
+                log.addHandler(fileHandler);
+                fileHandler.setFormatter(simpleFormatter);
+                log.addHandler(consoleHandler);
+                configured = true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        log.info(username + ": The calling function is " + context  + ", with following message:\n\t" + message);
+        // Somehow on shutdown need to get rid of the handlers
     }
-
 }

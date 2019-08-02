@@ -8,7 +8,6 @@ import org.zkoss.zul.Messagebox;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
@@ -33,11 +32,15 @@ public class WarningComposer{
      * Opens a warning box and if acknowledged performs the restart of all web-applications.
      * Otherwise stages it for later and upon next restart the effects will take place
      * */
-    public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model) {
+    public void warningTomcat(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model, String callingContext, String logMessage) {
         Messagebox.show("Clicking OK will restart all web applications and all unsaved data will be lost.", "Warning", Messagebox.OK | Messagebox.CANCEL, Messagebox.EXCLAMATION, new org.zkoss.zk.ui.event.EventListener() {
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
                     model.serverHandler.executeAllTomcatReloadRequest();
+                    if (!logMessage.equals(null)){
+                        alert(logMessage);
+                        writeToLog(callingContext, logMessage, username);
+                    }
                     binder.sendCommand("disableEdit", null);
                     model.goToHome();
                 } else {

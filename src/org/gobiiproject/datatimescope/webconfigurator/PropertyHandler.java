@@ -4,13 +4,12 @@ import java.io.*;
 import java.util.Properties;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
-import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
  * A class that handles the gobii-configurator.properties file
  */
 
-public class PropertyHandler {
+public class PropertyHandler{
 
     private Properties prop = new Properties();
     private String username;
@@ -46,7 +45,6 @@ public class PropertyHandler {
         }
     }
 
-    //TODO What happens for empty file
     public String getPassword(){
         try {
             InputStream input = new FileInputStream("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/gobii-configurator.properties");

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
+import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
  * A class responsible for any changes made to CRON schedules for individual Crops
@@ -40,9 +41,13 @@ public class CronHandler {
             errorMessages.add("Please choose a valid value between 1 and 59. The default setting is 2.");
             writeToLog("CronHandler.reloadCrons()", "Invalid minute selection for the crop " + currentCrop.getName() + ".", username);
         } else {
-            modifyCron("update", hostFromXml, currentCrop);
-            writeToLog("CronHandler.reloadCrons()", "CRON jobs for the crop " + currentCrop.getName() + " have been adjusted.", username);
-            success = true;
+            if (modifyCron("update", hostFromXml, currentCrop)) {
+                writeToLog("CronHandler.reloadCrons()", "CRON jobs for the crop " + currentCrop.getName() + " have been adjusted.", username);
+                success = true;
+            } else {
+                writeToLog("CronHandler.reloadCrons()", "CRON jobs for the crop " + currentCrop.getName() + " have failed to be adjusted.", username);
+                success = false;
+            }
         }
         return success;
     }
@@ -56,7 +61,7 @@ public class CronHandler {
      * @param hostFromXml Currently web-node host pulled from the XML file, should be changed to compute host once known
      * @param currentCrop The crop we are applying the CRON job change to
      */
-    public void modifyCron(String modification, String hostFromXml, Crop currentCrop){
+    public boolean modifyCron(String modification, String hostFromXml, Crop currentCrop){
         String[] read = {
                 "ssh",
                 "gadm@cbsugobiixvm14.biohpc.cornell.edu",
@@ -83,10 +88,13 @@ public class CronHandler {
             //Send the new CRONs back to the server
             Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server succeeded.", username);
+            return true;
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
         } catch (IOException e){
             e.printStackTrace();
+            alert("Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed.");
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed.", username);
+            return false;
         }
     }
 

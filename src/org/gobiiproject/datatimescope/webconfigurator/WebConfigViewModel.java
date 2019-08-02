@@ -1,7 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
 import org.gobiiproject.datatimescope.services.UserCredential;
-import org.jooq.Log;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
@@ -15,10 +14,7 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Window;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.*;
 
@@ -46,27 +42,34 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private boolean locationSet = false;
     private boolean firstUpload = true;
     private boolean isKeySet = true;
+    private boolean setUpisDone = false;
 
     private String username;
 
     @Init
     public void init() {
-        UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-        if (cre.getRole() == 1) {
-            isSuperAdmin = true;
-            username = cre.getAccount();
-            keygen();
-            instantiate();
-            copyCurrentSettings();
-            try {
-                Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
-            } catch (IOException e) {
-                writeToLog("WebConfigViewModel.init()", "Scripts were not enabled", username);
-                e.printStackTrace();
+        if (setUpisDone){
+            writeToLog("WebConfigViewModel.init()", "SetUp already is completed.", username);
+        } else {
+            setUpisDone = true;
+            UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+            if (cre.getRole() == 1) {
+                isSuperAdmin = true;
+                username = cre.getAccount();
+                keygen();
+                instantiate();
+                copyCurrentSettings();
+                try {
+                    Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
+                    writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
+                } catch (IOException e) {
+                    writeToLog("WebConfigViewModel.init()", "Scripts were not enabled", username);
+                    e.printStackTrace();
+                }
+            } else {
+                writeToLog("WebConfigViewModel.init()", "User is not SuperAdmin", username);
             }
-            writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
         }
-        writeToLog("WebConfigViewModel.init()", "User is not SuperAdmin", username);
     }
 
     private void instantiate(){
@@ -80,12 +83,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         currentCrop = new Crop(username);
     }
 
+
+
     /**
      * A function to create a copy of the current gobii-web.xml to enable a button to revert changes made.
      */
     private void copyCurrentSettings(){
         try {
             Runtime.getRuntime().exec("cp /data/gobii_bundle/config/gobii-web.xml /usr/local/tomcat/temp/gobii-web-tmp.xml");
+            //Runtime.getRuntime().exec("cp /data/gobii_bundle/config/gobii-web.xml /home/fvgoldman/Documents/apache-tomcat-7.0.94/temp/gobii-web-tmp.xml");
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully created temporary copy of gobii-web.xml.", username);
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,10 +102,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     /**
      * Revert all gobii-web.xml changes made during this session. This excludes crop addition, deletion, crop CRON jobs and backup configuration
      */
-    private void revertAllSessionChanges(){
+    @Command("revertAllSessionChanges")
+    public void revertAllSessionChanges(){
         ListModelList oldCrops = xmlHandler.getCropList();
         try {
             Runtime.getRuntime().exec("cp /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
+            //Runtime.getRuntime().exec("cp /home/fvgoldman/Documents/apache-tomcat-7.0.94/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully copied temporary copy of gobii-web.xml.", username);
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,7 +169,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("tomcatModification")
     public void tomcatModification(@ContextParam(ContextType.BINDER) Binder binder){
-        warningComposer.warningTomcat(binder, this);
+        if (propertyHandler.getUsername() == null || propertyHandler.getUsername().trim().isEmpty() || propertyHandler.getPassword() == null || propertyHandler.getPassword().trim().isEmpty()){
+            writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are not set.", username);
+            alert("Please configure gobii-configurator.properties with correct credentials and redo the changes.");
+            goToHome();
+        } else {
+            warningComposer.warningTomcat(binder, this, "WebConfigViewModel", null);
+        }
     }
 
     @Command("postgresModification")
@@ -282,16 +296,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "passed"));
             writeToLog("WebConfigViewModel.importXML()", "Imported file is valid.", username);
             if (scriptExecutor("importExportXml.sh", params)){
-                warningComposer.warningTomcat(binder, this);
-                alert("Imported XML is now being used.");
-                writeToLog("WebConfigViewModel.importXML()", "Imported XML is now being used.", username);
+                String oldPGname = xmlHandler.getPostgresUserName();
+                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                warningComposer.warningTomcat(binder, this, "WebConfigViewModel.importXML()", "Imported XML is now being used.");
+                serverHandler.executePostgresChange(oldPGname);
             } else {
                 binder.sendCommand("disableEdit",null);
                 writeToLog("WebConfigViewModel.importXML()", "After successful validation script for renaming failed.", username);
             }
         } else {
             xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
-            String oldPGname = xmlHandler.getPostgresUserName();
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "failed"));
             if (!scriptExecutor("importExportXml.sh", params)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
@@ -300,7 +314,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 alert(validator.getErrorMessage());
                 writeToLog("WebConfigViewModel.importXML()", "Validation of the XML failed.", username);
             }
-            serverHandler.executePostgresChange(oldPGname);
             binder.sendCommand("disableEdit",null);
         }
         locationSet = false;

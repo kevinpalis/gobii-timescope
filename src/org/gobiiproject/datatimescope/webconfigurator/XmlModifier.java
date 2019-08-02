@@ -8,7 +8,6 @@ import org.zkoss.zul.ListModelList;
 
 import java.io.*;
 import java.lang.Object;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -121,6 +120,9 @@ public class XmlModifier extends SelectorComposer<Component> {
         Document doc = XmlModifier.retrieveFile(path);
         NodeList postgresCropNodes = evaluateXPathExpression(postgresPasswordXPath, doc);
         for (int n = 0; n < postgresCropNodes.getLength(); n++){
+            if (newContent.equals(String.valueOf(postgresCropNodes.item(n).getTextContent().hashCode()))) {
+                continue;
+            }
             postgresCropNodes.item(n).setTextContent(newContent);
         }
         XmlModifier.modifyDocument(doc, path);
