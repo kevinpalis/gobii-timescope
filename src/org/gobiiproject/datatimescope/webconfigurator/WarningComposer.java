@@ -37,7 +37,7 @@ public class WarningComposer{
             public void onEvent(Event evt) {
                 if (evt.getName().equals("onOK")) {
                     model.serverHandler.executeAllTomcatReloadRequest();
-                    if (!logMessage.equals(null)){
+                    if (logMessage != null){
                         alert(logMessage);
                         writeToLog(callingContext, logMessage, username);
                     }
