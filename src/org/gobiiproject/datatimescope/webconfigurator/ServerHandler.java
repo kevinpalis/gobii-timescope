@@ -130,12 +130,12 @@ public class ServerHandler {
      * @param cropName
      * @return true upon success
      */
-    public boolean postgresRemoveCrop(String cropName){
+    public boolean postgresRemoveCrop(String cropName, String cropDatabase){
         boolean success = true;
         ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
         DSLContext context = tmpService.getDSLContext();
         try {
-            context.fetch("DROP DATABASE " + xmlHandler.getDatabaseName(cropName) + ";");
+            context.fetch("DROP DATABASE " + cropDatabase + ";");
             writeToLog("ServerHandler.postgresRemoveCrop()", "You have successfully removed database for the crop " + cropName + ".", username);
         } catch (Exception e) {
             alert("The database could not be removed. Stacktrace of the error: \n" + e.toString());

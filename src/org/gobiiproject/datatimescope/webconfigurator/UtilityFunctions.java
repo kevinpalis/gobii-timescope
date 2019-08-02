@@ -39,7 +39,7 @@ public class UtilityFunctions {
     public static boolean scriptExecutor(String scriptName, List<String> scriptParameters){
         boolean success;
         String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
-        //String scriptPath = "/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
+        //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts" + scriptName;
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
         try {

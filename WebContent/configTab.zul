@@ -3,12 +3,12 @@
 <zk>
     <style>
         .z-tree-icon .z-tree-open {
-        background-image: url("/gobiidatatimescope_war_exploded/imgs/minus.png");
+        background-image: url("/imgs/minus.png");
         background-repeat: no-repeat;
         width: 100%;
         }
         .z-tree-icon .z-tree-close {
-        background-image: url("/gobiidatatimescope_war_exploded/imgs/plus_tree.png");
+        background-image: url("/imgs/plus_tree.png");
         background-size: cover;
         width: 100%;
         }

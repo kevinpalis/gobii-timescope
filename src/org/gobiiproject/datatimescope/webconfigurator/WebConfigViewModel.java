@@ -59,13 +59,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 keygen();
                 instantiate();
                 copyCurrentSettings();
-                try {
-                    Runtime.getRuntime().exec("chmod +x /usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/*.sh");
-                    writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
-                } catch (IOException e) {
-                    writeToLog("WebConfigViewModel.init()", "Scripts were not enabled", username);
-                    e.printStackTrace();
-                }
+                writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
             } else {
                 writeToLog("WebConfigViewModel.init()", "User is not SuperAdmin", username);
             }
@@ -190,9 +184,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("reloadCrons")
     public void reloadCrons(@ContextParam(ContextType.BINDER) Binder binder){
         if (!cronHandler.reloadCrons(xmlHandler.getHostForReload(), currentCrop)){
-            alert(generateAlertMessage(cronHandler.getErrorMessages()));
             binder.sendCommand("disableEdit", null);
-            writeToLog("WebConfigViewModel.reloadCrons()", generateAlertMessage(cronHandler.getErrorMessages()), username);
         } else {
             binder.sendCommand("disableEdit", null);
             alert("All CRON jobs have successfully modified and been transmitted to the server.");
@@ -348,7 +340,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
         int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
-            serverHandler.postgresRemoveCrop(currentCrop.getName());
+            serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit", null);
             writeToLog("WebConfigViewModel.addCropToDatabase()", "Liquibase failed and database of the new crop was removed.", username);
             return;
@@ -365,7 +357,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             xmlCropHandler.removeCrop(currentCrop);
-            serverHandler.postgresRemoveCrop(currentCrop.getName());
+            serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit",null);
             writeToLog("WebConfigViewModel.addCropToDatabase()", "Creating the file structure for the new crop failed, database creation has been reverted.", username);
             return;
@@ -377,7 +369,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             xmlCropHandler.removeCrop(currentCrop);
             List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
             scriptExecutor("cropFileManagement.sh", removeBundle);
-            serverHandler.postgresRemoveCrop(currentCrop.getName());
+            serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit",null);
             writeToLog("WebConfigViewModel.addCropToDatabase()", "Copying the WAR file failed, all changes have been reverted.", username);
             return;
@@ -458,7 +450,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             }
         }
         writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " .war file has been removed.", username);
-        if (!serverHandler.postgresRemoveCrop(currentCrop.getName())) {
+        if (!serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName())) {
             writeToLog("WebConfigViewModel.executeRemoval()", "Removal of the database was unsuccessful.", username);
             return;
         }
