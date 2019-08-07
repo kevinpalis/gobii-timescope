@@ -105,7 +105,7 @@ public class CronHandler {
      */
     private void createCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
+        String line;
         while ((line = stdInput.readLine()) != null) {
             if (line.equals("")){
                 break;
@@ -128,7 +128,7 @@ public class CronHandler {
      */
     private void updateCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
+        String line;
         while ((line = stdInput.readLine()) != null) {
             if (line.equals("")){
                 break;
@@ -156,7 +156,7 @@ public class CronHandler {
      */
     private void deleteCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
         ArrayList<String> newJobs = new ArrayList<>();
-        String line = null;
+        String line;
         while ((line = stdInput.readLine()) != null) {
             if (line.equals("")){
                 break;

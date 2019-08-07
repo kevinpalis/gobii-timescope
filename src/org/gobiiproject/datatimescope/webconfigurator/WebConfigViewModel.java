@@ -494,7 +494,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         x.detach();
     }
 
-    //TODO rename this to more accurate name
     @Command("setLocationForSeeddata")
     public void setLocationForSeeddata (@ContextParam(ContextType.TRIGGER_EVENT) UploadEvent event, @ContextParam(ContextType.BINDER) Binder binder) {
         currentCrop.setContactData(createTmpCopyOfUpload(event));

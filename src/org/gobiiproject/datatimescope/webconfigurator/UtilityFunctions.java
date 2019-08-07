@@ -10,6 +10,7 @@ import static org.zkoss.zk.ui.util.Clients.alert;
  * A class for general small utility functions that are called multiple time within the webconfigurator package
  *
  */
+
 public class UtilityFunctions {
 
 
@@ -55,12 +56,10 @@ public class UtilityFunctions {
     public static void writeToLog(String context, String message, String username){
         if (!configured){
             try {
-                ConsoleHandler consoleHandler = new ConsoleHandler();
                 SimpleFormatter simpleFormatter = new SimpleFormatter();
                 FileHandler fileHandler = new FileHandler("../logs/ConfigManager.log");
                 log.addHandler(fileHandler);
                 fileHandler.setFormatter(simpleFormatter);
-                log.addHandler(consoleHandler);
                 configured = true;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -168,7 +168,7 @@ public class BackupHandler {
      * Create the CRON jobs if it doesn't exist yet, otherwise modify the values according to the user input
      * This also calls the script to send the jobs back to the server to make them active
      * @param hostFromXml web-node host read in from the gobii-web.xml, should be changed to compute-node host once known
-     * @return
+     * @return true if operation was successful, false if not
      */
     public boolean saveDataToCrons(String hostFromXml) {
         boolean success = false;
