@@ -11,4 +11,7 @@
 	<desktop-config>
 		<theme-uri>/css/syle.css</theme-uri>
 	</desktop-config>
+	 <client-config>
+        <tooltip-delay>1</tooltip-delay>
+    </client-config>
 </zk>
