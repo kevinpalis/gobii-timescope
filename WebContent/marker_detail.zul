@@ -1,65 +1,88 @@
-<window mode="popup" popup="true" width="650px" height="400px"
-	closable="true" apply="org.zkoss.bind.BindComposer"
+<window id="markerDetailWindow" mode="popup" popup="true" hflex="min"
+	vflex="min" closable="true" apply="org.zkoss.bind.BindComposer"
 	border="normal" position="right,top"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDetailViewModel')">
+
 	<label visible="@load(not vm.markerAssociated)"
 		value="This marker is not associated with any linkage group, dataset, and marker groups."
-		style="font-size: 16px; " />
+		style="font-size: 14px; " />
 	<label visible="@load(vm.markerAssociated)"
-		value="This marker is associated with the following:"
-		style="font-size: 16px; " />
+		value="This marker is associated with the following (Id - Name):"
+		style="font-size: 14px; " />
+
 	<separator spacing="15px" />
-	<hbox hflex="1" vflex="1">
-		<vlayout 
-			visible="@load(not empty vm.markerDetailDatasetList)">
-			<label value="Datasets:"
+	<hbox hflex="min" vflex="1">
+		<vlayout
+			visible="@load(not empty vm.markerDetailDatasetList)" style="padding:10px;">
+			<label value="Dataset:"
 				style="font-size: 14px; text-align:center;" />
 			<separator spacing="5px" />
 			<grid model="@load(vm.markerDetailDatasetList)"
-				mold="paging" pageSize="5" vflex="1" hflex="1">
+				mold="paging" pageSize="5" style="overflow-y: hidden !important;"
+				width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
 				<template name="model" var="each">
 					<row>
+						<cell hflex="min">
+							<label value="@load(each.datasetId)" />
+						</cell>
 						<cell>
-							<label value="@load(each.name)" />
+							<label value="@load('--  '.concat(each.name))"
+								width="200px" style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
 			</grid>
 		</vlayout>
-		<vlayout 
-			visible="@load(not empty vm.markerDetailLinkageGroupList)">
-			<label value="Linkage groups:"
+
+		<vlayout
+			visible="@load(not empty vm.markerDetailLinkageGroupList)" style="padding:10px;">
+			<label value="Linkage group:"
 				style="font-size: 14px; text-align:center;" />
 			<separator spacing="5px" />
 			<grid model="@load(vm.markerDetailLinkageGroupList)"
-				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
+				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
 				<template name="model" var="each">
 					<row>
-						<cell hflex="min" vflex="min">
-							<label value="@load(each.name)" />
+						<cell hflex="min">
+							<label value="@load(each.linkageGroupId)" />
+						</cell>
+						<cell align="left">
+							<label width="200px"
+								value="@load('--  '.concat(each.name))"
+								style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
 			</grid>
 		</vlayout>
-		<vlayout 
-			visible="@load(not empty vm.markerDetailsMarkerGroupList)" >
-			<label value="Marker groups:"
+
+		<vlayout
+			visible="@load(not empty vm.markerDetailsMarkerGroupList)" style="padding:10px;">
+			<label value="Marker group:"
 				style="font-size: 14px; text-align:center;" />
 			<separator spacing="5px" />
-			<grid model="@load(vm.markerDetailsMarkerGroupList)" 
-				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
+			<grid model="@load(vm.markerDetailsMarkerGroupList)"
+				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
 				<template name="model" var="each">
 					<row>
+						<cell hflex="min">
+							<label value="@load(each.markerGroupId)" />
+						</cell>
 						<cell>
-							<label value="@load(each.name)" />
+							<label value="@load('--  '.concat(each.name))"
+								width="200px" style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
 			</grid>
 		</vlayout>
 	</hbox>
+
+	<div align="center" style="margin: 10px">
+		<button id="exitMarkerDetail" label="OK" width="150px"
+			onClick="@command('exit')" />
+	</div>
 </window>

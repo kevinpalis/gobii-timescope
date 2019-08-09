@@ -42,6 +42,9 @@ import org.zkoss.zul.Window;
 public class MarkerDetailViewModel {
 	//UI component
 
+    @Wire("#markerDetailWindow")
+    Window markerDetailWindow;
+    
 	private Boolean markerAssociated;
 	private List<DatasetRecord> markerDetailDatasetList;
 	private List<LinkageGroupRecord> markerDetailLinkageGroupList;
@@ -64,6 +67,16 @@ public class MarkerDetailViewModel {
 		Selectors.wireComponents(view, this, false);
 	}
 
+    @Command("displayTooltip")
+    public void displayTooltip() {
+        Messagebox.show("Hover/point to a row to see its ID.", "Quick Tip", Messagebox.OK,  Messagebox.INFORMATION);
+    }
+	
+    @Command("exit")
+    public void exit(){
+        markerDetailWindow.detach();
+    }
+    
 	public Boolean getMarkerAssociated() {
 		return markerAssociated;
 	}
@@ -96,5 +109,4 @@ public class MarkerDetailViewModel {
 		this.markerDetailsMarkerGroupList = markerDetailsMarkerGroupList;
 	}
 
-	
 }

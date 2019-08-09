@@ -182,7 +182,8 @@ public class MarkerViewModel {
 		Window window = (Window)Executions.createComponents(
 				"/marker_detail.zul", null, args);
 		window.setPosition("center");
-		window.doPopup();
+		window.setClosable(true);
+		window.doModal();
 	}
 
 	@Command("noDatasetsSelectedAsFilter")

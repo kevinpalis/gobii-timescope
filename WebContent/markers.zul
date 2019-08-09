@@ -84,36 +84,36 @@
 								</grid>
 
 								<tabbox id="tb" orient="left" hflex="2"
-									height="350px">
+									height="350px" style="border:none;">
 									<tabs width="230px" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
 											label="Vendor-Protocol"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectVendorProtocolTab')" />
 										<tab id="I" label="Mapsets"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
 											label="Linkage Groups" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectLinkageGroupsTab')" />
 										<tab id="F" label="Projects"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectProjectsTab')" />
 										<tab id="G" label="Experiments"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectExperimentsTab')" />
 										<tab id="E" label="Analyses"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectAnalysesTab')" />
 										<tab id="H" label="Datasets"
 											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
 											onSelect="@command('selectDatasetsTab')" />
 									</tabs>
 									<tabpanels hflex="true">
@@ -141,7 +141,7 @@
 													var="item">
 													<listitem>
 														<listcell sclass="list-row"
-															label="@load(item.name)" />
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -174,7 +174,7 @@
 													var="item">
 													<listitem >
 														<listcell
-															label="@load(item.name)" tooltiptext="@load(item.name)"/>
+															label="@load(item.name)" tooltiptext="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -205,7 +205,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -236,7 +236,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"  tooltiptext="@load('Map Id: '.concat(item.mapId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -267,7 +267,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -298,7 +298,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load('Project ID: '.concat(item.projectId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -330,7 +330,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"  style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -371,7 +371,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load('Experiment ID: '.concat(item.experimentId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -445,7 +445,7 @@
 										<row
 											onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
 											style="cursor:pointer"
-											tooltip="markerTooltip, position=after_pointer">
+											tooltip="markerTooltip, position=after_pointer, delay=0">
 												<cell>
 													<checkbox
 														value="@load(marker)" checked="@load(vm.allCbSelected)"
