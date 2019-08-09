@@ -140,7 +140,7 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell sclass="list-row"
+														<listcell sclass="list-row" tooltiptext="@load('Platform Id: '.concat(item.platformId))"
 															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
@@ -204,7 +204,7 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell
+														<listcell  tooltiptext="@load('Mapset Id: '.concat(item.mapsetId))"
 															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
@@ -236,7 +236,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)"  tooltiptext="@load('Map Id: '.concat(item.mapId))" style="font-size: 12px;" />
+															label="@load(item.name)"  tooltiptext="@load('Mapset Id: '.concat(item.mapId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -266,7 +266,7 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell
+														<listcell  tooltiptext="@load('Project Id: '.concat(item.projectId))"
 															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
@@ -298,7 +298,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" tooltiptext="@load('Project ID: '.concat(item.projectId))" style="font-size: 12px;" />
+															label="@load(item.name)" tooltiptext="@load('Project Id: '.concat(item.projectId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
@@ -329,7 +329,7 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell
+														<listcell  tooltiptext="@load('Analysis Id: '.concat(item.analysisId))"
 															label="@load(item.name)"  style="font-size: 12px;" />
 													</listitem>
 												</template>
@@ -371,7 +371,7 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" tooltiptext="@load('Experiment ID: '.concat(item.experimentId))" style="font-size: 12px;" />
+															label="@load(item.name)" tooltiptext="@load('Experiment Id: '.concat(item.experimentId))" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>

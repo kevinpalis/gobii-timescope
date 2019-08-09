@@ -64,7 +64,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		int ctr = 0;
 		StringBuilder sb = new StringBuilder();
 		
-		for(String s: markerNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
+		for(String s: markerNamesAsCommaSeparatedString.replaceAll(" \n","\n").split("\n")){
 			if(ctr>0)sb.append(",");
 		sb.append(" '"+s.toLowerCase()+"' ");
 		ctr++;
