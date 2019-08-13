@@ -94,6 +94,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
 	final static Logger log = Logger.getLogger(ViewModelServiceImpl.class.getName());
 
+	public ViewModelServiceImpl(){};
+
 	@Override
 	public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
 		// TODO Auto-generated method stub
@@ -163,7 +165,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 
-	private DSLContext getDSLContext() {
+	public DSLContext getDSLContext() {
 		// TODO Auto-generated method stub
 
 		Configuration contextConfiguration = (Configuration) Sessions.getCurrent().getAttribute("contextConfiguration");

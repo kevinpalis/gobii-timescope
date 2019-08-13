@@ -21,7 +21,7 @@ font-size: 12px;
 .z-initing { width: 50px !important; height: 72px !important; background-image: url('../imgs/favicon.ico') !important; }
 
 .z-north splitter {
-	height: 20px important!;
+	height: 20px !important;
 }
 
 .banner {
