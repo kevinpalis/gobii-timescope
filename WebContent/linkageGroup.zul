@@ -2,96 +2,51 @@
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
 <window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LinkageGroupViewModel')">
-	<caption sclass="fn-caption" label="linkageGroups" />
-	<tabbox style="border: 0px; padding:0px;">
+	<caption sclass="fn-caption" label="Linkage Groups" />
+	<tabbox style="border: 0px; padding:0px;" vflex="1">
 		<tabs visible="false">
 			<tab id="linkageGroupSearchTab" label="Search" />
 			<tab id="linkageGroupSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
 		</tabs>
-		<tabpanels>
-			<tabpanel>
-				<borderlayout vflex="min" hflex="true">
+		<tabpanels vflex="1">
+			<tabpanel vflex="1">
+				<borderlayout vflex="1" hflex="true">
 					<north title="Filters:" style=" border: 0px;"
 						splittable="true" collapsible="true">
-						<vlayout>
-							<hlayout>
+						<vlayout vflex="1">
+							<hlayout vflex="1">
 								<grid hflex="1" vflex="1"
 									style="border: none; important!">
 									<columns>
-										<column align="left" />
+										<column align="left" width="30%"/>
 										<column align="left" />
 									</columns>
 									<rows>
 										<row>
 											<cell sclass="row-title">
-												Linkage Group ID :
+												Linkage Group ID:
 											</cell>
 											<cell>
 												<hbox hflex="true">
 													<intbox hflex="true"
 														value="@bind(vm.linkageGroupEntity.linkageGroupIDStartRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
-														onChange="@command('changeEnabled')" />
+														disabled="@bind(vm.iDBoxDisabled)"/>
 													to
 													<intbox hflex="true"
 														value="@bind(vm.linkageGroupEntity.linkageGroupIDEndRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
-														onChange="@command('changeEnabled')" />
+														disabled="@bind(vm.iDBoxDisabled)"/>
 												</hbox>
 											</cell>
 										</row>
 										<row>
 											<cell sclass="row-title">
-												<label
-													value="Linkage Group Names :" />
-											</cell>
-											<cell>
-												<textbox rows="8"
-													cols="40" hflex="true" vflex="true"
-													tooltiptext="Separate Linkage Group names with a new line"
-													value="@bind(vm.linkageGroupEntity.linkageGroupNamesAsEnterSeparatedString)"
-													popup="title, position=start_before"
-													disabled="@bind(vm.nameListDisabled)"
-													onChange="@command('changeEnabled')">
-
-												</textbox>
-											</cell>
-										</row>
-									</rows>
-								</grid>
-								<label value="  " />
-								<label value="  " />
-								<grid hflex="true"
-									style="border: none; important!" >
-									<columns>
-										<column align="left"
-											width="40%" />
-										<column align="left"
-											width="60%" />
-									</columns>
-									<rows>
-										<!-- row>
-											<cell sclass="row-title">
-											Created By :
-											</cell>
-											<cell>
-											<combobox autodrop="true"
-											hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.linkageGroupEntity.createdByContactRecord)">
-											<template name="model">
-											<comboitem
-											label="@load(each.wholename)" value="@load(each.contactId)" />
-											</template>
-											</combobox>
-											</cell>
-											</row> -->
-										<row>
-											<cell sclass="row-title">
-												Creation Date :
+												Creation Date:
 											</cell>
 											<cell>
 												<hbox hflex="true">
@@ -109,40 +64,128 @@
 										</row>
 										<row>
 											<cell sclass="row-title">
-												Linkage Group Type :
+												Current Filters:
 											</cell>
 											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.linkageGroupTypes)"
-													selectedItem="@bind(vm.linkageGroupEntity.linkageGroupTypeRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.term)" />
-													</template>
-												</combobox>
-											</cell>
-										</row>
+												<textbox  rows="8"
+													cols="40" hflex="true" vflex="true" multiline="true" 
+													readonly="true"
+													value="@load(vm.linkageGroupEntity.filtersAsText)"
+													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
 
-										<row>
-											<cell sclass="row-title">
-												Principal Investigator :
-											</cell>
-											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.piList)"
-													selectedItem="@bind(vm.linkageGroupEntity.piRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.wholename)"
-															value="@load(each.contactId)" />
-													</template>
-												</combobox>
+												</textbox>
 											</cell>
 										</row>
 									</rows>
 								</grid>
+								<tabbox id="tb" orient="left" hflex="2"
+									height="350px" style="border:none;">
+									<tabs width="230px" id="tabs">
+										<tab id="A" label="References"
+											sclass="tab-title"
+											onSelect="@command('selectReferenceTab')" />
+										<tab id="C"
+											label="Mapsets"
+											sclass="tab-title"
+											onSelect="@command('selectMapsetsTab')" />
+										<tab id="I" label="Linkage Groups"
+											sclass="tab-title"
+											onSelect="@command('selectLinkageGroupTab')" />
+										
+									</tabs>
+									<tabpanels hflex="true">
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbReferences)"
+													value="@bind(vm.filterReference)"
+													onChange="@command('doSearchReferences')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='reference')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox
+												visible="@load(vm.dbReferences)"
+												model="@load(vm.referenceList)" hflex="max" vflex="1"
+												multiple="true" checkmark="true"
+												style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.referenceList)"
+												onSelect="@command('validateForReset', category='reference')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell sclass="list-row" tooltiptext="@load('Reference Id: '.concat(item.referenceId))"
+															label="@load(item.name)" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbReferences)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbMapsets)"
+													value="@bind(vm.filterMapset)"
+													onChange="@command('doSearchMapset')"
+													instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='mapsets')"
+													tooltiptext="View Filters" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbMapsets)" vflex="1"
+												model="@load(vm.mapsetList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.mapsetList)"
+												onSelect="@command('validateForReset', category='mapsets')">
+												<template name="model"
+													var="item">
+													<listitem >
+														<listcell
+															label="@load(item.name)" tooltiptext="@load('Reference Id: '.concat(item.referenceId))" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbMapsets)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbLinkageGroup)"
+													value="@bind(vm.filterLinkageGroup)"
+													onChange="@command('doSearchLinkageGroup')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='linkagegroup')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbLinkageGroup)" vflex="1"
+												model="@load(vm.linkageGroupList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.linkageGroupList)"
+												onSelect="@command('validateForReset', category='lg')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)"  tooltiptext="@load('Mapset Id: '.concat(item.mapId))" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbLinkageGroup)"
+												value="There's nothing to see here." />
+										</tabpanel>
+									</tabpanels>
+								</tabbox>
 							</hlayout>
 
 							<div align="center" hflex="1">
@@ -163,7 +206,7 @@
 						<div>
 							<div sclass="Container">
 								<grid id="linkageGroupGrid"
-									model="@load(vm.linkageGroupList)" mold="paging" pageSize="25"
+									model="@load(vm.vlinkageGroupSummaryEntityList)" mold="paging" pageSize="25"
 									pagingPosition="both" height="500px">
 									<columns sizable="true">
 										<column hflex="min">
@@ -266,23 +309,23 @@
 													onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
 											</cell>
 											<cell>
-												<label
+												<label sclass="grid-row "
 													value="@load(linkageGroup.linkageGroupId)" />
 											</cell>
 											<cell>
-												<label
+												<label sclass="grid-row "
 													value="@load(linkageGroup.linkageGroupName)" />
 											</cell>
 											<cell>
-												<label
+												<label sclass="grid-row "
 													value="@load(linkageGroup.experimentId)" />
 											</cell>
 											<cell>
-												<label
+												<label sclass="grid-row "
 													value="@load(linkageGroup.experimentName)" />
 											</cell>
 											<cell>
-												<label
+												<label sclass="grid-row "
 													value="@load(linkageGroup.piId)" />
 											</cell>
 											<cell>

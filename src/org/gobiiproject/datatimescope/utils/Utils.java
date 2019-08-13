@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jooq.Record;
+
 public class Utils {
 
 	static List<String> roleList= new ArrayList<String>();
@@ -62,4 +64,57 @@ public class Utils {
 		return returnVal;
 	}
 
+	public static String checkIfCommaNeeded(StringBuilder sb, String string) {
+        // TODO Auto-generated method stub
+        String returnVal = string;
+        if(!sb.toString().isEmpty()) {
+            returnVal = ", " + string;
+        }
+        return returnVal;
+	}
+
+    public static <T> void filterItems( List<T> list, List<T> allItems, String filter) {
+        list.clear();
+
+        if(filter == null || "".equals(filter)) {
+            list.addAll(allItems);
+        } else {
+            for(T item : allItems) {
+                if(((String) ((Record) item).get(1)).toLowerCase().indexOf(filter.toLowerCase()) >= 0) {
+                    list.add(item);
+                }
+            }
+        }
+    }
+    
+    public static <T> String getListNamesToString( List<T> list) {
+
+        StringBuilder sb = new StringBuilder();
+
+        int ctr=0;
+
+        for(T item : list) {
+            if(ctr>0) sb.append(", "); 
+            sb.append((String) ((Record) item).get(1));
+            ctr++;
+        }
+        
+        return sb.toString();
+    }
+    
+
+    public static <T> String getListNamesToString( List<T> list, int index) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(System.getProperty("line.separator"));
+        for(T item : list) {
+            sb.append("\t");
+            sb.append((String) ((Record) item).get(index));
+            sb.append(System.getProperty("line.separator"));
+        }
+        sb.append(System.getProperty("line.separator"));
+        return sb.toString();
+    }
+	
 }

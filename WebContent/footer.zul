@@ -1,4 +1,4 @@
-<div hflex="1" vflex="1" sclass="footer">
+<div hflex="1" vflex="1">
 	<hbox hflex="1" vflex="1" align="left" pack="top"
 		apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.TimescopeVersionModel')">

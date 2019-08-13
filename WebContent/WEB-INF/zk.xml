@@ -3,6 +3,10 @@
 <!-- Created by ZK Studio -->
 
 <zk>
+	<library-property>
+		<name>org.zkoss.theme.preferred</name>
+		<value>iceblue_c</value>
+	</library-property>
 	<device-config>
 		<device-type>ajax</device-type>
 		<timeout-uri>/timeout.zul</timeout-uri><!-- An empty URL can cause the 
@@ -11,7 +15,7 @@
 	<desktop-config>
 		<theme-uri>/css/syle.css</theme-uri>
 	</desktop-config>
-	 <client-config>
-        <tooltip-delay>1</tooltip-delay>
-    </client-config>
+	<client-config>
+		<tooltip-delay>1</tooltip-delay>
+	</client-config>
 </zk>

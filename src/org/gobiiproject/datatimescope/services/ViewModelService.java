@@ -16,6 +16,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRec
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
@@ -138,6 +139,8 @@ public interface ViewModelService {
 	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
 
 	public List<DatasetRecord> getDatasetsByPlatformID(List<PlatformRecord> platformList);
+
+    public List<ReferenceRecord> getAllReferences();
 
 
 }

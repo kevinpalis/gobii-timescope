@@ -12,6 +12,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PROJECT;
+import static org.gobiiproject.datatimescope.db.generated.Tables.REFERENCE;
 import static org.gobiiproject.datatimescope.db.generated.Tables.ORGANIZATION;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MAPSET;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_GROUP;
@@ -58,6 +59,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
@@ -1853,5 +1855,24 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 		return list;
 	}
+
+    @Override
+    public List<ReferenceRecord> getAllReferences() {
+        // TODO Auto-generated method stub
+
+        DSLContext context = getDSLContext();
+        List<ReferenceRecord> list = null;
+        try{
+
+            list = context.select().from(REFERENCE).orderBy(REFERENCE.NAME).fetchInto(ReferenceRecord.class);
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve references", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+
+        return list;
+    }
 
 }

@@ -15,14 +15,14 @@
 			<tab id="datasetSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
 		</tabs>
-		<tabpanels>
-			<tabpanel
+		<tabpanels vflex="1">
+			<tabpanel vflex="1"
 				style="border: 0 !important; padding:0 !important; margin:0;">
 				<borderlayout vflex="1" hflex="true">
 					<north title="Filters:" style=" border: 0px;"
 						collapsible="true">
-						<vlayout>
-							<hlayout>
+						<vlayout vflex="1">
+							<hlayout vflex="1">
 								<grid hflex="1" vflex="1"
 									style="border: none; important!">
 									<columns>
@@ -32,7 +32,7 @@
 									<rows>
 										<row>
 											<cell sclass="row-title">
-												Dataset ID :
+												Dataset ID:
 											</cell>
 											<cell>
 												<hbox hflex="true">
@@ -53,7 +53,7 @@
 										<row>
 											<cell sclass="row-title">
 												<label
-													value="Dataset Names :" />
+													value="Dataset Names:" />
 											</cell>
 											<cell>
 												<textbox rows="8"
@@ -63,7 +63,6 @@
 													popup="title, position=start_before"
 													disabled="@bind(vm.nameListDisabled)"
 													onChange="@command('changeEnabled')">
-
 												</textbox>
 											</cell>
 										</row>
@@ -82,7 +81,7 @@
 									<rows>
 										<!-- row>
 											<cell sclass="row-title">
-											Created By :
+											Created By:
 											</cell>
 											<cell>
 											<combobox autodrop="true"
@@ -96,7 +95,7 @@
 											</row> -->
 										<row>
 											<cell sclass="row-title">
-												Creation Date :
+												Creation Date:
 											</cell>
 											<cell>
 												<hbox hflex="true">
@@ -114,7 +113,7 @@
 										</row>
 										<row>
 											<cell sclass="row-title">
-												Dataset Type :
+												Dataset Type:
 											</cell>
 											<cell>
 												<combobox
@@ -131,7 +130,7 @@
 
 										<row>
 											<cell sclass="row-title">
-												Principal Investigator :
+												Principal Investigator:
 											</cell>
 											<cell>
 												<combobox
@@ -166,7 +165,7 @@
 
 					<center border="0" vflex="1" hflex="1">
 						<div vflex="1" hflex="1">
-							<div sclass="div2" vflex="1" hflex="1">
+							<div vflex="1" hflex="1">
 								<vbox vflex="1" hflex="1">
 									<grid id="datasetGrid"
 										model="@load(vm.datasetList)" mold="paging" pageSize="25"
