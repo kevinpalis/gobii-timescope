@@ -28,7 +28,10 @@
 					<label value="In Dataset(s)" />
 				</column>
 				<column hflex="min">
-					<label value="In Markergroup(s)" />
+					<label value="In Marker group(s)" />
+				</column>
+				<column hflex="min">
+					<label value="In Linkage group(s)" />
 				</column>
 			</columns>
 			<template name="model" var="marker">
@@ -44,6 +47,9 @@
 					</cell>
 					<cell>
 						<label value="@load(marker.marker_group_name)" />
+					</cell>
+					<cell>
+						<label value="@load(marker.linkage_group_name)" />
 					</cell>
 				</row>
 			</template>

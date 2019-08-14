@@ -1141,7 +1141,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<Integer> markerIDsThatCanFreelyBeDeleted =  new ArrayList<Integer>();
 		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
 
-		boolean inMarkerGroup = false, inDataset = false;
+		boolean inMarkerGroup = false, inDataset = false, inLinkageGroup = false;;
 
 		for(VMarkerSummaryEntity marker: selectedMarkerList){
 			try{
@@ -1151,6 +1151,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				inMarkerGroup = false;
 				inDataset = false;
+				inLinkageGroup = false;
+				
 				markerDeleteResultTableEntity.setMarker_id(marker.getMarkerId());
 				markerDeleteResultTableEntity.setMarker_name(marker.getMarkerName());
 
@@ -1166,14 +1168,19 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 				//check if the marker id is being used in a marker_group
 				List<MarkerGroupRecord> inMarkerGroupList = getMarkerGroupsThatContainsThisMarkerId(marker.getMarkerId());
-
-
 				if(inMarkerGroupList.size()>0){
 					inMarkerGroup = true;
 					markerDeleteResultTableEntity.setMarker_group_name(setMarkerGroupDetails(inMarkerGroupList));
 				}
 
-				if(!inMarkerGroup && !inDataset){
+				//check if the marker id is being used in a linkage_group
+				List<LinkageGroupRecord> inLinkageGroupList = getLinkageGroupsThatContainsThisMarkerId(marker.getMarkerId());
+                if(inLinkageGroupList.size()>0){
+                    inLinkageGroup = true;
+                    markerDeleteResultTableEntity.setLinkage_group_name(setLinkageGroupDetails(inLinkageGroupList));
+                }
+				
+				if(!inMarkerGroup && !inDataset && !inLinkageGroup){
 					markerIDsThatCanFreelyBeDeleted.add(marker.getMarkerId());
 				}else{
 					if(totalNumOfMarkersThatCantBeDeleted<10) markerDeleteResultTableEntityList.add(markerDeleteResultTableEntity);
@@ -1201,8 +1208,30 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return markerIDsThatCanFreelyBeDeleted;
 	}
 
-	private String setDatasetIdDetails(List<DatasetRecord> inDatasetList) {
-		// TODO Auto-generated method stub
+	private List<LinkageGroupRecord> getLinkageGroupsThatContainsThisMarkerId(Integer markerId) {
+
+        List<LinkageGroupRecord> linkageGroupList = null;
+        DSLContext context = getDSLContext();
+        String query = "SELECT * FROM linkage_group lg left join marker_linkage_group mlg on lg.linkage_group_id = mlg.linkage_group_id left join marker m on mlg.marker_id = m.marker_id  where m.marker_id='"+Integer.toString(markerId)+"';";
+        linkageGroupList = context.fetch(query).into(LinkageGroupRecord.class);
+
+        return linkageGroupList;
+    }
+
+    private String setLinkageGroupDetails(List<LinkageGroupRecord> inLinkageGroupList) {
+
+        StringBuilder sb = new StringBuilder();
+        for(LinkageGroupRecord mgr : inLinkageGroupList){
+
+            if(sb.length()>0) sb.append(", ");
+            sb.append(mgr.getLinkageGroupId() +" : " + mgr.getName());
+
+        }
+
+        return(sb.toString());
+    }
+
+    private String setDatasetIdDetails(List<DatasetRecord> inDatasetList) {
 
 		StringBuilder sb = new StringBuilder();
 		for(DatasetRecord mgr : inDatasetList){
@@ -1243,7 +1272,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		for(MarkerGroupRecord mgr : markerGroupList){
 
 			if(sb.length()>0) sb.append(", ");
-			sb.append(mgr.getMarkerGroupId() +":" + mgr.getName());
+			sb.append(mgr.getMarkerGroupId() +" : " + mgr.getName());
 
 		}
 
