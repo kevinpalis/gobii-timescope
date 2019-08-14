@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.jooq.Record;
 
 public class Utils {
@@ -86,6 +87,24 @@ public class Utils {
             }
         }
     }
+
+    public static <T> void filterItems(List<T> list, List<T> allItems,
+            String filter, int indexOfName) {
+        
+        list.clear();
+
+        if(filter == null || "".equals(filter)) {
+            list.addAll(allItems);
+        } else {
+            for(T item : allItems) {
+                if(((String) ((Record) item).get(indexOfName)).toLowerCase().indexOf(filter.toLowerCase()) >= 0) {
+                    list.add(item);
+                }
+            }
+        }
+        
+    }
+    
     
     public static <T> String getListNamesToString( List<T> list) {
 
@@ -116,5 +135,4 @@ public class Utils {
         sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
-	
 }

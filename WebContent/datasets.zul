@@ -19,7 +19,7 @@
 			<tabpanel vflex="1"
 				style="border: 0 !important; padding:0 !important; margin:0;">
 				<borderlayout vflex="1" hflex="true">
-					<north title="Filters:" style=" border: 0px;"
+					<north title="Filters:" style=" border: 0px;" splittable="true"
 						collapsible="true">
 						<vlayout vflex="1">
 							<hlayout vflex="1">
@@ -168,8 +168,7 @@
 							<div vflex="1" hflex="1">
 								<vbox vflex="1" hflex="1">
 									<grid id="datasetGrid"
-										model="@load(vm.datasetList)" mold="paging" pageSize="25"
-										pagingPosition="both" vflex="1" hflex="1">
+										model="@load(vm.datasetList)" mold="paging" pageSize="25" vflex="1" hflex="1">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox
@@ -280,55 +279,55 @@
 														onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.datasetId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.datasetName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.experimentId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.experimentName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.piId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.piName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.callinganalysisId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.callingnalysisName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.analysesAsString)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.dataTable)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.dataFile)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.qualityTable)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.qualityFile)" />
 												</cell>
 												<!-- <cell>
@@ -336,27 +335,27 @@
 													value="@load(dataset.createdByUsername)" />
 													</cell>  -->
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.createdDate)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.modifiedByUsername)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.modifiedDate)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.statusName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.typeName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(dataset.jobName)" />
 												</cell>
 											</row>
@@ -366,11 +365,10 @@
 										pack="end" align="end">
 										<label
 											value="Total number of rows:"
-											style="font-style: oblique; font-size: 15px" />
-										:
+											sclass="row-count" />
 										<label
 											value="@bind(vm.sizeDatasetList)"
-											style="font-style: oblique; font-size: 15px" />
+											sclass="row-count" />
 									</hbox>
 								</vbox>
 							</div>

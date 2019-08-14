@@ -75,6 +75,7 @@ public class LinkageGroupViewModel {
 	@Wire("#linkageGroupGrid")
 	Grid linkageGroupGrid;
 
+    private Integer sizeLGList=0;
 	private List<CvRecord> linkageGroupTypes;
 	private List<ContactRecord> contactsList, piList;
     private List<ReferenceRecord> referenceList;
@@ -136,7 +137,7 @@ public class LinkageGroupViewModel {
 
 
 	@Command("submitQuery")
-	@NotifyChange({"vlinkageGroupSummaryEntityList","selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList", "sizeLGList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void submitQuery(){
 
 		try{
@@ -158,7 +159,7 @@ public class LinkageGroupViewModel {
 	}
 
 	@Command("resetLinkageGroupTab")
-	@NotifyChange({"vlinkageGroupSummaryEntityList","selectedDsList", "allCbSelected", "cbAllUsers", "linkageGroupEntity","iDBoxDisabled","nameListDisabled", "paged"})
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList","selectedDsList", "allCbSelected", "cbAllUsers", "linkageGroupEntity","iDBoxDisabled","nameListDisabled", "paged"})
 	public void resetLinkageGroupTab(){
 		try{
 			vlinkageGroupSummaryEntityList.clear(); //clear the list first and then just add if there are any selected
@@ -426,7 +427,7 @@ public class LinkageGroupViewModel {
     }
     
     @GlobalCommand("retrieveLinkageGroupList")
-	@NotifyChange({"vlinkageGroupSummaryEntityList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void retrieveUserList(){
 		//...
 
@@ -797,6 +798,26 @@ public class LinkageGroupViewModel {
 
     public void setCurrentFiltersAsText(String currentFiltersAsText) {
         this.currentFiltersAsText = currentFiltersAsText;
+    }
+
+
+    public Integer getSizeLGList() {
+        
+        try {
+        sizeLGList = vlinkageGroupSummaryEntityList.size();
+        
+        if(sizeLGList<1) sizeLGList = 0;
+        
+        }catch(NullPointerException npe) {
+        sizeLGList = 0;
+        }
+        
+        return sizeLGList;
+    }
+
+
+    public void setSizeLGList(Integer sizeLGList) {
+        this.sizeLGList = sizeLGList;
     }
 
 }

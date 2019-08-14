@@ -25,9 +25,8 @@ font-size: 12px;
 }
 
 .banner {
-	background-color: #102d35;
-	color: white;
-	padding: 5px 10px;
+	font-size: 11px;
+	font-style: oblique;
 }
 
 .banner-head {
@@ -67,9 +66,28 @@ font-size: 12px;
 	font-size: medium;
 }
 
+.row-count{
+	font-style: oblique;
+	font-size: 11px;
+}
+
+div .z-listcell-content{
+	color: #636363;
+	font-size: 11px !important;
+}
+
+div .z-north-header {
+	font-size: 12px !important;
+}
+
+span .z-label{
+	color: #636363;
+	font-size: 19px !important;
+}
+
 .row-title .z-label {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 	font-size: 12px !important;
 }
 
@@ -80,13 +98,13 @@ font-size: 12px;
 
 .row-title {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 	font-size: 12px !important;
 }
 
 .tab-title {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 	font-size: 12px !important;
 	text-align: left;
 	border-bottom: 1px solid #ECECEC;
@@ -94,7 +112,7 @@ font-size: 12px;
 }
 .list-row .z-listcell {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 }
 
 
@@ -103,10 +121,11 @@ font-size: 12px;
 	color: #660066 !important;
 }
 
-.fn-caption .z-caption-l {
+div .z-caption-content {
 	font-weight: bold;
-	font-size: small;
+	font-style: italic;
 	color: #636363;
+	font-size: 12px !important;
 }
 
 .complete-todo .z-label {

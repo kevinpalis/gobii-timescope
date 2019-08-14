@@ -17,7 +17,7 @@
 		<tabpanels vflex="1">
 			<tabpanel vflex="1">
 				<borderlayout vflex="1" hflex="true">
-					<north title="Filters:" style="border: 0px;"
+					<north title="Filters:" style="border: 0px;" splittable="true"
 						collapsible="true">
 						<vlayout vflex="1">
 							<hlayout vflex="1">
@@ -84,8 +84,8 @@
 								</grid>
 
 								<tabbox id="tb" orient="left" hflex="2"
-									height="350px" style="border:none;">
-									<tabs width="230px" id="tabs">
+									height="250px" style="border:none;">
+									<tabs width="130px" id="tabs">
 										<tab id="A" label="Platform"
 											sclass="tab-title"
 											onSelect="@command('selectPlatformTab')" />
@@ -384,8 +384,7 @@
 								<vbox vflex="1" hflex="1">
 									<grid id="markerGrid"
 										model="@load(vm.markerList)" mold="paging" pageSize="25"
-										emptyMessage="No items match your search"
-										pagingPosition="both" vflex="1" hflex="1">
+										emptyMessage="No items match your search" vflex="1" hflex="1">
 									<columns sizable="true">
 										<column hflex="1">
 											<checkbox label="Select All"
@@ -467,11 +466,10 @@
 										pack="end" align="end">
 										<label
 											value="Total number of rows:"
-											style="font-style: oblique; font-size: 15px" />
-										:
+											sclass="row-count" />
 										<label
 											value="@bind(vm.sizeMarkerList)"
-											style="font-style: oblique; font-size: 15px" />
+											sclass="row-count" />
 									</hbox>
 								</vbox>
 							</div>
