@@ -20,6 +20,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.gobiiproject.datatimescope.db.generated.tables.LinkageGroup;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -27,6 +32,7 @@ import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.bind.BindUtils;
@@ -63,33 +69,53 @@ public class LinkageGroupViewModel {
 	//UI component
 
 	ViewModelService viewModelService;
-	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false, paged=false;
-
+	private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false, paged=false, shouldNextChangeResetOtherFilterValues=false;
+	private boolean dbReferences=true, dbMapsets=true, dbLinkageGroup=true;
+	
 	@Wire("#linkageGroupGrid")
 	Grid linkageGroupGrid;
 
+    private Integer sizeLGList=0;
 	private List<CvRecord> linkageGroupTypes;
 	private List<ContactRecord> contactsList, piList;
-	private List<VLinkageGroupSummaryEntity> linkageGroupList, selectedDsList;
+    private List<ReferenceRecord> referenceList;
+    private List<MapsetRecord> mapsetList, backupMapsetList;
+    private List<LinkageGroupRecord> linkageGroupList, backupLinkageGroupList;
+	private List<VLinkageGroupSummaryEntity> vlinkageGroupSummaryEntityList, selectedDsList;
 	private List<LinkageGroupSummaryEntity> linkageGroupSummary;
 	private LinkageGroupSummaryEntity linkageGroupSummaryEntity;
 	private LinkageGroupEntity linkageGroupEntity;
 
+    private String filterMapset;
+    private String filterLinkageGroup;
+    private String filterReference, currentFiltersAsText;
+	
 	@SuppressWarnings("unchecked")
 	@Init
 	public void init() {
+        Integer [] roles = {1}; // PI only
+        ContactRecord selectAllPI = new ContactRecord(0, null, null, null, null, roles, null, null, null, null, null, null);
+        
 		linkageGroupSummaryEntity= new LinkageGroupSummaryEntity();
 		selectedDsList = new ArrayList<VLinkageGroupSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
-		setLinkageGroupEntity(new LinkageGroupEntity());
-		setLinkageGroupList(viewModelService.getAllLinkageGroups(linkageGroupSummaryEntity));
-		contactsList = viewModelService.getAllContacts();
-		Integer [] roles = {1}; // PI only
-		piList = viewModelService.getContactsByRoles(roles);
-		ContactRecord selectAllPI = new ContactRecord(0, null, null, null, null, roles, null, null, null, null, null, null);
-		piList.add(0, selectAllPI);
-		setLinkageGroupTypes(viewModelService.getCvTermsByGroupName("linkageGroup_type"));
+        contactsList = viewModelService.getAllContacts();
+        piList = viewModelService.getContactsByRoles(roles);
+        piList.add(0, selectAllPI);
 
+        backupMapsetList = new ArrayList<MapsetRecord>();
+        backupLinkageGroupList = new ArrayList<LinkageGroupRecord>();
+		setLinkageGroupEntity(new LinkageGroupEntity());
+		setvlinkageGroupSummaryEntityList(viewModelService.getAllLinkageGroups(linkageGroupSummaryEntity));
+        setLinkageGroupTypes(viewModelService.getCvTermsByGroupName("linkageGroup_type"));
+        setReferenceList(viewModelService.getAllReferences());
+        setMapsetList(viewModelService.getAllMapsets());
+        setLinkageGroupList(viewModelService.getAllLinkageGroups());
+
+        if(referenceList.isEmpty()) dbReferences = false;
+        if(mapsetList.isEmpty()) dbMapsets = false;
+        if(linkageGroupList.isEmpty()) dbLinkageGroup = false;
+		
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 		linkageGroupSummary = (List<LinkageGroupSummaryEntity>) Sessions.getCurrent().getAttribute("linkageGroupSummary");
 
@@ -113,11 +139,11 @@ public class LinkageGroupViewModel {
 
 
 	@Command("submitQuery")
-	@NotifyChange({"linkageGroupList","selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList", "sizeLGList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void submitQuery(){
 
 		try{
-			linkageGroupList.clear(); //clear the list first and then just add if there are any selected
+			vlinkageGroupSummaryEntityList.clear(); //clear the list first and then just add if there are any selected
 
 			selectedDsList.clear();
 
@@ -125,7 +151,7 @@ public class LinkageGroupViewModel {
 
 		}
 
-		setLinkageGroupList(viewModelService.getAllLinkageGroupsBasedOnQuery(linkageGroupEntity,linkageGroupSummaryEntity));
+		setvlinkageGroupSummaryEntityList(viewModelService.getAllLinkageGroupsBasedOnQuery(linkageGroupEntity,linkageGroupSummaryEntity));
 
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
@@ -135,10 +161,10 @@ public class LinkageGroupViewModel {
 	}
 
 	@Command("resetLinkageGroupTab")
-	@NotifyChange({"linkageGroupList","selectedDsList", "allCbSelected", "cbAllUsers", "linkageGroupEntity","iDBoxDisabled","nameListDisabled", "paged"})
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList","selectedDsList", "allCbSelected", "cbAllUsers", "linkageGroupEntity","iDBoxDisabled","nameListDisabled", "paged"})
 	public void resetLinkageGroupTab(){
 		try{
-			linkageGroupList.clear(); //clear the list first and then just add if there are any selected
+			vlinkageGroupSummaryEntityList.clear(); //clear the list first and then just add if there are any selected
 			selectedDsList.clear(); 
 
 		}catch(NullPointerException e){
@@ -146,7 +172,7 @@ public class LinkageGroupViewModel {
 		}
 		linkageGroupEntity = new LinkageGroupEntity();
 
-		setLinkageGroupList(viewModelService.getAllLinkageGroups(linkageGroupSummaryEntity));
+		setvlinkageGroupSummaryEntityList(viewModelService.getAllLinkageGroups(linkageGroupSummaryEntity));
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -156,7 +182,7 @@ public class LinkageGroupViewModel {
 	@Command("doSelectAll")
 	@NotifyChange("allCbSelected")
 	public void doSelectAll(){
-		List<VLinkageGroupSummaryEntity> linkageGroupListOnDisplay = getLinkageGroupList();
+		List<VLinkageGroupSummaryEntity> linkageGroupListOnDisplay = getvlinkageGroupSummaryEntityList();
 
 		selectedDsList.clear(); //clear the list first and then just add if there are any selected
 
@@ -173,24 +199,24 @@ public class LinkageGroupViewModel {
 		}
 	}
 
-	@Command("changeEnabled")
-	@NotifyChange({"iDBoxDisabled","nameListDisabled"})
-	public void changeEnabled(){
-		isIDBoxDisabled = false; // reset
-		isNameListDisabled= false; 
-
-		if(linkageGroupEntity.getLinkageGroupNamesAsEnterSeparatedString()!=null && !linkageGroupEntity.getLinkageGroupNamesAsEnterSeparatedString().isEmpty()){
-			isIDBoxDisabled = true;
-		}else if(linkageGroupEntity.getLinkageGroupIDStartRange() != null ){
-			if(linkageGroupEntity.getLinkageGroupIDStartRange() >0 ){
-				isNameListDisabled=true;
-			}
-		}else if(linkageGroupEntity.getLinkageGroupIDEndRange() !=null){
-			if(linkageGroupEntity.getLinkageGroupIDEndRange()>0){
-				isNameListDisabled=true;
-			}
-		}
-	}
+//	@Command("changeEnabled")
+//	@NotifyChange({"iDBoxDisabled","nameListDisabled"})
+//	public void changeEnabled(){
+//		isIDBoxDisabled = false; // reset
+//		isNameListDisabled= false; 
+//
+//		if(linkageGroupEntity.getLinkageGroupNamesAsEnterSeparatedString()!=null && !linkageGroupEntity.getLinkageGroupNamesAsEnterSeparatedString().isEmpty()){
+//			isIDBoxDisabled = true;
+//		}else if(linkageGroupEntity.getLinkageGroupIDStartRange() != null ){
+//			if(linkageGroupEntity.getLinkageGroupIDStartRange() >0 ){
+//				isNameListDisabled=true;
+//			}
+//		}else if(linkageGroupEntity.getLinkageGroupIDEndRange() !=null){
+//			if(linkageGroupEntity.getLinkageGroupIDEndRange()>0){
+//				isNameListDisabled=true;
+//			}
+//		}
+//	}
 
 
 	@SuppressWarnings("unchecked")
@@ -269,12 +295,153 @@ public class LinkageGroupViewModel {
 		}
 	}
 
-	@GlobalCommand("retrieveLinkageGroupList")
-	@NotifyChange({"linkageGroupList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
+	@Command
+    public void selectReferenceTab() {
+
+        showTabInfoPopUp("reference");
+    }
+	
+
+    @NotifyChange("mapsetList")
+    @Command
+    public void selectMapsetsTab() {
+        //Displaying all mapsets instead
+
+        showTabInfoPopUp("mapset");
+        if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+
+            setMapsetList(viewModelService.getAllMapsetsByReferenceId(linkageGroupEntity.getReferenceList()));
+        }else{
+
+            setMapsetList(viewModelService.getAllMapsets());
+        }
+    }
+
+
+    @NotifyChange("linkageGroupList")
+    @Command
+    public void selectLinkageGroupTab() {
+        if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+
+            setLinkageGroupList(viewModelService.getLinkageGroupByMapsetId(linkageGroupEntity.getMapsetList()));
+        }else if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+
+            setLinkageGroupList(viewModelService.getAllLinkageGroupsByReferenceId(linkageGroupEntity.getReferenceList()));
+        }else{
+
+            setLinkageGroupList(viewModelService.getAllLinkageGroups());
+        }
+    }
+	
+	private void showTabInfoPopUp(String string) {
+        // TODO Auto-generated method stub
+	    StringBuilder sb = new StringBuilder();
+
+        switch(string){
+
+        case "reference": 
+            if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+                sb.append("\n Mapset");
+            }
+        case "mapset": 
+            if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
+                sb.append(Utils.checkIfCommaNeeded(sb,"\n Linkage Group"));
+            } 
+        default: 
+            break; 
+        } 
+
+        if(!sb.toString().isEmpty()) {
+            setShouldNextChangeResetOtherFilterValues(true);
+            sb.insert(0, "Changing the selected values here will reset the selections you already made on the  tab(s): \n");
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("message", sb.toString());
+
+            Window window = (Window)Executions.createComponents(
+                    "/info_popup.zul", null, args);
+            window.setPosition("center");
+            window.setClosable(true);
+            window.doModal();
+        }
+        else setShouldNextChangeResetOtherFilterValues(false);
+    }
+
+    @Command("displayFilterDetails")
+    public void displayFilterDetails(@BindingParam("category") String category){
+        int ctr = 0;
+        String title="This list is being filtered by: ";
+        StringBuilder sb = new StringBuilder();
+        StringBuilder filterInfo = new StringBuilder();
+
+        switch(category){
+        case "mapset" :
+            if(!linkageGroupEntity.getReferenceList().isEmpty()) {
+                sb.append("\n Reference(s): \n"+ Utils.getListNamesToString(linkageGroupEntity.getReferenceList())+"\n");
+            } else {
+                ctr++;
+                filterInfo.append(Utils.checkIfCommaNeeded(filterInfo,"references"));
+            }
+            
+            if(category.equalsIgnoreCase("mapset")) break;
+        case "linkagegroup": 
+            if(!linkageGroupEntity.getMapsetList().isEmpty()) {
+                ctr++;
+                sb.append("\n Mapset(s): \n"+ Utils.getListNamesToString(linkageGroupEntity.getMapsetList())+"\n");
+            }else filterInfo.append("mapset");
+            break;
+        default: 
+            title=" All items are displayed.";
+            sb.append("This list is not affected by filters.");
+        }
+        
+        if(sb.toString().isEmpty()) {
+            if(ctr>1) filterInfo.insert(0, "List is not filtered. There are no filters selected in the following tabs: ");
+            else {
+                filterInfo.insert(0, "List is not filtered. There are no filters selected in the ");
+                filterInfo.append(" tab.");
+            }
+            Messagebox.show(filterInfo.toString(), "All items are displayed.", Messagebox.OK, Messagebox.NONE);
+        }
+        else Messagebox.show(sb.toString(), title, Messagebox.OK, Messagebox.NONE);
+        
+    }
+
+    @Command("validateForReset")
+    @NotifyChange({"markerEntity", "currentFiltersAsText"})
+    public void validateForReset(@BindingParam("category") String category){
+
+        //if reset required then: if(shouldNextChangeResetOtherFilterValues)  
+
+            switch(category){
+
+            case "reference": 
+                if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+
+                    if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getReferenceList().clear();
+                }
+            case "mapset": 
+                    if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+                        if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getMapsetList().clear();
+                }
+            case "linkageGroup": 
+                if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
+                    if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getLinkageGroupList().clear();
+                }
+                break; 
+            default: 
+                break; 
+            }
+            //once resets are done, update boolean
+            shouldNextChangeResetOtherFilterValues=false;
+            setCurrentFiltersAsText(linkageGroupEntity.getFiltersAsText());
+    }
+    
+    @GlobalCommand("retrieveLinkageGroupList")
+	@NotifyChange({"vlinkageGroupSummaryEntityList","sizeLGList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void retrieveUserList(){
 		//...
 
-		setLinkageGroupList(viewModelService.getAllLinkageGroupsBasedOnQuery(linkageGroupEntity, linkageGroupSummaryEntity));
+		setvlinkageGroupSummaryEntityList(viewModelService.getAllLinkageGroupsBasedOnQuery(linkageGroupEntity, linkageGroupSummaryEntity));
 
 		selectedDsList.clear();
 
@@ -303,7 +470,7 @@ public class LinkageGroupViewModel {
 	@Command("exportLinkageGroupTable")
 	public void exportLinkageGroupTable() {
 
-		ListIterator<VLinkageGroupSummaryEntity> it = linkageGroupList.listIterator();
+		ListIterator<VLinkageGroupSummaryEntity> it = vlinkageGroupSummaryEntityList.listIterator();
 		StringBuffer buffMap = new StringBuffer();
 
 		while (it.hasNext()) {
@@ -359,7 +526,7 @@ public class LinkageGroupViewModel {
 
 		}
 
-		ListIterator<VLinkageGroupSummaryEntity> it = linkageGroupList.listIterator();
+		ListIterator<VLinkageGroupSummaryEntity> it = vlinkageGroupSummaryEntityList.listIterator();
 
 		while (it.hasNext()) {
 
@@ -392,7 +559,28 @@ public class LinkageGroupViewModel {
 			e.printStackTrace();
 		}
 	}
+	
+	@NotifyChange("referenceList")
+    @Command
+    public void doSearchReferences() {
+        List<ReferenceRecord> allItems = viewModelService.getAllReferences();
+        Utils.filterItems(referenceList, allItems, filterReference);
+    }
 
+    @NotifyChange("mapasetList")
+    @Command
+    public void doSearchMapset() {
+
+        Utils.filterItems(mapsetList, backupMapsetList, filterMapset);
+    }
+
+
+    @NotifyChange("linkageGroupList")
+    @Command
+    public void doSearchLinkageGroup() {
+
+        Utils.filterItems(linkageGroupList, backupLinkageGroupList, filterLinkageGroup);
+    }
 	public boolean isAllCbSelected() {
 		return isAllCbSelected;
 	}
@@ -406,19 +594,19 @@ public class LinkageGroupViewModel {
 		this.cbAllUsers = cbAllUsers;
 	}
 
-	public List<VLinkageGroupSummaryEntity> getLinkageGroupList() {
-		return linkageGroupList;
+	public List<VLinkageGroupSummaryEntity> getvlinkageGroupSummaryEntityList() {
+		return vlinkageGroupSummaryEntityList;
 	}
 
-	public void setLinkageGroupList(List<VLinkageGroupSummaryEntity> linkageGroupList) {
+	public void setvlinkageGroupSummaryEntityList(List<VLinkageGroupSummaryEntity> vlinkageGroupSummaryEntityList) {
 		
 		try {
-		if(linkageGroupList.size() > 25) setPaged(true);
+		if(vlinkageGroupSummaryEntityList.size() > 25) setPaged(true);
 		else setPaged(false);
 		}catch(NullPointerException npe) {
 			
 		}
-		this.linkageGroupList = linkageGroupList;
+		this.vlinkageGroupSummaryEntityList = vlinkageGroupSummaryEntityList;
 	}
 
 	public List<ContactRecord> getContactsList() {
@@ -504,5 +692,149 @@ public class LinkageGroupViewModel {
 	public void setPaged(boolean paged) {
 		this.paged = paged;
 	}
+
+
+    public boolean isDbReferences() {
+        return dbReferences;
+    }
+
+
+    public void setDbReferences(boolean dbReferences) {
+        this.dbReferences = dbReferences;
+    }
+
+
+    public List<ReferenceRecord> getReferenceList() {
+        return referenceList;
+    }
+
+
+    public void setReferenceList(List<ReferenceRecord> referenceList) {
+        this.referenceList = referenceList;
+    }
+
+
+    public boolean isShouldNextChangeResetOtherFilterValues() {
+        return shouldNextChangeResetOtherFilterValues;
+    }
+
+
+    public void setShouldNextChangeResetOtherFilterValues(boolean shouldNextChangeResetOtherFilterValues) {
+        this.shouldNextChangeResetOtherFilterValues = shouldNextChangeResetOtherFilterValues;
+    }
+
+
+    public String getFilterMapset() {
+        return filterMapset;
+    }
+
+
+    public void setFilterMapset(String filterMapset) {
+        this.filterMapset = filterMapset;
+    }
+
+
+    public String getFilterLinkageGroup() {
+        return filterLinkageGroup;
+    }
+
+
+    public void setFilterLinkageGroup(String filterLinkageGroup) {
+        this.filterLinkageGroup = filterLinkageGroup;
+    }
+
+
+    public String getFilterReference() {
+        return filterReference;
+    }
+
+
+    public void setFilterReference(String filterReference) {
+        this.filterReference = filterReference;
+    }
+
+
+    public List<MapsetRecord> getMapsetList() {
+        return mapsetList;
+    }
+
+
+    public void setMapsetList(List<MapsetRecord> mapsetList) {
+
+        backupMapsetList.clear();
+        backupMapsetList.addAll(mapsetList);
+        
+        
+        this.mapsetList = mapsetList;
+    }
+
+
+    public List<VLinkageGroupSummaryEntity> getVlinkageGroupSummaryEntityList() {
+        return vlinkageGroupSummaryEntityList;
+    }
+
+
+    public boolean isDbMapsets() {
+        return dbMapsets;
+    }
+
+
+    public void setDbMapsets(boolean dbMapsets) {
+        this.dbMapsets = dbMapsets;
+    }
+
+
+    public boolean isDbLinkageGroup() {
+        return dbLinkageGroup;
+    }
+
+
+    public void setDbLinkageGroup(boolean dbLinkageGroup) {
+        this.dbLinkageGroup = dbLinkageGroup;
+    }
+
+
+    public List<LinkageGroupRecord> getLinkageGroupList() {
+        return linkageGroupList;
+    }
+
+
+    public void setLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
+
+        backupLinkageGroupList.clear();
+        backupLinkageGroupList.addAll(linkageGroupList);
+        
+        this.linkageGroupList = linkageGroupList;
+    }
+
+
+    public String getCurrentFiltersAsText() {
+        return currentFiltersAsText;
+    }
+
+
+    public void setCurrentFiltersAsText(String currentFiltersAsText) {
+        this.currentFiltersAsText = currentFiltersAsText;
+    }
+
+
+    public Integer getSizeLGList() {
+        
+        try {
+        sizeLGList = vlinkageGroupSummaryEntityList.size();
+        
+        if(sizeLGList<1) sizeLGList = 0;
+        
+        }catch(NullPointerException npe) {
+        sizeLGList = 0;
+        }
+        
+        return sizeLGList;
+    }
+
+
+    public void setSizeLGList(Integer sizeLGList) {
+        this.sizeLGList = sizeLGList;
+    }
 
 }

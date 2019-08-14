@@ -14,6 +14,10 @@ div .z-window-content {
     zoom: 1;
 }
 
+.z-listcell-content{
+font-size: 12px;
+}
+
 .z-initing { width: 50px !important; height: 72px !important; background-image: url('../imgs/favicon.ico') !important; }
 
 .z-north splitter {
@@ -21,9 +25,8 @@ div .z-window-content {
 }
 
 .banner {
-	background-color: #102d35;
-	color: white;
-	padding: 5px 10px;
+	font-size: 11px;
+	font-style: oblique;
 }
 
 .banner-head {
@@ -63,21 +66,53 @@ div .z-window-content {
 	font-size: medium;
 }
 
+.row-count{
+	font-style: oblique;
+	font-size: 11px;
+}
+
+div .z-listcell-content{
+	color: #636363;
+	font-size: 11px !important;
+}
+
+div .z-north-header {
+	font-size: 12px !important;
+}
+
+span .z-label{
+	color: #636363;
+	font-size: 19px !important;
+}
+
 .row-title .z-label {
 	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+}
+
+.grid-row {
 	color: #636363;
-	font-size: 14px !important;
+	font-size: 12px !important;
 }
 
 .row-title {
 	font-weight: bold;
-	color: #636363;
-	font-size: 14px !important;
+	color: #7d7d7d;
+	font-size: 12px !important;
 }
 
+.tab-title {
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+	text-align: left;
+	border-bottom: 1px solid #ECECEC;
+	padding-left: 50px;
+}
 .list-row .z-listcell {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 }
 
 
@@ -86,10 +121,11 @@ div .z-window-content {
 	color: #660066 !important;
 }
 
-.fn-caption .z-caption-l {
+div .z-caption-content {
 	font-weight: bold;
-	font-size: medium;
+	font-style: italic;
 	color: #636363;
+	font-size: 12px !important;
 }
 
 .complete-todo .z-label {
@@ -117,18 +153,6 @@ div .z-window-content {
 .warningMessagebox {
 	color: red;
 	font-style: oblique;
-}
-
-.div1 {
-  width:1000px;
-  height: 20px;
-}
-
-.div2 {
-  width:1000px;
-  height: 200px;
-  background-color: #88FF88;
-  overflow: auto;
 }
 
 .Flipped, .Flipped .Content

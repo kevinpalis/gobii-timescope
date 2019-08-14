@@ -1,4 +1,4 @@
-<div hflex="1" sclass="banner"
+<div hflex="1"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
 
 	<hbox apply="org.zkoss.bind.BindComposer"
@@ -6,17 +6,17 @@
 		hflex="1" vflex="1" pack="end" align="end">
 
 		<label value="@load(vm.userAccount.username)"
-			style="font-style: oblique; font-size: 15px" />
+			sclass="banner" />
 		:
 
 		<label value="@load(vm.userAccount.lastname)"
-			style="font-style: oblique; font-size: 15px" />
+			sclass="banner" />
 		,
 		<label value="@load(vm.userAccount.firstname)"
-			style="font-style: oblique; font-size: 15px" />
+			sclass="banner" />
 		(
 		<a label="logout" onClick="@command('signout')"
-			style="font-style: oblique; font-size: 15px" />
+			sclass="banner" />
 		)
 	</hbox>
 </div>

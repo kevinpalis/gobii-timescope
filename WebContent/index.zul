@@ -1,4 +1,4 @@
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 <?link rel="shortcut icon" type="image/x-icon" href="/imgs/favicon.ico"?>
 <?link rel="icon" type="image/x-icon" href="/imgs/favicon.ico"?>

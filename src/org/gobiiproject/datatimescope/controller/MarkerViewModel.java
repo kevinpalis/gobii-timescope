@@ -35,6 +35,7 @@ import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -84,13 +85,13 @@ public class MarkerViewModel {
 	private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
 	private List<PlatformRecord> platformList;
 	private List<OrganizationRecord> vendorList;
-	private List<VendorProtocolRecord> vendorProtocolList;
+	private List<VendorProtocolRecord> vendorProtocolList, backupVendorProtocolList;
 	private List<AnalysisRecord> callingAnalysisList, analysesList;
-	private List<ProjectRecord> projectList;
-	private List<ExperimentRecord> experimentList;
-	private List<DatasetRecord> datasetList, markerDetailDatasetList;
+	private List<ProjectRecord> projectList, backupProjectList;
+	private List<ExperimentRecord> experimentList, backupExperimentList;
+	private List<DatasetRecord> datasetList, markerDetailDatasetList, backupDatasetList;
 	private List<MapsetRecord> mapsetList;
-	private List<LinkageGroupRecord> linkageGroupList, markerDetailLinkageGroupList;
+	private List<LinkageGroupRecord> linkageGroupList, markerDetailLinkageGroupList, backupLinkageGroupList;
 	private List<MarkerGroupRecord> markerDetailsMarkerGroupList;
 	private List<DatasetSummaryEntity> markerSummary;
 
@@ -122,6 +123,12 @@ public class MarkerViewModel {
 		markerDetailsMarkerGroupList = new ArrayList<MarkerGroupRecord>();
 		viewModelService = new ViewModelServiceImpl();
 
+        backupVendorProtocolList =  new ArrayList<VendorProtocolRecord>();
+        backupProjectList =  new ArrayList<ProjectRecord>();
+        backupExperimentList =  new ArrayList<ExperimentRecord>();
+        backupDatasetList  =  new ArrayList<DatasetRecord>();
+        backupLinkageGroupList = new ArrayList<LinkageGroupRecord>();
+        
 		setMarkerEntity(new MarkerRecordEntity());
 		setPlatformList(viewModelService.getAllPlatforms());
 		setVendorList(viewModelService.getAllVendors());
@@ -772,23 +779,23 @@ public class MarkerViewModel {
 	@Command
 	public void doSearchPlatform() {
 		List<PlatformRecord> allItems = viewModelService.getAllPlatforms();
-		filterItems(platformList, allItems, filterPlatform);
+		
+		Utils.filterItems(platformList, allItems, filterPlatform);
 	}
 
 	@NotifyChange("vendorList")
 	@Command
 	public void doSearchVendor() {
-		List<OrganizationRecord> allItems = viewModelService.getAllVendors();
-
-		filterItems(vendorList, allItems, filterVendor);
+		List<OrganizationRecord> allItems = new ArrayList<OrganizationRecord>();
+		allItems.addAll(vendorList);
+		Utils.filterItems(vendorList, allItems, filterVendor);
 	}
 
 	@NotifyChange("vendorProtocolList")
 	@Command
 	public void doSearchVendorProtocol() {
-		List<VendorProtocolRecord> allItems = viewModelService.getAllVendorProtocols();
 
-		filterItems(vendorProtocolList, allItems, filterVendorProtocol);
+	    Utils.filterItems(vendorProtocolList, backupVendorProtocolList, filterVendorProtocol);
 	}
 
 	@NotifyChange("callingAnalysisList")
@@ -796,7 +803,7 @@ public class MarkerViewModel {
 	public void doSearchCallingAnalysis() {
 		List<AnalysisRecord> allItems = viewModelService.getAllCallingAnalysis();
 
-		filterItems(callingAnalysisList, allItems, filterCallingAnalysis);
+		Utils.filterItems(callingAnalysisList, allItems, filterCallingAnalysis);
 	}
 
 	@NotifyChange("analysesList")
@@ -804,31 +811,28 @@ public class MarkerViewModel {
 	public void doSearchAnalyses() {
 		List<AnalysisRecord> allItems = viewModelService.getAllAnalyses();
 
-		filterItems(analysesList, allItems, filterAnalyses);
+		Utils.filterItems(analysesList, allItems, filterAnalyses);
 	}
 
 	@NotifyChange("projectList")
 	@Command
-	public void doSearchProjects() {
-		List<ProjectRecord> allItems = viewModelService.getAllProjects();
+	public void doSearchProject() {
 
-		filterItems(projectList, allItems, filterProject);
+	    Utils.filterItems(projectList, backupProjectList, filterProject);
 	}
 
 	@NotifyChange("experimentList")
 	@Command
 	public void doSearchExperiment() {
-		List<ExperimentRecord> allItems = viewModelService.getAllExperiments();
 
-		filterItems(experimentList, allItems, filterExperiment);
+	    Utils.filterItems(experimentList, backupExperimentList, filterExperiment);
 	}		
 
 	@NotifyChange("datasetList")
 	@Command
 	public void doSearchDataset() {
-		List<DatasetRecord> allItems = viewModelService.getAllDatasets();
 
-		filterItems(datasetList, allItems, filterDataset);
+	    Utils.filterItems(datasetList, backupDatasetList, filterDataset,15);
 	}		
 
 	@NotifyChange("mapasetList")
@@ -836,31 +840,14 @@ public class MarkerViewModel {
 	public void doSearchMapset() {
 		List<MapsetRecord> allItems = viewModelService.getAllMapsets();
 
-		filterItems(mapsetList, allItems, filterMapset);
+		Utils.filterItems(mapsetList, allItems, filterMapset);
 	}
 
 	@NotifyChange("linkageGroupList")
 	@Command
 	public void doSearchLinkageGroup() {
-		List<LinkageGroupRecord> allItems = viewModelService.getAllLinkageGroups();
 
-		filterItems(linkageGroupList, allItems, filterLinkageGroup);
-	}
-
-
-
-	public <T> void filterItems( List<T> list, List<T> allItems, String filter) {
-		list.clear();
-
-		if(filter == null || "".equals(filter)) {
-			list.addAll(allItems);
-		} else {
-			for(T item : allItems) {
-				if(((String) ((Record) item).get(1)).toLowerCase().indexOf(filter.toLowerCase()) >= 0) {
-					list.add(item);
-				}
-			}
-		}
+		Utils.filterItems(linkageGroupList, backupLinkageGroupList, filterLinkageGroup);
 	}
 
 
@@ -986,6 +973,10 @@ public class MarkerViewModel {
 
 
 	public void setVendorProtocolList(List<VendorProtocolRecord> vendorProtocolList) {
+	    
+	    backupVendorProtocolList.clear();
+	    backupVendorProtocolList.addAll(vendorProtocolList);
+	    
 		this.vendorProtocolList = vendorProtocolList;
 	}
 
@@ -1009,13 +1000,17 @@ public class MarkerViewModel {
 		this.analysesList = analysesList;
 	}
 
-
 	public List<ProjectRecord> getProjectList() {
 		return projectList;
 	}
 
 
 	public void setProjectList(List<ProjectRecord> projectList) {
+	    
+
+        backupProjectList.clear();
+        backupProjectList.addAll(projectList);
+        
 		this.projectList = projectList;
 	}
 
@@ -1026,6 +1021,10 @@ public class MarkerViewModel {
 
 
 	public void setExperimentList(List<ExperimentRecord> experimentList) {
+
+	    backupExperimentList.clear();
+	    backupExperimentList.addAll(experimentList);
+	    
 		this.experimentList = experimentList;
 	}
 
@@ -1046,6 +1045,10 @@ public class MarkerViewModel {
 
 
 	public void setLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
+
+	    backupLinkageGroupList.clear();
+	    backupLinkageGroupList.addAll(linkageGroupList);
+	    
 		this.linkageGroupList = linkageGroupList;
 	}
 
@@ -1056,6 +1059,10 @@ public class MarkerViewModel {
 
 
 	public void setDatasetList(List<DatasetRecord> datasetList) {
+
+	    backupDatasetList.clear();
+	    backupDatasetList.addAll(datasetList);
+	    
 		this.datasetList = datasetList;
 	}
 

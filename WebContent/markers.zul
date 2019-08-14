@@ -17,7 +17,7 @@
 		<tabpanels vflex="1">
 			<tabpanel vflex="1">
 				<borderlayout vflex="1" hflex="true">
-					<north title="Filters:" style="border: 0px;"
+					<north title="Filters:" style="border: 0px;" splittable="true"
 						collapsible="true">
 						<vlayout vflex="1">
 							<hlayout vflex="1">
@@ -84,43 +84,38 @@
 								</grid>
 
 								<tabbox id="tb" orient="left" hflex="2"
-									height="350px" style="border:none;">
-									<tabs width="230px" id="tabs">
+									height="250px" style="border:none;">
+									<tabs width="130px" id="tabs">
 										<tab id="A" label="Platform"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
 											label="Vendor-Protocol"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectVendorProtocolTab')" />
 										<tab id="I" label="Mapsets"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
-											label="Linkage Groups" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											label="Linkage Groups"
+											sclass="tab-title"
 											onSelect="@command('selectLinkageGroupsTab')" />
 										<tab id="F" label="Projects"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectProjectsTab')" />
 										<tab id="G" label="Experiments"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectExperimentsTab')" />
 										<tab id="E" label="Analyses"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectAnalysesTab')" />
 										<tab id="H" label="Datasets"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC; font-size: 14px;"
+											sclass="tab-title"
 											onSelect="@command('selectDatasetsTab')" />
 									</tabs>
 									<tabpanels hflex="true">
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbPlatforms)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbPlatforms)"
 													value="@bind(vm.filterPlatform)"
@@ -151,8 +146,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbVendorProtocols)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbVendorProtocols)"
 													value="@bind(vm.filterVendorProtocol)"
@@ -184,9 +177,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-
-												<label
-													visible="@load(vm.dbMapset)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
 													onChange="@command('doSearchMapset')" instant="true" />
@@ -215,8 +205,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbLinkageGroup)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbLinkageGroup)"
 													value="@bind(vm.filterLinkageGroup)"
@@ -246,8 +234,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbProjects)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbProjects)"
 													value="@bind(vm.filterProject)"
@@ -277,8 +263,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbExperiment)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbExperiment)"
 													value="@bind(vm.filterExperiment)"
@@ -309,8 +293,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbAnalyses)" value="Search:" />
 												<textbox
 													visible="@load( vm.dbAnalyses)"
 													value="@bind(vm.filterAnalyses)"
@@ -340,8 +322,6 @@
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbDataset)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbDataset)"
 													value="@bind(vm.filterDataset)"
@@ -404,8 +384,7 @@
 								<vbox vflex="1" hflex="1">
 									<grid id="markerGrid"
 										model="@load(vm.markerList)" mold="paging" pageSize="25"
-										emptyMessage="No items match your search"
-										pagingPosition="both" vflex="1" hflex="1">
+										emptyMessage="No items match your search" vflex="1" hflex="1">
 									<columns sizable="true">
 										<column hflex="1">
 											<checkbox label="Select All"
@@ -452,31 +431,31 @@
 														onCheck="@command('updateSelectMarker', markerChecked=self.value, isChecked=self.checked)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(marker.markerId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(marker.markerName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(marker.platformId)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row"
 														value="@load(marker.platformName)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row "
 														value="@load(marker.ref)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row "
 														value="@load(marker.altsToString)" />
 												</cell>
 												<cell>
-													<label
+												<label sclass="grid-row "
 														value="@load(marker.referenceName)" />
 												</cell>
 											</row>
@@ -487,11 +466,10 @@
 										pack="end" align="end">
 										<label
 											value="Total number of rows:"
-											style="font-style: oblique; font-size: 15px" />
-										:
+											sclass="row-count" />
 										<label
 											value="@bind(vm.sizeMarkerList)"
-											style="font-style: oblique; font-size: 15px" />
+											sclass="row-count" />
 									</hbox>
 								</vbox>
 							</div>
