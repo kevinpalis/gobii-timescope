@@ -180,44 +180,43 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	public String getFiltersAsText() {
 		// TODO Auto-generated method stub
 		StringBuilder sb = new StringBuilder();
-		ViewModelServiceImpl vms = new ViewModelServiceImpl();
 		
-		if(vms.isListNotNullOrEmpty(getPlatformList())){
+		if(Utils.isListNotNullOrEmpty(getPlatformList())){
 			sb.append("Platform(s):");
 			sb.append(Utils.getListNamesToString(getPlatformList(), 1));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getVendorProtocolList())){
+		if(Utils.isListNotNullOrEmpty(getVendorProtocolList())){
 			sb.append("Vendor-protocol(s):");
 			sb.append(Utils.getListNamesToString(getVendorProtocolList(), 1));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getMapsetList())){
+		if(Utils.isListNotNullOrEmpty(getMapsetList())){
 			sb.append("Mapset(s):");
 			sb.append(Utils.getListNamesToString(getMapsetList(), 1));
 		}
 
-		if(vms.isListNotNullOrEmpty(getLinkageGroupList())){
+		if(Utils.isListNotNullOrEmpty(getLinkageGroupList())){
 			sb.append("Linkage group(s):");
 			sb.append(Utils.getListNamesToString(getLinkageGroupList(), 1));
 		}
 
-		if(vms.isListNotNullOrEmpty(getProjectList())){
+		if(Utils.isListNotNullOrEmpty(getProjectList())){
 			sb.append("Project(s):");
 			sb.append(Utils.getListNamesToString(getProjectList(), 1));
 		}
 
-		if(vms.isListNotNullOrEmpty(getExperimentList())){
+		if(Utils.isListNotNullOrEmpty(getExperimentList())){
 			sb.append("Experiment(s):");
 			sb.append(Utils.getListNamesToString(getExperimentList(), 1));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getAnalysesList())){
+		if(Utils.isListNotNullOrEmpty(getAnalysesList())){
 			sb.append("Analyses:");
 			sb.append(Utils.getListNamesToString(getAnalysesList(), 1));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getDatasetList())){
+		if(Utils.isListNotNullOrEmpty(getDatasetList())){
 			sb.append("Dataset(s):");
 			sb.append(Utils.getListNamesToString(getDatasetList(), 15));
 		}

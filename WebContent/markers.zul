@@ -72,7 +72,7 @@
 											</cell>
 											<cell>
 												<textbox  rows="8"
-													cols="40" hflex="true" vflex="true" multiline="true" 
+													cols="40" hflex="true" vflex="max" multiline="true" 
 													value="@bind(vm.currentFiltersAsText)"
 													readonly="true"
 													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
@@ -82,36 +82,35 @@
 										</row>
 									</rows>
 								</grid>
-
-								<tabbox id="tb" orient="left" hflex="2"
+								<tabbox id="tb1" orient="left" hflex="2"
 									height="250px" style="border:none;">
-									<tabs width="130px" id="tabs">
-										<tab id="A" label="Platform"
+									<tabs width="180px" id="tabs1">
+										<tab id="A" label="@load(vm.platformTabLabel)"
 											sclass="tab-title"
 											onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
-											label="Vendor-Protocol"
+											label="@load(vm.vendorProtocolTabLabel)"
 											sclass="tab-title"
-											onSelect="@command('selectVendorProtocolTab')" />
-										<tab id="I" label="Mapsets"
+											onSelect="@global-command('selectVendorProtocolTab')" />
+										<tab id="F" label="@load(vm.projectsTabLabel)"
 											sclass="tab-title"
-											onSelect="@command('selectMapsetsTab')" />
-										<tab id="J"
-											label="Linkage Groups"
+											onSelect="@global-command('selectProjectsTab')" />
+										<tab id="G" label="@load(vm.experimentTabLabel)"
 											sclass="tab-title"
-											onSelect="@command('selectLinkageGroupsTab')" />
-										<tab id="F" label="Projects"
-											sclass="tab-title"
-											onSelect="@command('selectProjectsTab')" />
-										<tab id="G" label="Experiments"
-											sclass="tab-title"
-											onSelect="@command('selectExperimentsTab')" />
-										<tab id="E" label="Analyses"
+											onSelect="@global-command('selectExperimentsTab')" />
+										<tab id="E" label="@load(vm.analysisTabLabel)"
 											sclass="tab-title"
 											onSelect="@command('selectAnalysesTab')" />
-										<tab id="H" label="Datasets"
+										<tab id="H" label="@load(vm.datasetTabLabel)"
 											sclass="tab-title"
-											onSelect="@command('selectDatasetsTab')" />
+											onSelect="@global-command('selectDatasetsTab')" />
+										<tab id="I" label="@load(vm.mapsetTabLabel)"
+											sclass="tab-title-with-separator"
+											onSelect="@command('selectMapsetsTab')" />
+										<tab id="J"
+											label="@load(vm.linkageGroupTabLabel)"
+											sclass="tab-title"
+											onSelect="@global-command('selectLinkageGroupsTab')" />
 									</tabs>
 									<tabpanels hflex="true">
 										<tabpanel>
@@ -173,63 +172,6 @@
 											</listbox>
 											<label
 												visible="@load(not vm.dbVendorProtocols)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<hbox>
-												<textbox
-													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
-													onChange="@command('doSearchMapset')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png"
-													onClick="@command('displayFilterDetails', category='mapset')" />
-											</hbox>
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbMapset)" vflex="1"
-												model="@load(vm.mapsetList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.mapsetList)"
-												onSelect="@command('validateForReset', category='mapset')">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell  tooltiptext="@load('Mapset Id: '.concat(item.mapsetId))"
-															label="@load(item.name)" style="font-size: 12px;" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbMapset)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<hbox>
-												<textbox
-													visible="@load(vm.dbLinkageGroup)"
-													value="@bind(vm.filterLinkageGroup)"
-													onChange="@command('doSearchLinkageGroup')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png"
-													onClick="@command('displayFilterDetails', category='linkagegroup')" />
-											</hbox>
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbLinkageGroup)" vflex="1"
-												model="@load(vm.linkageGroupList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.linkageGroupList)"
-												onSelect="@command('validateForReset', category='lg')">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell
-															label="@load(item.name)"  tooltiptext="@load('Mapset Id: '.concat(item.mapId))" style="font-size: 12px;" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbLinkageGroup)"
 												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
@@ -360,9 +302,66 @@
 												visible="@load(not vm.dbDataset)"
 												value="There's nothing to see here." />
 										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
+													onChange="@command('doSearchMapset')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='mapset')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbMapset)" vflex="1"
+												model="@load(vm.mapsetList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.mapsetList)"
+												onSelect="@command('validateForReset', category='mapset')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell  tooltiptext="@load('Mapset Id: '.concat(item.mapsetId))"
+															label="@load(item.name)" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbMapset)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbLinkageGroup)"
+													value="@bind(vm.filterLinkageGroup)"
+													onChange="@command('doSearchLinkageGroup')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='linkagegroup')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbLinkageGroup)" vflex="1"
+												model="@load(vm.linkageGroupList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.linkageGroupList)"
+												onSelect="@command('validateForReset', category='lg')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)"  tooltiptext="@load('Mapset Id: '.concat(item.mapId))" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbLinkageGroup)"
+												value="There's nothing to see here." />
+										</tabpanel>
 									</tabpanels>
 								</tabbox>
-
+								
 							</hlayout>
 
 							<div align="center" hflex="1" vflex="min">

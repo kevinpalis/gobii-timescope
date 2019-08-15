@@ -134,7 +134,7 @@ public interface ViewModelService {
 
 	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList);
 
-	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+	public List<DatasetRecord> getDatasetsByExperimentIDandAnalysisId(List<ExperimentRecord> experimentList, List<AnalysisRecord> list);
 
 	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
 
@@ -145,6 +145,8 @@ public interface ViewModelService {
     public List<MapsetRecord> getAllMapsetsByReferenceId(List<ReferenceRecord> referenceList);
 
     public List<LinkageGroupRecord> getAllLinkageGroupsByReferenceId(List<ReferenceRecord> referenceList);
+
+    public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
 
 
 }

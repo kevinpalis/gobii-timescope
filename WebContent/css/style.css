@@ -1,5 +1,5 @@
 .footer_center {
-	text-align: center;;
+	text-align: center;
 }
 
 body { padding: 0 0;  /* 0 padding	on top and bottom and 0 padding on right and left */ }
@@ -109,6 +109,15 @@ span .z-label{
 	text-align: left;
 	border-bottom: 1px solid #ECECEC;
 	padding-left: 50px;
+}
+
+.tab-title-with-separator{
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+	text-align: left;
+	border-bottom: 1px solid #ECECEC;
+	margin-top: 15px;
 }
 .list-row .z-listcell {
 	font-weight: bold;

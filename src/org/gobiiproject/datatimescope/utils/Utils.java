@@ -135,4 +135,25 @@ public class Utils {
         sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
+    
+    public static <T> Boolean isListNotNullOrEmpty( List<T> list) {
+        Boolean returnValue = false;
+
+        if( list!=null && !list.isEmpty()) returnValue = true;
+
+        return returnValue;
+    }
+
+    public static String combineLabelWithNum(String string, Integer i) {
+        // TODO Auto-generated method stub
+        
+        String label;
+        try {
+             label = string+" ("+ i.toString()+")";
+        } catch(NullPointerException npe) {
+             label = string+" (0)";
+        }
+        
+        return label;
+    }
 }

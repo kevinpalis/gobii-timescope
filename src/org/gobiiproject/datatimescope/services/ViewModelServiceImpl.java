@@ -74,6 +74,7 @@ import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -926,7 +927,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 			
 			// build query for MAPSET filter
-			if (isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
+			if (Utils.isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
 				
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
 				sbWhere.append(" map.mapset_id "+ getIDsToString(markerEntity.getMapsetList()));
@@ -934,7 +935,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for LINKAGE GROUP filter
-			if (isListNotNullOrEmpty(markerEntity.getLinkageGroupList())){ 
+			if (Utils.isListNotNullOrEmpty(markerEntity.getLinkageGroupList())){ 
 
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
 				sbWhere.append(" lg.linkage_group_id "+ getIDsToString(markerEntity.getLinkageGroupList()));
@@ -942,7 +943,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for PLATFORM filter
-			if (isListNotNullOrEmpty(markerEntity.getPlatformList())){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())){
 
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
 				sbWhere.append(" pl.platform_id "+ getIDsToString(markerEntity.getPlatformList()));
@@ -950,7 +951,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for VENDOR-PROTOCOL filter
-			if (isListNotNullOrEmpty(markerEntity.getVendorProtocolList())){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())){
 
 				sb.append(buildLeftJoin(sb,"vendorprotocol"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -959,7 +960,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for PROJECTS filter
-			if (isListNotNullOrEmpty(markerEntity.getProjectList())){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getProjectList())){
 
 				sb.append(buildLeftJoin(sb,"project"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -968,7 +969,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for EXPERIMENTS filter
-			if (isListNotNullOrEmpty(markerEntity.getExperimentList())){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getExperimentList())){
 
 				sb.append(buildLeftJoin(sb,"experiment"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -977,7 +978,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 			// build query for DATASETS filter
-			if (isListNotNullOrEmpty(markerEntity.getDatasetList()) && !markerEntity.isMarkerNotInDatasets()){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getDatasetList()) && !markerEntity.isMarkerNotInDatasets()){
 
 				sb.append(buildLeftJoin(sb,"dataset"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -986,7 +987,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 			
 			// build query for ANALYSES filter
-			if (isListNotNullOrEmpty(markerEntity.getAnalysesList()) && !markerEntity.isMarkerNotInDatasets()){
+			if (Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()) && !markerEntity.isMarkerNotInDatasets()){
 
 				sb.append(buildLeftJoin(sb,"analysis"));
 				checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -1602,14 +1603,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return sb.toString();
 	}
 
-	public <T> Boolean isListNotNullOrEmpty( List<T> list) {
-		Boolean returnValue = false;
-
-		if( list!=null && !list.isEmpty()) returnValue = true;
-
-		return returnValue;
-	}
-
 	@Override
 	public List<VendorProtocolRecord> getVendorProtocolByPlatformId(List<PlatformRecord> iDlist) {
 		// TODO Auto-generated method stub
@@ -1909,6 +1902,27 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve getDatasetsByPlatformID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DatasetRecord> getDatasetsByExperimentIDandAnalysisId(List<ExperimentRecord> experimentList,
+            List<AnalysisRecord> analysisList) {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DatasetRecord> list = null;
+        try{
+
+            String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) where e.experiment_id "+ getIDsToString(experimentList)+" and "+ getIDsToString(analysisList)+";";
+            list = context.fetch(query).into(DatasetRecord.class);
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve getDatasetsByExperimentID", "ERROR", Messagebox.OK, Messagebox.ERROR);
             e.printStackTrace();
 
         }

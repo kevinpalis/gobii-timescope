@@ -69,7 +69,7 @@
 											</cell>
 											<cell>
 												<textbox rows="8"
-													cols="40" hflex="true" vflex="true" multiline="true"
+													cols="40" hflex="true" vflex="max" multiline="true"
 													readonly="true" value="@load(vm.currentFiltersAsText)"
 													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
 
