@@ -219,7 +219,7 @@ public class MarkerViewModel {
 		case "vendorprotocol":
 		case "datasets":
 			if(!markerEntity.getPlatformList().isEmpty()) {
-				sb.append("\n Platform(s): \n"+ getListNamesToString(markerEntity.getPlatformList())+"\n");
+				sb.append("\n Platform(s): \n"+ Utils.getListNamesToString(markerEntity.getPlatformList())+"\n");
 			}else {
 				filterInfo.append("platform");
 				ctr++;
@@ -228,7 +228,7 @@ public class MarkerViewModel {
 			if(category.equalsIgnoreCase("vendorprotocol")) break;
 
 			if(!markerEntity.getVendorProtocolList().isEmpty()) {
-				sb.append("\n Vendor-Protocol(s): \n"+ getListNamesToString(markerEntity.getVendorProtocolList())+"\n");
+				sb.append("\n Vendor-Protocol(s): \n"+ Utils.getListNamesToString(markerEntity.getVendorProtocolList())+"\n");
 			} else {
 				ctr++;
 				filterInfo.append(checkIfCommaNeeded(filterInfo,"vendor-protocol"));
@@ -237,7 +237,7 @@ public class MarkerViewModel {
 			if(category.equalsIgnoreCase("project")) break;
 
 			if(!markerEntity.getProjectList().isEmpty()) {
-				sb.append("\n Project(s): \n "+ getListNamesToString(markerEntity.getProjectList())+"\n");
+				sb.append("\n Project(s): \n "+ Utils.getListNamesToString(markerEntity.getProjectList())+"\n");
 			}  else {
 				ctr++;
 				filterInfo.append(checkIfCommaNeeded(filterInfo,"project"));
@@ -245,14 +245,14 @@ public class MarkerViewModel {
 			if(category.equalsIgnoreCase("experiment")) break;
 
 			if(!markerEntity.getExperimentList().isEmpty()) {
-				sb.append("\n Experiment(s): \n "+ getListNamesToString(markerEntity.getExperimentList())+"\n");
+				sb.append("\n Experiment(s): \n "+ Utils.getListNamesToString(markerEntity.getExperimentList())+"\n");
 			} else {
 				ctr++;
 				filterInfo.append(checkIfCommaNeeded(filterInfo,"experiment"));
 			}
 			
 			if(!markerEntity.getAnalysesList().isEmpty()) {
-				sb.append("\n Anaylsis: \n"+ getListNamesToString(markerEntity.getAnalysesList())+"\n");
+				sb.append("\n Anaylsis: \n"+ Utils.getListNamesToString(markerEntity.getAnalysesList())+"\n");
 			}  else {
 				ctr++;
 				filterInfo.append(checkIfCommaNeeded(filterInfo,"analysis"));
@@ -262,7 +262,7 @@ public class MarkerViewModel {
 		case "linkagegroup": 
 			if(!markerEntity.getMapsetList().isEmpty()) {
 				ctr++;
-				sb.append("\n Mapset(s): \n"+ getListNamesToString(markerEntity.getMapsetList())+"\n");
+				sb.append("\n Mapset(s): \n"+ Utils.getListNamesToString(markerEntity.getMapsetList())+"\n");
 			}else filterInfo.append("mapset");
 			break;
 		default: 
@@ -848,22 +848,6 @@ public class MarkerViewModel {
 	public void doSearchLinkageGroup() {
 
 		Utils.filterItems(linkageGroupList, backupLinkageGroupList, filterLinkageGroup);
-	}
-
-
-	public <T> String getListNamesToString( List<T> list) {
-
-		StringBuilder sb = new StringBuilder();
-
-		int ctr=0;
-
-		for(T item : list) {
-			if(ctr>0) sb.append(", "); 
-			sb.append((String) ((Record) item).get(1));
-			ctr++;
-		}
-		
-		return sb.toString();
 	}
 
 	/**************************************************************** Getters and Setters *************************************************************/ 
