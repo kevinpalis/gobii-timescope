@@ -699,26 +699,29 @@ public class MarkerViewModel {
 
 		if(Utils.isListNotNullOrEmpty(markerEntity.getExperimentList())) { // if not empty, use experiment as filter
 
-			if(!markerEntity.getAnalysesList().isEmpty()) setDatasetList(viewModelService.getDatasetsByExperimentIDandAnalysisId(markerEntity.getExperimentList(),markerEntity.getAnalysesList()));
+			if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getDatasetsByExperimentIDandAnalysisId(markerEntity.getExperimentList(),markerEntity.getAnalysesList()));
 			else setDatasetList(viewModelService.getDatasetsByExperimentID(markerEntity.getExperimentList()));
 
 		}
 		else if(Utils.isListNotNullOrEmpty(markerEntity.getProjectList())) { // if not empty, use project as filter
-
-			setDatasetList(viewModelService.getDatasetsByProjectID(markerEntity.getProjectList(),markerEntity.getAnalysesList()));
-
+		   
+		    if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(viewModelService.getDatasetsByProjectIDandAnalysisID(markerEntity.getProjectList(),markerEntity.getAnalysesList()));
+		    else setDatasetList(viewModelService.getDatasetsByProjectID(markerEntity.getProjectList()));
 		}
 		else if(Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) { // if not empty, use vendor-protocol as filter
 
-			setDatasetList(viewModelService.getDatasetsByVendorProtocolID(markerEntity.getVendorProtocolList(),markerEntity.getAnalysesList()));
+		    if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(viewModelService.getDatasetsByVendorProtocolIDandAnalysisID(markerEntity.getVendorProtocolList(),markerEntity.getAnalysesList()));
+		    else setDatasetList(viewModelService.getDatasetsByVendorProtocolID(markerEntity.getVendorProtocolList()));
 
 
-		}else if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList(),markerEntity.getAnalysesList())) { // check if platform filter is not empty and filter by that instead
-
-			setDatasetList(viewModelService.getDatasetsByPlatformID(markerEntity.getPlatformList(),markerEntity.getAnalysesList()));
+		}else if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) { // check if platform filter is not empty and filter by that instead
+		    
+		    if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getDatasetsByPlatformIDandAnalysisID(markerEntity.getPlatformList(),markerEntity.getAnalysesList()));
+		    else setDatasetList(viewModelService.getDatasetsByPlatformID(markerEntity.getPlatformList()));
 
 		}else{
-			setDatasetList(viewModelService.getAllDatasets(markerEntity.getAnalysesList()));
+		    if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getAllDatasetsByAnalysisID(markerEntity.getAnalysesList()));
+		    else setDatasetList(viewModelService.getAllDatasets());
 		}
 	}
 

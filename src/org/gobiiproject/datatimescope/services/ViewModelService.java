@@ -148,5 +148,16 @@ public interface ViewModelService {
 
     public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
 
+    public List<DatasetRecord> getDatasetsByPlatformIDandAnalysisID(List<PlatformRecord> platformList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getAllDatasetsByAnalysisID(List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByVendorProtocolIDandAnalysisID(List<VendorProtocolRecord> vendorProtocolList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByProjectIDandAnalysisID(List<ProjectRecord> projectList,
+            List<AnalysisRecord> analysesList);
+
 
 }

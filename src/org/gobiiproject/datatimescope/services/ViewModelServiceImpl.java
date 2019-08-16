@@ -1775,7 +1775,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		List<DatasetRecord> list = null;
 		try{
 
-			String query = "Select * from experiment e left join project prj on e.project_id = prj.project_id where prj.project_id "+ getIDsToString(projectList)+";";
+			String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join project prj on e.project_id = prj.project_id where prj.project_id "+ getIDsToString(projectList)+";";
 			list = context.fetch(query).into(DatasetRecord.class);
 
 		}catch(Exception e ){
@@ -1917,12 +1917,91 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         List<DatasetRecord> list = null;
         try{
 
-            String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) where e.experiment_id "+ getIDsToString(experimentList)+" and "+ getIDsToString(analysisList)+";";
+            String query = "Select * from dataset d left join experiment e on d.experiment_id = e.experiment_id left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) where e.experiment_id "+ getIDsToString(experimentList)+" and a.analysis_id "+ getIDsToString(analysisList)+";";
             list = context.fetch(query).into(DatasetRecord.class);
 
         }catch(Exception e ){
 
-            Messagebox.show("There was an error while trying to retrieve getDatasetsByExperimentID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            Messagebox.show("There was an error while trying to retrieve getDatasetsByExperimentIDandAnalysisId", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DatasetRecord> getDatasetsByPlatformIDandAnalysisID(List<PlatformRecord> platformList,
+            List<AnalysisRecord> analysisList) {
+        DSLContext context = getDSLContext();
+        List<DatasetRecord> list = null;
+        try{
+
+            String query = "Select distinct on (d.dataset_id) * from dataset d left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id left join protocol pr on vp.protocol_id = pr.protocol_id left join platform pl on pr.platform_id = pl.platform_id where pl.platform_id "+ getIDsToString(platformList)+" and a.analysis_id "+ getIDsToString(analysisList)+";";
+            list = context.fetch(query).into(DatasetRecord.class);
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve getDatasetsByPlatformIDandAnalysisID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DatasetRecord> getAllDatasetsByAnalysisID(List<AnalysisRecord> analysesList) {
+        DSLContext context = getDSLContext();
+
+        List<DatasetRecord> list = null;
+        try{
+            String query = "Select distinct on (d.dataset_id) * from dataset d left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) where a.analysis_id "+ getIDsToString(analysesList)+";";
+            list = context.fetch(query).into(DatasetRecord.class);
+
+            log.info("Submitted Query: "+query);
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve datasets by analysis Id", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+        return list;
+    }
+
+    @Override
+    public List<DatasetRecord> getDatasetsByVendorProtocolIDandAnalysisID(List<VendorProtocolRecord> vendorProtocolList,
+            List<AnalysisRecord> analysesList) {
+        
+        DSLContext context = getDSLContext();
+        List<DatasetRecord> list = null;
+        try{
+
+            String query = "Select distinct on (d.dataset_id) * from dataset d join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) left join experiment e on d.experiment_id = e.experiment_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where vp.vendor_protocol_id "+ getIDsToString(vendorProtocolList)+" and a.analysis_id "+ getIDsToString(analysesList)+";";
+            list = context.fetch(query).into(DatasetRecord.class);
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve getDatasetsByVendorProtocolIDandAnalysisID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DatasetRecord> getDatasetsByProjectIDandAnalysisID(List<ProjectRecord> projectList,
+            List<AnalysisRecord> analysesList) {
+        DSLContext context = getDSLContext();
+        List<DatasetRecord> list = null;
+        try{
+
+            String query = "Select * from dataset d join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) left join experiment e on d.experiment_id = e.experiment_id left join project prj on e.project_id = prj.project_id where prj.project_id "+ getIDsToString(projectList)+" and a.analysis_id "+ getIDsToString(analysesList)+";";
+            list = context.fetch(query).into(DatasetRecord.class);
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve getDatasetsByProjectIDandAnalysisID", "ERROR", Messagebox.OK, Messagebox.ERROR);
             e.printStackTrace();
 
         }
