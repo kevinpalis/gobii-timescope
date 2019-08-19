@@ -102,15 +102,13 @@
 											sclass="tab-title"
 											onSelect="@command('selectAnalysesTab')" />
 										<tab id="H" label="@load(vm.datasetTabLabel)"
-											sclass="tab-title"
-											onSelect="@global-command('selectDatasetsTab')" />
+											sclass="tab-title"/>
 										<tab id="I" label="@load(vm.mapsetTabLabel)"
 											sclass="tab-title-with-separator"
 											onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
 											label="@load(vm.linkageGroupTabLabel)"
-											sclass="tab-title"
-											onSelect="@global-command('selectLinkageGroupsTab')" />
+											sclass="tab-title" />
 									</tabs>
 									<tabpanels hflex="true">
 										<tabpanel>
@@ -269,7 +267,7 @@
 													value="@bind(vm.filterDataset)"
 													onChange="@command('doSearchDataset')" instant="true" />
 												<toolbarbutton
-													visible="@load(vm.dbDataset)" image="/imgs/info.png"
+													 image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='datasets')" />
 											</hbox>
 											<separator spacing="12px"

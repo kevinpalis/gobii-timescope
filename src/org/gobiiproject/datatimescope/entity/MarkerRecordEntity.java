@@ -216,7 +216,10 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 			sb.append(Utils.getListNamesToString(getAnalysesList(), 1));
 		}
 		
-		if(Utils.isListNotNullOrEmpty(getDatasetList())){
+		if(markerNotInDatasets){
+		    sb.append("Dataset(s):\n\t*Should not be in a dataset");
+		}
+		else if(Utils.isListNotNullOrEmpty(getDatasetList())){
 			sb.append("Dataset(s):");
 			sb.append(Utils.getListNamesToString(getDatasetList(), 15));
 		}
