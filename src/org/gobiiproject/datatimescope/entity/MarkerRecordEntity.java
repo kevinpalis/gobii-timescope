@@ -231,4 +231,23 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		return sb.toString();
 	}
 
+    public String getCompleteFiltersAsText() {
+        StringBuilder sb = new StringBuilder();
+        
+        if(markerIDStartRange!=null || markerIDEndRange!=null){
+            
+            sb.append("Marker Id: ");
+            sb.append(Utils.getIdRangeAsString(markerIDStartRange,markerIDEndRange));
+        }else if(markerNamesAsCommaSeparatedString!=null) {
+
+            if(!markerNamesAsCommaSeparatedString.isEmpty()) {
+                sb.append("Marker Names:\n");
+                sb.append(markerNamesAsCommaSeparatedString);
+            }
+        }
+        String filters = getFiltersAsText();
+        sb.append(filters);
+        return sb.toString();
+    }
+
 }

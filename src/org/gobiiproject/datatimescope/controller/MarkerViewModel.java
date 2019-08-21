@@ -128,27 +128,8 @@ public class MarkerViewModel {
         backupDatasetList  =  new ArrayList<DatasetRecord>();
         backupLinkageGroupList = new ArrayList<LinkageGroupRecord>();
         
-		setMarkerEntity(new MarkerRecordEntity());
-		setPlatformList(viewModelService.getAllPlatforms());
-		setVendorList(viewModelService.getAllVendors());
-		setVendorProtocolList(viewModelService.getAllVendorProtocols());
-		setCallingAnalysisList(viewModelService.getAllCallingAnalysis());
-		setAnalysesList(viewModelService.getAllAnalyses());
-		setProjectList(viewModelService.getAllProjects());
-		setExperimentList(viewModelService.getAllExperiments());
-		setDatasetList(viewModelService.getAllDatasets());
-		setMapsetList(viewModelService.getAllMapsets());
-		setLinkageGroupList(viewModelService.getAllLinkageGroups());
-
+		populateFilterLists();
 		
-		if(vendorList.isEmpty()) dbVendors = false;	
-		if(callingAnalysisList.isEmpty()) dbCallingAnalysis = false;
-		if(analysesList.isEmpty()) dbAnalyses = false;
-		if(projectList.isEmpty()) dbProjects = false;		
-		if(experimentList.isEmpty()) dbExperiment = false;
-		if(mapsetList.isEmpty()) dbMapset = false;
-		if(linkageGroupList.isEmpty()) dbLinkageGroup = false;
-		if(datasetList.isEmpty()) dbDataset = false;
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
@@ -159,8 +140,7 @@ public class MarkerViewModel {
 
 	}
 
-
-	@AfterCompose
+    @AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		Selectors.wireComponents(view, this, false);
 	}
@@ -207,10 +187,9 @@ public class MarkerViewModel {
 
 	@Command("displayFilterDetails")
 	public void displayFilterDetails(@BindingParam("category") String category){
-		int ctr = 0;
 		String title="This list is being filtered by: ";
 		StringBuilder sb = new StringBuilder();
-		StringBuilder filterInfo = new StringBuilder();
+		String filterInfo="";
 
 		switch(category){
 		case "experiment":
@@ -220,8 +199,7 @@ public class MarkerViewModel {
 			if(!markerEntity.getPlatformList().isEmpty()) {
 				sb.append("\n Platform(s): \n"+ Utils.getListNamesToString(markerEntity.getPlatformList())+"\n");
 			}else {
-				filterInfo.append("platform");
-				ctr++;
+				filterInfo="This list is not yet filtered. You can filter it by selecting a platform.";
 			}
 			
 			if(category.equalsIgnoreCase("vendorprotocol")) break;
@@ -229,8 +207,8 @@ public class MarkerViewModel {
 			if(!markerEntity.getVendorProtocolList().isEmpty()) {
 				sb.append("\n Vendor-Protocol(s): \n"+ Utils.getListNamesToString(markerEntity.getVendorProtocolList())+"\n");
 			} else {
-				ctr++;
-				filterInfo.append(checkIfCommaNeeded(filterInfo,"vendor-protocol"));
+
+                filterInfo="This list is not yet filtered. You can filter it by selecting a platform and/or a vendor-protocol.";
 			}
 			
 			if(category.equalsIgnoreCase("project")) break;
@@ -238,31 +216,29 @@ public class MarkerViewModel {
 			if(!markerEntity.getProjectList().isEmpty()) {
 				sb.append("\n Project(s): \n "+ Utils.getListNamesToString(markerEntity.getProjectList())+"\n");
 			}  else {
-				ctr++;
-				filterInfo.append(checkIfCommaNeeded(filterInfo,"project"));
+
+                filterInfo="This list is not yet filtered. You can filter it by selecting a platform, vendor-protocol, and/or a project.";
 			}
 			if(category.equalsIgnoreCase("experiment")) break;
 
 			if(!markerEntity.getExperimentList().isEmpty()) {
 				sb.append("\n Experiment(s): \n "+ Utils.getListNamesToString(markerEntity.getExperimentList())+"\n");
 			} else {
-				ctr++;
-				filterInfo.append(checkIfCommaNeeded(filterInfo,"experiment"));
+
+                filterInfo="This list is not yet filtered. You can filter it by selecting a platform, vendor-protocol, project, and/or an experiment.";
 			}
 			
 			if(!markerEntity.getAnalysesList().isEmpty()) {
 				sb.append("\n Anaylsis: \n"+ Utils.getListNamesToString(markerEntity.getAnalysesList())+"\n");
 			}  else {
-				ctr++;
-				filterInfo.append(checkIfCommaNeeded(filterInfo,"analysis"));
+
+                filterInfo="This list is not yet filtered. You can filter it by selecting a platform, vendor-protocol, project, experiment, and/or an analysis.";
 			}
-			
 			break;
 		case "linkagegroup": 
 			if(!markerEntity.getMapsetList().isEmpty()) {
-				ctr++;
 				sb.append("\n Mapset(s): \n"+ Utils.getListNamesToString(markerEntity.getMapsetList())+"\n");
-			}else filterInfo.append("mapset");
+			}else  filterInfo="This list is not yet filtered. You can filter it by selecting a mapset.";
 			break;
 		default: 
 			title=" All items are displayed.";
@@ -270,12 +246,8 @@ public class MarkerViewModel {
 		}
 		
 		if(sb.toString().isEmpty()) {
-			if(ctr>1) filterInfo.insert(0, "List is not filtered. There are no filters selected in the following tabs: ");
-			else {
-				filterInfo.insert(0, "List is not filtered. There are no filters selected in the ");
-				filterInfo.append(" tab.");
-			}
-			Messagebox.show(filterInfo.toString(), "All items are displayed.", Messagebox.OK, Messagebox.NONE);
+			
+			Messagebox.show(filterInfo, "All items are displayed.", Messagebox.OK, Messagebox.NONE);
 		}
 		else Messagebox.show(sb.toString(), title, Messagebox.OK, Messagebox.NONE);
 		
@@ -351,7 +323,9 @@ public class MarkerViewModel {
 	}
 
 	@Command("resetMarkerTab")
-	@NotifyChange({"markerList","sizeMarkerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity", "currentFiltersAsText", "iDBoxDisabled","nameListDisabled","paged"})
+	@NotifyChange({"markerList","sizeMarkerList", "selectedMarkerList", "allCbSelected", "cbAllMarkers", "markerEntity", "currentFiltersAsText", "iDBoxDisabled","nameListDisabled","paged","platformList","vendorProtocolList", "analysesList", "projectList", "experimentList", "datasetList", "mapsetList", "linakageGroupList",
+        "dbAnalyses", "dbProjects", "dbExperiment", "dbMapset", "dbLinkageGroup", "dbDataset", "dbVendorProtocols",
+        "linkageGroupTabLabel","vendorProtocolTabLabel","projectsTabLabel","experimentTabLabel","datasetTabLabel"})
 	public void resetMarkerTab(){
 		try{
 			markerList.clear(); //clear the list first and then just add if there are any selected
@@ -362,6 +336,7 @@ public class MarkerViewModel {
 		markerEntity = new MarkerRecordEntity();
 		currentFiltersAsText = "";
 
+		populateFilterLists();
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);
 		setAllCbSelected(false);
@@ -391,7 +366,7 @@ public class MarkerViewModel {
 	@Command("changeEnabled")
 	@NotifyChange({"iDBoxDisabled","nameListDisabled"})
 	public void changeEnabled(){
-		isIDBoxDisabled = false; // reseet
+		isIDBoxDisabled = false; // reset
 		isNameListDisabled= false; 
 
 		if(markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
@@ -439,16 +414,13 @@ public class MarkerViewModel {
 					// TODO Auto-generated method stub
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
-						boolean successful;
 
 						if(selectedMarkerList.size() == 1){  // just one marker is selected
-							successful = viewModelService.deleteMarker(selectedMarkerList.get(0), markerSummary, markerSummaryEntity);
+							viewModelService.deleteMarker(selectedMarkerList.get(0), markerSummary, markerEntity);
 						}else{
 							//bulk delete
-							successful = viewModelService.deleteMarkers(selectedMarkerList, markerSummary, markerSummaryEntity);
+							viewModelService.deleteMarkers(selectedMarkerList, markerSummary, markerEntity);
 						}
-
-						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
 
 					}
 				}
@@ -511,15 +483,15 @@ public class MarkerViewModel {
 			VMarkerSummaryEntity next = it.next();
 
 			if(it.nextIndex()==1){
-				buffMap.append(next.getHeaderDelimitedBy(","));
+				buffMap.append(next.getHeaderDelimitedBy("\t"));
 			}
-			buffMap.append(next.getAllDelimitedBy(","));
+			buffMap.append(next.getAllDelimitedBy("\t"));
 
 		}
 
 		FileWriter fw;
 		try {
-			File file = new File("timescope_marker.csv");
+			File file = new File("timescope_marker.txt");
 			fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(buffMap.toString());
@@ -527,7 +499,7 @@ public class MarkerViewModel {
 			bw.close();
 
 			InputStream is = new FileInputStream(file);
-			Filedownload.save(is, "text/csv", file.getName());
+			Filedownload.save(is, "text/plain", file.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -567,18 +539,18 @@ public class MarkerViewModel {
 			int nextIndex = it.nextIndex();
 
 			if(nextIndex==1){
-				buffMap.append(next.getHeaderDelimitedBy(","));
+				buffMap.append(next.getHeaderDelimitedBy("\t"));
 			}
 
 			if(indices.contains(nextIndex)){
-				buffMap.append(next.getAllDelimitedBy(","));
+				buffMap.append(next.getAllDelimitedBy("\t"));
 			}
 
 		}
 
 		FileWriter fw;
 		try {
-			File file = new File("timescope_marker_currentpage.csv");
+			File file = new File("timescope_marker_currentpage.txt");
 			fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(buffMap.toString());
@@ -586,12 +558,32 @@ public class MarkerViewModel {
 			bw.close();
 
 			InputStream is = new FileInputStream(file);
-			Filedownload.save(is, "text/csv", file.getName());
+			Filedownload.save(is, "text/plain", file.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+    private void populateFilterLists() {
+        // TODO Auto-generated method stub
+        setPlatformList(viewModelService.getAllPlatforms());
+        setVendorList(viewModelService.getAllVendors());
+        setVendorProtocolList(viewModelService.getAllVendorProtocols());
+        setCallingAnalysisList(viewModelService.getAllCallingAnalysis());
+        setAnalysesList(viewModelService.getAllAnalyses());
+        setProjectList(viewModelService.getAllProjects());
+        setExperimentList(viewModelService.getAllExperiments());
+        setDatasetList(viewModelService.getAllDatasets());
+        setMapsetList(viewModelService.getAllMapsets());
+        setLinkageGroupList(viewModelService.getAllLinkageGroups());
+        
+
+        // If List is noll or empty, make invisible.
+        setDbAnalyses(Utils.isListNotNullOrEmpty(analysesList));
+        setDbMapset(Utils.isListNotNullOrEmpty(mapsetList));
+        setDbPlatforms(Utils.isListNotNullOrEmpty(platformList));
+    }
+
 
 
 	/**************************************************************** Methods related to tab selection *************************************************************/ 
@@ -615,7 +607,6 @@ public class MarkerViewModel {
 
         if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) {
             //          Messagebox.show("There are platforms selected");
-
             setVendorProtocolList(viewModelService.getVendorProtocolByPlatformId(markerEntity.getPlatformList()));
 
         }else{
@@ -633,7 +624,7 @@ public class MarkerViewModel {
 		showInfoPopUp("mapset");
 	}
 	
-	@NotifyChange({"linkageGroupList","linkageGroupTabLabel", "dbLinkageGroup"})
+	@NotifyChange({"linkageGroupList","linkageGroupTabLabel", "dbLinkageGroup"}) 
     @GlobalCommand
     public void updateLinkageGroupsTab() {
         if(Utils.isListNotNullOrEmpty(markerEntity.getMapsetList())) {
@@ -651,7 +642,7 @@ public class MarkerViewModel {
 		showInfoPopUp("project");
 	}
 
-	@NotifyChange({"projectList", "projectsTabLabel", "dbProjects"})
+	@NotifyChange({"projectList", "projectsTabLabel", "dbProjects"}) 
     @GlobalCommand
     public void updateProjectsTab() { // Projects are connected to a platform and a vendor-protocol (via experiment)
 
@@ -706,7 +697,7 @@ public class MarkerViewModel {
 		showInfoPopUp("analyses");
 	}
 
-	@NotifyChange({"datasetList","datasetTabLabel", "dbDataset"})
+	@NotifyChange({"datasetList","datasetTabLabel", "dbDataset"}) 
 	@GlobalCommand
 	public void updateDatasetsTab() {
 

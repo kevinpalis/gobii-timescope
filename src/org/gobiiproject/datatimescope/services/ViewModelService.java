@@ -73,9 +73,9 @@ public interface ViewModelService {
 
 	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary, MarkerRecordEntity markerEntity);
 
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary, MarkerRecordEntity markerEntity);
 
 	public List<PlatformRecord> getAllPlatforms();
 

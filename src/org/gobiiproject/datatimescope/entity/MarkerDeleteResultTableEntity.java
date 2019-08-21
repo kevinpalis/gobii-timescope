@@ -69,17 +69,17 @@ public class MarkerDeleteResultTableEntity {
 	}
 	public Object getHeaderDelimitedBy(String string) {
 		// TODO Auto-generated method stub
-		String header = "Marker ID, Marker Name, Dataset (ID), Markergroup (ID:Name) \n";
+		String header = "Marker ID"+string+" Marker Name"+string+" Dataset name (Id)"+string+" Markergroup name(Id) \n";
 		return header;
 	}
 	public Object getAllDelimitedBy(String string) {
 		// TODO Auto-generated method stub
 		StringBuilder sb = new StringBuilder();
-		sb.append(Integer.toString(getMarker_id())+",");
-		sb.append("\""+getMarker_name()+"\",");
-		sb.append("\""+getDataset_name()+"\",");
-		sb.append("\""+getMarker_group_name()+"\",\n");
-		
+		sb.append(Integer.toString(getMarker_id())+string);
+		sb.append(getMarker_name()+string);
+		sb.append(getDataset_name()+string);
+		sb.append(getMarker_group_name()+string);
+		sb.append("\n");
 		
 		return sb.toString();
 	}

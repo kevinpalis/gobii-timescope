@@ -156,4 +156,26 @@ public class Utils {
         
         return label;
     }
+
+    public static String getIdRangeAsString(Integer markerIDStartRange, Integer markerIDEndRange) {
+        // TODO Auto-generated method stub
+        
+        StringBuilder sb = new StringBuilder();
+        try {
+            
+            if(markerIDStartRange!=null) {
+                sb.append(Integer.toString(markerIDStartRange));
+            }
+            
+            if(markerIDEndRange!=null) {
+                if(sb.length()>0) sb.append(" - ");
+                sb.append(Integer.toString(markerIDEndRange));
+            }
+            sb.append("\n");
+        } catch(NullPointerException npe) {
+            
+        }
+        
+        return sb.toString();
+    }
 }
