@@ -97,7 +97,8 @@ import org.zkoss.zul.Window;
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
     private static final long serialVersionUID = 1L;
     final static Logger log = Logger.getLogger(ViewModelServiceImpl.class.getName());
-
+    private MarkerRecordEntity lastQueriedMarkerEntity;
+    
     @Override
     public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
         // TODO Auto-generated method stub
@@ -895,6 +896,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity) {
         // TODO Auto-generated method stub
 
+        lastQueriedMarkerEntity = new MarkerRecordEntity();
         int queryCount =0;
         int dsNameCount = 0;
         DSLContext context = getDSLContext();
@@ -912,7 +914,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for MARKER NAMES filter
             if (markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
-
+                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
                 sbWhere.append(" where LOWER(m.name) in ("+markerEntity.getSQLReadyMarkerNames()+")");
                 dsNameCount++;	
             }
@@ -920,7 +922,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             //build query for 'none' selected on dataset filter
             if(markerEntity.isMarkerNotInDatasets()) {
-
+                lastQueriedMarkerEntity.setMarkerNotInDatasets(true);
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" m.dataset_marker_idx = '{}' ");
                 queryCount++;
@@ -929,7 +931,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for MAPSET filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
-
+                lastQueriedMarkerEntity.getMapsetList().addAll(markerEntity.getMapsetList());
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" map.mapset_id "+ getIDsToString(markerEntity.getMapsetList()));
                 queryCount++;
@@ -937,6 +939,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for LINKAGE GROUP filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getLinkageGroupList())){ 
+                lastQueriedMarkerEntity.getLinkageGroupList().addAll(markerEntity.getLinkageGroupList());
 
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" lg.linkage_group_id "+ getIDsToString(markerEntity.getLinkageGroupList()));
@@ -945,6 +948,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for PLATFORM filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())){
+                lastQueriedMarkerEntity.getPlatformList().addAll(markerEntity.getPlatformList());
 
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" pl.platform_id "+ getIDsToString(markerEntity.getPlatformList()));
@@ -953,7 +957,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for VENDOR-PROTOCOL filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())){
-
+                lastQueriedMarkerEntity.getVendorProtocolList().addAll(markerEntity.getVendorProtocolList());
                 sb.append(buildLeftJoin(sb,"vendorprotocol"));
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" vp.vendor_protocol_id "+ getIDsToString(markerEntity.getVendorProtocolList()));
@@ -962,7 +966,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for PROJECTS filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getProjectList())){
-
+                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
                 sb.append(buildLeftJoin(sb,"project"));
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" prj.project_id "+ getIDsToString(markerEntity.getProjectList()));
@@ -971,7 +975,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for EXPERIMENTS filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getExperimentList())){
-
+                lastQueriedMarkerEntity.getExperimentList().addAll(markerEntity.getExperimentList());
                 sb.append(buildLeftJoin(sb,"experiment"));
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" e.experiment_id "+ getIDsToString(markerEntity.getExperimentList()));
@@ -980,7 +984,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for DATASETS filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getDatasetList()) && !markerEntity.isMarkerNotInDatasets()){
-
+                lastQueriedMarkerEntity.getDatasetList().addAll(markerEntity.getDatasetList());
                 sb.append(buildLeftJoin(sb,"dataset"));
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" d.dataset_id "+ getIDsToString(markerEntity.getDatasetList()));
@@ -989,7 +993,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for ANALYSES filter
             if (Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()) && !markerEntity.isMarkerNotInDatasets()){
-
+                lastQueriedMarkerEntity.getAnalysesList().addAll(markerEntity.getAnalysesList());
                 sb.append(buildLeftJoin(sb,"analysis"));
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" a.analysis_id "+ getIDsToString(markerEntity.getAnalysesList()));
@@ -1010,12 +1014,19 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         lowerID = markerEntity.getMarkerIDEndRange();
                         higherID = markerEntity.getMarkerIDStartRange();
                     }
-
+                    lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
                     sbWhere.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
                 }else{
                     Integer ID = null;
-                    if(markerEntity.getMarkerIDStartRange()!=null) ID = markerEntity.getMarkerIDStartRange();
-                    else ID = markerEntity.getMarkerIDEndRange();
+                    if(markerEntity.getMarkerIDStartRange()!=null) {
+                        ID = markerEntity.getMarkerIDStartRange();
+                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    }
+                    else {
+                        lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+                        ID = markerEntity.getMarkerIDEndRange();
+                    }
 
                     sbWhere.append(" m.marker_id = "+Integer.toString(ID));
                 }
@@ -1105,7 +1116,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, 
-            List<DatasetSummaryEntity> markerSummary, MarkerRecordEntity markerEntity) {
+            List<DatasetSummaryEntity> markerSummary) {
         boolean successful = false;
         List<VMarkerSummaryEntity> selectedMarkerList = new ArrayList<VMarkerSummaryEntity>();
         selectedMarkerList.add(vMarkerSummaryEntity);
@@ -1126,8 +1137,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                     if(Messagebox.ON_YES.equals(event.getName())){
                         DSLContext context = getDSLContext();
 
-                        long startTime = 0, endTime=0, startTimeMLG = 0, endTimeMLG=0;
-
+                        double startTime = 0, endTime=0, startTimeMLG = 0, endTimeMLG=0;
                         startTimeMLG = System.currentTimeMillis();
 
                         int result = context.delete(MARKER_LINKAGE_GROUP)
@@ -1145,24 +1155,23 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         double rowDeleteSeconds = (endTime - startTime) / 1000;
                         double rowDeleteSecondsMLG = (endTimeMLG - startTimeMLG) / 1000;
 
-                        //                          MarkerRecord dr = new DatasetRecord();
-                        //                          dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
-                        //                          dr.attach(configuration);
-                        //                          dr.delete();
-                        //                          endTime = System.currentTimeMillis();
-                        //                          double rowDeleteSeconds = (endTime - startTime) / 1000;
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+ Integer.toString(result) +" marker_linkage_group row deleted. (\n"+Double.toString(rowDeleteSecondsMLG)+" sec) \n");
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add("1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                        successMessagesAsList.add(Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
+                       
 
-                        if(!markerEntity.getCompleteFiltersAsText().isEmpty()) {
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedMarkerEntity.getFilterListAsRows());
 
-                            sb.append("\nFiltering Criteria:\n\n");
-                            String filteringCriteria = markerEntity.getCompleteFiltersAsText();
-                            sb.append(filteringCriteria);
-                        }
-                        Messagebox.show(sb.toString(), "Successfully deleted marker!",Messagebox.OK, Messagebox.INFORMATION);
-
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
                         BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
+                        
                     }
 
                 }
@@ -1293,7 +1302,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, 
-            List<DatasetSummaryEntity> markerSummary, MarkerRecordEntity markerEntity) {
+            List<DatasetSummaryEntity> markerSummary) {
 
         //check if Marker is not being used in a Marker Group or a Dataset
         List<VMarkerSummaryEntity> unusedInMarkersGroupsOrDataset = null;
@@ -1316,18 +1325,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             "WARNING", Messagebox.YES | Messagebox.CANCEL,
             Messagebox.EXCLAMATION,
             new org.zkoss.zk.ui.event.EventListener(){
+
                 @Override
                 public void onEvent(Event event) throws Exception {
                     // TODO Auto-generated method stub
                     if(Messagebox.ON_YES.equals(event.getName())){
                         DSLContext context = getDSLContext();
-
-                        long startTime = 0, endTime=0, startTimeMLG = 0, endTimeMLG=0;
+                        int result = 0, markersDeleted=0;
+                        double startTime = 0, endTime=0, startTimeMLG = 0, endTimeMLG=0;
 
                         startTimeMLG = System.currentTimeMillis();
 
-
-                        int result = context.deleteFrom(MARKER_LINKAGE_GROUP).where(MARKER_LINKAGE_GROUP.MARKER_ID.in(finalListofMarkersThatcanBeDeleted
+                        result = context.deleteFrom(MARKER_LINKAGE_GROUP).where(MARKER_LINKAGE_GROUP.MARKER_ID.in(finalListofMarkersThatcanBeDeleted
                                 .stream()
                                 .map(VMarkerSummaryEntity::getMarkerId)
                                 .collect(Collectors.toList())))
@@ -1337,7 +1346,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                         startTime = System.currentTimeMillis();
                         
-                        int markersDeleted = context.deleteFrom(MARKER).where(MARKER.MARKER_ID.in(finalListofMarkersThatcanBeDeleted
+                        markersDeleted = context.deleteFrom(MARKER).where(MARKER.MARKER_ID.in(finalListofMarkersThatcanBeDeleted
                                 .stream()
                                 .map(VMarkerSummaryEntity::getMarkerId)
                                 .collect(Collectors.toList())))
@@ -1347,22 +1356,21 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         double rowDeleteSeconds = (endTime - startTime) / 1000;
                         double rowDeleteSecondsMLG = (endTimeMLG - startTimeMLG) / 1000;
 
-                        //                          MarkerRecord dr = new DatasetRecord();
-                        //                          dr.setDatasetId(vDatasetSummaryRecord.getDatasetId());
-                        //                          dr.attach(configuration);
-                        //                          dr.delete();
-                        //                          endTime = System.currentTimeMillis();
-                        //                          double rowDeleteSeconds = (endTime - startTime) / 1000;
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(Integer.toString(markersDeleted)+" marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+ Integer.toString(result) +" marker_linkage_group row deleted. (\n"+Double.toString(rowDeleteSecondsMLG)+" sec) \n");
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add(Integer.toString(markersDeleted)+" markers deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                        successMessagesAsList.add(Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
+                       
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedMarkerEntity.getFilterListAsRows());
 
-                        if(!markerEntity.getCompleteFiltersAsText().isEmpty()) {
-
-                            sb.append("\nFiltering Criteria:\n\n");
-                            String filteringCriteria = markerEntity.getCompleteFiltersAsText();
-                            sb.append(filteringCriteria);
-                        }
-                        Messagebox.show(sb.toString(), "Successfully deleted marker!",Messagebox.OK, Messagebox.INFORMATION);
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+//                        Messagebox.show(sb.toString(), "Successfully deleted marker!",Messagebox.OK, Messagebox.INFORMATION);
 
                         BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
                     }

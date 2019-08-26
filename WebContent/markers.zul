@@ -273,10 +273,10 @@
 											<separator spacing="12px"
 												visible="@load(vm.dbDataset)" />
 											<checkbox id="l1"
-												label="   None" visible="@load(not empty vm.datasetList)"
+												label="None" visible="@load(not empty vm.datasetList)"
 												tooltip="Search for markers that are not associated with any dataset"
 												onCheck="@command('noDatasetsSelectedAsFilter', isChecked=self.checked)"
-												Style="margin-left:7px;}" />
+												Style="margin-left: 3px;}" />
 											<separator spacing="12px"
 												visible="@load(not vm.dbDataset)" />
 											<separator spacing="5px"

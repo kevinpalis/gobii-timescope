@@ -182,7 +182,7 @@ public class MarkerViewModel {
 			dbDataset=true;
 			markerEntity.setMarkerNotInDatasets(false);
 		}
-        currentFiltersAsText = markerEntity.getFiltersAsText();
+        currentFiltersAsText = markerEntity.getFiltersAsTextWithDelimiter(System.getProperty("line.separator"));
 	}
 
 	@Command("displayFilterDetails")
@@ -303,7 +303,7 @@ public class MarkerViewModel {
 			}
 			//once resets are done, update boolean
 			shouldNextChangeResetOtherFilterValues=false;
-			currentFiltersAsText = markerEntity.getFiltersAsText();
+			currentFiltersAsText = markerEntity.getFiltersAsTextWithDelimiter(System.getProperty("line.separator"));
 	}
 
 	@Command("submitQuery")
@@ -416,10 +416,10 @@ public class MarkerViewModel {
 						//YES is clicked
 
 						if(selectedMarkerList.size() == 1){  // just one marker is selected
-							viewModelService.deleteMarker(selectedMarkerList.get(0), markerSummary, markerEntity);
+							viewModelService.deleteMarker(selectedMarkerList.get(0), markerSummary);
 						}else{
 							//bulk delete
-							viewModelService.deleteMarkers(selectedMarkerList, markerSummary, markerEntity);
+							viewModelService.deleteMarkers(selectedMarkerList, markerSummary);
 						}
 
 					}

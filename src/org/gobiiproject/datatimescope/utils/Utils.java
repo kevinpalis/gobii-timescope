@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.jooq.Record;
 
@@ -176,6 +177,21 @@ public class Utils {
             
         }
         
+        return sb.toString();
+    }
+
+    public static <T> String getListNamesToStringWithDelimiter(List<T> list, int i, String delim) {
+        // TODO Auto-generated method stub
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(System.getProperty("line.separator"));
+        for(T item : list) {
+            if(sb.length()>3) sb.append(delim);
+            
+            sb.append("\t");
+            sb.append((String) ((Record) item).get(i));
+        }
+        sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 }
