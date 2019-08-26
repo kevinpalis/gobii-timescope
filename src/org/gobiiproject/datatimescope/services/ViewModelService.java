@@ -73,9 +73,9 @@ public interface ViewModelService {
 
 	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary);
 
 	public List<PlatformRecord> getAllPlatforms();
 
@@ -134,7 +134,7 @@ public interface ViewModelService {
 
 	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList);
 
-	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+	public List<DatasetRecord> getDatasetsByExperimentIDandAnalysisId(List<ExperimentRecord> experimentList, List<AnalysisRecord> list);
 
 	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
 
@@ -145,6 +145,19 @@ public interface ViewModelService {
     public List<MapsetRecord> getAllMapsetsByReferenceId(List<ReferenceRecord> referenceList);
 
     public List<LinkageGroupRecord> getAllLinkageGroupsByReferenceId(List<ReferenceRecord> referenceList);
+
+    public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+
+    public List<DatasetRecord> getDatasetsByPlatformIDandAnalysisID(List<PlatformRecord> platformList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getAllDatasetsByAnalysisID(List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByVendorProtocolIDandAnalysisID(List<VendorProtocolRecord> vendorProtocolList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByProjectIDandAnalysisID(List<ProjectRecord> projectList,
+            List<AnalysisRecord> analysesList);
 
 
 }

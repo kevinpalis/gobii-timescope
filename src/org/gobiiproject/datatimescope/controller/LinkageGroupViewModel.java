@@ -308,7 +308,7 @@ public class LinkageGroupViewModel {
         //Displaying all mapsets instead
 
         showTabInfoPopUp("mapset");
-        if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+        if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
 
             setMapsetList(viewModelService.getAllMapsetsByReferenceId(linkageGroupEntity.getReferenceList()));
         }else{
@@ -321,10 +321,10 @@ public class LinkageGroupViewModel {
     @NotifyChange("linkageGroupList")
     @Command
     public void selectLinkageGroupTab() {
-        if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+        if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
 
             setLinkageGroupList(viewModelService.getLinkageGroupByMapsetId(linkageGroupEntity.getMapsetList()));
-        }else if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+        }else if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
 
             setLinkageGroupList(viewModelService.getAllLinkageGroupsByReferenceId(linkageGroupEntity.getReferenceList()));
         }else{
@@ -340,11 +340,11 @@ public class LinkageGroupViewModel {
         switch(string){
 
         case "reference": 
-            if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+            if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
                 sb.append("\n Mapset");
             }
         case "mapset": 
-            if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
+            if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
                 sb.append(Utils.checkIfCommaNeeded(sb,"\n Linkage Group"));
             } 
         default: 
@@ -415,16 +415,16 @@ public class LinkageGroupViewModel {
             switch(category){
 
             case "reference": 
-                if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
+                if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getReferenceList())) {
 
                     if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getReferenceList().clear();
                 }
             case "mapset": 
-                    if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
+                    if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getMapsetList())) {
                         if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getMapsetList().clear();
                 }
             case "linkageGroup": 
-                if(((ViewModelServiceImpl) viewModelService).isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
+                if(Utils.isListNotNullOrEmpty(linkageGroupEntity.getLinkageGroupList())) {
                     if(shouldNextChangeResetOtherFilterValues) linkageGroupEntity.getLinkageGroupList().clear();
                 }
                 break; 

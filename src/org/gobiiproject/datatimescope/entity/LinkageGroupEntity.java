@@ -111,19 +111,18 @@ public class LinkageGroupEntity implements Serializable,Cloneable {
     public String getFiltersAsText() {
         // TODO Auto-generated method stub
         StringBuilder sb = new StringBuilder();
-        ViewModelServiceImpl vms = new ViewModelServiceImpl();
         
-        if(vms.isListNotNullOrEmpty(getReferenceList())){
+        if(Utils.isListNotNullOrEmpty(getReferenceList())){
             sb.append("Reference(s):");
             sb.append(Utils.getListNamesToString(getReferenceList(), 1));
         }
         
-        if(vms.isListNotNullOrEmpty(getMapsetList())){
+        if(Utils.isListNotNullOrEmpty(getMapsetList())){
             sb.append("Mapset(s):");
             sb.append(Utils.getListNamesToString(getMapsetList(), 1));
         }
 
-        if(vms.isListNotNullOrEmpty(getLinkageGroupList())){
+        if(Utils.isListNotNullOrEmpty(getLinkageGroupList())){
             sb.append("Linkage group(s):");
             sb.append(Utils.getListNamesToString(getLinkageGroupList(), 1));
         }

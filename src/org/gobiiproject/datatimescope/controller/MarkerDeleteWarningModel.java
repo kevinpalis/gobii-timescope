@@ -85,15 +85,15 @@ public class MarkerDeleteWarningModel {
 			MarkerDeleteResultTableEntity next = it.next();
 
 			if(it.nextIndex()==1){
-				buffMap.append(next.getHeaderDelimitedBy(","));
+				buffMap.append(next.getHeaderDelimitedBy("\t"));
 			}
-			buffMap.append(next.getAllDelimitedBy(","));
+			buffMap.append(next.getAllDelimitedBy("\t"));
 
 		}
 
 		FileWriter fw;
 		try {
-			File file = new File("list_of_markers_that_cant_be_deleted.csv");
+			File file = new File("list_of_markers_that_cant_be_deleted.txt");
 			fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(buffMap.toString());
@@ -101,7 +101,7 @@ public class MarkerDeleteWarningModel {
 			bw.close();
 
 			InputStream is = new FileInputStream(file);
-			Filedownload.save(is, "text/csv", file.getName());
+			Filedownload.save(is, "text/plain", file.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
