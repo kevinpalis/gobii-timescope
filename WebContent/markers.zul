@@ -294,6 +294,7 @@
 											<separator spacing="12px"
 												visible="@load(vm.dbDataset)" />
 											<checkbox id="l1"
+												checked="@load(vm.markerEntity.markerNotInDatasets)"
 												label="None" visible="@load(not empty vm.datasetList)"
 												tooltip="Search for markers that are not associated with any dataset"
 												onCheck="@command('noDatasetsSelectedAsFilter', isChecked=self.checked)"
