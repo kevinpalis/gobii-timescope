@@ -17,8 +17,8 @@ public class SidebarPageConfigAjaxBasedImpl implements SidebarPageConfig{
 		pageMap.put("fn1",new SidebarPage("users","Users","/imgs/user.png","/users.zul"));
 		pageMap.put("fn2",new SidebarPage("datasets","Datasets","/imgs/dataset.png","/datasets.zul"));
 //		pageMap.put("fn4",new SidebarPage("dnaruns","DNA Runs","/imgs/dnarun.png","/dnaruns.zul"));
-		pageMap.put("fn5",new SidebarPage("markers","Markers","/imgs/marker.png","/markers.zul"));
-		pageMap.put("fn3",new SidebarPage("linkagegroup","Linkage Group","/imgs/dnasample.png","/linkageGroup.zul"));
+//		pageMap.put("fn5",new SidebarPage("markers","Markers","/imgs/marker.png","/markers.zul"));
+//		pageMap.put("fn3",new SidebarPage("linkagegroup","Linkage Group","/imgs/dnasample.png","/linkageGroup.zul"));
 	}
 	
 	public List<SidebarPage> getPages(){
