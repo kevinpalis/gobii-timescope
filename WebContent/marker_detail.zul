@@ -2,15 +2,7 @@
 	vflex="min" closable="true" apply="org.zkoss.bind.BindComposer"
 	border="normal" position="right,top"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDetailViewModel')">
-
-	<label visible="@load(not vm.markerAssociated)"
-		value="This marker is not associated with any linkage group, dataset, and marker groups."
-		style="font-size: 14px; " />
-	<label visible="@load(vm.markerAssociated)"
-		value="This marker is associated with the following (Id - Name):"
-		style="font-size: 14px; " />
-
-	<separator spacing="15px" />
+	<caption sclass="fn-caption" label="@load(vm.markerAssociated)" />
 	<hbox hflex="min" vflex="1">
 		<vlayout
 			visible="@load(not empty vm.markerDetailDatasetList)" style="padding:10px;">
@@ -19,16 +11,27 @@
 			<separator spacing="5px" />
 			<grid model="@load(vm.markerDetailDatasetList)"
 				mold="paging" pageSize="5" style="overflow-y: hidden !important;"
-				width="250px">
+				width="350px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<columns>
+					<column width="10%">ID</column>
+					<column width="40%">Name</column>
+					<column width="20%">Calling ID</column>
+					<column width="30%">Analyses IDs</column>
+				 </columns>
 				<template name="model" var="each">
 					<row>
-						<cell hflex="min">
+						<cell >
 							<label value="@load(each.datasetId)" />
 						</cell>
 						<cell>
-							<label value="@load('--  '.concat(each.name))"
-								width="200px" style="font-size: 14px; text-align:left;" />
+							<label value="@load(each.name)" style="font-size: 14px; text-align:left;" />
+						</cell>
+						<cell>
+							<label value="@load(each.callinganalysisId)" />
+						</cell>
+						<cell>
+							<label value="@load(each.analyses)" style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
@@ -43,21 +46,24 @@
 			<grid model="@load(vm.markerDetailLinkageGroupList)"
 				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<columns>
+					<column width="20%">ID</column>
+					<column width="80%">Name</column>
+				</columns>
 				<template name="model" var="each">
 					<row>
-						<cell hflex="min">
+						<cell>
 							<label value="@load(each.linkageGroupId)" />
 						</cell>
 						<cell align="left">
-							<label width="200px"
-								value="@load('--  '.concat(each.name))"
+							<label
+								value="@load(each.name)"
 								style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
 			</grid>
 		</vlayout>
-
 		<vlayout
 			visible="@load(not empty vm.markerDetailsMarkerGroupList)" style="padding:10px;">
 			<label value="Marker group:"
@@ -66,14 +72,18 @@
 			<grid model="@load(vm.markerDetailsMarkerGroupList)"
 				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
+				<columns>
+					<column width="20%">ID</column>
+					<column width="80%">Name</column>
+				</columns>
 				<template name="model" var="each">
 					<row>
-						<cell hflex="min">
+						<cell>
 							<label value="@load(each.markerGroupId)" />
 						</cell>
 						<cell>
-							<label value="@load('--  '.concat(each.name))"
-								width="200px" style="font-size: 14px; text-align:left;" />
+							<label value="@load(each.name)"
+								style="font-size: 14px; text-align:left;" />
 						</cell>
 					</row>
 				</template>

@@ -45,7 +45,7 @@ public class MarkerDetailViewModel {
     @Wire("#markerDetailWindow")
     Window markerDetailWindow;
     
-	private Boolean markerAssociated;
+	private String markerAssociated;
 	private List<DatasetRecord> markerDetailDatasetList;
 	private List<LinkageGroupRecord> markerDetailLinkageGroupList;
 	private List<MarkerGroupRecord> markerDetailsMarkerGroupList;
@@ -59,10 +59,20 @@ public class MarkerDetailViewModel {
 		this.setMarkerDetailDatasetList(markerDetailDatasetList);
 		this.setMarkerDetailLinkageGroupList(markerDetailLinkageGroupList);
 		this.setMarkerDetailsMarkerGroupList(markerDetailsMarkerGroupList);
-		this.setMarkerAssociated(markerAssociated);
+		this.setMarkerAssociated(isAssociated(markerAssociated));
 	}
 
-	@AfterCompose
+	
+	@NotifyChange("markerAssociated")
+	private String isAssociated(Boolean input) {
+        // TODO Auto-generated method stub
+
+	    if(input) return "This marker is associated with the following:";
+	    
+        return "This marker is not associated with any linkage group, dataset, and marker groups.";
+    }
+
+    @AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		Selectors.wireComponents(view, this, false);
 	}
@@ -77,14 +87,6 @@ public class MarkerDetailViewModel {
         markerDetailWindow.detach();
     }
     
-	public Boolean getMarkerAssociated() {
-		return markerAssociated;
-	}
-
-	public void setMarkerAssociated(Boolean markerAssociated) {
-		this.markerAssociated = markerAssociated;
-	}
-
 	public List<DatasetRecord> getMarkerDetailDatasetList() {
 		return markerDetailDatasetList;
 	}
@@ -108,5 +110,13 @@ public class MarkerDetailViewModel {
 	public void setMarkerDetailsMarkerGroupList(List<MarkerGroupRecord> markerDetailsMarkerGroupList) {
 		this.markerDetailsMarkerGroupList = markerDetailsMarkerGroupList;
 	}
+
+    public String getMarkerAssociated() {
+        return markerAssociated;
+    }
+
+    public void setMarkerAssociated(String markerAssociated) {
+        this.markerAssociated = markerAssociated;
+    }
 
 }

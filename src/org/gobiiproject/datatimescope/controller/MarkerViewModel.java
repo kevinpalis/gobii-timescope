@@ -156,6 +156,8 @@ public class MarkerViewModel {
 
         if(markerDetailsMarkerGroupList.size()<1 && markerDetailLinkageGroupList.size()<1 && markerDetailDatasetList.size()<1) {
             setMarkerAssociated(false);
+        }else {
+            setMarkerAssociated(true);
         }
 
         Map<String, Object> args = new HashMap<String, Object>();
