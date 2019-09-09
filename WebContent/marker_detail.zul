@@ -13,8 +13,8 @@
 				mold="paging" pageSize="5" style="overflow-y: hidden !important;"
 				width="350px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
-				<columns>
-					<column width="10%">ID</column>
+				<columns sizable="true" >
+					<column width="10%" >ID</column>
 					<column width="40%">Name</column>
 					<column width="20%">Calling ID</column>
 					<column width="30%">Analyses IDs</column>
@@ -24,7 +24,7 @@
 						<cell >
 							<label value="@load(each.datasetId)" />
 						</cell>
-						<cell>
+						<cell tooltiptext="@load(each.name)">
 							<label value="@load(each.name)" style="font-size: 14px; text-align:left;" />
 						</cell>
 						<cell>
@@ -46,13 +46,13 @@
 			<grid model="@load(vm.markerDetailLinkageGroupList)"
 				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
-				<columns>
+				<columns  sizable="true" >
 					<column width="20%">ID</column>
 					<column width="80%">Name</column>
 				</columns>
 				<template name="model" var="each">
 					<row>
-						<cell>
+						<cell tooltiptext="@load(each.name)">
 							<label value="@load(each.linkageGroupId)" />
 						</cell>
 						<cell align="left">
@@ -72,7 +72,7 @@
 			<grid model="@load(vm.markerDetailsMarkerGroupList)"
 				mold="paging" pageSize="5" width="250px">
 				<custom-attributes org.zkoss.zul.nativebar="false" />
-				<columns>
+				<columns sizable="true" >
 					<column width="20%">ID</column>
 					<column width="80%">Name</column>
 				</columns>
@@ -81,7 +81,7 @@
 						<cell>
 							<label value="@load(each.markerGroupId)" />
 						</cell>
-						<cell>
+						<cell tooltiptext="@load(each.name)">
 							<label value="@load(each.name)"
 								style="font-size: 14px; text-align:left;" />
 						</cell>

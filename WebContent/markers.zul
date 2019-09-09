@@ -510,7 +510,7 @@
 							</popup>
 							<popup id="markerTooltip" hflex="1">
 								<label
-									value="Click to view marker details" />
+									value="Click to view additional marker details" />
 							</popup>
 						</div>
 					</center>
