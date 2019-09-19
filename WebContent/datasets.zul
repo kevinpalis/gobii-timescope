@@ -139,7 +139,7 @@
 													<template
 														name="model">
 														<comboitem
-															label="@load(each.wholename)"
+															label="@load((each.lastname).concat(',  '.concat(each.firstname)))"
 															value="@load(each.contactId)" />
 													</template>
 												</combobox>

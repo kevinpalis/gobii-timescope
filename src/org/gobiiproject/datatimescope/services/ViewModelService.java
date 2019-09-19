@@ -24,6 +24,8 @@ import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -158,6 +160,12 @@ public interface ViewModelService {
 
     public List<DatasetRecord> getDatasetsByProjectIDandAnalysisID(List<ProjectRecord> projectList,
             List<AnalysisRecord> analysesList);
+
+    public List<MarkerDetailDatasetEntity> getMarkerAssociatedDetailsForEachDataset(
+            List<DatasetRecord> markerDetailDatasetList);
+
+    public List<MarkerDetailLinkageGroupEntity> getAssociatedDetailsForEachLinkageGroup(
+            List<LinkageGroupRecord> markerDetailLinkageGroupList);
 
 
 }

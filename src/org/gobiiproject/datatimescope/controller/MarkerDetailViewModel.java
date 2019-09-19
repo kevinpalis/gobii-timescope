@@ -11,6 +11,8 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -46,20 +48,23 @@ public class MarkerDetailViewModel {
     Window markerDetailWindow;
     
 	private String markerAssociated;
-	private List<DatasetRecord> markerDetailDatasetList;
-	private List<LinkageGroupRecord> markerDetailLinkageGroupList;
+	private List<MarkerDetailDatasetEntity> markerDetailDatasetList;
+	private List<MarkerDetailLinkageGroupEntity> markerDetailLinkageGroupList;
 	private List<MarkerGroupRecord> markerDetailsMarkerGroupList;
 	
+	ViewModelService viewModelService;
 	@Init
 	public void init(@ExecutionArgParam("markerDetailsMarkerGroupList") List<MarkerGroupRecord> markerDetailsMarkerGroupList,
 			@ExecutionArgParam("markerDetailDatasetList") List<DatasetRecord> markerDetailDatasetList,
 			@ExecutionArgParam("markerDetailLinkageGroupList")  List<LinkageGroupRecord> markerDetailLinkageGroupList,
 			@ExecutionArgParam("markerAssociated") Boolean markerAssociated) {
 
+        viewModelService = new ViewModelServiceImpl();
 		this.setMarkerDetailDatasetList(markerDetailDatasetList);
 		this.setMarkerDetailLinkageGroupList(markerDetailLinkageGroupList);
 		this.setMarkerDetailsMarkerGroupList(markerDetailsMarkerGroupList);
 		this.setMarkerAssociated(isAssociated(markerAssociated));
+		
 	}
 
 	
@@ -87,20 +92,22 @@ public class MarkerDetailViewModel {
         markerDetailWindow.detach();
     }
     
-	public List<DatasetRecord> getMarkerDetailDatasetList() {
+	public List<MarkerDetailDatasetEntity> getMarkerDetailDatasetList() {
 		return markerDetailDatasetList;
 	}
 
 	public void setMarkerDetailDatasetList(List<DatasetRecord> markerDetailDatasetList) {
-		this.markerDetailDatasetList = markerDetailDatasetList;
+	    
+	    
+		this.markerDetailDatasetList = viewModelService.getMarkerAssociatedDetailsForEachDataset(markerDetailDatasetList);
 	}
 
-	public List<LinkageGroupRecord> getMarkerDetailLinkageGroupList() {
+	public List<MarkerDetailLinkageGroupEntity> getMarkerDetailLinkageGroupList() {
 		return markerDetailLinkageGroupList;
 	}
 
 	public void setMarkerDetailLinkageGroupList(List<LinkageGroupRecord> markerDetailLinkageGroupList) {
-		this.markerDetailLinkageGroupList = markerDetailLinkageGroupList;
+		this.markerDetailLinkageGroupList = viewModelService.getAssociatedDetailsForEachLinkageGroup(markerDetailLinkageGroupList);
 	}
 
 	public List<MarkerGroupRecord> getMarkerDetailsMarkerGroupList() {

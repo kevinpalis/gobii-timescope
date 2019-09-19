@@ -71,6 +71,8 @@ import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -2088,6 +2090,61 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve getDatasetsByProjectIDandAnalysisID", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<MarkerDetailDatasetEntity> getMarkerAssociatedDetailsForEachDataset(
+            List<DatasetRecord> datasetList) {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<MarkerDetailDatasetEntity> list = new ArrayList<MarkerDetailDatasetEntity>();
+        
+        try{
+         if(datasetList.size()>0) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select d.dataset_id as dataset_id, d.name as dataset_name, d.callinganalysis_id as calling_analysis, d.analyses as analyses, e.experiment_id as experiment_id, e.name as experiment_name, p.project_id as project_id, p.name as project_name, vp.vendor_protocol_id as vp_id, vp.name as vp_name from dataset d ");
+        sb.append("left join experiment e on d.experiment_id = e.experiment_id left join project p on e.project_id = p.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where d.dataset_id "+ getIDsToString(datasetList));
+        
+        String query = sb.toString();
+        System.out.println(query);
+        list = context.fetch(query).into(MarkerDetailDatasetEntity.class);
+         }
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve marker details by dataset", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<MarkerDetailLinkageGroupEntity> getAssociatedDetailsForEachLinkageGroup(
+            List<LinkageGroupRecord> markerDetailLinkageGroupList) {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<MarkerDetailLinkageGroupEntity> list = new ArrayList<MarkerDetailLinkageGroupEntity>();
+        
+        try{
+         if(markerDetailLinkageGroupList.size()>0) {
+             
+        StringBuilder sb = new StringBuilder();
+        sb.append("select lg.linkage_group_id as lg_id, lg.name as lg_name, m.mapset_id as map_id, m.name as map_name from linkage_group lg ");
+        sb.append("left join mapset m on lg.map_id = m.mapset_id where lg.linkage_group_id "+ getIDsToString(markerDetailLinkageGroupList));
+        
+        String query = sb.toString();
+        System.out.println(query);
+        list = context.fetch(query).into(MarkerDetailLinkageGroupEntity.class);
+         }
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve marker details by linkage group", "ERROR", Messagebox.OK, Messagebox.ERROR);
             e.printStackTrace();
 
         }
