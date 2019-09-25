@@ -157,6 +157,9 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getcvgroupid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvterm;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
+import org.gobiiproject.datatimescope.db.generated.routines.Getdatasetsinexperiment;
+import org.gobiiproject.datatimescope.db.generated.routines.Getdatasetsinproject;
+import org.gobiiproject.datatimescope.db.generated.routines.Getdatasetsinvendorprotocol;
 import org.gobiiproject.datatimescope.db.generated.routines.Getdnarunidsbydnasamplenames;
 import org.gobiiproject.datatimescope.db.generated.routines.Getdnarunidsbydnasamplenamesandpi;
 import org.gobiiproject.datatimescope.db.generated.routines.Getdnarunidsbydnasamplenamesandproject;
@@ -199,6 +202,13 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerpropertybyi
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerpropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerqcmetadatabydataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerqcmetadatabymarkerlist;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinanalysis;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersincallinganalysis;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinexperiment;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinlinkagegroup;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinmapset;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinproject;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkersinvendorprotocol;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmatrixposofmarkers1;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmatrixposofmarkers2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmatrixposofsamples;
@@ -3992,6 +4002,39 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.getdatasetsinexperiment</code>
+     */
+    public static Getdatasetsinexperiment getdatasetsinexperiment(Configuration configuration, Integer _Experimentid) {
+        Getdatasetsinexperiment p = new Getdatasetsinexperiment();
+        p.set_Experimentid(_Experimentid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getdatasetsinproject</code>
+     */
+    public static Getdatasetsinproject getdatasetsinproject(Configuration configuration, Integer _Projectid) {
+        Getdatasetsinproject p = new Getdatasetsinproject();
+        p.set_Projectid(_Projectid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getdatasetsinvendorprotocol</code>
+     */
+    public static Getdatasetsinvendorprotocol getdatasetsinvendorprotocol(Configuration configuration, Integer _VendorProtocolId) {
+        Getdatasetsinvendorprotocol p = new Getdatasetsinvendorprotocol();
+        p.set_VendorProtocolId(_VendorProtocolId);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
      * Call <code>public.getdnarunidsbydnasamplenames</code>
      */
     public static Getdnarunidsbydnasamplenames getdnarunidsbydnasamplenames(Configuration configuration, String dnasamplenames) {
@@ -4647,6 +4690,83 @@ public class Routines {
     public static Getmarkerqcmetadatabymarkerlist getmarkerqcmetadatabymarkerlist(Configuration configuration, String markerlist) {
         Getmarkerqcmetadatabymarkerlist p = new Getmarkerqcmetadatabymarkerlist();
         p.setMarkerlist(markerlist);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinanalysis</code>
+     */
+    public static Getmarkersinanalysis getmarkersinanalysis(Configuration configuration, Integer _AnalysisId) {
+        Getmarkersinanalysis p = new Getmarkersinanalysis();
+        p.set_AnalysisId(_AnalysisId);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersincallinganalysis</code>
+     */
+    public static Getmarkersincallinganalysis getmarkersincallinganalysis(Configuration configuration, Integer _CallingAnalysisId) {
+        Getmarkersincallinganalysis p = new Getmarkersincallinganalysis();
+        p.set_CallingAnalysisId(_CallingAnalysisId);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinexperiment</code>
+     */
+    public static Getmarkersinexperiment getmarkersinexperiment(Configuration configuration, Integer _Experimentid) {
+        Getmarkersinexperiment p = new Getmarkersinexperiment();
+        p.set_Experimentid(_Experimentid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinlinkagegroup</code>
+     */
+    public static Getmarkersinlinkagegroup getmarkersinlinkagegroup(Configuration configuration, Integer _LinkageGroupId) {
+        Getmarkersinlinkagegroup p = new Getmarkersinlinkagegroup();
+        p.set_LinkageGroupId(_LinkageGroupId);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinmapset</code>
+     */
+    public static Getmarkersinmapset getmarkersinmapset(Configuration configuration, Integer _MapsetId) {
+        Getmarkersinmapset p = new Getmarkersinmapset();
+        p.set_MapsetId(_MapsetId);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinproject</code>
+     */
+    public static Getmarkersinproject getmarkersinproject(Configuration configuration, Integer _Projectid) {
+        Getmarkersinproject p = new Getmarkersinproject();
+        p.set_Projectid(_Projectid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getmarkersinvendorprotocol</code>
+     */
+    public static Getmarkersinvendorprotocol getmarkersinvendorprotocol(Configuration configuration, Integer _VendorProtocolId) {
+        Getmarkersinvendorprotocol p = new Getmarkersinvendorprotocol();
+        p.set_VendorProtocolId(_VendorProtocolId);
 
         p.execute(configuration);
         return p;

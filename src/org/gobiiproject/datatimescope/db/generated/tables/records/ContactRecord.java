@@ -647,18 +647,6 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
         return this;
     }
 
-    /**
-     * User-defined Getter to get whole name
-     */
-    public String getWholename() {
-    	String name;
-    	
-    	if((Integer)get(0)!=0) name= (String) get(1) +", " + (String) get(2);
-    	else name= (String) get(1);
-    	
-        return name;
-    }
-    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -689,5 +677,4 @@ public class ContactRecord extends UpdatableRecordImpl<ContactRecord> implements
         set(10, organizationId);
         set(11, username);
     }
- 
 }

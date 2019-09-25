@@ -18,13 +18,14 @@
 			<tabpanel vflex="1">
 				<borderlayout vflex="1" hflex="true">
 					<north title="Filters:" style="border: 0px;"
-						collapsible="true">
+						splittable="true" collapsible="true">
 						<vlayout vflex="1">
 							<hlayout vflex="1">
 								<grid hflex="1" vflex="1"
 									style="border: none; important!">
 									<columns>
-										<column align="left" width="30%"/>
+										<column align="left"
+											width="30%" />
 										<column align="left" />
 									</columns>
 									<rows>
@@ -65,16 +66,15 @@
 												</textbox>
 											</cell>
 										</row>
-										
+
 										<row>
 											<cell sclass="row-title">
 												Current Filters:
 											</cell>
 											<cell>
-												<textbox  rows="8"
-													cols="40" hflex="true" vflex="true" multiline="true" 
-													value="@bind(vm.currentFiltersAsText)"
-													readonly="true"
+												<textbox rows="8"
+													cols="40" hflex="true" vflex="max" multiline="true"
+													value="@bind(vm.currentFiltersAsText)" readonly="true"
 													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
 
 												</textbox>
@@ -82,45 +82,36 @@
 										</row>
 									</rows>
 								</grid>
-
-								<tabbox id="tb" orient="left" hflex="2"
-									height="350px">
-									<tabs width="230px" id="tabs">
-										<tab id="A" label="Platform"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+								<tabbox id="tb1" orient="left" hflex="2"
+									height="250px" style="border:none;">
+									<tabs width="180px" id="tabs1">
+										<tab id="A"
+											label="@load(vm.platformTabLabel)" sclass="tab-title"
 											onSelect="@command('selectPlatformTab')" />
 										<tab id="C"
-											label="Vendor-Protocol"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectVendorProtocolTab')" />
-										<tab id="I" label="Mapsets"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
+											label="@load(vm.vendorProtocolTabLabel)" sclass="tab-title"
+											onSelect="@global-command('selectVendorProtocolTab')" />
+										<tab id="F"
+											label="@load(vm.projectsTabLabel)" sclass="tab-title"
+											onSelect="@global-command('selectProjectsTab')" />
+										<tab id="G"
+											label="@load(vm.experimentTabLabel)" sclass="tab-title"
+											onSelect="@global-command('selectExperimentsTab')" />
+										<tab id="E"
+											label="@load(vm.analysisTabLabel)" sclass="tab-title"
+											onSelect="@command('selectAnalysesTab')" />
+										<tab id="H"
+											label="@load(vm.datasetTabLabel)" sclass="tab-title" />
+										<tab id="I"
+											label="@load(vm.mapsetTabLabel)"
+											sclass="tab-title-with-separator"
 											onSelect="@command('selectMapsetsTab')" />
 										<tab id="J"
-											label="Linkage Groups" sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectLinkageGroupsTab')" />
-										<tab id="F" label="Projects"
-											style="padding: none; text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectProjectsTab')" />
-										<tab id="G" label="Experiments"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectExperimentsTab')" />
-										<tab id="E" label="Analyses"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectAnalysesTab')" />
-										<tab id="H" label="Datasets"
-											sclass="tabstyle"
-											style="text-align: left; border-bottom: 1px solid #ECECEC;"
-											onSelect="@command('selectDatasetsTab')" />
+											label="@load(vm.linkageGroupTabLabel)" sclass="tab-title" />
 									</tabs>
 									<tabpanels hflex="true">
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbPlatforms)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbPlatforms)"
 													value="@bind(vm.filterPlatform)"
@@ -128,6 +119,11 @@
 												<toolbarbutton
 													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='platform')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbPlatforms)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox
@@ -140,19 +136,16 @@
 												<template name="model"
 													var="item">
 													<listitem>
-														<listcell sclass="list-row"
-															label="@load(item.name)" />
+														<listcell
+															sclass="list-row"
+															tooltiptext="@load('Platform Id: '.concat(item.platformId))"
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
-											<label
-												visible="@load(not vm.dbPlatforms)"
-												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbVendorProtocols)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbVendorProtocols)"
 													value="@bind(vm.filterVendorProtocol)"
@@ -162,6 +155,11 @@
 													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='vendorprotocol')"
 													tooltiptext="View Filters" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbVendorProtocols)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -172,82 +170,16 @@
 												onSelect="@command('validateForReset', category='vendorprotocol')">
 												<template name="model"
 													var="item">
-													<listitem >
-														<listcell
-															label="@load(item.name)" tooltiptext="@load(item.name)"/>
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbVendorProtocols)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<hbox>
-
-												<label
-													visible="@load(vm.dbMapset)" value="Search:" />
-												<textbox
-													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
-													onChange="@command('doSearchMapset')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png"
-													onClick="@command('displayFilterDetails', category='mapset')" />
-											</hbox>
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbMapset)" vflex="1"
-												model="@load(vm.mapsetList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.mapsetList)"
-												onSelect="@command('validateForReset', category='mapset')">
-												<template name="model"
-													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)" tooltiptext="@load(item.name)"
+															style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
-											<label
-												visible="@load(not vm.dbMapset)"
-												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbLinkageGroup)" value="Search:" />
-												<textbox
-													visible="@load(vm.dbLinkageGroup)"
-													value="@bind(vm.filterLinkageGroup)"
-													onChange="@command('doSearchLinkageGroup')" instant="true" />
-												<toolbarbutton
-													image="/imgs/info.png"
-													onClick="@command('displayFilterDetails', category='linkagegroup')" />
-											</hbox>
-											<separator spacing="12px" />
-											<listbox hflex="max"
-												visible="@load(vm.dbLinkageGroup)" vflex="1"
-												model="@load(vm.linkageGroupList)" multiple="true"
-												checkmark="true" style="border: 0px; padding:0px;"
-												selectedItems="@bind(vm.markerEntity.linkageGroupList)"
-												onSelect="@command('validateForReset', category='lg')">
-												<template name="model"
-													var="item">
-													<listitem>
-														<listcell
-															label="@load(item.name)" />
-													</listitem>
-												</template>
-											</listbox>
-											<label
-												visible="@load(not vm.dbLinkageGroup)"
-												value="There's nothing to see here." />
-										</tabpanel>
-										<tabpanel>
-											<hbox>
-												<label
-													visible="@load(vm.dbProjects)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbProjects)"
 													value="@bind(vm.filterProject)"
@@ -255,6 +187,11 @@
 												<toolbarbutton
 													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='project')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbProjects)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -267,18 +204,14 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															tooltiptext="@load('Project Id: '.concat(item.projectId))"
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
-											<label
-												visible="@load(not vm.dbProjects)"
-												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbExperiment)" value="Search:" />
 												<textbox
 													visible="@load(vm.dbExperiment)"
 													value="@bind(vm.filterExperiment)"
@@ -286,6 +219,11 @@
 												<toolbarbutton
 													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='experiment')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbExperiment)"
+													value="There's nothing to see here."
+													disabled="true" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -298,19 +236,15 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"
+															tooltiptext="@load('Project Id: '.concat(item.projectId))"
+															style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
-
-											<label
-												visible="@load(not vm.dbExperiment)"
-												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
 											<hbox>
-												<label
-													visible="@load(vm.dbAnalyses)" value="Search:" />
 												<textbox
 													visible="@load( vm.dbAnalyses)"
 													value="@bind(vm.filterAnalyses)"
@@ -318,6 +252,11 @@
 												<toolbarbutton
 													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='analyses')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbAnalyses)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
 											</hbox>
 											<separator spacing="12px" />
 											<listbox hflex="max"
@@ -330,33 +269,36 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															tooltiptext="@load('Analysis Id: '.concat(item.analysisId))"
+															label="@load(item.name)" style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
-											<label
-												visible="@load(not vm.dbAnalyses)"
-												value="There's nothing to see here." />
 										</tabpanel>
 										<tabpanel>
-											<hbox>
-												<label
-													visible="@load(vm.dbDataset)" value="Search:" />
+											<hbox hflex="max">
 												<textbox
 													visible="@load(vm.dbDataset)"
 													value="@bind(vm.filterDataset)"
 													onChange="@command('doSearchDataset')" instant="true" />
 												<toolbarbutton
-													visible="@load(vm.dbDataset)" image="/imgs/info.png"
+													image="/imgs/info.png"
 													onClick="@command('displayFilterDetails', category='datasets')" />
+													
+												<textbox id="lblDatasetFilter"
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbDataset)"
+													value="There's nothing to see here."
+													disabled="true" width="350px"/>
 											</hbox>
 											<separator spacing="12px"
 												visible="@load(vm.dbDataset)" />
 											<checkbox id="l1"
-												label="   None" visible="@load(not empty vm.datasetList)"
+												checked="@load(vm.markerEntity.markerNotInDatasets)"
+												label="None" visible="@load(not empty vm.datasetList)"
 												tooltip="Search for markers that are not associated with any dataset"
 												onCheck="@command('noDatasetsSelectedAsFilter', isChecked=self.checked)"
-												Style="margin-left:7px;}" />
+												Style="margin-left: 3px;}" />
 											<separator spacing="12px"
 												visible="@load(not vm.dbDataset)" />
 											<separator spacing="5px"
@@ -371,14 +313,77 @@
 													var="item">
 													<listitem>
 														<listcell
-															label="@load(item.name)" />
+															label="@load(item.name)"
+															tooltiptext="@load('Experiment Id: '.concat(item.experimentId))"
+															style="font-size: 12px;" />
 													</listitem>
 												</template>
 											</listbox>
 
-											<label id="lblDatasetFilter"
-												visible="@load(not vm.dbDataset)"
-												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbMapset)" value="@bind(vm.filterMapset)"
+													onChange="@command('doSearchMapset')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='mapset')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbMapset)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbMapset)" vflex="1"
+												model="@load(vm.mapsetList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.mapsetList)"
+												onSelect="@command('validateForReset', category='mapset')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															tooltiptext="@load('Mapset Id: '.concat(item.mapsetId))"
+															label="@load(item.name)" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbLinkageGroup)"
+													value="@bind(vm.filterLinkageGroup)"
+													onChange="@command('doSearchLinkageGroup')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='linkagegroup')" />
+												<textbox
+													style="border: 0px; background-color:white !important;"
+													visible="@load(not vm.dbLinkageGroup)"
+													value="There's nothing to see here."
+													disabled="true" width="350px" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbLinkageGroup)" vflex="1"
+												model="@load(vm.linkageGroupList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.markerEntity.linkageGroupList)"
+												onSelect="@command('validateForReset', category='lg')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)"
+															tooltiptext="@load('Mapset Id: '.concat(item.mapId))"
+															style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
 										</tabpanel>
 									</tabpanels>
 								</tabbox>
@@ -404,48 +409,51 @@
 								<vbox vflex="1" hflex="1">
 									<grid id="markerGrid"
 										model="@load(vm.markerList)" mold="paging" pageSize="25"
-										emptyMessage="No items match your search"
-										pagingPosition="both" vflex="1" hflex="1">
-									<columns sizable="true">
-										<column hflex="1">
-											<checkbox label="Select All"
-												onCheck="@command('doSelectAll')"
-												checked="@bind(vm.cbAllMarkers)" />
-										</column>
-										<column hflex="1"
-											sort="auto(markerId)">
-											<label value="Marker Id" />
-										</column>
-										<column hflex="1"
-											sort="auto(markerName)">
-											<label value="Marker Name" />
-										</column>
-										<column hflex="1"
-											sort="auto(platformId)">
-											<label value="Platform Id" />
-										</column>
-										<column hflex="1"
-											sort="auto(platformName)">
-											<label
-												value="Platform Name" />
-										</column>
-										<column hflex="1">
-											<label value="Ref" />
-										</column>
-										<column hflex="1">
-											<label value="Alts" />
-										</column>
-										<column hflex="1">
-											<label
-												value="Reference Name" />
-										</column>
-									</columns>
-									<template name="model"
-										var="marker">
-										<row
-											onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
-											style="cursor:pointer"
-											tooltip="markerTooltip, position=after_pointer">
+										emptyMessage="No items match your search" vflex="1"
+										hflex="1">
+										<columns sizable="true">
+											<column hflex="1">
+												<checkbox
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllMarkers)" />
+											</column>
+											<column hflex="1"
+												sort="auto(markerId)">
+												<label
+													value="Marker Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(markerName)">
+												<label
+													value="Marker Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(platformId)">
+												<label
+													value="Platform Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(platformName)">
+												<label
+													value="Platform Name" />
+											</column>
+											<column hflex="1">
+												<label value="Ref" />
+											</column>
+											<column hflex="1">
+												<label value="Alts" />
+											</column>
+											<column hflex="1">
+												<label
+													value="Reference Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="marker">
+											<row
+												onClick="@command('showMarkerDetail', markerId=marker.markerId, markerName=marker.markerName)"
+												style="cursor:pointer"
+												tooltip="markerTooltip, position=after_pointer, delay=0">
 												<cell>
 													<checkbox
 														value="@load(marker)" checked="@load(vm.allCbSelected)"
@@ -453,31 +461,31 @@
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.markerId)" />
+														sclass="grid-row" value="@load(marker.markerId)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.markerName)" />
+														sclass="grid-row" value="@load(marker.markerName)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.platformId)" />
+														sclass="grid-row" value="@load(marker.platformId)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.platformName)" />
+														sclass="grid-row" value="@load(marker.platformName)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.ref)" />
+														sclass="grid-row " value="@load(marker.ref)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.altsToString)" />
+														sclass="grid-row " value="@load(marker.altsToString)" />
 												</cell>
 												<cell>
 													<label
-														value="@load(marker.referenceName)" />
+														sclass="grid-row " value="@load(marker.referenceName)" />
 												</cell>
 											</row>
 										</template>
@@ -486,12 +494,9 @@
 									<hbox hflex="1" vflex="min"
 										pack="end" align="end">
 										<label
-											value="Total number of rows:"
-											style="font-style: oblique; font-size: 15px" />
-										:
+											value="Total number of rows:" sclass="row-count" />
 										<label
-											value="@bind(vm.sizeMarkerList)"
-											style="font-style: oblique; font-size: 15px" />
+											value="@bind(vm.sizeMarkerList)" sclass="row-count" />
 									</hbox>
 								</vbox>
 							</div>
@@ -505,7 +510,7 @@
 							</popup>
 							<popup id="markerTooltip" hflex="1">
 								<label
-									value="Click to view marker details" />
+									value="Click to view additional marker details" />
 							</popup>
 						</div>
 					</center>

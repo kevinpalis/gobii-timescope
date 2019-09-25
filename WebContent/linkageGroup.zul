@@ -2,96 +2,52 @@
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 
 <window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
 	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LinkageGroupViewModel')">
-	<caption sclass="fn-caption" label="linkageGroups" />
-	<tabbox style="border: 0px; padding:0px;">
+	<caption sclass="fn-caption" label="Linkage Groups" />
+	<tabbox style="border: 0px; padding:0px;" vflex="1" hflex="1">
 		<tabs visible="false">
 			<tab id="linkageGroupSearchTab" label="Search" />
 			<tab id="linkageGroupSummaryTab" label="Summary"
 				onClick="@command('resetDSSummary')" />
 		</tabs>
-		<tabpanels>
-			<tabpanel>
-				<borderlayout vflex="min" hflex="true">
+		<tabpanels vflex="1">
+			<tabpanel vflex="1">
+				<borderlayout vflex="1" hflex="true">
 					<north title="Filters:" style=" border: 0px;"
 						splittable="true" collapsible="true">
-						<vlayout>
-							<hlayout>
+						<vlayout vflex="1">
+							<hlayout vflex="1">
 								<grid hflex="1" vflex="1"
 									style="border: none; important!">
 									<columns>
-										<column align="left" />
+										<column align="left"
+											width="30%" />
 										<column align="left" />
 									</columns>
 									<rows>
 										<row>
 											<cell sclass="row-title">
-												Linkage Group ID :
+												Linkage Group ID:
 											</cell>
 											<cell>
 												<hbox hflex="true">
 													<intbox hflex="true"
 														value="@bind(vm.linkageGroupEntity.linkageGroupIDStartRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
-														onChange="@command('changeEnabled')" />
+														disabled="@bind(vm.iDBoxDisabled)" />
 													to
 													<intbox hflex="true"
 														value="@bind(vm.linkageGroupEntity.linkageGroupIDEndRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
-														onChange="@command('changeEnabled')" />
+														disabled="@bind(vm.iDBoxDisabled)" />
 												</hbox>
 											</cell>
 										</row>
 										<row>
 											<cell sclass="row-title">
-												<label
-													value="Linkage Group Names :" />
-											</cell>
-											<cell>
-												<textbox rows="8"
-													cols="40" hflex="true" vflex="true"
-													tooltiptext="Separate Linkage Group names with a new line"
-													value="@bind(vm.linkageGroupEntity.linkageGroupNamesAsEnterSeparatedString)"
-													popup="title, position=start_before"
-													disabled="@bind(vm.nameListDisabled)"
-													onChange="@command('changeEnabled')">
-
-												</textbox>
-											</cell>
-										</row>
-									</rows>
-								</grid>
-								<label value="  " />
-								<label value="  " />
-								<grid hflex="true"
-									style="border: none; important!" >
-									<columns>
-										<column align="left"
-											width="40%" />
-										<column align="left"
-											width="60%" />
-									</columns>
-									<rows>
-										<!-- row>
-											<cell sclass="row-title">
-											Created By :
-											</cell>
-											<cell>
-											<combobox autodrop="true"
-											hflex="true" model="@load(vm.contactsList)" selectedItem="@bind(vm.linkageGroupEntity.createdByContactRecord)">
-											<template name="model">
-											<comboitem
-											label="@load(each.wholename)" value="@load(each.contactId)" />
-											</template>
-											</combobox>
-											</cell>
-											</row> -->
-										<row>
-											<cell sclass="row-title">
-												Creation Date :
+												Creation Date:
 											</cell>
 											<cell>
 												<hbox hflex="true">
@@ -109,40 +65,129 @@
 										</row>
 										<row>
 											<cell sclass="row-title">
-												Linkage Group Type :
+												Current Filters:
 											</cell>
 											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.linkageGroupTypes)"
-													selectedItem="@bind(vm.linkageGroupEntity.linkageGroupTypeRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.term)" />
-													</template>
-												</combobox>
-											</cell>
-										</row>
+												<textbox rows="8"
+													cols="40" hflex="true" vflex="max" multiline="true"
+													readonly="true" value="@load(vm.currentFiltersAsText)"
+													style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
 
-										<row>
-											<cell sclass="row-title">
-												Principal Investigator :
-											</cell>
-											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.piList)"
-													selectedItem="@bind(vm.linkageGroupEntity.piRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.wholename)"
-															value="@load(each.contactId)" />
-													</template>
-												</combobox>
+												</textbox>
 											</cell>
 										</row>
 									</rows>
 								</grid>
+								<tabbox id="tb" orient="left" hflex="2"
+									height="250px" style="border:none;">
+									<tabs width="130px" id="tabs">
+										<tab id="A" label="References"
+											sclass="tab-title" onSelect="@command('selectReferenceTab')" />
+										<tab id="C" label="Mapsets"
+											sclass="tab-title" onSelect="@command('selectMapsetsTab')" />
+										<tab id="I"
+											label="Linkage Groups" sclass="tab-title"
+											onSelect="@command('selectLinkageGroupTab')" />
+
+									</tabs>
+									<tabpanels hflex="true">
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbReferences)"
+													value="@bind(vm.filterReference)"
+													onChange="@command('doSearchReferences')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='reference')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox
+												visible="@load(vm.dbReferences)"
+												model="@load(vm.referenceList)" hflex="max" vflex="1"
+												multiple="true" checkmark="true"
+												style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.referenceList)"
+												onSelect="@command('validateForReset', category='reference')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															sclass="list-row"
+															tooltiptext="@load('Reference Id: '.concat(item.referenceId))"
+															label="@load(item.name)" style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbReferences)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbMapsets)"
+													value="@bind(vm.filterMapset)"
+													onChange="@command('doSearchMapset')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='mapset')"
+													tooltiptext="View Filters" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbMapsets)" vflex="1"
+												model="@load(vm.mapsetList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.mapsetList)"
+												onSelect="@command('validateForReset', category='mapsets')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)"
+															tooltiptext="@load('Reference Id: '.concat(item.referenceId))"
+															style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbMapsets)"
+												value="There's nothing to see here." />
+										</tabpanel>
+										<tabpanel>
+											<hbox>
+												<textbox
+													visible="@load(vm.dbLinkageGroup)"
+													value="@bind(vm.filterLinkageGroup)"
+													onChange="@command('doSearchLinkageGroup')" instant="true" />
+												<toolbarbutton
+													image="/imgs/info.png"
+													onClick="@command('displayFilterDetails', category='linkagegroup')" />
+											</hbox>
+											<separator spacing="12px" />
+											<listbox hflex="max"
+												visible="@load(vm.dbLinkageGroup)" vflex="1"
+												model="@load(vm.linkageGroupList)" multiple="true"
+												checkmark="true" style="border: 0px; padding:0px;"
+												selectedItems="@bind(vm.linkageGroupEntity.linkageGroupList)"
+												onSelect="@command('validateForReset', category='lg')">
+												<template name="model"
+													var="item">
+													<listitem>
+														<listcell
+															label="@load(item.name)"
+															tooltiptext="@load('Mapset Id: '.concat(item.mapId))"
+															style="font-size: 12px;" />
+													</listitem>
+												</template>
+											</listbox>
+											<label
+												visible="@load(not vm.dbLinkageGroup)"
+												value="There's nothing to see here." />
+										</tabpanel>
+									</tabpanels>
+								</tabbox>
 							</hlayout>
 
 							<div align="center" hflex="1">
@@ -159,214 +204,227 @@
 						</vlayout>
 					</north>
 
-					<center border="0" flex="true">
-						<div>
-							<div sclass="Container">
-								<grid id="linkageGroupGrid"
-									model="@load(vm.linkageGroupList)" mold="paging" pageSize="25"
-									pagingPosition="both" height="500px">
-									<columns sizable="true">
-										<column hflex="min">
-											<checkbox label="Select All"
-												onCheck="@command('doSelectAll')"
-												checked="@bind(vm.cbAllUsers)" />
-										</column>
-										<column hflex="min"
-											sort="auto(linkageGroupId)">
-											<label value="linkageGroup ID" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(linkageGroupName))">
-											<label value="linkageGroup Name" />
-										</column>
-										<column hflex="min"
-											sort="auto(experimentId)">
-											<label
-												value="Experiment Id" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(experimentName))">
-											<label
-												value="Experiment Name" />
-										</column>
-										<column hflex="min"
-											sort="auto(piId)">
-											<label value="PI Id" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(piName))">
-											<label value="PI Name" />
-										</column>
-										<column hflex="min"
-											sort="auto(callinganalysisId)">
-											<label
-												value="Calling Analysis Id" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(callingnalysisName))">
-											<label
-												value="Calling Analysis Name" />
-										</column>
-										<column hflex="min">
-											<label value="Analyses" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(dataTable))">
-											<label value="Data Table" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(dataFile))">
-											<label value="Data File" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(qualityTable))">
-											<label
-												value="Quality Table" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(qualityFile))">
-											<label value="Quality File" />
-										</column>
-										<!-- column hflex="min"
-											sort="auto(LOWER(createdByUsername))">
-											<label value="Created By" /> 
-											</column> -->
-										<column hflex="min"
-											sort="auto(createdDate)">
-											<label value="Created Date" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(modifiedByUsername))">
-											<label value="Modified By" />
-										</column>
-										<column hflex="min"
-											sort="auto(modifiedDate)">
-											<label
-												value="Modified Date" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(statusName))">
-											<label value="Status Name" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(typeName))">
-											<label value="Type Name" />
-										</column>
-										<column hflex="min"
-											sort="auto(LOWER(jobName))">
-											<label value="Job Name" />
-										</column>
-									</columns>
-									<template name="model"
-										var="linkageGroup">
-										<row>
-											<cell>
+					<center border="0"  vflex="1"
+								hflex="1">
+						<div  vflex="1"
+								hflex="1">
+							<div sclass="Container" vflex="1"
+								hflex="1">
+								<vbox vflex="1" hflex="1">
+									<grid id="linkageGroupGrid"
+										model="@load(vm.vlinkageGroupSummaryEntityList)" mold="paging"
+										pageSize="25"
+										emptyMessage="No items match your search" vflex="1" hflex="1">
+										<columns sizable="true">
+											<column hflex="min">
 												<checkbox
-													value="@load(linkageGroup)" checked="@load(vm.allCbSelected)"
-													onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
-											</cell>
-											<cell>
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllUsers)" />
+											</column>
+											<column hflex="min"
+												sort="auto(linkageGroupId)">
 												<label
-													value="@load(linkageGroup.linkageGroupId)" />
-											</cell>
-											<cell>
+													value="linkageGroup ID" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(linkageGroupName))">
 												<label
-													value="@load(linkageGroup.linkageGroupName)" />
-											</cell>
-											<cell>
+													value="linkageGroup Name" />
+											</column>
+											<column hflex="min"
+												sort="auto(experimentId)">
 												<label
-													value="@load(linkageGroup.experimentId)" />
-											</cell>
-											<cell>
+													value="Experiment Id" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(experimentName))">
 												<label
-													value="@load(linkageGroup.experimentName)" />
-											</cell>
-											<cell>
+													value="Experiment Name" />
+											</column>
+											<column hflex="min"
+												sort="auto(piId)">
+												<label value="PI Id" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(piName))">
+												<label value="PI Name" />
+											</column>
+											<column hflex="min"
+												sort="auto(callinganalysisId)">
 												<label
-													value="@load(linkageGroup.piId)" />
-											</cell>
-											<cell>
+													value="Calling Analysis Id" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(callingnalysisName))">
 												<label
-													value="@load(linkageGroup.piName)" />
-											</cell>
-											<cell>
+													value="Calling Analysis Name" />
+											</column>
+											<column hflex="min">
+												<label value="Analyses" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(dataTable))">
 												<label
-													value="@load(linkageGroup.callinganalysisId)" />
-											</cell>
-											<cell>
+													value="Data Table" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(dataFile))">
 												<label
-													value="@load(linkageGroup.callingnalysisName)" />
-											</cell>
-											<cell>
+													value="Data File" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(qualityTable))">
 												<label
-													value="@load(linkageGroup.analysesAsString)" />
-											</cell>
-											<cell>
+													value="Quality Table" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(qualityFile))">
 												<label
-													value="@load(linkageGroup.dataTable)" />
-											</cell>
-											<cell>
+													value="Quality File" />
+											</column>
+											<!-- column hflex="min"
+												sort="auto(LOWER(createdByUsername))">
+												<label value="Created By" /> 
+												</column> -->
+											<column hflex="min"
+												sort="auto(createdDate)">
 												<label
-													value="@load(linkageGroup.dataFile)" />
-											</cell>
-											<cell>
+													value="Created Date" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(modifiedByUsername))">
 												<label
-													value="@load(linkageGroup.qualityTable)" />
-											</cell>
-											<cell>
+													value="Modified By" />
+											</column>
+											<column hflex="min"
+												sort="auto(modifiedDate)">
 												<label
-													value="@load(linkageGroup.qualityFile)" />
-											</cell>
-											<!-- <cell>
+													value="Modified Date" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(statusName))">
 												<label
-												value="@load(linkageGroup.createdByUsername)" />
-												</cell>  -->
-											<cell>
+													value="Status Name" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(typeName))">
 												<label
-													value="@load(linkageGroup.createdDate)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(linkageGroup.modifiedByUsername)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(linkageGroup.modifiedDate)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(linkageGroup.statusName)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(linkageGroup.typeName)" />
-											</cell>
-											<cell>
-												<label
-													value="@load(linkageGroup.jobName)" />
-											</cell>
-										</row>
-									</template>
-								</grid>
+													value="Type Name" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(jobName))">
+												<label value="Job Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="linkageGroup">
+											<row>
+												<cell>
+													<checkbox
+														value="@load(linkageGroup)"
+														checked="@load(vm.allCbSelected)"
+														onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row "
+														value="@load(linkageGroup.linkageGroupId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row "
+														value="@load(linkageGroup.linkageGroupName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row "
+														value="@load(linkageGroup.experimentId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row "
+														value="@load(linkageGroup.experimentName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row " value="@load(linkageGroup.piId)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.piName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.callinganalysisId)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.callingnalysisName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.analysesAsString)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.dataTable)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.dataFile)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.qualityTable)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.qualityFile)" />
+												</cell>
+												<!-- <cell>
+													<label
+													value="@load(linkageGroup.createdByUsername)" />
+													</cell>  -->
+												<cell>
+													<label
+														value="@load(linkageGroup.createdDate)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.modifiedByUsername)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.modifiedDate)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.statusName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.typeName)" />
+												</cell>
+												<cell>
+													<label
+														value="@load(linkageGroup.jobName)" />
+												</cell>
+											</row>
+										</template>
+									</grid>
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:" sclass="row-count" />
+										<label
+											value="@bind(vm.sizeLGList)" sclass="row-count" />
+									</hbox>
+								</vbox>
 							</div>
 							<popup id="title" width="400px">
 								<label
 									value="Separate each name with a new line." />
 							</popup>
-
-
-							<hbox>
-								<div align="right">
-									<button label="Export Current"
-										width="200px"
-										onClick="@command('exportCurrentlinkageGroupTablePage')" />
-								</div>
-								<div align="right">
-									<button visible="@bind(vm.paged)"
-										label="Export All" width="200px"
-										onClick="@command('exportlinkageGroupTable')" />
-								</div>
-							</hbox>
 						</div>
 					</center>
 				</borderlayout>

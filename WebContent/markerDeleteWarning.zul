@@ -13,7 +13,7 @@
 			value="The following markers can't be deleted because they are being used in a dataset or a markergroup." />
 		<label style=" font-size: 14px" value="" />
 		<label style=" font-size: 14px"
-			value="Please delete the associated datasets and markergroups first." />
+			value="Please delete or remove it from the associated datasets and markergroups first." />
 		<grid id="markerGrid"
 			model="@load(vm.markerDeleteResultTableEntityList)" mold="paging"
 			pageSize="15" pagingPosition="both">
@@ -21,13 +21,13 @@
 				<column hflex="min" sort="auto(markerId)">
 					<label value="Marker Id" />
 				</column>
-				<column hflex="min" sort="auto(markerName)">
+				<column hflex="1" sort="auto(markerName)">
 					<label value="Marker Name" />
 				</column>
-				<column hflex="min">
+				<column hflex="1">
 					<label value="In Dataset(s)" />
 				</column>
-				<column hflex="min">
+				<column hflex="1">
 					<label value="In Markergroup(s)" />
 				</column>
 			</columns>

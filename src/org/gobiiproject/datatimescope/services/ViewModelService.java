@@ -16,6 +16,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRec
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
@@ -23,6 +24,8 @@ import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -69,12 +72,14 @@ public interface ViewModelService {
 	public List<VDatasetSummaryEntity> getAllDatasetsBasedOnQuery(DatasetEntity datasetEntity, DatasetSummaryEntity datasetSummaryEntity);
 
 	public List<VMarkerSummaryEntity> getAllMarkersBasedOnQuery(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity);
+	
+    public List<VMarkerSummaryEntity> getAllMarkersBasedOnQueryViaView(MarkerRecordEntity markerEntity, DatasetSummaryEntity markerSummaryEntity);
 
 	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary);
 
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary, DatasetSummaryEntity markerSummaryEntity);
+	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary);
 
 	public List<PlatformRecord> getAllPlatforms();
 
@@ -133,11 +138,36 @@ public interface ViewModelService {
 
 	public List<DatasetRecord> getDatasetsByProjectID(List<ProjectRecord> projectList);
 
-	public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+	public List<DatasetRecord> getDatasetsByExperimentIDandAnalysisId(List<ExperimentRecord> experimentList, List<AnalysisRecord> list);
 
 	public List<DatasetRecord> getDatasetsByVendorProtocolID(List<VendorProtocolRecord> vendorProtocolList);
 
 	public List<DatasetRecord> getDatasetsByPlatformID(List<PlatformRecord> platformList);
+
+    public List<ReferenceRecord> getAllReferences();
+
+    public List<MapsetRecord> getAllMapsetsByReferenceId(List<ReferenceRecord> referenceList);
+
+    public List<LinkageGroupRecord> getAllLinkageGroupsByReferenceId(List<ReferenceRecord> referenceList);
+
+    public List<DatasetRecord> getDatasetsByExperimentID(List<ExperimentRecord> experimentList);
+
+    public List<DatasetRecord> getDatasetsByPlatformIDandAnalysisID(List<PlatformRecord> platformList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getAllDatasetsByAnalysisID(List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByVendorProtocolIDandAnalysisID(List<VendorProtocolRecord> vendorProtocolList,
+            List<AnalysisRecord> analysesList);
+
+    public List<DatasetRecord> getDatasetsByProjectIDandAnalysisID(List<ProjectRecord> projectList,
+            List<AnalysisRecord> analysesList);
+
+    public List<MarkerDetailDatasetEntity> getMarkerAssociatedDetailsForEachDataset(
+            List<DatasetRecord> markerDetailDatasetList);
+
+    public List<MarkerDetailLinkageGroupEntity> getAssociatedDetailsForEachLinkageGroup(
+            List<LinkageGroupRecord> markerDetailLinkageGroupList);
 
 
 }
