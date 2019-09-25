@@ -2111,7 +2111,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         sb.append("left join experiment e on d.experiment_id = e.experiment_id left join project p on e.project_id = p.project_id left join vendor_protocol vp on e.vendor_protocol_id = vp.vendor_protocol_id where d.dataset_id "+ getIDsToString(datasetList));
         
         String query = sb.toString();
-        System.out.println(query);
         list = context.fetch(query).into(MarkerDetailDatasetEntity.class);
          }
         }catch(Exception e ){
@@ -2139,7 +2138,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         sb.append("left join mapset m on lg.map_id = m.mapset_id where lg.linkage_group_id "+ getIDsToString(markerDetailLinkageGroupList));
         
         String query = sb.toString();
-        System.out.println(query);
         list = context.fetch(query).into(MarkerDetailLinkageGroupEntity.class);
          }
         }catch(Exception e ){
@@ -2150,6 +2148,272 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         }
 
         return list;
+    }
+
+    @Override
+    public List<VMarkerSummaryEntity> getAllMarkersBasedOnQueryViaView(MarkerRecordEntity markerEntity,
+            DatasetSummaryEntity markerSummaryEntity) {
+        // TODO Auto-generated method stub
+
+        lastQueriedMarkerEntity = new MarkerRecordEntity();
+        int queryCount =0;
+        int dsNameCount = 0;
+        DSLContext context = getDSLContext();
+
+        List<VMarkerSummaryEntity> markerList = null;
+
+        try{ /* START building THE QUERY via StringBuilder */
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbWhere = new StringBuilder(); 
+
+
+               sb.append("select * from v_marker_summary vms "); 
+            
+            /* ADD THE "WHERE" CONDITIONS */
+
+            // build query for MARKER NAMES filter
+            if (markerEntity.getMarkerNamesAsCommaSeparatedString()!=null && !markerEntity.getMarkerNamesAsCommaSeparatedString().isEmpty()){
+                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
+                sbWhere.append(" where LOWER(vms.marker_name) in ("+markerEntity.getSQLReadyMarkerNames()+")");
+                dsNameCount++;  
+            }
+
+
+            //build query for 'none' selected on dataset filter
+            if(markerEntity.isMarkerNotInDatasets()) {
+                lastQueriedMarkerEntity.setMarkerNotInDatasets(true);
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(" vms.dataset_marker_idx = '{}' ");
+                queryCount++;
+            }
+
+            // build query for MAPSET filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getMapsetList())){ 
+                lastQueriedMarkerEntity.getMapsetList().addAll(markerEntity.getMapsetList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(buildQueryForGetMarkersInMapsetList(markerEntity.getMapsetList()));
+                queryCount++;
+            }
+
+            // build query for LINKAGE GROUP filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getLinkageGroupList())){ 
+                lastQueriedMarkerEntity.getLinkageGroupList().addAll(markerEntity.getLinkageGroupList());
+
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(buildQueryForGetMarkersInLinkageGroupList(markerEntity.getLinkageGroupList()));
+                queryCount++;
+            }
+
+            // build query for PLATFORM filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())){
+                lastQueriedMarkerEntity.getPlatformList().addAll(markerEntity.getPlatformList());
+
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(" vms.platform_id "+ getIDsToString(markerEntity.getPlatformList()));
+                queryCount++;
+            }
+
+            // build query for VENDOR-PROTOCOL filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())){
+                lastQueriedMarkerEntity.getVendorProtocolList().addAll(markerEntity.getVendorProtocolList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(buildQueryForGetMarkersInVendorProtocol(markerEntity.getVendorProtocolList()));
+                queryCount++;
+            }
+
+            // build query for PROJECTS filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getProjectList())){
+                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(buildQueryForGetMarkersInProject(markerEntity.getProjectList()));
+                queryCount++;
+            }
+
+            // build query for EXPERIMENTS filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getExperimentList())){
+                lastQueriedMarkerEntity.getExperimentList().addAll(markerEntity.getExperimentList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(buildQueryForGetMarkersInExperiment(markerEntity.getExperimentList()));
+                queryCount++;
+            }
+
+            // build query for DATASETS filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getDatasetList()) && !markerEntity.isMarkerNotInDatasets()){
+                lastQueriedMarkerEntity.getDatasetList().addAll(markerEntity.getDatasetList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(getDatasetJsonbQueryFor(markerEntity.getDatasetList())+" ");
+                queryCount++;
+            }
+
+            // build query for ANALYSES filter
+            if (Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()) && !markerEntity.isMarkerNotInDatasets()){
+                lastQueriedMarkerEntity.getAnalysesList().addAll(markerEntity.getAnalysesList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append("("+buildQueryForGetMarkersInAnalysis(markerEntity.getAnalysesList()));
+                sbWhere.append(" or "+buildQueryForGetMarkersInCallingAnalysis(markerEntity.getAnalysesList())+")");
+                queryCount++;
+            }
+
+            // build query for given marker IDs
+            if (markerEntity.getMarkerIDStartRange()!=null || markerEntity.getMarkerIDEndRange()!=null){
+
+                //check which is not null
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                if(markerEntity.getMarkerIDStartRange()!=null && markerEntity.getMarkerIDEndRange()!=null){ //if both is not null
+                    Integer lowerID = markerEntity.getMarkerIDStartRange();
+                    Integer higherID = markerEntity.getMarkerIDEndRange();
+
+                    if(lowerID.compareTo(higherID)>0){
+                        lowerID = markerEntity.getMarkerIDEndRange();
+                        higherID = markerEntity.getMarkerIDStartRange();
+                    }
+                    lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    sbWhere.append(" vms.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                }else{
+                    Integer ID = null;
+                    if(markerEntity.getMarkerIDStartRange()!=null) {
+                        ID = markerEntity.getMarkerIDStartRange();
+                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    }
+                    else {
+                        lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+                        ID = markerEntity.getMarkerIDEndRange();
+                    }
+
+                    sbWhere.append(" vms.marker_id = "+Integer.toString(ID));
+                }
+
+                queryCount++;
+            }
+
+            sbWhere.append(";");
+            sb.append(sbWhere.toString());
+            String query = sb.toString();
+            System.out.println(query);
+            markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+
+            log.info("Submitted Query: "+query);
+        }catch(Exception e ){
+            e.printStackTrace();
+            Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+        return markerList;
+    }
+    
+    private Object buildQueryForGetMarkersInCallingAnalysis(List<AnalysisRecord> analysesList) {
+        StringBuilder sb = new StringBuilder();
+        for(AnalysisRecord record : analysesList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInCallingAnalysis("+record.getAnalysisId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private Object buildQueryForGetMarkersInAnalysis(List<AnalysisRecord> analysesList) {
+        StringBuilder sb = new StringBuilder();
+        for(AnalysisRecord record : analysesList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInAnalysis("+record.getAnalysisId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private Object buildQueryForGetMarkersInExperiment(List<ExperimentRecord> experimentList) {
+        StringBuilder sb = new StringBuilder();
+        for(ExperimentRecord record : experimentList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInExperiment("+record.getExperimentId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private Object buildQueryForGetMarkersInProject(List<ProjectRecord> projectList) {
+        StringBuilder sb = new StringBuilder();
+        for(ProjectRecord record : projectList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInProject("+record.getProjectId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private Object buildQueryForGetMarkersInVendorProtocol(List<VendorProtocolRecord> vendorProtocolList) {
+        StringBuilder sb = new StringBuilder();
+        for(VendorProtocolRecord record : vendorProtocolList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInVendorProtocol("+record.getVendorProtocolId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private Object buildQueryForGetMarkersInLinkageGroupList(List<LinkageGroupRecord> linkageGroupList) {
+        StringBuilder sb = new StringBuilder();
+        for(LinkageGroupRecord lg : linkageGroupList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInLinkageGroup("+lg.getLinkageGroupId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    private String buildQueryForGetMarkersInMapsetList(List<MapsetRecord> mapsetList) {
+       StringBuilder sb = new StringBuilder();
+        for(MapsetRecord mr : mapsetList) {
+            if(sb.length()>0)sb.append(" or ");
+            sb.append("vms.marker_id in (select marker_id from getMarkersInMapset("+mr.getMapsetId()+"))");
+        }
+        
+        sb.append(") ");
+        sb.insert(0, "(");
+        
+        return sb.toString();
+    }
+
+    public <T> String getDatasetJsonbQueryFor(List<T> list) {
+        if(list.isEmpty()) return null;
+        StringBuilder sb = new StringBuilder();
+
+        int ctr=0;
+        for(T item : list) {
+            if(ctr>0)sb.append(",");
+            sb.append("'"+((Record) item).get(0).toString()+"'");
+            ctr++;
+        }
+
+        if(list.size()>1) {
+            sb.append("])");
+            sb.insert(0, " jsonb_exists_any(dataset_marker_idx, array[");
+        }else{
+            sb.insert(0, " jsonb_exists(dataset_marker_idx, ");
+            sb.append(")");
+        }
+
+        return sb.toString();
     }
 
 }

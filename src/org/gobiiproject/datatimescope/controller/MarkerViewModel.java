@@ -325,7 +325,7 @@ public class MarkerViewModel {
 
         }
         //		setMarkerList(viewModelService.getAllMarkers(markerSummary));
-        setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity,markerSummaryEntity));
+        setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity,markerSummaryEntity));
 
         setAllCbSelected(false);
         setCbAllMarkers(false);
@@ -442,7 +442,7 @@ public class MarkerViewModel {
     public void retrieveMarkerList(){
         //...
 
-        setMarkerList(viewModelService.getAllMarkersBasedOnQuery(markerEntity, markerSummaryEntity));
+        setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity, markerSummaryEntity));
 
         selectedMarkerList.clear();
 
