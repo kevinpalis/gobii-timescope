@@ -1,5 +1,5 @@
 .footer_center {
-	text-align: center;;
+	text-align: center;
 }
 
 body { padding: 0 0;  /* 0 padding	on top and bottom and 0 padding on right and left */ }
@@ -14,6 +14,10 @@ div .z-window-content {
     zoom: 1;
 }
 
+.z-listcell-content{
+font-size: 12px;
+}
+
 .z-initing { width: 50px !important; height: 72px !important; background-image: url('../imgs/favicon.ico') !important; }
 
 .z-north splitter {
@@ -21,9 +25,8 @@ div .z-window-content {
 }
 
 .banner {
-	background-color: #102d35;
-	color: white;
-	padding: 5px 10px;
+	font-size: 11px;
+	font-style: oblique;
 }
 
 .banner-head {
@@ -63,15 +66,62 @@ div .z-window-content {
 	font-size: medium;
 }
 
-.row-title .z-label {
-	font-weight: bold;
-	color: #636363;
+.row-count{
+	font-style: oblique;
+	font-size: 11px;
 }
 
+div .z-listcell-content{
+	color: #636363;
+	font-size: 11px !important;
+}
 
+div .z-north-header {
+	font-size: 12px !important;
+}
+
+span .z-label{
+	color: #636363;
+	font-size: 19px !important;
+}
+
+.row-title .z-label {
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+}
+
+.grid-row {
+	color: #636363;
+	font-size: 12px !important;
+}
+
+.row-title {
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+}
+
+.tab-title {
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+	text-align: left;
+	border-bottom: 1px solid #ECECEC;
+	padding-left: 50px;
+}
+
+.tab-title-with-separator{
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 12px !important;
+	text-align: left;
+	border-bottom: 1px solid #ECECEC;
+	margin-top: 15px;
+}
 .list-row .z-listcell {
 	font-weight: bold;
-	color: #636363;
+	color: #7d7d7d;
 }
 
 
@@ -80,10 +130,11 @@ div .z-window-content {
 	color: #660066 !important;
 }
 
-.fn-caption .z-caption-l {
+div .z-caption-content {
 	font-weight: bold;
-	font-size: medium;
+	font-style: italic;
 	color: #636363;
+	font-size: 12px !important;
 }
 
 .complete-todo .z-label {
@@ -104,14 +155,6 @@ div .z-window-content {
 	padding-right: 4px;
 }
 
-.grid-borderless { .borderRadius (0px);
-	
-}
-
-.main {
-	padding: 15px;
-}
-
 .filterbox {
 	background: url("/imgs/todo.png") no-repeat 0 -16px;
 }
@@ -119,18 +162,6 @@ div .z-window-content {
 .warningMessagebox {
 	color: red;
 	font-style: oblique;
-}
-
-.div1 {
-  width:1000px;
-  height: 20px;
-}
-
-.div2 {
-  width:1000px;
-  height: 200px;
-  background-color: #88FF88;
-  overflow: auto;
 }
 
 .Flipped, .Flipped .Content

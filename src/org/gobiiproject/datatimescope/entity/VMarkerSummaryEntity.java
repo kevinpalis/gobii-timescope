@@ -19,16 +19,16 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 		new VMarkerSummaryRecord();
 
 		set(0, markerId);
-		set(1, platformId);
-		set(2, platformName);
-		set(3, variantId);
-		set(4, markerName);
-		set(5, code);
-		set(6, ref);
-		set(7, alts);
-		set(8, sequence);
-		set(9, referenceId);
-		set(10, referenceName);
+        set(1, markerName);
+		set(2, platformId);
+		set(3, platformName);
+        set(4, ref);
+        set(5, alts);
+        set(6, referenceId);
+        set(7, referenceName);
+		set(8, variantId);
+		set(9, code);
+		set(10, sequence);
 		set(11, primers);
 		set(12, strandId);
 		set(13, strandName);
@@ -43,10 +43,10 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 	    	StringBuilder sb = new StringBuilder();
 	    	
 	    	sb.append(Utils.checkInteger((Integer) get(0))+delim); //getMarkerId()
-	    	sb.append((Utils.checkString((String)get(4))).toLowerCase()+delim); //getMarkerName()
+	    	sb.append((Utils.checkString((String)get(1))).toLowerCase()+delim); //getMarkerName()
 	    	
-	    	sb.append(Utils.checkInteger((Integer) get(1))+delim);//PlatformId()
-	    	sb.append((Utils.checkString((String)get(2))).toLowerCase()+delim);//PlatformName()
+	    	sb.append(Utils.checkInteger((Integer) get(2))+delim);//PlatformId()
+	    	sb.append((Utils.checkString((String)get(3))).toLowerCase()+delim);//PlatformName()
 	    	
 
 	    	sb.append((Utils.checkString((String) get(4))).toLowerCase()+delim);//Ref

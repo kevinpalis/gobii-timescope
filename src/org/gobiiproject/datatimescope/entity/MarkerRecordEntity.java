@@ -15,6 +15,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Record;
 
 public class MarkerRecordEntity  implements Serializable,Cloneable {
@@ -28,6 +29,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	private Integer markerIDStartRange;
 	private Integer  markerIDEndRange;
 	private String markerNamesAsCommaSeparatedString;
+    private List<RowColEntity> filterListAsRows;
 	private List<PlatformRecord> platformList;
 	private List<OrganizationRecord> vendorList;
 	private List<VendorProtocolRecord> vendorProtocolList;
@@ -64,7 +66,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		int ctr = 0;
 		StringBuilder sb = new StringBuilder();
 		
-		for(String s: markerNamesAsCommaSeparatedString.replaceAll(", ",",").split(",")){
+		for(String s: markerNamesAsCommaSeparatedString.replaceAll(" \n","\n").split("\n")){
 			if(ctr>0)sb.append(",");
 		sb.append(" '"+s.toLowerCase()+"' ");
 		ctr++;
@@ -176,49 +178,51 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		this.markerNotInDatasets = markerNotInDatasets;
 	}
 
-	public String getFiltersAsText() {
+	public String getFiltersAsTextWithDelimiter(String delim) {
 		// TODO Auto-generated method stub
 		StringBuilder sb = new StringBuilder();
-		ViewModelServiceImpl vms = new ViewModelServiceImpl();
 		
-		if(vms.isListNotNullOrEmpty(getPlatformList())){
+		if(Utils.isListNotNullOrEmpty(getPlatformList())){
 			sb.append("Platform(s):");
-			sb.append(getListNamesToString(getPlatformList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getPlatformList(), 1, delim));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getVendorProtocolList())){
+		if(Utils.isListNotNullOrEmpty(getVendorProtocolList())){
 			sb.append("Vendor-protocol(s):");
-			sb.append(getListNamesToString(getVendorProtocolList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getVendorProtocolList(), 1, delim));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getMapsetList())){
+		if(Utils.isListNotNullOrEmpty(getMapsetList())){
 			sb.append("Mapset(s):");
-			sb.append(getListNamesToString(getMapsetList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getMapsetList(), 1, delim));
 		}
 
-		if(vms.isListNotNullOrEmpty(getLinkageGroupList())){
+		if(Utils.isListNotNullOrEmpty(getLinkageGroupList())){
 			sb.append("Linkage group(s):");
-			sb.append(getListNamesToString(getLinkageGroupList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getLinkageGroupList(), 1, delim));
 		}
 
-		if(vms.isListNotNullOrEmpty(getProjectList())){
+		if(Utils.isListNotNullOrEmpty(getProjectList())){
 			sb.append("Project(s):");
-			sb.append(getListNamesToString(getProjectList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getProjectList(), 1, delim));
 		}
 
-		if(vms.isListNotNullOrEmpty(getExperimentList())){
+		if(Utils.isListNotNullOrEmpty(getExperimentList())){
 			sb.append("Experiment(s):");
-			sb.append(getListNamesToString(getExperimentList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1, delim));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getAnalysesList())){
+		if(Utils.isListNotNullOrEmpty(getAnalysesList())){
 			sb.append("Analyses:");
-			sb.append(getListNamesToString(getAnalysesList(), 1));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getAnalysesList(), 1, delim));
 		}
 		
-		if(vms.isListNotNullOrEmpty(getDatasetList())){
+		if(markerNotInDatasets){
+		    sb.append("Dataset(s):\n\t*Should not be in a dataset");
+		}
+		else if(Utils.isListNotNullOrEmpty(getDatasetList())){
 			sb.append("Dataset(s):");
-			sb.append(getListNamesToString(getDatasetList(), 15));
+			sb.append(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15, delim));
 		}
 		
 //		private Integer markerIDStartRange;
@@ -227,20 +231,114 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 		
 		return sb.toString();
 	}
-	
-	public <T> String getListNamesToString( List<T> list, int index) {
 
-		StringBuilder sb = new StringBuilder();
+    public String getCompleteFiltersAsText() {
+        StringBuilder sb = new StringBuilder();
+        
+        if(markerIDStartRange!=null || markerIDEndRange!=null){
+            
+            sb.append("Marker Id: ");
+            sb.append(Utils.getIdRangeAsString(markerIDStartRange,markerIDEndRange));
+        }else if(markerNamesAsCommaSeparatedString!=null) {
 
-		sb.append(System.getProperty("line.separator"));
-		sb.append(System.getProperty("line.separator"));
-		for(T item : list) {
-			sb.append((String) ((Record) item).get(index));
-			sb.append(System.getProperty("line.separator"));
-		}
-		sb.append(System.getProperty("line.separator"));
-		sb.append(System.getProperty("line.separator"));
-		return sb.toString();
-	}
+            if(!markerNamesAsCommaSeparatedString.isEmpty()) {
+                sb.append("Marker Names:\n");
+                sb.append(markerNamesAsCommaSeparatedString);
+            }
+        }
+        String filters = getFiltersAsTextWithDelimiter(", ");
+        sb.append(filters);
+        return sb.toString();
+    }
+
+    public List<RowColEntity> getFilterListAsRows() {
+        filterListAsRows = new ArrayList<RowColEntity>();
+
+        RowColEntity rowColEntity = new RowColEntity();
+        
+        if(markerIDStartRange!=null || markerIDEndRange!=null){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Marker Id(s)");
+            rowColEntity.setSecondRow(Utils.getIdRangeAsString(markerIDStartRange,markerIDEndRange));
+            filterListAsRows.add(rowColEntity);
+            
+        }else if(markerNamesAsCommaSeparatedString!=null) {
+
+            if(!markerNamesAsCommaSeparatedString.isEmpty()) {
+                rowColEntity = new RowColEntity();
+                rowColEntity.setFirstRow("Marker Name(s)");
+                rowColEntity.setSecondRow(markerNamesAsCommaSeparatedString);
+                filterListAsRows.add(rowColEntity);
+            }
+        }
+        
+        if(Utils.isListNotNullOrEmpty(getPlatformList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Platform(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getPlatformList(), 1, ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        if(Utils.isListNotNullOrEmpty(getVendorProtocolList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Vendor-protocol(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getVendorProtocolList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        if(Utils.isListNotNullOrEmpty(getMapsetList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Mapset(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getMapsetList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+
+        if(Utils.isListNotNullOrEmpty(getLinkageGroupList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Linkage group(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getLinkageGroupList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+
+        if(Utils.isListNotNullOrEmpty(getProjectList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Project(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getProjectList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+
+        if(Utils.isListNotNullOrEmpty(getExperimentList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Experiment(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        if(Utils.isListNotNullOrEmpty(getAnalysesList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Analyses");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getAnalysesList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        if(markerNotInDatasets){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Dataset(s)");
+            rowColEntity.setSecondRow("*Should not be in a dataset");
+            filterListAsRows.add(rowColEntity);
+        }
+        else if(Utils.isListNotNullOrEmpty(getDatasetList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Dataset(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        return filterListAsRows;
+    }
+
+    public void setFilterListAsRows(List<RowColEntity> filterListAsRows) {
+        this.filterListAsRows = filterListAsRows;
+    }
 
 }

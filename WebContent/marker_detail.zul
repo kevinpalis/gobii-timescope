@@ -1,65 +1,151 @@
-<window mode="popup" popup="true" width="650px" height="400px"
-	closable="true" apply="org.zkoss.bind.BindComposer"
+<window id="markerDetailWindow" mode="popup" popup="true" hflex="min"
+	vflex="min" closable="true" apply="org.zkoss.bind.BindComposer"
 	border="normal" position="right,top"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerDetailViewModel')">
-	<label visible="@load(not vm.markerAssociated)"
-		value="This marker is not associated with any linkage group, dataset, and marker groups."
-		style="font-size: 16px; " />
-	<label visible="@load(vm.markerAssociated)"
-		value="This marker is associated with the following:"
-		style="font-size: 16px; " />
-	<separator spacing="15px" />
-	<hbox hflex="1" vflex="1">
-		<vlayout 
-			visible="@load(not empty vm.markerDetailDatasetList)">
-			<label value="Datasets:"
-				style="font-size: 14px; text-align:center;" />
+	<caption sclass="fn-caption" label="@load(vm.markerAssociated)" />
+	<vlayout>
+
+		<vlayout visible="@load(not empty vm.markerDetailDatasetList)"
+			style="padding:10px;">
+			<label value="Dataset:"
+				style="font-size: 12px; text-align:center;" />
 			<separator spacing="5px" />
 			<grid model="@load(vm.markerDetailDatasetList)"
-				mold="paging" pageSize="5" vflex="1" hflex="1">
-				<custom-attributes org.zkoss.zul.nativebar="false" />
+				mold="paging" pageSize="5" style="overflow: auto !important;"
+				width="850px">
+				<auxhead >
+					<auxheader label="Dataset" colspan="2" />
+					<auxheader label="Analysis" colspan="2" />
+					<auxheader label="Experiment" colspan="2" />
+					<auxheader label="Project" colspan="2" />
+					<auxheader label="Vendor-Protocol" colspan="2" />
+				</auxhead>
+				<columns sizable="true">
+					<column hflex="min">Id</column>
+					<column>Name</column>
+					<column hflex="min" align="center">Calling Id</column>
+					<column hflex="min" align="center" >Analyses Id(s)</column>
+					<column hflex="min">Id</column>
+					<column>Name</column>
+					<column hflex="min">Id</column>
+					<column>Name</column>
+					<column hflex="min">Id</column>
+					<column>Name</column>
+				</columns>
 				<template name="model" var="each">
 					<row>
 						<cell>
-							<label value="@load(each.name)" />
+							<label value="@load(each.dataset_id)" />
 						</cell>
-					</row>
-				</template>
-			</grid>
-		</vlayout>
-		<vlayout 
-			visible="@load(not empty vm.markerDetailLinkageGroupList)">
-			<label value="Linkage groups:"
-				style="font-size: 14px; text-align:center;" />
-			<separator spacing="5px" />
-			<grid model="@load(vm.markerDetailLinkageGroupList)"
-				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
-				<custom-attributes org.zkoss.zul.nativebar="false" />
-				<template name="model" var="each">
-					<row>
-						<cell hflex="min" vflex="min">
-							<label value="@load(each.name)" />
+						<cell tooltiptext="@load(each.dataset_name)">
+							<label value="@load(each.dataset_name)"
+								style="font-size: 12px; text-align:left;" />
 						</cell>
-					</row>
-				</template>
-			</grid>
-		</vlayout>
-		<vlayout 
-			visible="@load(not empty vm.markerDetailsMarkerGroupList)" >
-			<label value="Marker groups:"
-				style="font-size: 14px; text-align:center;" />
-			<separator spacing="5px" />
-			<grid model="@load(vm.markerDetailsMarkerGroupList)" 
-				mold="paging" pageSize="5" style="overflow-y: auto;" vflex="1" hflex="1">
-				<custom-attributes org.zkoss.zul.nativebar="false" />
-				<template name="model" var="each">
-					<row>
 						<cell>
-							<label value="@load(each.name)" />
+							<label
+								value="@load(each.calling_analysis)" />
+						</cell>
+						<cell tooltiptext="@load(each.analyses)">
+							<label value="@load(each.analyses)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+						<cell>
+							<label value="@load(each.experiment_id)" />
+						</cell>
+						<cell tooltiptext="@load(each.experiment_name)">
+							<label value="@load(each.experiment_name)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+						<cell>
+							<label
+								value="@load(each.project_id)" />
+						</cell>
+						<cell tooltiptext="@load(each.project_name)">
+							<label value="@load(each.project_name)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+						<cell>
+							<label
+								value="@load(each.vp_id)" />
+						</cell>
+						<cell tooltiptext="@load(each.vp_name)">
+							<label value="@load(each.vp_name)"
+								style="font-size: 12px; text-align:left;" />
 						</cell>
 					</row>
 				</template>
 			</grid>
 		</vlayout>
-	</hbox>
+		<hbox hflex="min" vflex="1">
+
+			<vlayout
+				visible="@load(not empty vm.markerDetailLinkageGroupList)"
+				style="padding:10px;">
+				<label value="Linkage group:"
+					style="font-size: 12px; text-align:center;" />
+				<separator spacing="5px" />
+				<grid model="@load(vm.markerDetailLinkageGroupList)"
+					mold="paging" pageSize="5" width="450px">
+					<columns sizable="true">
+						<column hflex="min">LG Id</column>
+						<column  >LG Name</column>
+						<column hflex="min">Map Id</column>
+						<column  >Map Name</column>
+					</columns>
+					<template name="model" var="each">
+						<row>
+							<cell tooltiptext="@load(each.lg_id)">
+								<label
+									value="@load(each.lg_id)" />
+							</cell>
+							<cell align="left" tooltiptext="@load(each.lg_name)">
+								<label value="@load(each.lg_name)"
+									style="font-size: 12px; text-align:left;" />
+							</cell>
+							<cell tooltiptext="@load(each.map_id)">
+								<label
+									value="@load(each.map_id)" />
+							</cell>
+							<cell align="left" tooltiptext="@load(each.map_name)">
+								<label value="@load(each.map_name)"
+									style="font-size: 12px; text-align:left;" />
+							</cell>
+						</row>
+					</template>
+				</grid>
+			</vlayout>
+			<vlayout
+				visible="@load(not empty vm.markerDetailsMarkerGroupList)"
+				style="padding:10px;">
+				<label value="Marker group:"
+					style="font-size: 12px; text-align:center;" />
+				<separator spacing="5px" />
+				<grid model="@load(vm.markerDetailsMarkerGroupList)"
+					mold="paging" pageSize="5" width="380px">
+					<custom-attributes org.zkoss.zul.nativebar="false" />
+					<columns sizable="true">
+						<column width="20%">ID</column>
+						<column width="80%">Name</column>
+					</columns>
+					<template name="model" var="each">
+						<row>
+							<cell>
+								<label
+									value="@load(each.markerGroupId)" />
+							</cell>
+							<cell tooltiptext="@load(each.name)">
+								<label value="@load(each.name)"
+									style="font-size: 12px; text-align:left;" />
+							</cell>
+						</row>
+					</template>
+				</grid>
+			</vlayout>
+		</hbox>
+	</vlayout>
+
+	<div align="center" style="margin: 10px">
+		<button id="exitMarkerDetail" label="OK" width="150px"
+			onClick="@command('exit')" />
+	</div>
 </window>
