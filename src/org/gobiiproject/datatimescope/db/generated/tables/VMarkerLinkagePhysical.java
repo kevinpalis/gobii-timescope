@@ -32,7 +32,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VMarkerLinkagePhysical extends TableImpl<VMarkerLinkagePhysicalRecord> {
 
-    private static final long serialVersionUID = -53719160;
+    private static final long serialVersionUID = -181838196;
 
     /**
      * The reference instance of <code>public.v_marker_linkage_physical</code>
@@ -65,12 +65,12 @@ public class VMarkerLinkagePhysical extends TableImpl<VMarkerLinkagePhysicalReco
     /**
      * The column <code>public.v_marker_linkage_physical.linkage_group_start</code>.
      */
-    public final TableField<VMarkerLinkagePhysicalRecord, Integer> LINKAGE_GROUP_START = createField("linkage_group_start", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<VMarkerLinkagePhysicalRecord, BigDecimal> LINKAGE_GROUP_START = createField("linkage_group_start", org.jooq.impl.SQLDataType.NUMERIC(20, 3), this, "");
 
     /**
      * The column <code>public.v_marker_linkage_physical.linkage_group_stop</code>.
      */
-    public final TableField<VMarkerLinkagePhysicalRecord, Integer> LINKAGE_GROUP_STOP = createField("linkage_group_stop", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<VMarkerLinkagePhysicalRecord, BigDecimal> LINKAGE_GROUP_STOP = createField("linkage_group_stop", org.jooq.impl.SQLDataType.NUMERIC(20, 3), this, "");
 
     /**
      * The column <code>public.v_marker_linkage_physical.start</code>.
