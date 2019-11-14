@@ -6,8 +6,8 @@
   <jdbc>
     <driver>org.postgresql.Driver</driver>
     <url>jdbc:postgresql://localhost:5432/timescope_db2</url>
-    <user>timescoper</user>
-    <password>helloworld</password>
+    <user>appuser</user>
+    <password>appuser</password>
   </jdbc>
 
   <generator>
@@ -44,7 +44,7 @@
       <packageName>org.gobiiproject.datatimescope.db.generated</packageName>
 
       <!-- The destination directory of your generated classes. Using Maven directory layout here -->
-      <directory>/Users/KevinPalis/Work/Repositories/gobiidatatimescope/src</directory>
+      <directory>C:\Users\GOBii\Documents\Git Workspace\gobiidatatimescope\WebContent\src</directory>
     </target>
   </generator>
 </configuration>

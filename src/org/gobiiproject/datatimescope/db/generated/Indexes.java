@@ -16,6 +16,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Dbxref;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnarun;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnasample;
+import org.gobiiproject.datatimescope.db.generated.tables.Edge;
 import org.gobiiproject.datatimescope.db.generated.tables.Experiment;
 import org.gobiiproject.datatimescope.db.generated.tables.Germplasm;
 import org.gobiiproject.datatimescope.db.generated.tables.Gobiiprop;
@@ -35,6 +36,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
+import org.gobiiproject.datatimescope.db.generated.tables.Vertex;
 import org.jooq.Index;
 import org.jooq.OrderField;
 import org.jooq.impl.AbstractKeys;
@@ -59,6 +61,7 @@ public class Indexes {
 
     public static final Index IDX_ANALYSIS_TYPE_ID = Indexes0.IDX_ANALYSIS_TYPE_ID;
     public static final Index PK_ANALYSIS = Indexes0.PK_ANALYSIS;
+    public static final Index CONTACT_USERNAME_KEY = Indexes0.CONTACT_USERNAME_KEY;
     public static final Index EMAIL_KEY = Indexes0.EMAIL_KEY;
     public static final Index PK_CONTACT = Indexes0.PK_CONTACT;
     public static final Index IDX_CV_CVGROUPID = Indexes0.IDX_CV_CVGROUPID;
@@ -87,6 +90,12 @@ public class Indexes {
     public static final Index IDX_DNASAMPLE_PROPS = Indexes0.IDX_DNASAMPLE_PROPS;
     public static final Index IDX_DNASAMPLE_WELLROW_WELLCOL = Indexes0.IDX_DNASAMPLE_WELLROW_WELLCOL;
     public static final Index PK_DNASAMPLE = Indexes0.PK_DNASAMPLE;
+    public static final Index UNIQUE_DNASAMPLE_UUID = Indexes0.UNIQUE_DNASAMPLE_UUID;
+    public static final Index EDGE_PKEY = Indexes0.EDGE_PKEY;
+    public static final Index EDGE_START_VERTEX_END_VERTEX_KEY = Indexes0.EDGE_START_VERTEX_END_VERTEX_KEY;
+    public static final Index END_VERTEX_IDX = Indexes0.END_VERTEX_IDX;
+    public static final Index START_VERTEX_IDX = Indexes0.START_VERTEX_IDX;
+    public static final Index TYPEOF_EDGE_IDX = Indexes0.TYPEOF_EDGE_IDX;
     public static final Index IDX_EXPERIMENT_NAME = Indexes0.IDX_EXPERIMENT_NAME;
     public static final Index IDX_EXPERIMENT_PROJECT_ID = Indexes0.IDX_EXPERIMENT_PROJECT_ID;
     public static final Index IDX_EXPERIMENT_VENDOR_PROTOCOL_ID = Indexes0.IDX_EXPERIMENT_VENDOR_PROTOCOL_ID;
@@ -150,6 +159,11 @@ public class Indexes {
     public static final Index IDX_VENDOR_PROTOCOL_PROTOCOL_ID = Indexes0.IDX_VENDOR_PROTOCOL_PROTOCOL_ID;
     public static final Index IDX_VENDOR_PROTOCOL_VENDOR_ID = Indexes0.IDX_VENDOR_PROTOCOL_VENDOR_ID;
     public static final Index PK_VENDOR_PROTOCOL = Indexes0.PK_VENDOR_PROTOCOL;
+    public static final Index ENTRY_VERTEX_IDX = Indexes0.ENTRY_VERTEX_IDX;
+    public static final Index TYPEOF_VERTEX_IDX = Indexes0.TYPEOF_VERTEX_IDX;
+    public static final Index VERTEX_NAME_IDX = Indexes0.VERTEX_NAME_IDX;
+    public static final Index VERTEX_NAME_KEY = Indexes0.VERTEX_NAME_KEY;
+    public static final Index VERTEX_PKEY = Indexes0.VERTEX_PKEY;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
@@ -158,6 +172,7 @@ public class Indexes {
     private static class Indexes0 extends AbstractKeys {
         public static Index IDX_ANALYSIS_TYPE_ID = createIndex("idx_analysis_type_id", Analysis.ANALYSIS, new OrderField[] { Analysis.ANALYSIS.TYPE_ID }, false);
         public static Index PK_ANALYSIS = createIndex("pk_analysis", Analysis.ANALYSIS, new OrderField[] { Analysis.ANALYSIS.ANALYSIS_ID }, true);
+        public static Index CONTACT_USERNAME_KEY = createIndex("contact_username_key", Contact.CONTACT, new OrderField[] { Contact.CONTACT.USERNAME }, true);
         public static Index EMAIL_KEY = createIndex("email_key", Contact.CONTACT, new OrderField[] { Contact.CONTACT.EMAIL }, true);
         public static Index PK_CONTACT = createIndex("pk_contact", Contact.CONTACT, new OrderField[] { Contact.CONTACT.CONTACT_ID }, true);
         public static Index IDX_CV_CVGROUPID = createIndex("idx_cv_cvgroupid", Cv.CV, new OrderField[] { Cv.CV.CVGROUP_ID }, false);
@@ -186,6 +201,12 @@ public class Indexes {
         public static Index IDX_DNASAMPLE_PROPS = createIndex("idx_dnasample_props", Dnasample.DNASAMPLE, new OrderField[] { Dnasample.DNASAMPLE.PROPS }, false);
         public static Index IDX_DNASAMPLE_WELLROW_WELLCOL = createIndex("idx_dnasample_wellrow_wellcol", Dnasample.DNASAMPLE, new OrderField[] { Dnasample.DNASAMPLE.WELL_ROW, Dnasample.DNASAMPLE.WELL_COL }, false);
         public static Index PK_DNASAMPLE = createIndex("pk_dnasample", Dnasample.DNASAMPLE, new OrderField[] { Dnasample.DNASAMPLE.DNASAMPLE_ID }, true);
+        public static Index UNIQUE_DNASAMPLE_UUID = createIndex("unique_dnasample_uuid", Dnasample.DNASAMPLE, new OrderField[] { Dnasample.DNASAMPLE.UUID }, true);
+        public static Index EDGE_PKEY = createIndex("edge_pkey", Edge.EDGE, new OrderField[] { Edge.EDGE.EDGE_ID }, true);
+        public static Index EDGE_START_VERTEX_END_VERTEX_KEY = createIndex("edge_start_vertex_end_vertex_key", Edge.EDGE, new OrderField[] { Edge.EDGE.START_VERTEX, Edge.EDGE.END_VERTEX }, true);
+        public static Index END_VERTEX_IDX = createIndex("end_vertex_idx", Edge.EDGE, new OrderField[] { Edge.EDGE.END_VERTEX }, false);
+        public static Index START_VERTEX_IDX = createIndex("start_vertex_idx", Edge.EDGE, new OrderField[] { Edge.EDGE.START_VERTEX }, false);
+        public static Index TYPEOF_EDGE_IDX = createIndex("typeof_edge_idx", Edge.EDGE, new OrderField[] { Edge.EDGE.TYPE_ID }, false);
         public static Index IDX_EXPERIMENT_NAME = createIndex("idx_experiment_name", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.NAME }, false);
         public static Index IDX_EXPERIMENT_PROJECT_ID = createIndex("idx_experiment_project_id", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.PROJECT_ID }, false);
         public static Index IDX_EXPERIMENT_VENDOR_PROTOCOL_ID = createIndex("idx_experiment_vendor_protocol_id", Experiment.EXPERIMENT, new OrderField[] { Experiment.EXPERIMENT.VENDOR_PROTOCOL_ID }, false);
@@ -249,5 +270,10 @@ public class Indexes {
         public static Index IDX_VENDOR_PROTOCOL_PROTOCOL_ID = createIndex("idx_vendor_protocol_protocol_id", VendorProtocol.VENDOR_PROTOCOL, new OrderField[] { VendorProtocol.VENDOR_PROTOCOL.PROTOCOL_ID }, false);
         public static Index IDX_VENDOR_PROTOCOL_VENDOR_ID = createIndex("idx_vendor_protocol_vendor_id", VendorProtocol.VENDOR_PROTOCOL, new OrderField[] { VendorProtocol.VENDOR_PROTOCOL.VENDOR_ID }, false);
         public static Index PK_VENDOR_PROTOCOL = createIndex("pk_vendor_protocol", VendorProtocol.VENDOR_PROTOCOL, new OrderField[] { VendorProtocol.VENDOR_PROTOCOL.VENDOR_PROTOCOL_ID }, true);
+        public static Index ENTRY_VERTEX_IDX = createIndex("entry_vertex_idx", Vertex.VERTEX, new OrderField[] { Vertex.VERTEX.IS_ENTRY }, false);
+        public static Index TYPEOF_VERTEX_IDX = createIndex("typeof_vertex_idx", Vertex.VERTEX, new OrderField[] { Vertex.VERTEX.TYPE_ID }, false);
+        public static Index VERTEX_NAME_IDX = createIndex("vertex_name_idx", Vertex.VERTEX, new OrderField[] { Vertex.VERTEX.NAME }, false);
+        public static Index VERTEX_NAME_KEY = createIndex("vertex_name_key", Vertex.VERTEX, new OrderField[] { Vertex.VERTEX.NAME }, true);
+        public static Index VERTEX_PKEY = createIndex("vertex_pkey", Vertex.VERTEX, new OrderField[] { Vertex.VERTEX.VERTEX_ID }, true);
     }
 }

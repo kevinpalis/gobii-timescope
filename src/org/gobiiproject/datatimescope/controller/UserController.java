@@ -18,13 +18,13 @@ package org.gobiiproject.datatimescope.controller;
 
 import java.util.Set;
 
-import org.gobiiproject.datatimescope.entity.User;
+import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
-import org.gobiiproject.datatimescope.services.CommonInfoService;
 import org.gobiiproject.datatimescope.services.UserCredential;
-import org.gobiiproject.datatimescope.services.UserInfoService;
-import org.gobiiproject.datatimescope.services.UserInfoServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.ViewModelService;
+import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -43,124 +43,72 @@ import org.jooq.*;
 
 import java.sql.*;
 
-
-public class UserController extends SelectorComposer<Component>{
+public class UserController extends SelectorComposer<Component> {
 	private static final long serialVersionUID = 1L;
 
-	//wire components
+	// wire components
 	@Wire
-	Label account;
+	Label firstName;
 	@Wire
-	Textbox firstName;
+	Label lastName;
 	@Wire
-	Textbox lastName;
+	Label userName;
 	@Wire
-	Textbox userName;
+	Label email;
 	@Wire
-	Textbox password;
-	@Wire
-	Textbox email;
-	@Wire
-	Listbox role;
-	@Wire
-	Label nameLabel;
-	
-	//services
+	Label role;
+
+	// services
 	AuthenticationService authService = new AuthenticationServiceChapter3Impl();
-	UserInfoService userInfoService = new UserInfoServiceChapter3Impl();
-	
+	ViewModelService userInfoService = new ViewModelServiceImpl();
+
 	@Override
-	public void doAfterCompose(Component comp) throws Exception{
+	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		
-		ListModelList<String> roleModel = new ListModelList<String>(CommonInfoService.getRoleList());
-		role.setModel(roleModel);
-		
-		refreshProfileView();
+
+		ListModelList<String> roleModel = new ListModelList<String>(Utils.getRoleList());
+		role.setValue(roleModel.get(1));
 	}
-	
-	
-	@Listen("onClick=#saveProfile")
-	public void doSaveProfile(){
+
+	@Listen("onClick = #editProfile")
+	public void doEditProfile() {
 		Clients.showNotification("@SaveProfile.");
 		UserCredential cre = authService.getUserCredential();
-		User user = userInfoService.findUser(cre.getAccount());
-		if(user==null){
-			//TODO handle un-authenticated access 
-			return;
-		}
-		
-		//apply component value to bean
-		user.setFirstName(firstName.getValue());
-		user.setLastName(lastName.getValue());
-		user.setUserName(userName.getValue());
-		if (password.getValue()!=null && !(password.getValue()).isEmpty()) {
-			user.setPassword(password.getValue());
-		}
-		user.setEmail(email.getValue());
-		
-		Set<String> selection = ((ListModelList)role.getModel()).getSelection();
-		if(!selection.isEmpty()){
-			user.setRole(Integer.parseInt(selection.iterator().next()));
-		}else{
-			user.setRole(null);
-		}
-		
-		nameLabel.setValue(firstName.getValue()+" "+lastName.getValue());
-		
-		userInfoService.updateUser(user);
-		
+		TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
+
+		// userInfoService.updateUser(user);
+
 		Clients.showNotification("Your profile was updated.");
 	}
-	
-	@Listen("onClick=#reloadProfile")
-	public void doReloadProfile(){
-		refreshProfileView();
+
+	@Listen("onClick = #reloadProfile")
+	public void doReloadProfile() {
 
 		String userName = "timescoper";
-        String password = "helloworld";
-        String url = "jdbc:postgresql://localhost:5432/timescope_db1";
-        //try {
-		//	Class.forName("org.postgresql.Driver");
-		//} catch (ClassNotFoundException e1) {
+		String password = "helloworld";
+		String url = "jdbc:postgresql://localhost:5432/timescope_db2";
+		try {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
-		//	e1.printStackTrace();
-		//}
-        try  {
-            Connection conn = DriverManager.getConnection(url, userName, password);        
-            DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            Result<Record> result = context.select().from(CV).fetch();
-            
-            for (Record r : result) {
-                Integer id = r.getValue(CV.CV_ID);
-                String term = r.getValue(CV.TERM);
-
-                System.out.println("CV_id: " + id + " Term: " + term );
-            }
-        } 
-
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-	}
-
-	private void refreshProfileView() {
-		UserCredential cre = authService.getUserCredential();
-		User user = userInfoService.findUser(cre.getAccount());
-		if(user==null){
-			//TODO handle un-authenticated access 
-			return;
+			e1.printStackTrace();
 		}
-		
-		//apply bean value to UI components
-		account.setValue(user.getUserName());
-		firstName.setValue(user.getFirstName());
-		lastName.setValue(user.getLastName());
-		userName.setValue(user.getUserName());
-		email.setValue(user.getEmail());
-		//TODO: Handle mapping of DB value (int) to the displayed role text (string).
-		((ListModelList)role.getModel()).addToSelection(user.getRole());
+		try {
+			Connection conn = DriverManager.getConnection(url, userName, password);
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			Result<Record> result = context.select().from(CV).where(CV.CV_ID.lessThan(11)).fetch();
 
-		nameLabel.setValue(user.getFirstName()+" "+user.getLastName());
+			for (Record r : result) {
+				Integer id = r.getValue(CV.CV_ID);
+				String term = r.getValue(CV.TERM);
+
+				System.out.println("CV_id: " + id + " Term: " + term);
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+
 }

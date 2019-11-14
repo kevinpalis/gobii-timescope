@@ -7,6 +7,7 @@ package org.gobiiproject.datatimescope.db.generated;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import javax.annotation.Generated;
 
@@ -14,6 +15,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Appendanalysistodata
 import org.gobiiproject.datatimescope.db.generated.routines.Appendreadtabletorole;
 import org.gobiiproject.datatimescope.db.generated.routines.Appendroletocontact;
 import org.gobiiproject.datatimescope.db.generated.routines.Appendwritetabletorole;
+import org.gobiiproject.datatimescope.db.generated.routines.Armor1;
+import org.gobiiproject.datatimescope.db.generated.routines.Armor2;
 import org.gobiiproject.datatimescope.db.generated.routines.Citext1;
 import org.gobiiproject.datatimescope.db.generated.routines.Citext2;
 import org.gobiiproject.datatimescope.db.generated.routines.Citext3;
@@ -41,7 +44,9 @@ import org.gobiiproject.datatimescope.db.generated.routines.Createdataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Createdbxref;
 import org.gobiiproject.datatimescope.db.generated.routines.Createdisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Creatednarun;
-import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample;
+import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample1;
+import org.gobiiproject.datatimescope.db.generated.routines.Creatednasample2;
+import org.gobiiproject.datatimescope.db.generated.routines.Createedge;
 import org.gobiiproject.datatimescope.db.generated.routines.Createexperiment;
 import org.gobiiproject.datatimescope.db.generated.routines.Creategermplasm;
 import org.gobiiproject.datatimescope.db.generated.routines.Createjob1;
@@ -58,14 +63,22 @@ import org.gobiiproject.datatimescope.db.generated.routines.Createproject;
 import org.gobiiproject.datatimescope.db.generated.routines.Createprotocol;
 import org.gobiiproject.datatimescope.db.generated.routines.Createreference;
 import org.gobiiproject.datatimescope.db.generated.routines.Createrole;
+import org.gobiiproject.datatimescope.db.generated.routines.Createtimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Createvariant;
 import org.gobiiproject.datatimescope.db.generated.routines.Createvendorprotocol;
+import org.gobiiproject.datatimescope.db.generated.routines.Createvertex;
+import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
+import org.gobiiproject.datatimescope.db.generated.routines.Dearmor;
+import org.gobiiproject.datatimescope.db.generated.routines.Decrypt;
+import org.gobiiproject.datatimescope.db.generated.routines.DecryptIv;
 import org.gobiiproject.datatimescope.db.generated.routines.Deleteanalysis;
 import org.gobiiproject.datatimescope.db.generated.routines.Deleteanalysisparameter;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletecontact;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletecv;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletecvgroup;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnarunindices;
+import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkerindices;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedbxref;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletednarun;
@@ -106,13 +119,23 @@ import org.gobiiproject.datatimescope.db.generated.routines.Deletereference;
 import org.gobiiproject.datatimescope.db.generated.routines.Deleterole;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletevariant;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletevendorprotocol;
+import org.gobiiproject.datatimescope.db.generated.routines.Digest1;
+import org.gobiiproject.datatimescope.db.generated.routines.Digest2;
+import org.gobiiproject.datatimescope.db.generated.routines.Encrypt;
+import org.gobiiproject.datatimescope.db.generated.routines.EncryptIv;
 import org.gobiiproject.datatimescope.db.generated.routines.FileFdwHandler;
 import org.gobiiproject.datatimescope.db.generated.routines.FileFdwValidator;
+import org.gobiiproject.datatimescope.db.generated.routines.GenRandomBytes;
+import org.gobiiproject.datatimescope.db.generated.routines.GenRandomUuid;
+import org.gobiiproject.datatimescope.db.generated.routines.GenSalt1;
+import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallanalysisparameters;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbydataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbydatasetandmap;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallchrlenbymarkerlist;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallcontactsbyrole;
+import org.gobiiproject.datatimescope.db.generated.routines.Getalldatasetsbymarker;
+import org.gobiiproject.datatimescope.db.generated.routines.Getallentryvertices;
 import org.gobiiproject.datatimescope.db.generated.routines.Getalljobsbystatus;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallmarkermetadatabydataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallmarkermetadatabydatasetandmap;
@@ -130,6 +153,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofpl
 import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofproject;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallpropertiesofprotocol;
 import org.gobiiproject.datatimescope.db.generated.routines.Getallsamplemetadatabydataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Getcvgroupid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvterm;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
@@ -153,10 +177,12 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getexperimentnamesby
 import org.gobiiproject.datatimescope.db.generated.routines.Getexperimentsbyprojectid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getgermplasmpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getgermplasmpropertybyname;
+import org.gobiiproject.datatimescope.db.generated.routines.Getlinkagegroupsbymarker;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmanifestbyexperimentid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmapsetpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmapsetpropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerallmapsetinfobydataset;
+import org.gobiiproject.datatimescope.db.generated.routines.Getmarkergroupsbymarker;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkerids;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkeridsbymarkernames;
 import org.gobiiproject.datatimescope.db.generated.routines.Getmarkeridsbymarkernamesandplatformlist;
@@ -194,11 +220,34 @@ import org.gobiiproject.datatimescope.db.generated.routines.Getsampleqcmetadatab
 import org.gobiiproject.datatimescope.db.generated.routines.Getsampleqcmetadatabymarkerlistx1;
 import org.gobiiproject.datatimescope.db.generated.routines.Getsampleqcmetadatabymarkerlistx2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getsampleqcmetadatabysamplelist;
+import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettotaldnarunsindataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettotalmarkersindataset;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettotalprojects;
+import org.gobiiproject.datatimescope.db.generated.routines.Hmac1;
+import org.gobiiproject.datatimescope.db.generated.routines.Hmac2;
 import org.gobiiproject.datatimescope.db.generated.routines.Max;
 import org.gobiiproject.datatimescope.db.generated.routines.Min;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpArmorHeaders;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpKeyId;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecrypt1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecrypt2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecrypt3;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecryptBytea1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecryptBytea2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubDecryptBytea3;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubEncrypt1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubEncrypt2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubEncryptBytea1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpPubEncryptBytea2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymDecrypt1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymDecrypt2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymDecryptBytea1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymDecryptBytea2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymEncrypt1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymEncrypt2;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymEncryptBytea1;
+import org.gobiiproject.datatimescope.db.generated.routines.PgpSymEncryptBytea2;
 import org.gobiiproject.datatimescope.db.generated.routines.RegexpMatches1;
 import org.gobiiproject.datatimescope.db.generated.routines.RegexpMatches2;
 import org.gobiiproject.datatimescope.db.generated.routines.RegexpReplace1;
@@ -212,6 +261,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Removereadtablefromr
 import org.gobiiproject.datatimescope.db.generated.routines.Removerolefromcontact;
 import org.gobiiproject.datatimescope.db.generated.routines.Removewritetablefromrole;
 import org.gobiiproject.datatimescope.db.generated.routines.Replace;
+import org.gobiiproject.datatimescope.db.generated.routines.Setdatasetjobstatusok;
 import org.gobiiproject.datatimescope.db.generated.routines.Setdatawarehouseversion;
 import org.gobiiproject.datatimescope.db.generated.routines.SplitPart;
 import org.gobiiproject.datatimescope.db.generated.routines.Strpos;
@@ -237,7 +287,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Updatedisplay;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarun;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarunpropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednarunpropertybyname;
-import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample1;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatednasample2;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednasamplepropertybyid;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatednasamplepropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Updateexperiment;
@@ -296,6 +347,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ManifestRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.RoleRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.VertexRecord;
 import org.jooq.AggregateFunction;
 import org.jooq.Configuration;
 import org.jooq.Field;
@@ -358,6 +410,74 @@ public class Routines {
         p.setTableid(tableid);
 
         p.execute(configuration);
+    }
+
+    /**
+     * Call <code>public.armor</code>
+     */
+    public static String armor1(Configuration configuration, byte[] __1) {
+        Armor1 f = new Armor1();
+        f.set__1(__1);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.armor</code> as a field.
+     */
+    public static Field<String> armor1(byte[] __1) {
+        Armor1 f = new Armor1();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.armor</code> as a field.
+     */
+    public static Field<String> armor1(Field<byte[]> __1) {
+        Armor1 f = new Armor1();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.armor</code>
+     */
+    public static String armor2(Configuration configuration, byte[] __1, String[] __2, String[] __3) {
+        Armor2 f = new Armor2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.armor</code> as a field.
+     */
+    public static Field<String> armor2(byte[] __1, String[] __2, String[] __3) {
+        Armor2 f = new Armor2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.armor</code> as a field.
+     */
+    public static Field<String> armor2(Field<byte[]> __1, Field<String[]> __2, Field<String[]> __3) {
+        Armor2 f = new Armor2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
     }
 
     /**
@@ -966,9 +1086,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.createanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static Integer createanalysis1(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis1 p = new Createanalysis1();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -980,6 +1101,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -992,10 +1114,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.createanalysis</code>
      */
-    @java.lang.Deprecated
-    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static Integer createanalysis2(Configuration configuration, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Createanalysis2 p = new Createanalysis2();
         p.setAnalysisname(analysisname);
         p.setAnalysisdescription(analysisdescription);
@@ -1007,7 +1128,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -1163,8 +1283,8 @@ public class Routines {
     /**
      * Call <code>public.creatednasample</code>
      */
-    public static Integer creatednasample(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
-        Creatednasample p = new Creatednasample();
+    public static Integer creatednasample1(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
+        Creatednasample1 p = new Creatednasample1();
         p.setDnasamplename(dnasamplename);
         p.setDnasamplecode(dnasamplecode);
         p.setDnasampleplatename(dnasampleplatename);
@@ -1178,6 +1298,44 @@ public class Routines {
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setDnasamplestatus(dnasamplestatus);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.creatednasample</code>
+     */
+    public static Integer creatednasample2(Configuration configuration, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus, String _Uuid) {
+        Creatednasample2 p = new Creatednasample2();
+        p.setDnasamplename(dnasamplename);
+        p.setDnasamplecode(dnasamplecode);
+        p.setDnasampleplatename(dnasampleplatename);
+        p.setDnasamplenum(dnasamplenum);
+        p.setWellrow(wellrow);
+        p.setWellcol(wellcol);
+        p.setProjectid(projectid);
+        p.setGermplasmid(germplasmid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+        p.setDnasamplestatus(dnasamplestatus);
+        p.set_Uuid(_Uuid);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.createedge</code>
+     */
+    public static Integer createedge(Configuration configuration, Integer _StartVertex, Integer _EndVertex, Integer _TypeId, String _Criterion) {
+        Createedge p = new Createedge();
+        p.set_StartVertex(_StartVertex);
+        p.set_EndVertex(_EndVertex);
+        p.set_TypeId(_TypeId);
+        p.set_Criterion(_Criterion);
 
         p.execute(configuration);
         return p.getId();
@@ -1227,11 +1385,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob1(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob1(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Createjob1 p = new Createjob1();
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -1243,11 +1401,11 @@ public class Routines {
     /**
      * Call <code>public.createjob</code>
      */
-    public static Integer createjob2(Configuration configuration, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static Integer createjob2(Configuration configuration, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Createjob2 p = new Createjob2();
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -1471,6 +1629,22 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.createtimescoper</code>
+     */
+    public static Integer createtimescoper(Configuration configuration, String _Firstname, String _Lastname, String _Username, String _Password, String _Email, Integer _Role) {
+        Createtimescoper p = new Createtimescoper();
+        p.set_Firstname(_Firstname);
+        p.set_Lastname(_Lastname);
+        p.set_Username(_Username);
+        p.set_Password(_Password);
+        p.set_Email(_Email);
+        p.set_Role(_Role);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
      * Call <code>public.createvariant</code>
      */
     public static Integer createvariant(Configuration configuration, String variantcode, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
@@ -1497,6 +1671,166 @@ public class Routines {
 
         p.execute(configuration);
         return p.getId();
+    }
+
+    /**
+     * Call <code>public.createvertex</code>
+     */
+    public static Integer createvertex(Configuration configuration, String _Name, Integer _TypeId, String _TableName, String _DataLoc, String _Criterion, String _Alias, Integer _Relevance, Boolean _IsEntry) {
+        Createvertex p = new Createvertex();
+        p.set_Name(_Name);
+        p.set_TypeId(_TypeId);
+        p.set_TableName(_TableName);
+        p.set_DataLoc(_DataLoc);
+        p.set_Criterion(_Criterion);
+        p.set_Alias(_Alias);
+        p.set_Relevance(_Relevance);
+        p.set_IsEntry(_IsEntry);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.crypt</code>
+     */
+    public static String crypt(Configuration configuration, String __1, String __2) {
+        Crypt f = new Crypt();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.crypt</code> as a field.
+     */
+    public static Field<String> crypt(String __1, String __2) {
+        Crypt f = new Crypt();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.crypt</code> as a field.
+     */
+    public static Field<String> crypt(Field<String> __1, Field<String> __2) {
+        Crypt f = new Crypt();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.dearmor</code>
+     */
+    public static byte[] dearmor(Configuration configuration, String __1) {
+        Dearmor f = new Dearmor();
+        f.set__1(__1);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.dearmor</code> as a field.
+     */
+    public static Field<byte[]> dearmor(String __1) {
+        Dearmor f = new Dearmor();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.dearmor</code> as a field.
+     */
+    public static Field<byte[]> dearmor(Field<String> __1) {
+        Dearmor f = new Dearmor();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.decrypt</code>
+     */
+    public static byte[] decrypt(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        Decrypt f = new Decrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.decrypt</code> as a field.
+     */
+    public static Field<byte[]> decrypt(byte[] __1, byte[] __2, String __3) {
+        Decrypt f = new Decrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.decrypt</code> as a field.
+     */
+    public static Field<byte[]> decrypt(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        Decrypt f = new Decrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.decrypt_iv</code>
+     */
+    public static byte[] decryptIv(Configuration configuration, byte[] __1, byte[] __2, byte[] __3, String __4) {
+        DecryptIv f = new DecryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.decrypt_iv</code> as a field.
+     */
+    public static Field<byte[]> decryptIv(byte[] __1, byte[] __2, byte[] __3, String __4) {
+        DecryptIv f = new DecryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.decrypt_iv</code> as a field.
+     */
+    public static Field<byte[]> decryptIv(Field<byte[]> __1, Field<byte[]> __2, Field<byte[]> __3, Field<String> __4) {
+        DecryptIv f = new DecryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
     }
 
     /**
@@ -1684,6 +2018,68 @@ public class Routines {
     public static Field<Integer> deletedataset(Field<Integer> id) {
         Deletedataset f = new Deletedataset();
         f.setId(id);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.deletedatasetdnarunindices</code>
+     */
+    public static Integer deletedatasetdnarunindices(Configuration configuration, Integer datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.deletedatasetdnarunindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetdnarunindices(Integer datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.deletedatasetdnarunindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetdnarunindices(Field<Integer> datasetid) {
+        Deletedatasetdnarunindices f = new Deletedatasetdnarunindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.deletedatasetmarkerindices</code>
+     */
+    public static Integer deletedatasetmarkerindices(Configuration configuration, Integer datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.deletedatasetmarkerindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetmarkerindices(Integer datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.deletedatasetmarkerindices</code> as a field.
+     */
+    public static Field<Integer> deletedatasetmarkerindices(Field<Integer> datasetid) {
+        Deletedatasetmarkerindices f = new Deletedatasetmarkerindices();
+        f.setDatasetid(datasetid);
 
         return f.asField();
     }
@@ -2960,6 +3356,151 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.digest</code>
+     */
+    public static byte[] digest1(Configuration configuration, String __1, String __2) {
+        Digest1 f = new Digest1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.digest</code> as a field.
+     */
+    public static Field<byte[]> digest1(String __1, String __2) {
+        Digest1 f = new Digest1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.digest</code> as a field.
+     */
+    public static Field<byte[]> digest1(Field<String> __1, Field<String> __2) {
+        Digest1 f = new Digest1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.digest</code>
+     */
+    public static byte[] digest2(Configuration configuration, byte[] __1, String __2) {
+        Digest2 f = new Digest2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.digest</code> as a field.
+     */
+    public static Field<byte[]> digest2(byte[] __1, String __2) {
+        Digest2 f = new Digest2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.digest</code> as a field.
+     */
+    public static Field<byte[]> digest2(Field<byte[]> __1, Field<String> __2) {
+        Digest2 f = new Digest2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.encrypt</code>
+     */
+    public static byte[] encrypt(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        Encrypt f = new Encrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.encrypt</code> as a field.
+     */
+    public static Field<byte[]> encrypt(byte[] __1, byte[] __2, String __3) {
+        Encrypt f = new Encrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.encrypt</code> as a field.
+     */
+    public static Field<byte[]> encrypt(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        Encrypt f = new Encrypt();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.encrypt_iv</code>
+     */
+    public static byte[] encryptIv(Configuration configuration, byte[] __1, byte[] __2, byte[] __3, String __4) {
+        EncryptIv f = new EncryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.encrypt_iv</code> as a field.
+     */
+    public static Field<byte[]> encryptIv(byte[] __1, byte[] __2, byte[] __3, String __4) {
+        EncryptIv f = new EncryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.encrypt_iv</code> as a field.
+     */
+    public static Field<byte[]> encryptIv(Field<byte[]> __1, Field<byte[]> __2, Field<byte[]> __3, Field<String> __4) {
+        EncryptIv f = new EncryptIv();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
@@ -2989,6 +3530,121 @@ public class Routines {
         p.set__2(__2);
 
         p.execute(configuration);
+    }
+
+    /**
+     * Call <code>public.gen_random_bytes</code>
+     */
+    public static byte[] genRandomBytes(Configuration configuration, Integer __1) {
+        GenRandomBytes f = new GenRandomBytes();
+        f.set__1(__1);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.gen_random_bytes</code> as a field.
+     */
+    public static Field<byte[]> genRandomBytes(Integer __1) {
+        GenRandomBytes f = new GenRandomBytes();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.gen_random_bytes</code> as a field.
+     */
+    public static Field<byte[]> genRandomBytes(Field<Integer> __1) {
+        GenRandomBytes f = new GenRandomBytes();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.gen_random_uuid</code>
+     */
+    public static UUID genRandomUuid(Configuration configuration) {
+        GenRandomUuid f = new GenRandomUuid();
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.gen_random_uuid</code> as a field.
+     */
+    public static Field<UUID> genRandomUuid() {
+        GenRandomUuid f = new GenRandomUuid();
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.gen_salt</code>
+     */
+    public static String genSalt1(Configuration configuration, String __1) {
+        GenSalt1 f = new GenSalt1();
+        f.set__1(__1);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.gen_salt</code> as a field.
+     */
+    public static Field<String> genSalt1(String __1) {
+        GenSalt1 f = new GenSalt1();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.gen_salt</code> as a field.
+     */
+    public static Field<String> genSalt1(Field<String> __1) {
+        GenSalt1 f = new GenSalt1();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.gen_salt</code>
+     */
+    public static String genSalt2(Configuration configuration, String __1, Integer __2) {
+        GenSalt2 f = new GenSalt2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.gen_salt</code> as a field.
+     */
+    public static Field<String> genSalt2(String __1, Integer __2) {
+        GenSalt2 f = new GenSalt2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.gen_salt</code> as a field.
+     */
+    public static Field<String> genSalt2(Field<String> __1, Field<Integer> __2) {
+        GenSalt2 f = new GenSalt2();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
     }
 
     /**
@@ -3063,6 +3719,36 @@ public class Routines {
     public static Field<ContactRecord> getallcontactsbyrole(Field<Integer> roleid) {
         Getallcontactsbyrole f = new Getallcontactsbyrole();
         f.setRoleid(roleid);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.getalldatasetsbymarker</code>
+     */
+    public static Getalldatasetsbymarker getalldatasetsbymarker(Configuration configuration, Integer _Markerid) {
+        Getalldatasetsbymarker p = new Getalldatasetsbymarker();
+        p.set_Markerid(_Markerid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.getallentryvertices</code>
+     */
+    public static VertexRecord getallentryvertices(Configuration configuration) {
+        Getallentryvertices f = new Getallentryvertices();
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.getallentryvertices</code> as a field.
+     */
+    public static Field<VertexRecord> getallentryvertices() {
+        Getallentryvertices f = new Getallentryvertices();
 
         return f.asField();
     }
@@ -3256,6 +3942,18 @@ public class Routines {
 
         p.execute(configuration);
         return p;
+    }
+
+    /**
+     * Call <code>public.getcvgroupid</code>
+     */
+    public static Integer getcvgroupid(Configuration configuration, String _Groupname, Integer _Grouptype) {
+        Getcvgroupid p = new Getcvgroupid();
+        p.set_Groupname(_Groupname);
+        p.set_Grouptype(_Grouptype);
+
+        p.execute(configuration);
+        return p.getId();
     }
 
     /**
@@ -3612,6 +4310,17 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.getlinkagegroupsbymarker</code>
+     */
+    public static Getlinkagegroupsbymarker getlinkagegroupsbymarker(Configuration configuration, Integer _Markerid) {
+        Getlinkagegroupsbymarker p = new Getlinkagegroupsbymarker();
+        p.set_Markerid(_Markerid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
      * Call <code>public.getmanifestbyexperimentid</code>
      */
     public static ManifestRecord getmanifestbyexperimentid(Configuration configuration, Integer experimentid) {
@@ -3695,6 +4404,18 @@ public class Routines {
         Getmarkerallmapsetinfobydataset p = new Getmarkerallmapsetinfobydataset();
         p.setDsid(dsid);
         p.setMapid(mapid);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     */
+    @java.lang.Deprecated
+    public static Getmarkergroupsbymarker getmarkergroupsbymarker(Configuration configuration, Integer _Markerid) {
+        Getmarkergroupsbymarker p = new Getmarkergroupsbymarker();
+        p.set_Markerid(_Markerid);
 
         p.execute(configuration);
         return p;
@@ -4307,6 +5028,18 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.gettimescoper</code>
+     */
+    public static Gettimescoper gettimescoper(Configuration configuration, String _Username, String _Password) {
+        Gettimescoper p = new Gettimescoper();
+        p.set_Username(_Username);
+        p.set_Password(_Password);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
      * Call <code>public.gettotaldnarunsindataset</code>
      */
     public static Integer gettotaldnarunsindataset(Configuration configuration, String _DatasetId) {
@@ -4388,6 +5121,80 @@ public class Routines {
     }
 
     /**
+     * Call <code>public.hmac</code>
+     */
+    public static byte[] hmac1(Configuration configuration, String __1, String __2, String __3) {
+        Hmac1 f = new Hmac1();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.hmac</code> as a field.
+     */
+    public static Field<byte[]> hmac1(String __1, String __2, String __3) {
+        Hmac1 f = new Hmac1();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.hmac</code> as a field.
+     */
+    public static Field<byte[]> hmac1(Field<String> __1, Field<String> __2, Field<String> __3) {
+        Hmac1 f = new Hmac1();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.hmac</code>
+     */
+    public static byte[] hmac2(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        Hmac2 f = new Hmac2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.hmac</code> as a field.
+     */
+    public static Field<byte[]> hmac2(byte[] __1, byte[] __2, String __3) {
+        Hmac2 f = new Hmac2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.hmac</code> as a field.
+     */
+    public static Field<byte[]> hmac2(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        Hmac2 f = new Hmac2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
      * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
     @java.lang.Deprecated
@@ -4429,6 +5236,696 @@ public class Routines {
         f.set__1(__1);
 
         return f.asAggregateFunction();
+    }
+
+    /**
+     * Call <code>public.pgp_armor_headers</code>
+     */
+    public static PgpArmorHeaders pgpArmorHeaders(Configuration configuration, String __1) {
+        PgpArmorHeaders p = new PgpArmorHeaders();
+        p.set__1(__1);
+
+        p.execute(configuration);
+        return p;
+    }
+
+    /**
+     * Call <code>public.pgp_key_id</code>
+     */
+    public static String pgpKeyId(Configuration configuration, byte[] __1) {
+        PgpKeyId f = new PgpKeyId();
+        f.set__1(__1);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_key_id</code> as a field.
+     */
+    public static Field<String> pgpKeyId(byte[] __1) {
+        PgpKeyId f = new PgpKeyId();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_key_id</code> as a field.
+     */
+    public static Field<String> pgpKeyId(Field<byte[]> __1) {
+        PgpKeyId f = new PgpKeyId();
+        f.set__1(__1);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt</code>
+     */
+    public static String pgpPubDecrypt1(Configuration configuration, byte[] __1, byte[] __2) {
+        PgpPubDecrypt1 f = new PgpPubDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt1(byte[] __1, byte[] __2) {
+        PgpPubDecrypt1 f = new PgpPubDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt1(Field<byte[]> __1, Field<byte[]> __2) {
+        PgpPubDecrypt1 f = new PgpPubDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt</code>
+     */
+    public static String pgpPubDecrypt2(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        PgpPubDecrypt2 f = new PgpPubDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt2(byte[] __1, byte[] __2, String __3) {
+        PgpPubDecrypt2 f = new PgpPubDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt2(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        PgpPubDecrypt2 f = new PgpPubDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt</code>
+     */
+    public static String pgpPubDecrypt3(Configuration configuration, byte[] __1, byte[] __2, String __3, String __4) {
+        PgpPubDecrypt3 f = new PgpPubDecrypt3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt3(byte[] __1, byte[] __2, String __3, String __4) {
+        PgpPubDecrypt3 f = new PgpPubDecrypt3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt</code> as a field.
+     */
+    public static Field<String> pgpPubDecrypt3(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3, Field<String> __4) {
+        PgpPubDecrypt3 f = new PgpPubDecrypt3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt_bytea</code>
+     */
+    public static byte[] pgpPubDecryptBytea1(Configuration configuration, byte[] __1, byte[] __2) {
+        PgpPubDecryptBytea1 f = new PgpPubDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea1(byte[] __1, byte[] __2) {
+        PgpPubDecryptBytea1 f = new PgpPubDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea1(Field<byte[]> __1, Field<byte[]> __2) {
+        PgpPubDecryptBytea1 f = new PgpPubDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt_bytea</code>
+     */
+    public static byte[] pgpPubDecryptBytea2(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        PgpPubDecryptBytea2 f = new PgpPubDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea2(byte[] __1, byte[] __2, String __3) {
+        PgpPubDecryptBytea2 f = new PgpPubDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea2(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        PgpPubDecryptBytea2 f = new PgpPubDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_decrypt_bytea</code>
+     */
+    public static byte[] pgpPubDecryptBytea3(Configuration configuration, byte[] __1, byte[] __2, String __3, String __4) {
+        PgpPubDecryptBytea3 f = new PgpPubDecryptBytea3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea3(byte[] __1, byte[] __2, String __3, String __4) {
+        PgpPubDecryptBytea3 f = new PgpPubDecryptBytea3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubDecryptBytea3(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3, Field<String> __4) {
+        PgpPubDecryptBytea3 f = new PgpPubDecryptBytea3();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+        f.set__4(__4);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_encrypt</code>
+     */
+    public static byte[] pgpPubEncrypt1(Configuration configuration, String __1, byte[] __2) {
+        PgpPubEncrypt1 f = new PgpPubEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncrypt1(String __1, byte[] __2) {
+        PgpPubEncrypt1 f = new PgpPubEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncrypt1(Field<String> __1, Field<byte[]> __2) {
+        PgpPubEncrypt1 f = new PgpPubEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_encrypt</code>
+     */
+    public static byte[] pgpPubEncrypt2(Configuration configuration, String __1, byte[] __2, String __3) {
+        PgpPubEncrypt2 f = new PgpPubEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncrypt2(String __1, byte[] __2, String __3) {
+        PgpPubEncrypt2 f = new PgpPubEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncrypt2(Field<String> __1, Field<byte[]> __2, Field<String> __3) {
+        PgpPubEncrypt2 f = new PgpPubEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_encrypt_bytea</code>
+     */
+    public static byte[] pgpPubEncryptBytea1(Configuration configuration, byte[] __1, byte[] __2) {
+        PgpPubEncryptBytea1 f = new PgpPubEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncryptBytea1(byte[] __1, byte[] __2) {
+        PgpPubEncryptBytea1 f = new PgpPubEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncryptBytea1(Field<byte[]> __1, Field<byte[]> __2) {
+        PgpPubEncryptBytea1 f = new PgpPubEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_pub_encrypt_bytea</code>
+     */
+    public static byte[] pgpPubEncryptBytea2(Configuration configuration, byte[] __1, byte[] __2, String __3) {
+        PgpPubEncryptBytea2 f = new PgpPubEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncryptBytea2(byte[] __1, byte[] __2, String __3) {
+        PgpPubEncryptBytea2 f = new PgpPubEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_pub_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpPubEncryptBytea2(Field<byte[]> __1, Field<byte[]> __2, Field<String> __3) {
+        PgpPubEncryptBytea2 f = new PgpPubEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_decrypt</code>
+     */
+    public static String pgpSymDecrypt1(Configuration configuration, byte[] __1, String __2) {
+        PgpSymDecrypt1 f = new PgpSymDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt</code> as a field.
+     */
+    public static Field<String> pgpSymDecrypt1(byte[] __1, String __2) {
+        PgpSymDecrypt1 f = new PgpSymDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt</code> as a field.
+     */
+    public static Field<String> pgpSymDecrypt1(Field<byte[]> __1, Field<String> __2) {
+        PgpSymDecrypt1 f = new PgpSymDecrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_decrypt</code>
+     */
+    public static String pgpSymDecrypt2(Configuration configuration, byte[] __1, String __2, String __3) {
+        PgpSymDecrypt2 f = new PgpSymDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt</code> as a field.
+     */
+    public static Field<String> pgpSymDecrypt2(byte[] __1, String __2, String __3) {
+        PgpSymDecrypt2 f = new PgpSymDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt</code> as a field.
+     */
+    public static Field<String> pgpSymDecrypt2(Field<byte[]> __1, Field<String> __2, Field<String> __3) {
+        PgpSymDecrypt2 f = new PgpSymDecrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_decrypt_bytea</code>
+     */
+    public static byte[] pgpSymDecryptBytea1(Configuration configuration, byte[] __1, String __2) {
+        PgpSymDecryptBytea1 f = new PgpSymDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymDecryptBytea1(byte[] __1, String __2) {
+        PgpSymDecryptBytea1 f = new PgpSymDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymDecryptBytea1(Field<byte[]> __1, Field<String> __2) {
+        PgpSymDecryptBytea1 f = new PgpSymDecryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_decrypt_bytea</code>
+     */
+    public static byte[] pgpSymDecryptBytea2(Configuration configuration, byte[] __1, String __2, String __3) {
+        PgpSymDecryptBytea2 f = new PgpSymDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymDecryptBytea2(byte[] __1, String __2, String __3) {
+        PgpSymDecryptBytea2 f = new PgpSymDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_decrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymDecryptBytea2(Field<byte[]> __1, Field<String> __2, Field<String> __3) {
+        PgpSymDecryptBytea2 f = new PgpSymDecryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_encrypt</code>
+     */
+    public static byte[] pgpSymEncrypt1(Configuration configuration, String __1, String __2) {
+        PgpSymEncrypt1 f = new PgpSymEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncrypt1(String __1, String __2) {
+        PgpSymEncrypt1 f = new PgpSymEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncrypt1(Field<String> __1, Field<String> __2) {
+        PgpSymEncrypt1 f = new PgpSymEncrypt1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_encrypt</code>
+     */
+    public static byte[] pgpSymEncrypt2(Configuration configuration, String __1, String __2, String __3) {
+        PgpSymEncrypt2 f = new PgpSymEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncrypt2(String __1, String __2, String __3) {
+        PgpSymEncrypt2 f = new PgpSymEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncrypt2(Field<String> __1, Field<String> __2, Field<String> __3) {
+        PgpSymEncrypt2 f = new PgpSymEncrypt2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_encrypt_bytea</code>
+     */
+    public static byte[] pgpSymEncryptBytea1(Configuration configuration, byte[] __1, String __2) {
+        PgpSymEncryptBytea1 f = new PgpSymEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncryptBytea1(byte[] __1, String __2) {
+        PgpSymEncryptBytea1 f = new PgpSymEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncryptBytea1(Field<byte[]> __1, Field<String> __2) {
+        PgpSymEncryptBytea1 f = new PgpSymEncryptBytea1();
+        f.set__1(__1);
+        f.set__2(__2);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.pgp_sym_encrypt_bytea</code>
+     */
+    public static byte[] pgpSymEncryptBytea2(Configuration configuration, byte[] __1, String __2, String __3) {
+        PgpSymEncryptBytea2 f = new PgpSymEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncryptBytea2(byte[] __1, String __2, String __3) {
+        PgpSymEncryptBytea2 f = new PgpSymEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.pgp_sym_encrypt_bytea</code> as a field.
+     */
+    public static Field<byte[]> pgpSymEncryptBytea2(Field<byte[]> __1, Field<String> __2, Field<String> __3) {
+        PgpSymEncryptBytea2 f = new PgpSymEncryptBytea2();
+        f.set__1(__1);
+        f.set__2(__2);
+        f.set__3(__3);
+
+        return f.asField();
     }
 
     /**
@@ -4825,6 +6322,37 @@ public class Routines {
         f.set__1(__1);
         f.set__2(__2);
         f.set__3(__3);
+
+        return f.asField();
+    }
+
+    /**
+     * Call <code>public.setdatasetjobstatusok</code>
+     */
+    public static Integer setdatasetjobstatusok(Configuration configuration, Integer datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
+
+        f.execute(configuration);
+        return f.getReturnValue();
+    }
+
+    /**
+     * Get <code>public.setdatasetjobstatusok</code> as a field.
+     */
+    public static Field<Integer> setdatasetjobstatusok(Integer datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
+
+        return f.asField();
+    }
+
+    /**
+     * Get <code>public.setdatasetjobstatusok</code> as a field.
+     */
+    public static Field<Integer> setdatasetjobstatusok(Field<Integer> datasetid) {
+        Setdatasetjobstatusok f = new Setdatasetjobstatusok();
+        f.setDatasetid(datasetid);
 
         return f.asField();
     }
@@ -5298,9 +6826,10 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updateanalysis</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    @java.lang.Deprecated
+    public static void updateanalysis2(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis2 p = new Updateanalysis2();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -5313,6 +6842,7 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
+        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -5324,10 +6854,9 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updateanalysis</code>
      */
-    @java.lang.Deprecated
-    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Object analysisparameters, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+    public static void updateanalysis3(Configuration configuration, Integer id, String analysisname, String analysisdescription, Integer typeid, String analysisprogram, String analysisprogramversion, String aanalysisalgorithm, String analysissourcename, String analysissourceversion, String analysissourceuri, Integer referenceid, Timestamp analysistimeexecuted, Integer analysisstatus, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
         Updateanalysis3 p = new Updateanalysis3();
         p.setId(id);
         p.setAnalysisname(analysisname);
@@ -5340,7 +6869,6 @@ public class Routines {
         p.setAnalysissourceversion(analysissourceversion);
         p.setAnalysissourceuri(analysissourceuri);
         p.setReferenceid(referenceid);
-        p.setAnalysisparameters(analysisparameters);
         p.setAnalysistimeexecuted(analysistimeexecuted);
         p.setAnalysisstatus(analysisstatus);
         p.setCreatedby(createdby);
@@ -5611,8 +7139,8 @@ public class Routines {
     /**
      * Call <code>public.updatednasample</code>
      */
-    public static void updatednasample(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
-        Updatednasample p = new Updatednasample();
+    public static void updatednasample1(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus) {
+        Updatednasample1 p = new Updatednasample1();
         p.setId(id);
         p.setDnasamplename(dnasamplename);
         p.setDnasamplecode(dnasamplecode);
@@ -5627,6 +7155,30 @@ public class Routines {
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setDnasamplestatus(dnasamplestatus);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>public.updatednasample</code>
+     */
+    public static void updatednasample2(Configuration configuration, Integer id, String dnasamplename, String dnasamplecode, String dnasampleplatename, String dnasamplenum, String wellrow, String wellcol, Integer projectid, Integer germplasmid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer dnasamplestatus, String _Uuid) {
+        Updatednasample2 p = new Updatednasample2();
+        p.setId(id);
+        p.setDnasamplename(dnasamplename);
+        p.setDnasamplecode(dnasamplecode);
+        p.setDnasampleplatename(dnasampleplatename);
+        p.setDnasamplenum(dnasamplenum);
+        p.setWellrow(wellrow);
+        p.setWellcol(wellcol);
+        p.setProjectid(projectid);
+        p.setGermplasmid(germplasmid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+        p.setDnasamplestatus(dnasamplestatus);
+        p.set_Uuid(_Uuid);
 
         p.execute(configuration);
     }
@@ -5766,12 +7318,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob1(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob1(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
         Updatejob1 p = new Updatejob1();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_TypeId(_TypeId);
-        p.set_PayloadTypeId(_PayloadTypeId);
+        p.set_Type(_Type);
+        p.set_PayloadType(_PayloadType);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -5782,12 +7334,12 @@ public class Routines {
     /**
      * Call <code>public.updatejob</code>
      */
-    public static void updatejob2(Configuration configuration, Integer id, String _Name, String _Type, String _PayloadType, String _Status, String _Message, Integer _SubmittedBy) {
+    public static void updatejob2(Configuration configuration, Integer id, String _Name, Integer _TypeId, Integer _PayloadTypeId, Integer _Status, String _Message, Integer _SubmittedBy) {
         Updatejob2 p = new Updatejob2();
         p.setId(id);
         p.set_Name(_Name);
-        p.set_Type(_Type);
-        p.set_PayloadType(_PayloadType);
+        p.set_TypeId(_TypeId);
+        p.set_PayloadTypeId(_PayloadTypeId);
         p.set_Status(_Status);
         p.set_Message(_Message);
         p.set_SubmittedBy(_SubmittedBy);
@@ -5895,16 +7447,18 @@ public class Routines {
     }
 
     /**
-     * Call <code>public.updatemarkergroup</code>
+     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
      */
-    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
+    @java.lang.Deprecated
+    public static void updatemarkergroup1(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup1 p = new Updatemarkergroup1();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
+        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreateddate(createddate);
+        p.setCreatedate(createdate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);
@@ -5913,18 +7467,16 @@ public class Routines {
     }
 
     /**
-     * @deprecated Unknown data type. Please define an explicit {@link org.jooq.Binding} to specify how this type should be handled. Deprecation can be turned off using <deprecationOnUnknownTypes/> in your code generator configuration.
+     * Call <code>public.updatemarkergroup</code>
      */
-    @java.lang.Deprecated
-    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, Object markergroupmarkers, String germplasmgroup, Integer createdby, Date createdate, String modifiedby, Date modifieddate, Integer markergroupstatus) {
+    public static void updatemarkergroup2(Configuration configuration, Integer id, String markergroupname, String markergroupcode, String germplasmgroup, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate, Integer markergroupstatus) {
         Updatemarkergroup2 p = new Updatemarkergroup2();
         p.setId(id);
         p.setMarkergroupname(markergroupname);
         p.setMarkergroupcode(markergroupcode);
-        p.setMarkergroupmarkers(markergroupmarkers);
         p.setGermplasmgroup(germplasmgroup);
         p.setCreatedby(createdby);
-        p.setCreatedate(createdate);
+        p.setCreateddate(createddate);
         p.setModifiedby(modifiedby);
         p.setModifieddate(modifieddate);
         p.setMarkergroupstatus(markergroupstatus);

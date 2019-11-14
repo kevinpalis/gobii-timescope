@@ -1,13 +1,22 @@
-<div hflex="1" vflex="1" sclass="banner">
-	<hbox hflex="1" vflex="1" align="center">
-		<a href="http://www.zkoss.org/">
-			<image src="/imgs/gobiilogo.png" width="165px" />
-		</a>
-		<div width="400px">
-			<label value="Data TimeScope (will be replaced by a cool logo)" sclass="banner-head" />
-		</div>
-		<hbox hflex="1" vflex="1" pack="end" align="end">
-			Kpalis
-		</hbox>
+<div hflex="1" sclass="banner"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
+
+	<hbox apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')"
+		hflex="1" vflex="1" pack="end" align="end">
+
+		<label value="@load(vm.userAccount.username)"
+			style="font-style: oblique; font-size: 15px" />
+		:
+
+		<label value="@load(vm.userAccount.lastname)"
+			style="font-style: oblique; font-size: 15px" />
+		,
+		<label value="@load(vm.userAccount.firstname)"
+			style="font-style: oblique; font-size: 15px" />
+		(
+		<a label="logout" onClick="@command('signout')"
+			style="font-style: oblique; font-size: 15px" />
+		)
 	</hbox>
 </div>

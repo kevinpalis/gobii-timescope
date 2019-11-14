@@ -10,26 +10,20 @@ import java.util.Set;
 public class UserCredential implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	String account;
-	String name;
+	private String account;
+	Integer role;
 	
 	Set<String> roles = new HashSet<String>();
 
-	public UserCredential(String account, String name) {
+	public UserCredential(String account, Integer integer) {
 		this.account = account;
-		this.name = name;
+		this.role = integer;
 	}
 
 	public UserCredential() {
 		this.account = "anonymous";
-		this.name = "Anonymous";
-		roles.add("anonymous");
+		this.role = 0;
 	}
-
-	public boolean isAnonymous() {
-		return hasRole("anonymous") || "anonymous".equals(account);
-	}
-
 	public String getAccount() {
 		return account;
 	}
@@ -38,20 +32,13 @@ public class UserCredential implements Serializable{
 		this.account = account;
 	}
 
-	public String getName() {
-		return name;
+	public Integer getRole() {
+		return role;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setRole(Integer role) {
+		this.role = role;
 	}
-	
-	public boolean hasRole(String role){
-		return roles.contains(role);
-	}
-	
-	public void addRole(String role){
-		roles.add(role);
-	}
+
 
 }

@@ -17,8 +17,8 @@ import org.gobiiproject.datatimescope.db.generated.tables.Dbxref;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnarun;
 import org.gobiiproject.datatimescope.db.generated.tables.Dnasample;
+import org.gobiiproject.datatimescope.db.generated.tables.Edge;
 import org.gobiiproject.datatimescope.db.generated.tables.Experiment;
-import org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz;
 import org.gobiiproject.datatimescope.db.generated.tables.Germplasm;
 import org.gobiiproject.datatimescope.db.generated.tables.Gobiiprop;
 import org.gobiiproject.datatimescope.db.generated.tables.Job;
@@ -35,11 +35,16 @@ import org.gobiiproject.datatimescope.db.generated.tables.Protocol;
 import org.gobiiproject.datatimescope.db.generated.tables.Reference;
 import org.gobiiproject.datatimescope.db.generated.tables.Role;
 import org.gobiiproject.datatimescope.db.generated.tables.Timescoper;
+import org.gobiiproject.datatimescope.db.generated.tables.TransitiveClosure;
+import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkageGenetic;
 import org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical;
+import org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.Variant;
 import org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol;
+import org.gobiiproject.datatimescope.db.generated.tables.Vertex;
 
 
 /**
@@ -117,14 +122,14 @@ between them.
     public static final Dnasample DNASAMPLE = org.gobiiproject.datatimescope.db.generated.tables.Dnasample.DNASAMPLE;
 
     /**
+     * The table <code>public.edge</code>.
+     */
+    public static final Edge EDGE = org.gobiiproject.datatimescope.db.generated.tables.Edge.EDGE;
+
+    /**
      * The table <code>public.experiment</code>.
      */
     public static final Experiment EXPERIMENT = org.gobiiproject.datatimescope.db.generated.tables.Experiment.EXPERIMENT;
-
-    /**
-     * The table <code>public.ft_linkage_group_2bsid4wz</code>.
-     */
-    public static final FtLinkageGroup_2bsid4wz FT_LINKAGE_GROUP_2BSID4WZ = org.gobiiproject.datatimescope.db.generated.tables.FtLinkageGroup_2bsid4wz.FT_LINKAGE_GROUP_2BSID4WZ;
 
     /**
      * The table <code>public.germplasm</code>.
@@ -207,9 +212,24 @@ between them.
     public static final Timescoper TIMESCOPER = org.gobiiproject.datatimescope.db.generated.tables.Timescoper.TIMESCOPER;
 
     /**
+     * The table <code>public.transitive_closure</code>.
+     */
+    public static final TransitiveClosure TRANSITIVE_CLOSURE = org.gobiiproject.datatimescope.db.generated.tables.TransitiveClosure.TRANSITIVE_CLOSURE;
+
+    /**
+     * The table <code>public.v_dataset_summary</code>.
+     */
+    public static final VDatasetSummary V_DATASET_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary.V_DATASET_SUMMARY;
+
+    /**
      * The table <code>public.v_jobs_summary</code>.
      */
     public static final VJobsSummary V_JOBS_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VJobsSummary.V_JOBS_SUMMARY;
+
+    /**
+     * The table <code>public.v_marker_group_summary</code>.
+     */
+    public static final VMarkerGroupSummary V_MARKER_GROUP_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerGroupSummary.V_MARKER_GROUP_SUMMARY;
 
     /**
      * The table <code>public.v_marker_linkage_genetic</code>.
@@ -222,6 +242,11 @@ between them.
     public static final VMarkerLinkagePhysical V_MARKER_LINKAGE_PHYSICAL = org.gobiiproject.datatimescope.db.generated.tables.VMarkerLinkagePhysical.V_MARKER_LINKAGE_PHYSICAL;
 
     /**
+     * The table <code>public.v_marker_summary</code>.
+     */
+    public static final VMarkerSummary V_MARKER_SUMMARY = org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary.V_MARKER_SUMMARY;
+
+    /**
      * The table <code>public.variant</code>.
      */
     public static final Variant VARIANT = org.gobiiproject.datatimescope.db.generated.tables.Variant.VARIANT;
@@ -230,4 +255,9 @@ between them.
      * Vendors reside in the Organization table. A vendor can provide multiple protocols, and a particular protocol can be offered by multiple vendors, hence the N:M relationship table.
      */
     public static final VendorProtocol VENDOR_PROTOCOL = org.gobiiproject.datatimescope.db.generated.tables.VendorProtocol.VENDOR_PROTOCOL;
+
+    /**
+     * The table <code>public.vertex</code>.
+     */
+    public static final Vertex VERTEX = org.gobiiproject.datatimescope.db.generated.tables.Vertex.VERTEX;
 }

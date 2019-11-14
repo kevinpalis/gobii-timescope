@@ -1,0 +1,107 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+
+<?page title="Timescope Login" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?link rel="shortcut icon" type="image/x-icon" href="/imgs/favicon.ico"?>
+<?link rel="icon" type="image/x-icon" href="/imgs/favicon.ico"?>
+<zk>
+	<div height="100%">
+		<hbox vflex="1" hflex="1" align="center" pack="center"
+			spacing="20px">
+			<vlayout>
+				<window id="loginWin"
+					apply="org.zkoss.bind.BindComposer"
+					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
+					border="normal" hflex="min" vflex="max">
+
+					<caption sclass="fn-caption">
+						<image src="/imgs/datatimescope5.png"
+							width="200px" />
+					</caption>
+
+					<vbox hflex="min" align="center" vflex="min">
+
+						<grid hflex="min" vflex="min"
+							style="border: 0;">
+							<columns>
+								<column align="right" hflex="min" />
+								<column />
+							</columns>
+							<rows>
+								<row>
+									<cell sclass="row-title">
+										Database Host:
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a host name" width="300px"
+											value="@bind(vm.serverInfo.host)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Database Port :
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a database port"
+											width="300px" value="@bind(vm.serverInfo.port)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Database Name :
+									</cell>
+									<cell>
+										<textbox
+											constraint="no empty: Please enter a database name"
+											width="300px" value="@bind(vm.serverInfo.dbName)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Timescope Username :
+									</cell>
+									<cell>
+										<textbox id="account"
+											width="300px" value="@bind(vm.userAccount.username)" />
+									</cell>
+								</row>
+								<row>
+									<cell sclass="row-title">
+										Timescope Password :
+									</cell>
+									<cell>
+										<textbox id="password"
+											type="password" width="300px"
+											value="@bind(vm.userAccount.password)" />
+									</cell>
+								</row>
+							</rows>
+						</grid>
+						<separator spacing="12px" />
+						<button label="Login" width="200px"
+							onClick="@command('login')" />
+						<separator spacing="5px" />
+
+						<label value="Need help?"
+							style="font-style: oblique; color: blue; text-decoration: underline; cursor:pointer !important"
+							onClick="@command('needhelp')" />
+					</vbox>
+				</window>
+			</vlayout>
+		</hbox>
+	</div>
+</zk>

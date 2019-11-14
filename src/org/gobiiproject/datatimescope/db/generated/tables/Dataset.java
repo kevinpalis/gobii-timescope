@@ -40,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Dataset extends TableImpl<DatasetRecord> {
 
-    private static final long serialVersionUID = -1754899888;
+    private static final long serialVersionUID = -182371439;
 
     /**
      * The reference instance of <code>public.dataset</code>
@@ -119,7 +119,7 @@ public class Dataset extends TableImpl<DatasetRecord> {
     /**
      * The column <code>public.dataset.modified_date</code>.
      */
-    public final TableField<DatasetRecord, Date> MODIFIED_DATE = createField("modified_date", org.jooq.impl.SQLDataType.DATE.defaultValue(org.jooq.impl.DSL.field("('now'::text)::date", org.jooq.impl.SQLDataType.DATE)), this, "");
+    public final TableField<DatasetRecord, Date> MODIFIED_DATE = createField("modified_date", org.jooq.impl.SQLDataType.DATE, this, "");
 
     /**
      * The column <code>public.dataset.status</code>.
