@@ -4,6 +4,7 @@
 package org.gobiiproject.datatimescope.db.generated.routines;
 
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 import javax.annotation.Generated;
@@ -26,7 +27,7 @@ import org.jooq.impl.AbstractRoutine;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Getlinkagegroupsbymarker extends AbstractRoutine<java.lang.Void> {
 
-    private static final long serialVersionUID = 930690781;
+    private static final long serialVersionUID = 378083312;
 
     /**
      * The parameter <code>public.getlinkagegroupsbymarker._markerid</code>.
@@ -46,12 +47,12 @@ public class Getlinkagegroupsbymarker extends AbstractRoutine<java.lang.Void> {
     /**
      * The parameter <code>public.getlinkagegroupsbymarker.start</code>.
      */
-    public static final Parameter<Integer> START = createParameter("start", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<BigDecimal> START = createParameter("start", org.jooq.impl.SQLDataType.NUMERIC, false, false);
 
     /**
      * The parameter <code>public.getlinkagegroupsbymarker.stop</code>.
      */
-    public static final Parameter<Integer> STOP = createParameter("stop", org.jooq.impl.SQLDataType.INTEGER, false, false);
+    public static final Parameter<BigDecimal> STOP = createParameter("stop", org.jooq.impl.SQLDataType.NUMERIC, false, false);
 
     /**
      * The parameter <code>public.getlinkagegroupsbymarker.map_id</code>.
@@ -120,14 +121,14 @@ public class Getlinkagegroupsbymarker extends AbstractRoutine<java.lang.Void> {
     /**
      * Get the <code>start</code> parameter OUT value from the routine
      */
-    public Integer getStart() {
+    public BigDecimal getStart() {
         return get(START);
     }
 
     /**
      * Get the <code>stop</code> parameter OUT value from the routine
      */
-    public Integer getStop() {
+    public BigDecimal getStop() {
         return get(STOP);
     }
 

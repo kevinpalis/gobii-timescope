@@ -4,6 +4,7 @@
 package org.gobiiproject.datatimescope.db.generated.tables;
 
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class LinkageGroup extends TableImpl<LinkageGroupRecord> {
 
-    private static final long serialVersionUID = -624570562;
+    private static final long serialVersionUID = -863963543;
 
     /**
      * The reference instance of <code>public.linkage_group</code>
@@ -69,13 +70,13 @@ public class LinkageGroup extends TableImpl<LinkageGroupRecord> {
     /**
      * The column <code>public.linkage_group.start</code>. Start of the linkage group. 0-based, interbased coordinates.
      */
-    public final TableField<LinkageGroupRecord, Integer> START = createField("start", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "Start of the linkage group. 0-based, interbased coordinates.");
+    public final TableField<LinkageGroupRecord, BigDecimal> START = createField("start", org.jooq.impl.SQLDataType.NUMERIC(20, 3).nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.NUMERIC)), this, "Start of the linkage group. 0-based, interbased coordinates.");
 
     /**
      * The column <code>public.linkage_group.stop</code>. The maximum position in the linkage group, ex. 200, 200000000
 
      */
-    public final TableField<LinkageGroupRecord, Integer> STOP = createField("stop", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "The maximum position in the linkage group, ex. 200, 200000000\r\n");
+    public final TableField<LinkageGroupRecord, BigDecimal> STOP = createField("stop", org.jooq.impl.SQLDataType.NUMERIC(20, 3).nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.NUMERIC)), this, "The maximum position in the linkage group, ex. 200, 200000000\r\n");
 
     /**
      * The column <code>public.linkage_group.map_id</code>. Foreign key to the Map table. This defines which map the linkage group belongs to.

@@ -51,7 +51,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Createexperiment;
 import org.gobiiproject.datatimescope.db.generated.routines.Creategermplasm;
 import org.gobiiproject.datatimescope.db.generated.routines.Createjob1;
 import org.gobiiproject.datatimescope.db.generated.routines.Createjob2;
-import org.gobiiproject.datatimescope.db.generated.routines.Createlinkagegroup;
+import org.gobiiproject.datatimescope.db.generated.routines.Createlinkagegroup1;
+import org.gobiiproject.datatimescope.db.generated.routines.Createlinkagegroup2;
 import org.gobiiproject.datatimescope.db.generated.routines.Createmanifest;
 import org.gobiiproject.datatimescope.db.generated.routines.Createmapset;
 import org.gobiiproject.datatimescope.db.generated.routines.Createmarker;
@@ -307,7 +308,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Updategermplasmprope
 import org.gobiiproject.datatimescope.db.generated.routines.Updategermplasmpropertybyname;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatejob1;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatejob2;
-import org.gobiiproject.datatimescope.db.generated.routines.Updatelinkagegroup;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatelinkagegroup1;
+import org.gobiiproject.datatimescope.db.generated.routines.Updatelinkagegroup2;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatemanifest;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatemapset;
 import org.gobiiproject.datatimescope.db.generated.routines.Updatemapsetpropertybyid;
@@ -1427,8 +1429,26 @@ public class Routines {
     /**
      * Call <code>public.createlinkagegroup</code>
      */
-    public static Integer createlinkagegroup(Configuration configuration, String linkagegroupname, Integer linkagegroupstart, Integer linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
-        Createlinkagegroup p = new Createlinkagegroup();
+    public static Integer createlinkagegroup1(Configuration configuration, String linkagegroupname, Integer linkagegroupstart, Integer linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+        Createlinkagegroup1 p = new Createlinkagegroup1();
+        p.setLinkagegroupname(linkagegroupname);
+        p.setLinkagegroupstart(linkagegroupstart);
+        p.setLinkagegroupstop(linkagegroupstop);
+        p.setMapid(mapid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+
+        p.execute(configuration);
+        return p.getId();
+    }
+
+    /**
+     * Call <code>public.createlinkagegroup</code>
+     */
+    public static Integer createlinkagegroup2(Configuration configuration, String linkagegroupname, BigDecimal linkagegroupstart, BigDecimal linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+        Createlinkagegroup2 p = new Createlinkagegroup2();
         p.setLinkagegroupname(linkagegroupname);
         p.setLinkagegroupstart(linkagegroupstart);
         p.setLinkagegroupstop(linkagegroupstop);
@@ -7470,8 +7490,26 @@ public class Routines {
     /**
      * Call <code>public.updatelinkagegroup</code>
      */
-    public static void updatelinkagegroup(Configuration configuration, Integer id, String linkagegroupname, Integer linkagegroupstart, Integer linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
-        Updatelinkagegroup p = new Updatelinkagegroup();
+    public static void updatelinkagegroup1(Configuration configuration, Integer id, String linkagegroupname, Integer linkagegroupstart, Integer linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+        Updatelinkagegroup1 p = new Updatelinkagegroup1();
+        p.setId(id);
+        p.setLinkagegroupname(linkagegroupname);
+        p.setLinkagegroupstart(linkagegroupstart);
+        p.setLinkagegroupstop(linkagegroupstop);
+        p.setMapid(mapid);
+        p.setCreatedby(createdby);
+        p.setCreateddate(createddate);
+        p.setModifiedby(modifiedby);
+        p.setModifieddate(modifieddate);
+
+        p.execute(configuration);
+    }
+
+    /**
+     * Call <code>public.updatelinkagegroup</code>
+     */
+    public static void updatelinkagegroup2(Configuration configuration, Integer id, String linkagegroupname, BigDecimal linkagegroupstart, BigDecimal linkagegroupstop, Integer mapid, Integer createdby, Date createddate, Integer modifiedby, Date modifieddate) {
+        Updatelinkagegroup2 p = new Updatelinkagegroup2();
         p.setId(id);
         p.setLinkagegroupname(linkagegroupname);
         p.setLinkagegroupstart(linkagegroupstart);

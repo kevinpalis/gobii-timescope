@@ -16,7 +16,7 @@
 			value="Please delete or remove it from the associated datasets and markergroups first." />
 		<grid id="markerGrid"
 			model="@load(vm.markerDeleteResultTableEntityList)" mold="paging"
-			pageSize="15" pagingPosition="both">
+			pageSize="5" pagingPosition="both">
 			<columns sizable="true">
 				<column hflex="min" sort="auto(markerId)">
 					<label value="Marker Id" />
