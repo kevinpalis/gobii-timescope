@@ -7,8 +7,6 @@
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../installers/eclipse-rcp-mars-2-win32-x86_64/eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.13"/>
-    <property name="source" value="1.13"/>
     <path id="Web App Libraries.libraryclasspath">
 		<fileset dir="WebContent/WEB-INF/lib">
 			<include name="*.jar" />
