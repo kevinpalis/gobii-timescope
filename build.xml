@@ -7,8 +7,8 @@
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../installers/eclipse-rcp-mars-2-win32-x86_64/eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
+    <property name="target" value="13"/>
+    <property name="source" value="13"/>
     <path id="Web App Libraries.libraryclasspath">
 		<fileset dir="WebContent/WEB-INF/lib">
 			<include name="*.jar" />
@@ -17,6 +17,8 @@
     <path id="EAR Libraries.libraryclasspath"/>
     <path id="datatimescope.classpath">
         <pathelement location="build/classes"/>
+        <pathelement path="lib/javax.annotation.jar"/>
+        <pathelement path="lib/jaxb-api-2.3.1.jar"/>
         <path refid="Web App Libraries.libraryclasspath"/>
         <path refid="EAR Libraries.libraryclasspath"/>
     </path>
@@ -38,7 +40,8 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="datatimescope.classpath"/>
+            <classpath refid="datatimescope.classpath">
+            </classpath>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
