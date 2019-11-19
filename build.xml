@@ -38,9 +38,9 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="datatimescope.classpath"/>
-            <classpath>
-                <pathelement path="lib/*.jar"/>
+            <classpath refid="datatimescope.classpath">
+                <pathelement path="lib/javax.annotation.jar"/>
+                <pathelement path="lib/jaxb-api-2.3.1.jar"/>
             </classpath>
         </javac>
     </target>
