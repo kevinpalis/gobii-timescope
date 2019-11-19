@@ -17,6 +17,8 @@
     <path id="EAR Libraries.libraryclasspath"/>
     <path id="datatimescope.classpath">
         <pathelement location="build/classes"/>
+        <pathelement path="lib/javax.annotation.jar"/>
+        <pathelement path="lib/jaxb-api-2.3.1.jar"/>
         <path refid="Web App Libraries.libraryclasspath"/>
         <path refid="EAR Libraries.libraryclasspath"/>
     </path>
@@ -39,8 +41,6 @@
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
             <classpath refid="datatimescope.classpath">
-                <pathelement path="lib/javax.annotation.jar"/>
-                <pathelement path="lib/jaxb-api-2.3.1.jar"/>
             </classpath>
         </javac>
     </target>
