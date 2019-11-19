@@ -39,6 +39,9 @@
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
             <classpath refid="datatimescope.classpath"/>
+            <classpath>
+                <pathelement path="lib/*.jar"/>
+            </classpath>
         </javac>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
