@@ -528,8 +528,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             
             StringBuilder logSB = new StringBuilder();
             logSB.append("["+user+ "] DELETED A DATASET\n\n");
-            logSB.append("Filtering criteria for dataset delete:"+getLastDSQuery());
-            logSB.append("\nBackground JOOQ commands that ran:\n"
+            logSB.append("["+user+"] Filtering criteria for dataset delete:\n "+getLastDSQuery());
+            logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n"
                     + "Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();\r\n" + 
                     "            deleteDatasetMarkerIndices.setDatasetid("+dataset_id.toString()+");\r\n" + 
                     "            deleteDatasetMarkerIndices.attach(configuration);\r\n" + 
@@ -542,8 +542,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                     "            dr.setDatasetId("+dataset_id.toString()+");\r\n" + 
                     "            dr.attach(configuration);\r\n" + 
                     "            dr.delete();");
-            logSB.append("\nDataset delete result:\n"+message);
-            
+            logSB.append("\n\n["+user+"] Dataset delete result:\n"+message);
+            logSB.append("\n--------------------------------------------------");
             log.info(logSB.toString());
             
         }
@@ -773,9 +773,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         
         StringBuilder logSB = new StringBuilder();
         logSB.append("["+user+ "] DELETED DATASETS\n\n");
-        logSB.append("Filtering criteria for dataset delete: "+getLastDSQuery());
+        logSB.append("["+user+"] Filtering criteria for dataset delete:\n "+getLastDSQuery());
         
-        logSB.append("\nBackground JOOQ commands that ran for each dataset_id in selectedDsList, delete marker and dnarun indices:\n\n"+
+        logSB.append("\n\n["+user+"] Background JOOQ commands that ran for each dataset_id in selectedDsList (delete marker and dnarun indices):\n"+
                 "Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();\r\n" + 
                 "            deleteDatasetMarkerIndices.setDatasetid(dataset_id);\r\n" + 
                 "            deleteDatasetMarkerIndices.attach(configuration);\r\n" + 
@@ -785,13 +785,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 "            deleteDatasetDnarunIndices.attach(configuration);\r\n" + 
                 "            deleteDatasetDnarunIndices.execute();\n");
 
-        logSB.append("\nJOOQ command to delete dataset in bulk:"
-                + "            context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList\r\n" + 
+        logSB.append("\n["+user+"] JOOQ command to delete dataset in bulk:\n"
+                + "context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList\r\n" + 
                 "            .stream()\r\n" + 
                 "            .map(VDatasetSummaryEntity::getDatasetId)\r\n" + 
                 "            .collect(Collectors.toList())))\r\n" + 
                 "            .execute();");
-        logSB.append("\nDataset delete result:"+ message);
+        logSB.append("\n\n["+user+"] Dataset delete result:\n"+ message);
+        logSB.append("\n--------------------------------------------------");
         log.info(logSB.toString());
        
         Messagebox.show(message, "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
@@ -1211,17 +1212,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         String user = getUser();
                         StringBuilder logSB = new StringBuilder();
                         logSB.append("["+user+ "] DELETED A MARKER\n\n"); 
-                        logSB.append("Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
-                        logSB.append("\nBackground JOOQ commands that ran:\n"+
-                                "context.delete(MARKER_LINKAGE_GROUP)\r\n" + 
-                                "                                .where(MARKER_LINKAGE_GROUP.MARKER_ID.eq("+markerId.toString()+"))\r\n" + 
-                                "                                .execute();\n"+
-                                "context.delete(MARKER)\r\n" + 
-                                "                                .where(MARKER.MARKER_ID.eq("+markerId.toString()+"))\r\n" + 
-                                "                                .execute();");
+                        logSB.append("["+user+ "] Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.delete(MARKER_LINKAGE_GROUP).where(\n"
+                                + "            MARKER_LINKAGE_GROUP.MARKER_ID.eq("+markerId.toString()+"))\n"
+                                        + "            .execute();\n"+
+                                "context.delete(MARKER).where(\n"
+                                + "            MARKER.MARKER_ID.eq("+markerId.toString()+"))\n"
+                                        + "            .execute();");
           
-                        logSB.append("\nMarker delete result:\n"+ "1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
-                        
+                        logSB.append("\n\n["+user+"] Marker delete result:\n"+ "1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
                         log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
@@ -1427,23 +1429,26 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                         StringBuilder logSB = new StringBuilder();
                         logSB.append("["+user+ "] DELETED MARKERS\n\n");
-                        logSB.append("Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
+                        logSB.append("["+user+"] Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
                         
-                        logSB.append("\nBackground JOOQ commands that ran:\n"
-                                + "context.deleteFrom(MARKER_LINKAGE_GROUP).where(MARKER_LINKAGE_GROUP.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
-                                "                                .stream()\r\n" + 
-                                "                                .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
-                                "                                .collect(Collectors.toList())))\r\n" + 
-                                "                                .execute();\n"+
-                                "context.deleteFrom(MARKER).where(MARKER.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
-                                "                                .stream()\r\n" + 
-                                "                                .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
-                                "                                .collect(Collectors.toList())))\r\n" + 
-                                "                                .execute();");
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"
+                                + "context.deleteFrom(MARKER_LINKAGE_GROUP).where(\n"
+                                + "            MARKER_LINKAGE_GROUP.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
+                                "            .stream()\r\n" + 
+                                "            .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
+                                "            .collect(Collectors.toList())))\r\n" + 
+                                "            .execute();\n"+
+                                "context.deleteFrom(MARKER).where(\n"
+                                + "            MARKER.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
+                                "            .stream()\r\n" + 
+                                "            .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
+                                "            .collect(Collectors.toList())))\r\n" + 
+                                "            .execute();");
                         
                         
-                        logSB.append("\nMarker delete result:\n"+ Integer.toString(markersDeleted)+" markers deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
-                        
+                        logSB.append("\n\n["+user+"] Marker delete result:\n"+ Integer.toString(markersDeleted)+" markers deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
                         log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
