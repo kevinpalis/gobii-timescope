@@ -233,6 +233,7 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
 	}
 
     public String getCompleteFiltersAsText() {
+        String returnVal = " (not filtered)";
         StringBuilder sb = new StringBuilder();
         
         if(markerIDStartRange!=null || markerIDEndRange!=null){
@@ -248,7 +249,11 @@ public class MarkerRecordEntity  implements Serializable,Cloneable {
         }
         String filters = getFiltersAsTextWithDelimiter(", ");
         sb.append(filters);
-        return sb.toString();
+        
+        if(sb.length()>1) {
+            returnVal =  sb.toString();
+        }
+        return returnVal;
     }
 
     public List<RowColEntity> getFilterListAsRows() {

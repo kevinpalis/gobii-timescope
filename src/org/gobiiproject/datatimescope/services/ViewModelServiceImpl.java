@@ -100,6 +100,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     private static final long serialVersionUID = 1L;
     final static Logger log = Logger.getLogger(ViewModelServiceImpl.class.getName());
     private MarkerRecordEntity lastQueriedMarkerEntity;
+    private String lastDSQuery;
     
     @Override
     public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -366,7 +367,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
 
             datasetSummaryEntity.setFilter("");
-            log.info("Submitted Query: "+query);
+            setLastDSQuery(" (not filtered)");
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -481,7 +482,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             double rowDeleteSeconds = (endTime - startTime) / 1000;
 
             successful = true;
-            Messagebox.show("1 dataset deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(Markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(DNARunSeconds)+" sec) \n", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
+            String message = "1 dataset deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(Markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(DNARunSeconds)+" sec) \n";
+            Messagebox.show(message, "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
 
             //set Summary
 
@@ -521,6 +523,29 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             datasetSummaryEntity.setFilter(" ");
 
             datasetSummary.add(datasetSummaryEntity);
+            
+            String user = getUser();
+            
+            StringBuilder logSB = new StringBuilder();
+            logSB.append("["+user+ "] DELETED A DATASET\n\n");
+            logSB.append("["+user+"] Filtering criteria for dataset delete:\n "+getLastDSQuery());
+            logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n"
+                    + "Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();\r\n" + 
+                    "            deleteDatasetMarkerIndices.setDatasetid("+dataset_id.toString()+");\r\n" + 
+                    "            deleteDatasetMarkerIndices.attach(configuration);\r\n" + 
+                    "            deleteDatasetMarkerIndices.execute();\n\n"+
+                    "Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();\r\n" + 
+                    "            deleteDatasetDnarunIndices.setDatasetid("+dataset_id.toString()+");\r\n" + 
+                    "            deleteDatasetDnarunIndices.attach(configuration);\r\n" + 
+                    "            deleteDatasetDnarunIndices.execute();\n\n" + 
+                    "DatasetRecord dr = new DatasetRecord();\r\n" + 
+                    "            dr.setDatasetId("+dataset_id.toString()+");\r\n" + 
+                    "            dr.attach(configuration);\r\n" + 
+                    "            dr.delete();");
+            logSB.append("\n\n["+user+"] Dataset delete result:\n"+message);
+            logSB.append("\n--------------------------------------------------");
+            log.info(logSB.toString());
+            
         }
         catch(Exception e ){
             Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dataset!", Messagebox.OK, Messagebox.ERROR);
@@ -538,7 +563,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             deleteDatasetDnarunIndices.attach(configuration);
             deleteDatasetDnarunIndices.execute();
             deletedDatasetDnarunIndices = deleteDatasetDnarunIndices.getReturnValue();
-            log.info("Deleted dataset dnarun indices for dataset id :"+ Integer.toString(dataset_id));
         }
         catch (Exception e){
             Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dnarun indices!", Messagebox.OK, Messagebox.ERROR);
@@ -561,7 +585,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             deleteDatasetMarkerIndices.execute();
             deletedDatasetMarkerIndices = deleteDatasetMarkerIndices.getReturnValue();
 
-            log.info("Deleted dataset marker indices for dataset id :"+ Integer.toString(dataset_id));
         }
         catch (Exception e){
             Messagebox.show(e.getLocalizedMessage(), "ERROR: Cannot delete dataset marker indices!", Messagebox.OK, Messagebox.ERROR);
@@ -675,14 +698,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             //delete Marker.dataset_marker_idx
             totalDeletedDatasetMarkerIndices = totalDeletedDatasetMarkerIndices + deleteDatasetMarkerIndices(dataset_id, configuration);
             double endTime = System.currentTimeMillis();
-            markerseconds = (endTime - startTime) / 1000;
-
+            double newMarkerseconds = (endTime - startTime) / 1000;
+            markerseconds += newMarkerseconds;
 
             //delete Dnarun.dataset_dnarun idx entries for that particular dataset
             startTime = System.currentTimeMillis();
             totalDeletedDatasetDnarunIndices = totalDeletedDatasetDnarunIndices + deleteDatasetDnarunIndices(dataset_id, configuration);
             endTime = System.currentTimeMillis();
-            dnaRunSeconds = (endTime - startTime) / 1000;
+            double newdnaRunSeconds = (endTime - startTime) / 1000;
+            dnaRunSeconds += newdnaRunSeconds;
         }
 
         try{
@@ -743,10 +767,35 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             e.printStackTrace();
         }
+        String message = Integer.toString(selectedDsList.size())+" datasets deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(dnaRunSeconds)+" sec) \n";
+        
+        String user = getUser();
+        
+        StringBuilder logSB = new StringBuilder();
+        logSB.append("["+user+ "] DELETED DATASETS\n\n");
+        logSB.append("["+user+"] Filtering criteria for dataset delete:\n "+getLastDSQuery());
+        
+        logSB.append("\n\n["+user+"] Background JOOQ commands that ran for each dataset_id in selectedDsList (delete marker and dnarun indices):\n"+
+                "Deletedatasetmarkerindices deleteDatasetMarkerIndices = new Deletedatasetmarkerindices();\r\n" + 
+                "            deleteDatasetMarkerIndices.setDatasetid(dataset_id);\r\n" + 
+                "            deleteDatasetMarkerIndices.attach(configuration);\r\n" + 
+                "            deleteDatasetMarkerIndices.execute();\n\n"+
+                "Deletedatasetdnarunindices deleteDatasetDnarunIndices = new Deletedatasetdnarunindices();\r\n" + 
+                "            deleteDatasetDnarunIndices.setDatasetid(dataset_id);\r\n" + 
+                "            deleteDatasetDnarunIndices.attach(configuration);\r\n" + 
+                "            deleteDatasetDnarunIndices.execute();\n");
 
-        log.info("Deleted the following rows from the dataset table in the database: dataset IDs {"+ dsIDLeft.toString()+"}");
-        Messagebox.show(Integer.toString(selectedDsList.size())+" datasets deleted. ("+Double.toString(rowDeleteSeconds)+" sec) \n"+Integer.toString(totalDeletedDatasetMarkerIndices)+" markers updated. ("+Double.toString(markerseconds)+" sec) \n"+Integer.toString(totalDeletedDatasetDnarunIndices)+" DNAruns updated. ("+Double.toString(dnaRunSeconds)+" sec) \n", "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
-
+        logSB.append("\n["+user+"] JOOQ command to delete dataset in bulk:\n"
+                + "context.deleteFrom(DATASET).where(DATASET.DATASET_ID.in(selectedDsList\r\n" + 
+                "            .stream()\r\n" + 
+                "            .map(VDatasetSummaryEntity::getDatasetId)\r\n" + 
+                "            .collect(Collectors.toList())))\r\n" + 
+                "            .execute();");
+        logSB.append("\n\n["+user+"] Dataset delete result:\n"+ message);
+        logSB.append("\n--------------------------------------------------");
+        log.info(logSB.toString());
+       
+        Messagebox.show(message, "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
         if (selectedDsList.size()>0) successful=true;
         return successful;
     }
@@ -878,7 +927,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             String query = sb.toString();
             datasetList = context.fetch(query).into(VDatasetSummaryEntity.class);
             datasetSummaryEntity.setFilter(sbFilteringCriteria.toString());
-            log.info("Submitted Query: "+query);
+            setLastDSQuery(sbFilteringCriteria.toString());
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve datasets", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -1042,7 +1091,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             System.out.println(query);
             markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
-            log.info("Submitted Query: "+query);
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -1105,7 +1153,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             String query = "SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, r.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform pl ON m.platform_id = p.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id;";
             markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
-            log.info("Submitted Query: "+query);
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -1141,16 +1188,17 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                         double startTime = 0, endTime=0, startTimeMLG = 0, endTimeMLG=0;
                         startTimeMLG = System.currentTimeMillis();
+                        Integer markerId = selectedMarkerList.get(0).getMarkerId();
 
                         int result = context.delete(MARKER_LINKAGE_GROUP)
-                                .where(MARKER_LINKAGE_GROUP.MARKER_ID.eq(selectedMarkerList.get(0).getMarkerId()))
+                                .where(MARKER_LINKAGE_GROUP.MARKER_ID.eq(markerId))
                                 .execute();
 
                         endTimeMLG = System.currentTimeMillis();
 
                         startTime = System.currentTimeMillis();
                         context.delete(MARKER)
-                        .where(MARKER.MARKER_ID.eq(selectedMarkerList.get(0).getMarkerId()))
+                        .where(MARKER.MARKER_ID.eq(markerId))
                         .execute();
 
                         endTime = System.currentTimeMillis();
@@ -1161,7 +1209,22 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         successMessagesAsList.add("1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
                         successMessagesAsList.add(Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
                        
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED A MARKER\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.delete(MARKER_LINKAGE_GROUP).where(\n"
+                                + "            MARKER_LINKAGE_GROUP.MARKER_ID.eq("+markerId.toString()+"))\n"
+                                        + "            .execute();\n"+
+                                "context.delete(MARKER).where(\n"
+                                + "            MARKER.MARKER_ID.eq("+markerId.toString()+"))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] Marker delete result:\n"+ "1 marker deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
 
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
                         args.put("filterEntity", lastQueriedMarkerEntity.getFilterListAsRows());
@@ -1361,6 +1424,32 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         successMessagesAsList.add(Integer.toString(markersDeleted)+" markers deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
                         successMessagesAsList.add(Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
                        
+
+                        String user = getUser();
+
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED MARKERS\n\n");
+                        logSB.append("["+user+"] Filtering criteria for marker delete:\n"+lastQueriedMarkerEntity.getCompleteFiltersAsText());
+                        
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"
+                                + "context.deleteFrom(MARKER_LINKAGE_GROUP).where(\n"
+                                + "            MARKER_LINKAGE_GROUP.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
+                                "            .stream()\r\n" + 
+                                "            .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
+                                "            .collect(Collectors.toList())))\r\n" + 
+                                "            .execute();\n"+
+                                "context.deleteFrom(MARKER).where(\n"
+                                + "            MARKER.MARKER_ID.in(finalListofMarkersThatcanBeDeleted\r\n" + 
+                                "            .stream()\r\n" + 
+                                "            .map(VMarkerSummaryEntity::getMarkerId)\r\n" + 
+                                "            .collect(Collectors.toList())))\r\n" + 
+                                "            .execute();");
+                        
+                        
+                        logSB.append("\n\n["+user+"] Marker delete result:\n"+ Integer.toString(markersDeleted)+" markers deleted. ("+Double.toString(rowDeleteSeconds)+" sec)\n"+Integer.toString(result) +" marker_linkage_group row(s) deleted. ("+Double.toString(rowDeleteSecondsMLG)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
                         args.put("filterEntity", lastQueriedMarkerEntity.getFilterListAsRows());
@@ -2047,7 +2136,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             String query = "Select distinct on (d.dataset_id) * from dataset d left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) where a.analysis_id "+ getIDsToString(analysesList)+";";
             list = context.fetch(query).into(DatasetRecord.class);
 
-            log.info("Submitted Query: "+query);
         }catch(Exception e ){
 
             Messagebox.show("There was an error while trying to retrieve datasets by analysis Id", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -2291,10 +2379,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             sbWhere.append(";");
             sb.append(sbWhere.toString());
             String query = sb.toString();
-            System.out.println(query);
             markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
 
-            log.info("Submitted Query: "+query);
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -2416,4 +2502,20 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         return sb.toString();
     }
 
+    public String getLastDSQuery() {
+        return lastDSQuery;
+    }
+
+    public void setLastDSQuery(String lastDSQuery) {
+        if(lastDSQuery.isEmpty()) {
+            this.lastDSQuery = " (not Filtered)";
+        }
+        else this.lastDSQuery = lastDSQuery;
+    }
+
+    private String getUser() {
+
+        UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+        return cre.getAccount();
+    }
 }
