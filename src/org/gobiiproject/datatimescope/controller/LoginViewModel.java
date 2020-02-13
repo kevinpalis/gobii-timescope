@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
@@ -32,7 +33,7 @@ public class LoginViewModel {
 	private ServerInfo serverInfo;
 
 	private String pageCaption;
-	
+
 	private TimescoperRecord userAccount;
 
 	private ListModelList<String> roleList;
@@ -41,70 +42,63 @@ public class LoginViewModel {
 
 	@Init
 	public void init() {
-	    AuthenticationService authService = new AuthenticationServiceChapter3Impl();
-	  
-        UserCredential cre = authService.getUserCredential();
-        if(cre==null){
+		AuthenticationService authService = new AuthenticationServiceChapter3Impl();
 
-    		userAccount = new TimescoperRecord();
+		UserCredential cre = authService.getUserCredential();
+		if(cre==null){
 
-    		serverInfo = new ServerInfo();
+			userAccount = new TimescoperRecord();
 
-    		Map<String, Object> args = new HashMap<String, Object>();
-    		args.put("isLoggedIn", false);
+			serverInfo = new ServerInfo();
 
-    		viewModelService = new ViewModelServiceImpl();
-        } else{
-        	Executions.sendRedirect("/index.zul");
-            return;
-        }
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("isLoggedIn", false);
+
+			viewModelService = new ViewModelServiceImpl();
+		} else{
+			Executions.sendRedirect("/index.zul");
+			return;
+		}
 	}
 
 
 	@Command("needhelp")
 	public void needhelp() {
-		  Window window = (Window)Executions.createComponents(
-	                "needHelp.zul", null, null);
-	        window.doModal();
+		Window window = (Window)Executions.createComponents(
+				"needHelp.zul", null, null);
+		window.doModal();
 	}
-	
+
 	@Command("login")
 	public void openDatabaseInfoDialog() {
 
 		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
 		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			InputStream reader = classLoader.getResourceAsStream("config.properties");
+			ServletContext context = Executions.getCurrent().getDesktop().getWebApp().getServletContext();
 			
-//		    FileReader reader = new FileReader(configFile);
-		    Properties props = new Properties();
-		    props.load(reader);
-		 
-		    String dbusername = props.getProperty("db.username");
-		    String dbpassword = props.getProperty("db.pw");
 
-		    if(dbusername != null && dbpassword != null){
-		    reader.close();
-			serverInfo.setUserName(dbusername);
-			serverInfo.setPassword(dbpassword);
+			String dbusername = (String) context.getAttribute("DB_USERNAME"); //TODO: externalize constant
+			String dbpassword = (String) context.getAttribute("DB_PASSWORD");
 
-			Map<String, Object> args = new HashMap<String, Object>();
-			args.put("isLoggedIn", false);
-
-		    }
-		} catch (FileNotFoundException ex) {
-		    // file does not exist
-
-			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
-		} catch (IOException ex) {
-		    // I/O error
-			 log.error("i/o exception"+ ex.getMessage());
+			if(dbusername != null && dbpassword != null){		
+				serverInfo.setUserName(dbusername);
+				serverInfo.setPassword(dbpassword);
+				Map<String, Object> args = new HashMap<String, Object>();
+				args.put("isLoggedIn", false);
+			} else {
+				throw new NullPointerException();
+			}
+//		} catch (FileNotFoundException ex) {
+//			// file does not exist
+//			log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
+//		} catch (IOException ex) {
+//			// I/O error
+//			log.error("i/o exception"+ ex.getMessage());
 		} catch (NullPointerException ex) {
-		    // file does not exist
-
-			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+			// file does not exist
+			log.error("Null values were retrieved from config properties file");
 		}
-		
+
 		if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
 
 			AuthenticationService authService =new AuthenticationServiceChapter3Impl();
@@ -114,27 +108,28 @@ public class LoginViewModel {
 
 				serverInfo.setUserName("dummyusername");
 				serverInfo.setPassword("dummypassword");
-				
-				System.out.println(" ==================:"+ serverInfo.getHost() +" "+ serverInfo.getPort() + " "+ serverInfo.getDbName());
-				
-					try {
-						Properties properties = new Properties();
-						properties.setProperty("db.host", serverInfo.getHost());
-						properties.setProperty("db.port", serverInfo.getPort());
-						properties.setProperty("db.name", serverInfo.getDbName());
 
-						ClassLoader classLoader = getClass().getClassLoader();
-						File file = new File(classLoader.getResource("db.properties").getFile());
-						
-						FileOutputStream fileOut = new FileOutputStream(file);
-						properties.store(fileOut, null);
-						fileOut.close();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				
+				log.debug(String.format("Database: %s:%s/%s",  serverInfo.getHost(), serverInfo.getPort(), serverInfo.getDbName()));
+
+
+				try {
+					Properties properties = new Properties();
+					properties.setProperty("db.host", serverInfo.getHost());
+					properties.setProperty("db.port", serverInfo.getPort());
+					properties.setProperty("db.name", serverInfo.getDbName());
+
+					ClassLoader classLoader = getClass().getClassLoader();
+					File file = new File(classLoader.getResource("db.properties").getFile());
+
+					FileOutputStream fileOut = new FileOutputStream(file);
+					properties.store(fileOut, null);
+					fileOut.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
 				Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
 				Executions.sendRedirect("/index.zul");
 				return;

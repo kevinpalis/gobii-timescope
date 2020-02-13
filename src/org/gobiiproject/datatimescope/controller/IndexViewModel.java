@@ -2,6 +2,7 @@ package org.gobiiproject.datatimescope.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -32,38 +33,34 @@ public class IndexViewModel {
 		viewModelService = new ViewModelServiceImpl();
 		
 		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
-		
 		setServerInfo(new ServerInfo());
-
 		setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
 
 
 		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
 		try {
+			//TODO: Move this to startup servlet and store the contents of config.properties to application scope.
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			InputStream reader = classLoader.getResourceAsStream("config.properties");
 			
-//		    FileReader reader = new FileReader(configFile);
+		    //FileReader reader = new FileReader(configFile);
 		    Properties props = new Properties();
 		    props.load(reader);
 		 
 		    String tsversion = props.getProperty("version");
 
 		    if(tsversion != null){
-		    reader.close();
-			setVersion(tsversion);
-			
+		    	setVersion(tsversion);
 		    }
+		    reader.close();
 		} catch (FileNotFoundException ex) {
 		    // file does not exist
-
 			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
 		} catch (IOException ex) {
 		    // I/O error
 			 log.error("i/o exception"+ ex.getMessage());
 		} catch (NullPointerException ex) {
 		    // file does not exist
-
 			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
 		}
 	}
