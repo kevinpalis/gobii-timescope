@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
@@ -74,6 +76,7 @@ public class DatasetViewModel {
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
 	private List<DatasetSummaryEntity> datasetSummary;
+	private List<ProjectRecord> projectList;
 	private DatasetSummaryEntity datasetSummaryEntity;
 	private DatasetEntity datasetEntity;
 
@@ -88,7 +91,10 @@ public class DatasetViewModel {
 		contactsList = viewModelService.getAllContacts();
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
+        projectList = viewModelService.getAllProjects();
+        ProjectRecord selectAllProject = new ProjectRecord(0, "SELECT ALL PROJECTS", "", "", 0, 0, null, 0, null, 0, null);
 		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
+		projectList.add(0,selectAllProject);
 		piList.add(0, selectAllPI);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
@@ -515,5 +521,15 @@ public class DatasetViewModel {
 	public void setSizeDatasetList(Integer sizeDatasetList) {
 		this.sizeDatasetList = sizeDatasetList;
 	}
+
+
+    public List<ProjectRecord> getProjectList() {
+        return projectList;
+    }
+
+
+    public void setProjectList(List<ProjectRecord> projectList) {
+        this.projectList = projectList;
+    }
 
 }
