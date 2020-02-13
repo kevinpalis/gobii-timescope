@@ -1,0 +1,77 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+    <label>LDAP - GOBii System User</label>
+    <grid width="500px" >
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Authentification Type:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                        width="200px" value="@load(vm.xmlHandler.gobiiAuthenticationType) @save(vm.xmlHandler.gobiiAuthenticationType, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">User DN Pattern:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapUserDnPattern) @save(vm.xmlHandler.ldapUserDnPattern, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">LDAP URL:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapUrl) @save(vm.xmlHandler.ldapUrl, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Bind User DN:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapBindUser) @save(vm.xmlHandler.ldapBindUser, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Bind User Password:</cell>
+                <cell>
+                    <textbox type="password" constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapBindPassword) @save(vm.xmlHandler.ldapBindPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">GDM User DN:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapUserForBackendProcs) @save(vm.xmlHandler.ldapUserForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">GDM User Password:</cell>
+                <cell>
+                    <textbox type="password" constraint="no empty"
+                            width="200px" value="@load(vm.xmlHandler.ldapPasswordForBackendProcs) @save(vm.xmlHandler.ldapPasswordForBackendProcs, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+    <hlayout>
+        <button id="save" label="Save" onClick="@command('tomcatModification')" visible="@bind(not vm.documentLocked)" />
+        <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+    </hlayout>
+</div>
+</vlayout>

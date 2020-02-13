@@ -1,0 +1,18 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Export Configuration</label>
+    <grid width="700px">
+        <columns>
+            <column align="right" hflex="min"/>
+        </columns>
+        <rows>
+            <row>
+                <cell>
+                    <button id="export" label="Export Current gobii-web.xml to Downloads folder" onClick="@command('exportXML')" />
+                </cell>
+            </row>
+        </rows>
+    </grid>
+</vlayout>

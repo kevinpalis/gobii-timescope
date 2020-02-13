@@ -1,0 +1,37 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Postgres System User</label>
+    <grid width="500px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Postgres Username:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                             width="200px" value="@load(vm.xmlHandler.postgresUserName) @save(vm.xmlHandler.postgresUserName, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Postgres Password:</cell>
+                <cell>
+                    <textbox type="password" constraint="no empty"
+                             width="200px" value="@load(vm.xmlHandler.postgresPasswordExternal) @save(vm.xmlHandler.postgresPassword, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('postgresModification')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>
