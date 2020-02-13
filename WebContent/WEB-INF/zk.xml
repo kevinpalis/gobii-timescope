@@ -13,7 +13,7 @@
 			browser to reload the same URL -->
 	</device-config>
 	<desktop-config>
-		<theme-uri>/css/syle.css</theme-uri>
+		<theme-uri>/css/style.css</theme-uri>
 	</desktop-config>
 	<client-config>
 		<tooltip-delay>1</tooltip-delay>

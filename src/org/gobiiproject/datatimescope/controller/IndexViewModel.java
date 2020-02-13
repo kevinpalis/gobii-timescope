@@ -58,6 +58,8 @@ public class IndexViewModel {
 			}
 
 			setServerInfo(serverInfo);
+		} else {
+			setServerInfo(current);
 		}
 		//setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
 		//getting the version
