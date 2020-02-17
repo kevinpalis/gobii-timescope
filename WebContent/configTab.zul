@@ -1,35 +1,14 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <zk>
-    <style>
-        .z-tree-icon .z-tree-open {
-        background-image: url("/imgs/minus.png");
-        background-repeat: no-repeat;
-        width: 100%;
-        }
-        .z-tree-icon .z-tree-close {
-        background-image: url("/imgs/plus_tree.png");
-        background-size: cover;
-        width: 100%;
-        }
-        .z-tree-spacer:nth-last-child(2):before {
-        font-family: fontawesome;
-        content: "\f085";
-        }
-        /*remove the font awesome icon*/
-        .z-tree-icon .z-tree-open::before,
-        .z-tree-icon .z-tree-close::before {
-        content: '';
-        }
-    </style>
-    <tree rows="14" apply="org.zkoss.bind.BindComposer"
-          viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-        <treecols>
-            <treecol/>
-        </treecols>
-        <treechildren>
-            <treeitem open="false">
-            	<attribute name="onClick">
+	<tree rows="14" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+		<treecols>
+			<treecol />
+		</treecols>
+		<treechildren>
+			<treeitem open="false">
+				<attribute name="onClick">
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
