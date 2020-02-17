@@ -133,7 +133,24 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * This function checks if keygen has been run for later ssh commands which are needed in the backend
      */
     private void keygen() {
-        if (!new File("/home/gadm/.ssh/id_rsa.pub").exists()) {
+    	
+    	//check env for id rsa
+    	String sshFile = "";
+    	
+    	try {
+    		sshFile = System.getenv("SSH_PUBLIC_KEY_FILE");
+    		
+    	} catch (SecurityException se) {
+    		
+    	}
+    	
+    	if (sshFile == "" || sshFile == null) {
+			sshFile = System.getProperty("user.dir") + "/.ssh/id_rsa.pub"; //TODO: remove this
+		}
+    	
+    	writeToLog("WebConfigViewModel.keygen()", String.format("Using file: %s",  sshFile), username);
+ 
+        if (!new File(sshFile).exists()) {
             alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: \n" +
                     "http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?spaceKey=IN19&title=Webconfigurator");
             isKeySet = false;
