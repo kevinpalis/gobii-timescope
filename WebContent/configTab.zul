@@ -29,6 +29,9 @@
         </treecols>
         <treechildren>
             <treeitem open="false">
+            	<attribute name="onClick">
+            		self.setOpen(!self.isOpen());
+            	</attribute>
                 <treerow>
                     <treecell label="System Credentials" style="font-size:15px !important;"/>
                 </treerow>
@@ -60,6 +63,9 @@
                 </treechildren>
             </treeitem>
             <treeitem open="false">
+            	<attribute name="onClick">
+            		self.setOpen(!self.isOpen());
+            	</attribute>
                 <treerow>
                     <treecell label="Notifications" style="font-size:15px !important;"/>
                 </treerow>
@@ -111,6 +117,9 @@
                 </treechildren>
             </treeitem>
             <treeitem open="false">
+            	<attribute name="onClick">
+            		self.setOpen(!self.isOpen());
+            	</attribute>
                 <treerow>
                     <treecell label="Logging" style="font-size:15px !important;"/>
                 </treerow>
@@ -139,6 +148,9 @@
                 </treechildren>
             </treeitem>
             <treeitem open="false">
+            	<attribute name="onClick">
+            		self.setOpen(!self.isOpen());
+            	</attribute>
                 <treerow>
                     <treecell label="Integrations" style="font-size:15px !important;"/>
                 </treerow>
@@ -151,7 +163,7 @@
                         </treerow>
                     </treeitem>
                     <treeitem>
-                        <treerow onClick="=@command('ownCloud')">
+                        <treerow onClick="@command('ownCloud')">
                             <treecell>
                                 <label value="Own Cloud" style="font-size:15px !important;"/>
                             </treecell>
@@ -173,6 +185,9 @@
                 </treerow>
             </treeitem>
             <treeitem open="false">
+            	<attribute name="onClick">
+            		self.setOpen(!self.isOpen());
+            	</attribute>
                 <treerow>
                     <treecell label="Import/Export" style="font-size:15px !important;"/>
                 </treerow>
