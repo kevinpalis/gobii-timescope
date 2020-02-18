@@ -22,8 +22,11 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 public class LoginViewModel {
@@ -41,6 +44,14 @@ public class LoginViewModel {
 
 	ViewModelService viewModelService;
 	
+	//referenced UI elements
+	private Textbox hostName;
+	private Textbox hostPort;
+	private Textbox hostDb;
+	private Textbox account;
+	private Textbox password;
+	
+	
 	private void prefillServerInfoFromCookies() {
 		log.debug("Prefilling server info from cookie values");
 		this.serverInfo = new ServerInfo();
@@ -49,15 +60,19 @@ public class LoginViewModel {
 		Cookie[] cookies = request.getCookies();
 
 		for (Cookie cookie: cookies) {
+			String value = cookie.getValue();
 			log.debug(String.format("Cookie: %s %s", cookie.getName(), cookie.getValue()));
 			if (cookie.getName().equals("DB_HOST")){
-				this.serverInfo.setHost(cookie.getValue());
+				this.serverInfo.setHost(value);
 			}
 			else if (cookie.getName().equals("DB_PORT")) {
-				this.serverInfo.setPort(cookie.getValue());
+				this.serverInfo.setPort(value);
 			}
 			else if (cookie.getName().equals("DB_NAME")) {
-				this.serverInfo.setDbName(cookie.getValue());
+				this.serverInfo.setDbName(value);
+			}
+			else if (cookie.getName().equals("TS_NAME")) {
+				this.serverInfo.setUserName(value);
 			}
 		}
 
@@ -65,8 +80,6 @@ public class LoginViewModel {
 	
 	@AfterCompose
 	public void afterCompose() {
-		log.debug("AFter compose");
-		
 		this.prefillServerInfoFromCookies();
 	}
 
@@ -150,6 +163,9 @@ public class LoginViewModel {
 				response.addCookie(
 					new Cookie("DB_NAME", serverInfo.getDbName())
 						
+				);
+				response.addCookie(
+						new Cookie("TS_NAME", serverInfo.getUserName())			
 				);
 				
 
