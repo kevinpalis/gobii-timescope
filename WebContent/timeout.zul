@@ -1,7 +1,36 @@
-<window width="80%" title="Session Timeout" border="normal">
+
+<vbox height="100%" width="100%" pack="center" align="center">
+<window width="80%" title="Session Timeout" border="normal" xmlns:h="http://www.w3.org/1999/xhtml">
+	<zscript>
+		int countDown = 15;
+	</zscript>
 	<vbox>
-The page or component you request is no longer available.
+The page or component you requested is no longer available.
 This is normally caused by timeout, opening too many Web pages, or rebooting
 the server.
+<h:br/>
+<hbox>
+This page will automatically redirect to the login page in <label id="now">15 seconds</label>.  You can also <h:a class="z-label" href="./login.zul">click here</h:a> to go there now.
+</hbox>
 	</vbox>
+	
+	<timer id="timer" delay="1000" repeats="true" >
+		<attribute name="onTimer">
+			countDown--;
+			
+			String unit = "second";
+			if (countDown > 1) {
+				unit = "seconds";
+			}
+			
+			now.setValue("" + countDown + " " + unit);
+			if (countDown == 0) {
+				timer.stop();
+				Executions.sendRedirect("./login.zul");
+			} 
+			
+			
+		</attribute>
+	</timer>
 </window>
+</vbox>
