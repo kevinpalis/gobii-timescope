@@ -14,11 +14,12 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.wr
 public class PropertyHandler{
 
 	
-    private Properties prop = new Properties();
+    private Properties prop ;
     private String username;
 
     public PropertyHandler(String name, Properties properties){
         username = name;
+        prop = properties;
     }
 
     public String getUsername(){

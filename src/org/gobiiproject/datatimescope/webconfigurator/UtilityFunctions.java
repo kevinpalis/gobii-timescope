@@ -31,7 +31,7 @@ public class UtilityFunctions {
     	}
     	
     	SCRIPTS_DIR = SCRIPTS_DIR.trim();
-    	if (!SCRIPTS_DIR.endsWith("/")) SCRIPTS_DIR += "/";
+    	if (!SCRIPTS_DIR.endsWith(File.separator)) SCRIPTS_DIR += File.separator;
     	log.info(String.format("WebConfigurator Scripts Dir : %s", SCRIPTS_DIR));
     }
     	
