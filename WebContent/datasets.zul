@@ -56,7 +56,7 @@
 													value="Dataset Names:" />
 											</cell>
 											<cell>
-												<textbox rows="8"
+												<textbox rows="6"
 													cols="40" hflex="true" vflex="true"
 													tooltiptext="Separate dataset names with a new line"
 													value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
@@ -64,6 +64,24 @@
 													disabled="@bind(vm.nameListDisabled)"
 													onChange="@command('changeEnabled')">
 												</textbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Creation Date:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<datebox
+														lenient="true"
+														value="@bind(vm.datasetEntity.creationDateStart)"
+														constraint="no future" buttonVisible="true" hflex="true" />
+													to
+													<datebox
+														lenient="true"
+														value="@bind(vm.datasetEntity.creationDateEnd)"
+														constraint="no future" buttonVisible="true" hflex="true" />
+												</hbox>
 											</cell>
 										</row>
 									</rows>
@@ -95,24 +113,6 @@
 											</row> -->
 										<row>
 											<cell sclass="row-title">
-												Creation Date:
-											</cell>
-											<cell>
-												<hbox hflex="true">
-													<datebox
-														lenient="true"
-														value="@bind(vm.datasetEntity.creationDateStart)"
-														constraint="no future" buttonVisible="true" hflex="true" />
-													to
-													<datebox
-														lenient="true"
-														value="@bind(vm.datasetEntity.creationDateEnd)"
-														constraint="no future" buttonVisible="true" hflex="true" />
-												</hbox>
-											</cell>
-										</row>
-										<row>
-											<cell sclass="row-title">
 												Dataset Type:
 											</cell>
 											<cell>
@@ -141,6 +141,22 @@
 														<comboitem
 															label="@load((each.lastname).concat(',  '.concat(each.firstname)))"
 															value="@load(each.contactId)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Projects:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.projectList)"
+													selectedItem="@bind(vm.datasetEntity.projectRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.name)" />
 													</template>
 												</combobox>
 											</cell>
@@ -269,6 +285,16 @@
 												sort="auto(LOWER(jobName))">
 												<label value="Job Name" />
 											</column>
+											<column hflex="min"
+												sort="auto(projectId)">
+												<label
+													value="Project Id" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(projectName))">
+												<label
+													value="Project Name" />
+											</column>
 										</columns>
 										<template name="model"
 											var="dataset">
@@ -357,6 +383,14 @@
 												<cell>
 												<label sclass="grid-row"
 														value="@load(dataset.jobName)" />
+												</cell>
+												<cell>
+												<label sclass="grid-row"
+														value="@load(dataset.projectId)" />
+												</cell>
+												<cell>
+												<label sclass="grid-row"
+														value="@load(dataset.projectName)" />
 												</cell>
 											</row>
 										</template>
