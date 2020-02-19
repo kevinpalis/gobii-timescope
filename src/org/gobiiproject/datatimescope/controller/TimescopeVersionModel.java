@@ -25,31 +25,31 @@ public class TimescopeVersionModel {
 		try {
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			InputStream reader = classLoader.getResourceAsStream("config.properties");
-			
-//		    FileReader reader = new FileReader(configFile);
-		    Properties props = new Properties();
-		    props.load(reader);
-		 
-		    String tsversion = props.getProperty("version");
 
-		    if(tsversion != null){
-		    reader.close();
-			setVersion(tsversion);
-			
-		    }
+			//		    FileReader reader = new FileReader(configFile);
+			Properties props = new Properties();
+			props.load(reader);
+
+			String tsversion = props.getProperty("version");
+
+			if(tsversion != null){
+				reader.close();
+				setVersion(tsversion);
+
+			}
 		} catch (FileNotFoundException ex) {
-		    // file does not exist
+			// file does not exist
 
-			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
+			log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
 		} catch (IOException ex) {
-		    // I/O error
-			 log.error("i/o exception"+ ex.getMessage());
+			// I/O error
+			log.error("i/o exception"+ ex.getMessage());
 		} catch (NullPointerException ex) {
-		    // file does not exist
+			// file does not exist
 
-			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+			log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
 		}
-		
+
 	}
 
 	public String getVersion() {

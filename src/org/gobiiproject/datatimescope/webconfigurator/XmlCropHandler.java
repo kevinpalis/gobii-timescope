@@ -14,6 +14,7 @@ import static org.zkoss.lang.Strings.isBlank;
  * If the specifications change so should this file.
  */
 
+@SuppressWarnings("serial")
 public class XmlCropHandler extends XmlModifier {
 
     public XmlCropHandler(String name) {

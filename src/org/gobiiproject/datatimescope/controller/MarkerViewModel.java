@@ -1,7 +1,5 @@
 package org.gobiiproject.datatimescope.controller;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,12 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
@@ -30,15 +24,11 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
-import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.impl.UpdatableRecordImpl;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -51,19 +41,13 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Grid;
-import org.zkoss.zul.Label;
-import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Popup;
-import org.zkoss.zul.Row;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -132,7 +116,7 @@ public class MarkerViewModel {
         populateFilterLists();
 
 
-        UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+        //UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
 
         if(markerSummary.size()>0){

@@ -7,8 +7,6 @@ import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.TimeUnit;

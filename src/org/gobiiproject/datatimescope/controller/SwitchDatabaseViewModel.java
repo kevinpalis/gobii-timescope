@@ -1,31 +1,20 @@
 package org.gobiiproject.datatimescope.controller;
 
-import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -36,10 +25,8 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
@@ -83,7 +70,7 @@ public class SwitchDatabaseViewModel {
 		prevserverInfo.setHost(serverInfo.getHost());
 		prevserverInfo.setPort(serverInfo.getPort());
 		prevserverInfo.setDbName(serverInfo.getDbName());
-		
+
 		prevUsercredential = authService.getUserCredential();
 	}
 
@@ -96,77 +83,77 @@ public class SwitchDatabaseViewModel {
 	@Command
 	public void connectToDatabase(){
 		if(validate()){
-		//read file to get db username and pw from config file because upon logging in, that has been set back to dummy values.
-		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
-		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			InputStream reader = classLoader.getResourceAsStream("config.properties");
+			//read file to get db username and pw from config file because upon logging in, that has been set back to dummy values.
+			File configFile = new File( System.getProperty("user.dir")+"/config.properties");
+			try {
+				ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+				InputStream reader = classLoader.getResourceAsStream("config.properties");
 
-			//		    FileReader reader = new FileReader(configFile);
-			Properties props = new Properties();
-			props.load(reader);
+				//		    FileReader reader = new FileReader(configFile);
+				Properties props = new Properties();
+				props.load(reader);
 
-			String dbusername = props.getProperty("db.username");
-			String dbpassword = props.getProperty("db.pw");
+				String dbusername = props.getProperty("db.username");
+				String dbpassword = props.getProperty("db.pw");
 
-			if(dbusername != null && dbpassword != null){
-				reader.close();
-				serverInfo.setUserName(dbusername);
-				serverInfo.setPassword(dbpassword);
+				if(dbusername != null && dbpassword != null){
+					reader.close();
+					serverInfo.setUserName(dbusername);
+					serverInfo.setPassword(dbpassword);
 
-				Map<String, Object> args = new HashMap<String, Object>();
-				args.put("isLoggedIn", false);
+					Map<String, Object> args = new HashMap<String, Object>();
+					args.put("isLoggedIn", false);
 
-			}
-		} catch (FileNotFoundException ex) {
-			// file does not exist
+				}
+			} catch (FileNotFoundException ex) {
+				// file does not exist
 
-			Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
+				Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
 
-			log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
-			databaseConnectionWindow.detach();
-
-		} catch (IOException ex) {
-			// I/O error
-
-			Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
-
-			log.error("i/o exception"+ ex.getMessage());
-			databaseConnectionWindow.detach();
-		} catch (NullPointerException ex) {
-			// file does not exist
-
-			Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
-
-			log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
-			databaseConnectionWindow.detach();
-		}
-
-		if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
-
-
-			//try logging in using timescope credentials provided
-			if (authService.login(username, password)){
-				Messagebox.show("Login successful!");
-
+				log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
 				databaseConnectionWindow.detach();
-				Executions.sendRedirect("/index.zul");
-				return;
 
-			} else{ // re-connect to previous db and server
+			} catch (IOException ex) {
+				// I/O error
 
-				if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), prevserverInfo)){ //if can't log back in, logout altogether to be safe XD
+				Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
 
-			        Session sess = Sessions.getCurrent();
-			        UserCredential cre = new UserCredential(prevUsercredential.getAccount(), prevUsercredential.getRole());
-			        
-			        sess.setAttribute("userCredential",cre);
-			        
-				}else{
-					autologout();
+				log.error("i/o exception"+ ex.getMessage());
+				databaseConnectionWindow.detach();
+			} catch (NullPointerException ex) {
+				// file does not exist
+
+				Messagebox.show("Cannot find config properties file for default db username and password, please contact your administrator", "Cannot switch to any database", Messagebox.OK, Messagebox.ERROR);
+
+				log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+				databaseConnectionWindow.detach();
+			}
+
+			if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
+
+
+				//try logging in using timescope credentials provided
+				if (authService.login(username, password)){
+					Messagebox.show("Login successful!");
+
+					databaseConnectionWindow.detach();
+					Executions.sendRedirect("/index.zul");
+					return;
+
+				} else{ // re-connect to previous db and server
+
+					if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), prevserverInfo)){ //if can't log back in, logout altogether to be safe XD
+
+						Session sess = Sessions.getCurrent();
+						UserCredential cre = new UserCredential(prevUsercredential.getAccount(), prevUsercredential.getRole());
+
+						sess.setAttribute("userCredential",cre);
+
+					}else{
+						autologout();
+					}
 				}
 			}
-		}
 
 		}
 	}
@@ -175,14 +162,14 @@ public class SwitchDatabaseViewModel {
 		// TODO Auto-generated method stub
 		boolean validated = true;
 		if( prevserverInfo.getHost().equals(serverInfo.getHost()) &&
-		prevserverInfo.getPort().equals(serverInfo.getPort()) &&
-		prevserverInfo.getDbName().equals(serverInfo.getDbName())
-		){
+				prevserverInfo.getPort().equals(serverInfo.getPort()) &&
+				prevserverInfo.getDbName().equals(serverInfo.getDbName())
+				){
 			Messagebox.show("You are already connected to that database.");
 			validated = false;
 		}
-		
-		
+
+
 		return validated;
 	}
 

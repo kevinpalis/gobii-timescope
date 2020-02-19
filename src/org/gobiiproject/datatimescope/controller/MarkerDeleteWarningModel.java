@@ -3,20 +3,13 @@ package org.gobiiproject.datatimescope.controller;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
-import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
-import org.gobiiproject.datatimescope.services.UserCredential;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -24,15 +17,9 @@ import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.Session;
-import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Filedownload;
-import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 public class MarkerDeleteWarningModel {

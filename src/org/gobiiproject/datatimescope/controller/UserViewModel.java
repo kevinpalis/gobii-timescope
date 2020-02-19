@@ -43,8 +43,8 @@ public class UserViewModel {
 
 		setCbAllUsers(false);
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-		
-		
+
+
 
 		String accountUsername = cre.getAccount();
 
@@ -61,7 +61,7 @@ public class UserViewModel {
 
 		if(userAccount.getRolename().contains("Super")) superUser=true;
 		log.debug(String.format("User account is superUser: %b", superUser));
-		
+
 
 	}
 

@@ -4,7 +4,6 @@ package org.gobiiproject.datatimescope.controller;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.RowColEntity;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;

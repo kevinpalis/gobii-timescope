@@ -30,6 +30,7 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.wr
  * setters for the one-of tags and crop specific getters and setters, which require a cropname for which their settings are to be configured
  */
 
+@SuppressWarnings("serial")
 public class XmlModifier extends SelectorComposer<Component> {
 	final static Logger log = Logger.getLogger(XmlModifier.class.getName());
 
@@ -352,7 +353,7 @@ public class XmlModifier extends SelectorComposer<Component> {
 
 
 
-	public ListModelList getCropList(){
+	public ListModelList<String> getCropList(){
 		Document doc = XmlModifier.retrieveFile(path);
 		NodeList nl = evaluateXPathExpression(cropListXPath, doc);
 		ListModelList<String> cropList = new ListModelList<>();
