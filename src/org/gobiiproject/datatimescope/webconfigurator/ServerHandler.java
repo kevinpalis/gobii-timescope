@@ -273,9 +273,20 @@ public class ServerHandler {
 			}
 			writeToLog("ServerHandler.populateContactData()", "The organization have been correctly read in.", username);
 			try {
-				Routines.createcontact(context.configuration(), splitData[0], splitData[1], splitData[2], splitData[3], roleID,
-						timescopeData.getX(), timescopeData.getY(), timescopeData.getX(), timescopeData.getY(), organizationID, splitData[6]
-						);
+				Routines.createcontact(
+					context.configuration(),
+					splitData[0],
+					splitData[1],
+					splitData[2],
+					splitData[3],
+					roleID,
+					timescopeData.getX(),
+					timescopeData.getY(),
+					timescopeData.getX(),
+					timescopeData.getY(),
+					organizationID,
+					splitData[6]
+				);
 			} catch (Exception e) {
 				writeToLog("ServerHandler.populateContactData()", "Contact data could not be filled in.", username);
 				alert("Contact data could not be filled in correctly, with following error: \n" + e.toString());

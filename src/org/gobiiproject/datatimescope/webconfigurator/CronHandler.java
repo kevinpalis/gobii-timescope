@@ -86,7 +86,10 @@ public class CronHandler {
                 }
             }
             //Send the new CRONs back to the server
-            Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
+            Runtime.getRuntime().exec(
+                	String.format("%s %s", UtilityFunctions.getScriptPath("dockerCopyCron.sh"),  hostFromXml)
+            );
+            //Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server succeeded.", username);
             return true;
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
