@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
@@ -77,6 +78,7 @@ public class DatasetViewModel {
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
 	private List<DatasetSummaryEntity> datasetSummary;
 	private List<ProjectRecord> projectList;
+	private List<ExperimentRecord> experimentList;
 	private DatasetSummaryEntity datasetSummaryEntity;
 	private DatasetEntity datasetEntity;
 
@@ -92,10 +94,15 @@ public class DatasetViewModel {
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
         projectList = viewModelService.getAllProjects();
+        
         ProjectRecord selectAllProject = new ProjectRecord(0, "SELECT ALL PROJECTS", "", "", 0, 0, null, 0, null, 0, null);
+        projectList.add(0,selectAllProject);
+        
 		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
-		projectList.add(0,selectAllProject);
 		piList.add(0, selectAllPI);
+		
+		ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL PROJECTS", "", 0, 0, "", 0, null, 0, null, 0, 0);
+	    experimentList.add(0,selectAllExp);
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");

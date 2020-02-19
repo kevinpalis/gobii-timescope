@@ -147,7 +147,23 @@
 										</row>
 										<row>
 											<cell sclass="row-title">
-												Projects:
+												Project:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.projectList)"
+													selectedItem="@bind(vm.datasetEntity.projectRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.name)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Experiment:
 											</cell>
 											<cell>
 												<combobox
