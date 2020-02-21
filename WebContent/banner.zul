@@ -1,4 +1,11 @@
-<div hflex="1"
+<hlayout width="100%">
+<hbox vflex="2" pack="start" align="start"
+	apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
+	<image id="timescopeLogo" src="/imgs/datatimescope5.png"
+		height="40px" onClick="@command('bringBackToHome')" />
+</hbox>
+
+<hbox  pack="start" align="end" hflex="true"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.UserViewModel')">
 
 	<hbox apply="org.zkoss.bind.BindComposer"
@@ -19,4 +26,6 @@
 			sclass="banner" />
 		)
 	</hbox>
-</div>
+</hbox>
+
+</hlayout>
