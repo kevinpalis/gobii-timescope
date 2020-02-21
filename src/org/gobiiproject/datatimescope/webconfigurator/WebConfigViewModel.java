@@ -92,7 +92,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 		 
 		try {
 			FileReader reader=new FileReader(fileName);  
-
 			Properties p=new Properties(); 
 			p.load(reader);
 			return p;
@@ -215,7 +214,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("tomcatModification")
     public void tomcatModification(@ContextParam(ContextType.BINDER) Binder binder){
-        if (propertyHandler.getUsername() == null || propertyHandler.getUsername().trim().isEmpty() || propertyHandler.getPassword() == null || propertyHandler.getPassword().trim().isEmpty()){
+        if (
+        	propertyHandler.getUsername() == null ||
+        	propertyHandler.getUsername().trim().isEmpty() ||
+        	propertyHandler.getPassword() == null ||
+        	propertyHandler.getPassword().trim().isEmpty()
+        ){
             writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are not set.", username);
             alert("Please configure gobii-configurator.properties with correct credentials and redo the changes.");
             goToHome();

@@ -206,39 +206,42 @@ public class DatasetViewModel {
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
 
-						Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
-								"WARNING", Messagebox.YES | Messagebox.CANCEL,
-								Messagebox.EXCLAMATION,
-								new org.zkoss.zk.ui.event.EventListener(){
-							@Override
-							public void onEvent(Event event) throws Exception {
-								// TODO Auto-generated method stub
-								if(Messagebox.ON_YES.equals(event.getName())){
-									//YES is clicked
-									boolean successful;
+						Messagebox.show(
+							"THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
+							"WARNING",
+							Messagebox.YES | Messagebox.CANCEL,
+							Messagebox.EXCLAMATION,
+							new org.zkoss.zk.ui.event.EventListener(){
+								@Override
+								public void onEvent(Event event) throws Exception {
+									// TODO Auto-generated method stub
+									if(Messagebox.ON_YES.equals(event.getName())){
+										//YES is clicked
+										boolean successful;
 
-									if(selectedDsList.size() == 1){  // just one user is selected
-										successful = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
+										if(selectedDsList.size() == 1){  // just one user is selected
+											successful = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
 
-									}else{
-										//bulk delete
-										successful = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity);
-									}
-
-									if(successful){
-										BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
-
-										Session sess = Sessions.getCurrent();
-										sess.setAttribute("datasetSummary",datasetSummary);
-
-										if(datasetSummary.size()>0){
-											performedDeleteSuccesfully=true;
+										}else{
+											//bulk delete
+											successful = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity);
 										}
-									}
 
+										if(successful){
+											BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+
+											Session sess = Sessions.getCurrent();
+											sess.setAttribute("datasetSummary",datasetSummary);
+
+											if(datasetSummary.size()>0){
+												performedDeleteSuccesfully=true;
+											}
+										}
+
+									}
 								}
 							}
-						});
+						);
 					}
 				}
 			});
