@@ -1,9 +1,10 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
-import org.apache.catalina.ant.ReloadTask;
-import org.apache.catalina.ant.UndeployTask;
+//import org.apache.catalina.ant.ReloadTask;
+//import org.apache.catalina.ant.UndeployTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.TomcatManagerUtil;
 import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 
@@ -28,7 +29,7 @@ import org.zkoss.zul.Messagebox;
 public class ServerHandler {
 
 	private XmlModifier xmlHandler;
-	private ReloadTask reloadRequest = new ReloadTask();
+	//private ReloadTask reloadRequest = new ReloadTask();
 	private PropertyHandler prop;
 	private String username;
 
@@ -36,7 +37,7 @@ public class ServerHandler {
 		this.xmlHandler = xmlHandler;
 		username = prop.getUsername();
 		this.prop = prop;
-		configureTomcatReloadRequest();
+		//configureTomcatReloadRequest();
 	}
 
 	
@@ -66,11 +67,11 @@ public class ServerHandler {
 	 * Sets username and password needed for the reload reloadRequest for the web application specified under context path in the gobii-web.xml
 	 * @return true if username and password are filled
 	 */
-	private void configureTomcatReloadRequest(){
-		reloadRequest.setUsername(prop.getUsername());
-		reloadRequest.setPassword(prop.getPassword());
-		writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are set.", username);
-	}
+	//private void configureTomcatReloadRequest(){
+		//reloadRequest.setUsername(prop.getUsername());
+		//reloadRequest.setPassword(prop.getPassword());
+		//writeToLog("ServerHandler.configureTomcatReloadRequest()", "Tomcat properties are set.", username);
+	//}
 
 
 	/**
@@ -79,11 +80,22 @@ public class ServerHandler {
 	public void executeSingleTomcatReloadRequest(String cropname) {
 		String host = xmlHandler.getHostForReload();
 		String port = xmlHandler.getPortForReload();
-		reloadRequest.setPath(xmlHandler.getWARName(cropname));
-		reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
-		reloadRequest.execute();
-		alert("You have successfully reloaded the web-application for the crop " + cropname + ".");
-		writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "You have successfully reloaded the web-application for the crop " + cropname + ".", username);
+		String webAppPath = xmlHandler.getWARName(cropname);
+		String username = prop.getUsername();
+		String password = prop.getPassword();
+		
+		try {
+			TomcatManagerUtil.reloadWebapp(host, port, webAppPath, username, password);
+			alert("You have successfully reloaded the web-application for the crop " + cropname + ".");
+			writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "You have successfully reloaded the web-application for the crop " + cropname + ".", username);
+		} catch (Exception e) {
+			alert("Failed reloading webapp for " + cropname + ".");
+			writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "Failed reloading webapp for " + cropname + ", " + e.getMessage() + ".", username);
+		}
+		//reloadRequest.setPath(xmlHandler.getWARName(cropname));
+		//reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
+		//reloadRequest.execute();
+		
 	}
 
 	/**
@@ -92,12 +104,23 @@ public class ServerHandler {
 	public void executeAllTomcatReloadRequest() {
 		String host = xmlHandler.getHostForReload();
 		String port = xmlHandler.getPortForReload();
+		String username = prop.getUsername();
+		String password = prop.getPassword();
 		NodeList contextPathNodes = xmlHandler.getContextPathNodes();
 		//Reload each context
 		for (int i = 0; i < contextPathNodes.getLength(); i++) {
-			reloadRequest.setPath(contextPathNodes.item(i).getTextContent());
-			reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
-			reloadRequest.execute();
+			String webAppPath = contextPathNodes.item(i).getTextContent();
+			try {
+				TomcatManagerUtil.reloadWebapp(host, port, webAppPath, username, password);
+				//alert("You have successfully reloaded the web-application for at path " + webAppPath + ".");
+				writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "You have successfully reloaded the web-application at path " + webAppPath + ".", username);
+			} catch (Exception e) {
+				alert("Failed reloading webapp for " + webAppPath + ".");
+				writeToLog("ServerHandler.executeSingleTomcatReloadRequest()", "Failed reloading webapp for " + webAppPath + ", " + e.getMessage() + ".", username);
+			}
+			//reloadRequest.setPath(contextPathNodes.item(i).getTextContent());
+			//reloadRequest.setUrl("http://" + host + ":" + port + "/manager/text");
+			//reloadRequest.execute();
 		}
 		writeToLog("ServerHandler.executeAllTomcatReloadRequest()", "You have successfully reloaded all the web-applications.", username);
 	}
@@ -107,22 +130,37 @@ public class ServerHandler {
 	 */
 	public boolean undeployFromTomcat(Crop currCrop) {
 		boolean success = true;
+		//try {
+			/*
+			 * UndeployTask undeploy = new UndeployTask();
+			 * undeploy.setUsername(prop.getUsername());
+			 * undeploy.setPassword(prop.getPassword()); String host =
+			 * xmlHandler.getHostForReload(); String port = xmlHandler.getPortForReload();
+			 * undeploy.setPath(xmlHandler.getWebContextPath(currCrop.getName()));
+			 * undeploy.setUrl("http://" + host + ":" + port + "/manager/text");
+			 * undeploy.execute();
+			 */
+		String host = xmlHandler.getHostForReload();
+		String port = xmlHandler.getPortForReload();
+		String webAppPath = xmlHandler.getWebContextPath(currCrop.getName());
+		String username = prop.getUsername();
+		String password = prop.getPassword();
+
 		try {
-			UndeployTask undeploy = new UndeployTask();
-			undeploy.setUsername(prop.getUsername());
-			undeploy.setPassword(prop.getPassword());
-			String host = xmlHandler.getHostForReload();
-			String port = xmlHandler.getPortForReload();
-			undeploy.setPath(xmlHandler.getWebContextPath(currCrop.getName()));
-			undeploy.setUrl("http://" + host + ":" + port + "/manager/text");
-			undeploy.execute();
+			TomcatManagerUtil.undeployWebapp(host, port, webAppPath, username, password);
 			Messagebox.show(("You have successfully undeployed the crop " + currCrop.getName() + "."));
 			writeToLog("ServerHandler.undeployFromTomcat()", "You have successfully undeployed the crop " + currCrop.getName() + ".", username);
 		} catch (Exception e) {
-			e.printStackTrace();
-			writeToLog("ServerHandler.undeployFromTomcat()", "Undeployment for the crop " + currCrop.getName() + " has failed.", username);
+			alert("Failed undeploying webapp for crop " + currCrop.getName() + ".");
+			writeToLog("ServerHandler.undeployFromTomcat()", "Undeployment for the crop " + currCrop.getName() + " " + e.getMessage() + ".", username);
 			success = false;
 		}
+			
+		/*
+		 * } catch (Exception e) { e.printStackTrace();
+		 * writeToLog("ServerHandler.undeployFromTomcat()", "Undeployment for the crop "
+		 * + currCrop.getName() + " has failed.", username); success = false; }
+		 */
 		return success;
 	}
 
