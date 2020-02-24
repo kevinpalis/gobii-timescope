@@ -16,13 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 
 /**

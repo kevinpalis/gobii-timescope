@@ -68,7 +68,7 @@ public class UserController extends SelectorComposer<Component> {
 	public void doEditProfile() {
 		Clients.showNotification("@SaveProfile.");
 		UserCredential cre = authService.getUserCredential();
-		TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
+		//TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
 
 		// userInfoService.updateUser(user);
 

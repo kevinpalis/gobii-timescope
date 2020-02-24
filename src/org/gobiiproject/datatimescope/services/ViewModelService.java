@@ -18,7 +18,6 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
@@ -32,8 +31,6 @@ import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
-import org.jooq.Record;
-import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
 
 public interface ViewModelService {
