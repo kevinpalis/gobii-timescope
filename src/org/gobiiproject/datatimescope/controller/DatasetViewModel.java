@@ -14,9 +14,13 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
+import org.gobiiproject.datatimescope.exceptions.CannotDeleteDataSetListException;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.DataSetDeleteInfo;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -44,9 +48,9 @@ public class DatasetViewModel {
 
 	@Wire("#datasetGrid")
 	Grid datasetGrid;
-	
+
 	private Integer sizeDatasetList=0;
-	
+
 	private List<CvRecord> datasetTypes;
 	private List<ContactRecord> contactsList, piList;
 	private List<VDatasetSummaryEntity> datasetList, selectedDsList;
@@ -57,27 +61,32 @@ public class DatasetViewModel {
 	@SuppressWarnings("unchecked")
 	@Init
 	public void init() {
-		datasetSummaryEntity= new DatasetSummaryEntity();
-		selectedDsList = new ArrayList<VDatasetSummaryEntity>();
-		viewModelService = new ViewModelServiceImpl();
-		setDatasetEntity(new DatasetEntity());
-		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
-		contactsList = viewModelService.getAllContacts();
-		Integer [] roles = {1}; // PI only
-		piList = viewModelService.getContactsByRoles(roles);
-		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
-		piList.add(0, selectAllPI);
-		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
+		try {
+			datasetSummaryEntity= new DatasetSummaryEntity();
+			selectedDsList = new ArrayList<VDatasetSummaryEntity>();
+			viewModelService = new ViewModelServiceImpl();
+			setDatasetEntity(new DatasetEntity());
+			setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
+			contactsList = viewModelService.getAllContacts();
+			Integer [] roles = {1}; // PI only
+			piList = viewModelService.getContactsByRoles(roles);
+			ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
+			piList.add(0, selectAllPI);
+			setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
-		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
-		datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
+			UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+			datasetSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("datasetSummary");
 
-		if(datasetSummary.size()>0){
-			performedDeleteSuccesfully=true;
-		}
+			if(datasetSummary.size()>0){
+				performedDeleteSuccesfully=true;
+			}
 
-		if(cre.getRole() == 3){
-			isIsRoleUser=true;
+			if(cre.getRole() == 3){
+				isIsRoleUser=true;
+			}
+		} catch (TimescopeException e) {
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
 		}
 	}
 
@@ -91,42 +100,49 @@ public class DatasetViewModel {
 	@Command("submitQuery")
 	@NotifyChange({"datasetList","selectedDsList", "allCbSelected", "cbAllUsers","paged", "sizeDatasetList"})
 	public void submitQuery(){
+		try {
+			try{
+				datasetList.clear(); //clear the list first and then just add if there are any selected
 
-		try{
-			datasetList.clear(); //clear the list first and then just add if there are any selected
+				selectedDsList.clear();
 
-			selectedDsList.clear();
+			}catch(NullPointerException e){
 
-		}catch(NullPointerException e){
+			}
 
+			setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity,datasetSummaryEntity));
+
+			setiDBoxDisabled(false);
+			setnameListDisabled(false);
+			setAllCbSelected(false);
+			setCbAllUsers(false);
+		} catch (TimescopeException e) {
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
 		}
-
-		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity,datasetSummaryEntity));
-
-		setiDBoxDisabled(false);
-		setnameListDisabled(false);
-		setAllCbSelected(false);
-		setCbAllUsers(false);
 
 	}
 
 	@Command("resetDatasetTab")
 	@NotifyChange({"datasetList", "sizeDatasetList", "selectedDsList", "allCbSelected", "cbAllUsers", "datasetEntity","iDBoxDisabled","nameListDisabled", "paged"})
 	public void resetDatasetTab(){
-		try{
-			datasetList.clear(); //clear the list first and then just add if there are any selected
-			selectedDsList.clear(); 
+		try {
+			try{
+				datasetList.clear(); //clear the list first and then just add if there are any selected
+				selectedDsList.clear(); 
+			}catch(NullPointerException e){
+			}
+			datasetEntity = new DatasetEntity();
 
-		}catch(NullPointerException e){
-
+			setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
+			setiDBoxDisabled(false);
+			setnameListDisabled(false);
+			setAllCbSelected(false);
+			setCbAllUsers(false);
+		} catch (TimescopeException e) {
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
 		}
-		datasetEntity = new DatasetEntity();
-
-		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
-		setiDBoxDisabled(false);
-		setnameListDisabled(false);
-		setAllCbSelected(false);
-		setCbAllUsers(false);
 	}
 
 	@Command("doSelectAll")
@@ -196,69 +212,108 @@ public class DatasetViewModel {
 				sb.append("\n"+u.getDatasetName());
 			}
 
-			Messagebox.show("Are you sure you want to delete the following datasets?\n"+sb.toString(), 
-					"Confirm Delete", Messagebox.YES | Messagebox.NO,
-					Messagebox.QUESTION,
-					new org.zkoss.zk.ui.event.EventListener(){
-				@Override
-				public void onEvent(Event event) throws Exception {
-					// TODO Auto-generated method stub
-					if(Messagebox.ON_YES.equals(event.getName())){
-						//YES is clicked
 
-						Messagebox.show(
-							"THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
-							"WARNING",
-							Messagebox.YES | Messagebox.CANCEL,
-							Messagebox.EXCLAMATION,
-							new org.zkoss.zk.ui.event.EventListener(){
-								@Override
-								public void onEvent(Event event) throws Exception {
-									// TODO Auto-generated method stub
-									if(Messagebox.ON_YES.equals(event.getName())){
-										//YES is clicked
-										boolean successful;
+			int firstCheckpoint = Messagebox.show(
+					"Are you sure you want to delete the following datasets?\n"+sb.toString(), 
+					"Confirm Delete",
+					Messagebox.YES | Messagebox.NO,
+					Messagebox.QUESTION
+					);
 
-										if(selectedDsList.size() == 1){  // just one user is selected
-											successful = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
+			if (firstCheckpoint == Messagebox.NO) {
+				return;
+			}
 
-										}else{
-											//bulk delete
-											successful = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity);
-										}
+			int secondCheckpoint = Messagebox.show(
+					"THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
+					"WARNING",
+					Messagebox.YES | Messagebox.CANCEL,
+					Messagebox.EXCLAMATION
+					);
 
-										if(successful){
-											BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+			if (secondCheckpoint == Messagebox.CANCEL) {
+				return;
+			}
 
-											Session sess = Sessions.getCurrent();
-											sess.setAttribute("datasetSummary",datasetSummary);
-
-											if(datasetSummary.size()>0){
-												performedDeleteSuccesfully=true;
-											}
-										}
-
-									}
-								}
-							}
-						);
+			boolean successful = false;
+			DataSetDeleteInfo info = null;
+			try {
+				if(selectedDsList.size() == 1){  // just one user is selected
+					info = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
+					if (info.getDsListSize() == 1) {
+						Messagebox.show("Data set deleted", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
 					}
+				}else{
+					//bulk delete
+					int itemsDeleted = 0;
+					
+					try {
+						info = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, false, null);
+					} catch (CannotDeleteDataSetListException cde) {
+						int thirdCheckpoint = Messagebox.show(
+								cde.getMessage() + "\n\n Do you still want to continue?", 
+								"Some dataset can't be deleted",
+								Messagebox.YES | Messagebox.CANCEL,
+								Messagebox.QUESTION
+								);
+						if (thirdCheckpoint == Messagebox.CANCEL) {
+							return;
+						}
+
+						if(selectedDsList.size() == cde.getDataSetNames().size()){
+							Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
+							return;
+						}else{
+							//retry the call with true remove option
+							info = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, true, cde.getDataSetNames());
+						}
+
+
+					}
+					successful = info != null && info.getDsListSize() > 0;
+					if (successful) {
+						Messagebox.show(info.toString(), "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
+					}
+
 				}
-			});
+
+				if(successful){
+
+					BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+					Session sess = Sessions.getCurrent();
+					sess.setAttribute("datasetSummary",datasetSummary);
+
+					if(datasetSummary.size()>0){
+						performedDeleteSuccesfully=true;
+					}
+				} else {
+
+				}
+			} catch (TimescopeException e) {
+				e.printStackTrace();
+				WebappUtil.showErrorDialog(e);
+			}
+
 		}
 	}
+
+
 
 	@GlobalCommand("retrieveDatasetList")
 	@NotifyChange({"datasetList", "sizeDatasetList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
 	public void retrieveUserList(){
 		//...
+		try {
+			setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity, datasetSummaryEntity));
 
-		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity, datasetSummaryEntity));
+			selectedDsList.clear();
 
-		selectedDsList.clear();
-
-		setAllCbSelected(false);
-		setCbAllUsers(false);
+			setAllCbSelected(false);
+			setCbAllUsers(false);
+		} catch (TimescopeException e) {
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		}
 	}
 
 	@Command("updateSelectDs")
@@ -390,10 +445,10 @@ public class DatasetViewModel {
 	}
 
 	public void setDatasetList(List<VDatasetSummaryEntity> datasetList) {
-		
+
 		if(datasetList.size() > 25) setPaged(true);
 		else setPaged(false);
-		
+
 		this.datasetList = datasetList;
 	}
 
@@ -485,9 +540,9 @@ public class DatasetViewModel {
 	public Integer getSizeDatasetList() {
 
 		sizeDatasetList = datasetList.size();
-		
+
 		if(datasetList.size()<1) sizeDatasetList = 0;
-		
+
 		return sizeDatasetList;
 	}
 

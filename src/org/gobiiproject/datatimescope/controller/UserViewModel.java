@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -39,30 +41,37 @@ public class UserViewModel {
 
 	@AfterCompose
 	public void afterCompose() {
-		viewModelService = new ViewModelServiceImpl();
+		try {
+			viewModelService = new ViewModelServiceImpl();
 
-		setCbAllUsers(false);
-		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+			setCbAllUsers(false);
+			UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 
+			String accountUsername = cre.getAccount();
 
+			userAccount = viewModelService.getUserInfo(accountUsername);
 
-		String accountUsername = cre.getAccount();
+			//log.debug(String.format("User account is role: %s", userAccount.getRolename()) );
 
-		userAccount = viewModelService.getUserInfo(accountUsername);
-		log.debug(String.format("User account is role: %s", userAccount.getRolename()) );
+			roleList= new ListModelList<String>(Utils.getRoleList());
 
-		roleList= new ListModelList<String>(Utils.getRoleList());
-
-		selectedUsersList = new ListModelList<TimescoperEntity>();
-
-		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
-
-		userlist.setMultiple(true);
-
-		if(userAccount.getRolename().contains("Super")) superUser=true;
-		log.debug(String.format("User account is superUser: %b", superUser));
+			selectedUsersList = new ListModelList<TimescoperEntity>();
 
 
+			userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
+
+
+			userlist.setMultiple(true);
+
+			if(userAccount.getRolename().contains("Super")) superUser=true;
+			//log.debug(String.format("User account is superUser: %b", superUser));
+
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+			return;
+		}
 	}
 
 
@@ -77,7 +86,7 @@ public class UserViewModel {
 	@Command("signout")
 	public void signout() {
 
-		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
+		AuthenticationService authService =new AuthenticationServiceImpl();
 		authService.logout();
 
 		Executions.sendRedirect("/index.zul");
@@ -124,15 +133,29 @@ public class UserViewModel {
 					if(Messagebox.ON_YES.equals(event.getName())){
 						//YES is clicked
 						boolean successful;
+						String term = "user";
+						try {
+							if(selectedUsersList.getSize() == 1){  // just one user is selected
+								successful = viewModelService.deleteUser(selectedUsersList.get(0));
 
-						if(selectedUsersList.getSize() == 1){  // just one user is selected
-							successful = viewModelService.deleteUser(selectedUsersList.get(0));
-						}else{
-							//bulk delete
-							successful = viewModelService.deleteUsers(selectedUsersList);
+							}else{
+								//bulk delete
+								successful = viewModelService.deleteUsers(selectedUsersList);
+								term = "users";
+							}
+
+							if(successful) {
+								Messagebox.show(
+										String.format("Successfully deleted %s!", term),
+										"",
+										Messagebox.OK,
+										Messagebox.INFORMATION
+										);
+								BindUtils.postGlobalCommand(null, null, "retrieveUserList", null); 
+							}
+						} catch (TimescopeException e) {
+							WebappUtil.showErrorDialog(e);
 						}
-
-						if(successful) BindUtils.postGlobalCommand(null, null, "retrieveUserList", null);
 
 					}
 				}
@@ -203,22 +226,27 @@ public class UserViewModel {
 	@NotifyChange({"userlist", "users", "selectedUsersList", "allCbSelected", "cbAllUsers"})
 	public void retrieveUserList(){
 		//...
+		try {
+			UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 
-		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+			String accountUsername = cre.getAccount();
 
-		String accountUsername = cre.getAccount();
+			userAccount = viewModelService.getUserInfo(accountUsername);
 
-		userAccount = viewModelService.getUserInfo(accountUsername);
-		setUsers(new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true));
+			setUsers(new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true));
 
+			userlist.setMultiple(true);
 
-		userlist.setMultiple(true);
+			selectedUsersList.clear();
 
-		selectedUsersList.clear();
-
-		setAllCbSelected(false);
-		setCbAllUsers(false);
-
+			setAllCbSelected(false);
+			setCbAllUsers(false);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+			return;
+		}
 	}
 
 	@GlobalCommand("refreshUserWindow")
@@ -229,13 +257,27 @@ public class UserViewModel {
 
 		String accountUsername = cre.getAccount();
 
-		userAccount = viewModelService.getUserInfo(accountUsername);
+		try {
+			userAccount = viewModelService.getUserInfo(accountUsername);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+			return;
+		}
 
 		roleList= new ListModelList<String>(Utils.getRoleList());
 
 		selectedUsersList = new ListModelList<TimescoperEntity>();
 
-		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
+		try {
+			userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+			return;
+		}
 
 		userlist.setMultiple(true);
 

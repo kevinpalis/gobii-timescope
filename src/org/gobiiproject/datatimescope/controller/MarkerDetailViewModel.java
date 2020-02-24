@@ -6,8 +6,10 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRe
 import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
 import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -40,8 +42,20 @@ public class MarkerDetailViewModel {
 			@ExecutionArgParam("markerAssociated") Boolean markerAssociated) {
 
         viewModelService = new ViewModelServiceImpl();
-		this.setMarkerDetailDatasetList(markerDetailDatasetList);
-		this.setMarkerDetailLinkageGroupList(markerDetailLinkageGroupList);
+		try {
+			this.setMarkerDetailDatasetList(markerDetailDatasetList);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		}
+		try {
+			this.setMarkerDetailLinkageGroupList(markerDetailLinkageGroupList);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		}
 		this.setMarkerDetailsMarkerGroupList(markerDetailsMarkerGroupList);
 		this.setMarkerAssociated(isAssociated(markerAssociated));
 		
@@ -76,17 +90,15 @@ public class MarkerDetailViewModel {
 		return markerDetailDatasetList;
 	}
 
-	public void setMarkerDetailDatasetList(List<DatasetRecord> markerDetailDatasetList) {
-	    
-	    
-		this.markerDetailDatasetList = viewModelService.getMarkerAssociatedDetailsForEachDataset(markerDetailDatasetList);
+	public void setMarkerDetailDatasetList(List<DatasetRecord> markerDetailDatasetList) throws TimescopeException {
+	    this.markerDetailDatasetList = viewModelService.getMarkerAssociatedDetailsForEachDataset(markerDetailDatasetList);
 	}
 
 	public List<MarkerDetailLinkageGroupEntity> getMarkerDetailLinkageGroupList() {
 		return markerDetailLinkageGroupList;
 	}
 
-	public void setMarkerDetailLinkageGroupList(List<LinkageGroupRecord> markerDetailLinkageGroupList) {
+	public void setMarkerDetailLinkageGroupList(List<LinkageGroupRecord> markerDetailLinkageGroupList) throws TimescopeException {
 		this.markerDetailLinkageGroupList = viewModelService.getAssociatedDetailsForEachLinkageGroup(markerDetailLinkageGroupList);
 	}
 

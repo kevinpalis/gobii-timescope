@@ -3,6 +3,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 //import org.apache.catalina.ant.ReloadTask;
 //import org.apache.catalina.ant.UndeployTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.TomcatManagerUtil;
 import org.jooq.DSLContext;
@@ -195,8 +196,9 @@ public class ServerHandler {
 	 *  1, if the liquibase population of basic seed data failed
 	 * -1, if the provided contact data had an error
 	 *  0, upon complete success
+	 * @throws TimescopeException 
 	 */
-	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload){
+	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload) throws TimescopeException{
 		int success;
 		if (firstUpload) {
 			ViewModelServiceImpl tmpService = new ViewModelServiceImpl();

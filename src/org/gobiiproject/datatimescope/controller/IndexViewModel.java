@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.Executions;
@@ -36,7 +38,13 @@ public class IndexViewModel {
 		log.debug("Initializing Index page");
 		viewModelService = new ViewModelServiceImpl();
 		
-		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
+		try {
+			setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		}
 		ServerInfo current = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
 		if (current == null || current.getHost() == null || current.getHost() == "" ) {
 			log.info("Loading default DB values from cookie");

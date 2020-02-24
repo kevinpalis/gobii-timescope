@@ -1,5 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Include;
 import org.zkoss.zul.ListModelList;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import java.io.*;
@@ -394,7 +396,16 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         ArrayList<String> contacts = readInContactData();
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
-        int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
+        int seedData;
+		try {
+			seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Messagebox.show(e.getMessage(), e.getErrorTitle(), Messagebox.OK, Messagebox.ERROR);
+			return;
+			//seedData = 0;
+		}
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit", null);
@@ -405,7 +416,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             firstUpload = false;
             writeToLog("WebConfigViewModel.addCropToDatabase()", "Contact Data was malformed.", username);
             return;
-        }
+        } //TODO: seedData == 0
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The database for the crop " + currentCrop.getName() + " has successfully been created and populated.", username);
         firstUpload = true;
         xmlCropHandler.appendCrop(currentCrop);

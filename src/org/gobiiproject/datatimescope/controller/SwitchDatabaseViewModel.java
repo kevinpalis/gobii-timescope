@@ -10,8 +10,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -58,7 +59,7 @@ public class SwitchDatabaseViewModel {
 
 		if(isLoggedIn) serverInfo = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
 
-		authService =new AuthenticationServiceChapter3Impl();
+		authService =new AuthenticationServiceImpl();
 		viewModelService = new ViewModelServiceImpl();
 
 		//Figure out if this window was called to edit a user or to create one
@@ -129,30 +130,36 @@ public class SwitchDatabaseViewModel {
 				databaseConnectionWindow.detach();
 			}
 
-			if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
+			try {
+				if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo)){
 
 
-				//try logging in using timescope credentials provided
-				if (authService.login(username, password)){
-					Messagebox.show("Login successful!");
+					//try logging in using timescope credentials provided
+					if (authService.login(username, password)){
+						Messagebox.show("Login successful!");
 
-					databaseConnectionWindow.detach();
-					Executions.sendRedirect("/index.zul");
-					return;
+						databaseConnectionWindow.detach();
+						Executions.sendRedirect("/index.zul");
+						return;
 
-				} else{ // re-connect to previous db and server
+					} else{ // re-connect to previous db and server
 
-					if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), prevserverInfo)){ //if can't log back in, logout altogether to be safe XD
+						if(viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), prevserverInfo)){ //if can't log back in, logout altogether to be safe XD
 
-						Session sess = Sessions.getCurrent();
-						UserCredential cre = new UserCredential(prevUsercredential.getAccount(), prevUsercredential.getRole());
+							Session sess = Sessions.getCurrent();
+							UserCredential cre = new UserCredential(prevUsercredential.getAccount(), prevUsercredential.getRole());
 
-						sess.setAttribute("userCredential",cre);
+							sess.setAttribute("userCredential",cre);
 
-					}else{
-						autologout();
+						}else{
+							autologout();
+						}
 					}
 				}
+			} catch (TimescopeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Messagebox.show(e.getMessage(), e.getErrorTitle(), Messagebox.OK, Messagebox.ERROR);
 			}
 
 		}

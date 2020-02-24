@@ -30,9 +30,7 @@ public class TimescoperEntity extends TimescoperRecord {
 	public String getRolename() {
 
 		int role = this.getRole();
-		System.out.println("Role " + role);
 		String rolename = Utils.getRoleList().get(role);
-
 		return rolename; 
 
 	}

@@ -17,12 +17,14 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
+import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
+import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -53,7 +55,7 @@ public class UserController extends SelectorComposer<Component> {
 	Label role;
 
 	// services
-	AuthenticationService authService = new AuthenticationServiceChapter3Impl();
+	AuthenticationService authService = new AuthenticationServiceImpl();
 	ViewModelService userInfoService = new ViewModelServiceImpl();
 
 	@Override
@@ -68,11 +70,20 @@ public class UserController extends SelectorComposer<Component> {
 	public void doEditProfile() {
 		Clients.showNotification("@SaveProfile.");
 		UserCredential cre = authService.getUserCredential();
-		//TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
+		try {
+			TimescoperRecord user = userInfoService.getUserInfo(cre.getAccount());
+			//TODO:  why is the line below commented?
+			// userInfoService.updateUser(user);  
+			Clients.showNotification("Your profile was updated.");
+		} catch (TimescopeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		}
 
-		// userInfoService.updateUser(user);
+		
 
-		Clients.showNotification("Your profile was updated.");
+		//Clients.showNotification("Your profile was updated.");
 	}
 
 	@Listen("onClick = #reloadProfile")

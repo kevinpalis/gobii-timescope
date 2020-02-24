@@ -11,7 +11,7 @@ import org.zkoss.zk.ui.util.Initiator;
 public class AuthenticationInit implements Initiator {
 	 
     //services
-    AuthenticationService authService = new AuthenticationServiceChapter3Impl();
+    AuthenticationService authService = new AuthenticationServiceImpl();
   
 	@Override
 	public void doInit(Page page, Map<String, Object> args) throws Exception {
