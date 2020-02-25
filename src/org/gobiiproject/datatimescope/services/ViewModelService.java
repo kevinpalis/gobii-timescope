@@ -79,9 +79,9 @@ public interface ViewModelService {
 
 	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, List<DatasetSummaryEntity> markerSummary) throws TimescopeException;
 
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary) throws TimescopeException;
+	public DeleteMarkersResult deleteMarkers(List<VMarkerSummaryEntity> selectedMarkerList, List<DatasetSummaryEntity> markerSummary) throws TimescopeException;
 
-	public List<VMarkerSummaryEntity> filterUnusedMarkersInGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) throws TimescopeException;
+	public MarkersFilterResult filterUnusedMarkersInGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) throws TimescopeException;
 	
 	public List<PlatformRecord> getAllPlatforms() throws TimescopeException;
 

@@ -78,10 +78,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.zkoss.bind.BindUtils;
-import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zul.Window;
 
 public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	private static final long serialVersionUID = 1L;
@@ -118,7 +115,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 				throw new DatabaseException("Invalid username or password", e);
 			}
 			else if(e.getMessage().contains("connect(Unknown Source)")){
-				throw new TimescopeException("Host name not found", e); //TODO: create a more specific exception 
+				throw new TimescopeException("Host name not found", e); 
 			}
 			else{
 				throw new DatabaseException(e.getLocalizedMessage(), "Connect To Database Error", e);
@@ -534,11 +531,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		return deletedSuccessfully;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public DataSetDeleteInfo deleteDatasets(List<VDatasetSummaryEntity> selectedDsList, List<DatasetSummaryEntity> datasetSummary,
 			DatasetSummaryEntity datasetSummaryEntity, boolean removeCannotDelete, List<String> deleteList) throws TimescopeException  {
-		// TODO Auto-generated method stub
 
 		//int dsCount = selectedDsList.size();
 		//boolean successful = false;
@@ -1048,10 +1043,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	@Override
 	public List<VMarkerSummaryEntity> getAllMarkers(List<DatasetSummaryEntity> markerSummary) throws TimescopeException {
-		// TODO Auto-generated method stub
 
 		DSLContext context = getDSLContext();
-
 		List<VMarkerSummaryEntity> markerList = null;
 		try{
 			String query = "SELECT m.marker_id, m.platform_id, p.name AS platform_name, m.variant_id, m.name AS marker_name, m.code, m.ref, m.alts, m.sequence, r.reference_id, r.name AS reference_name, m.primers, m.strand_id, cv.term AS strand_name, m.status, m.probsets, m.dataset_marker_idx, m.props, m.dataset_vendor_protocol FROM marker m LEFT JOIN platform pl ON m.platform_id = p.platform_id LEFT JOIN cv ON m.strand_id = cv.cv_id  left join marker_linkage_group mlg on m.marker_id = mlg.marker_id left join linkage_group lg on mlg.linkage_group_id = lg.linkage_group_id left join mapset map on lg.map_id = map.mapset_id left join reference r on map.reference_id = r.reference_id;";
@@ -1065,7 +1058,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@Deprecated // - use filterUnusuedMarkersInGroupOrDataset  + deleteMarkers
 	public boolean deleteMarker(VMarkerSummaryEntity vMarkerSummaryEntity, 
@@ -1152,10 +1144,10 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	}
 
 	@Override
-	public List<VMarkerSummaryEntity> filterUnusedMarkersInGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) throws TimescopeException {
+	public MarkersFilterResult filterUnusedMarkersInGroupOrDataset(List<VMarkerSummaryEntity> selectedMarkerList) throws TimescopeException {
 
 		int totalNumOfMarkersThatCantBeDeleted = 0;
-
+		MarkersFilterResult result = new MarkersFilterResult(null, null);
 		List<VMarkerSummaryEntity> markerIDsThatCanFreelyBeDeleted =  new ArrayList<VMarkerSummaryEntity>();
 		List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList =  new ArrayList<MarkerDeleteResultTableEntity>();
 
@@ -1205,16 +1197,19 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 			}
 
 		}
+		
+		result.setResults(markerIDsThatCanFreelyBeDeleted);
 		if(markerDeleteResultTableEntityList.size()>0){
 
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("markerDeleteResultTableEntityList", markerDeleteResultTableEntityList);
 			args.put("totalNumOfMarkersThatCantBeDeleted", totalNumOfMarkersThatCantBeDeleted);
-			Window window = (Window)Executions.createComponents(
-					"/markerDeleteWarning.zul", null, args);
-			window.doModal();
+			result.setMeta(args);
+			//Window window = (Window)Executions.createComponents(
+			//		"/markerDeleteWarning.zul", null, args);
+			//window.doModal();
 		}
-		return markerIDsThatCanFreelyBeDeleted;
+		return result;
 	}
 
 	private String setDatasetIdDetails(List<DatasetRecord> inDatasetList) {
@@ -1261,9 +1256,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ })
 	@Override
-	public boolean deleteMarkers(List<VMarkerSummaryEntity> filteredMarkerList, 
+	public DeleteMarkersResult deleteMarkers(List<VMarkerSummaryEntity> filteredMarkerList, 
 			List<DatasetSummaryEntity> markerSummary) throws TimescopeException {
 
 		//check if Marker is not being used in a Marker Group or a Dataset
@@ -1274,6 +1269,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 		for(VMarkerSummaryEntity marker : filteredMarkerList){
 			sb.append(marker.getMarkerId().toString() + "\n");
 		}
+		
+		DeleteMarkersResult deleteMarkersResult = new DeleteMarkersResult(false, null);
 
 		final int noOfMarkers = filteredMarkerList.size();
 
@@ -1336,21 +1333,25 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
 			logSB.append("\n--------------------------------------------------");
 			log.info(logSB.toString());
+			
+			deleteMarkersResult.setSuccess(true);
+		
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("successMessagesAsList", successMessagesAsList);
 			args.put("filterEntity", lastQueriedMarkerEntity.getFilterListAsRows());
+			
+			deleteMarkersResult.setMeta(args);
+			//Window window = (Window)Executions.createComponents(
+			//		"/marker_delete_successful.zul", null, args);
+			//window.setPosition("center");
+			//window.setClosable(true);
+			//window.doModal();
 
-			Window window = (Window)Executions.createComponents(
-					"/marker_delete_successful.zul", null, args);
-			window.setPosition("center");
-			window.setClosable(true);
-			window.doModal();
-
-			BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
-			return true;
+			//BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
+			
 		}
 
-		return false;
+		return deleteMarkersResult;
 	}
 
 	@Override
@@ -1410,7 +1411,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 	
 	@Override
 	public List<OrganizationRecord> getAllVendors() throws TimescopeException {
-
 		DSLContext context = getDSLContext();
 		List<OrganizationRecord> vendorList = null;
 		try{

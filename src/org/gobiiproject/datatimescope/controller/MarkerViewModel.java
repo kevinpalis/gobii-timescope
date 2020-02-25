@@ -23,9 +23,12 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.DeleteMarkersResult;
+import org.gobiiproject.datatimescope.services.MarkersFilterResult;
 //import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
@@ -384,7 +387,6 @@ public class MarkerViewModel {
 	@Command("deleteSelectedMarkers")
 	@NotifyChange({"markerSummary","performedDeleteSuccesfully"})
 	public void deleteMarkers(){
-
 		if(selectedMarkerList.isEmpty()){ //Nothing is selected
 			Messagebox.show("There are no markers selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
 		}
@@ -416,10 +418,22 @@ public class MarkerViewModel {
 			
 			try {
 				
-				List<VMarkerSummaryEntity> unusedMarkersInGroupsOrDataset = viewModelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
 				
+				MarkersFilterResult filterResult= viewModelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
+				List<VMarkerSummaryEntity> unusedMarkersInGroupsOrDataset = filterResult.getResults();
 				
-				if (unusedMarkersInGroupsOrDataset.size() > 0) {
+				//check the meta
+				Map<String, Object> resultMeta = filterResult.getMeta();
+				if (resultMeta != null) {
+					List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList = (List<MarkerDeleteResultTableEntity>) resultMeta.get("markerDeleteResultTableEntityList");
+					if (markerDeleteResultTableEntityList != null && markerDeleteResultTableEntityList.size() > 0) {
+						Window window = (Window)Executions.createComponents(
+								"/markerDeleteWarning.zul", null, resultMeta);
+						window.doModal();
+					}
+				}
+				
+				if (unusedMarkersInGroupsOrDataset != null && unusedMarkersInGroupsOrDataset.size() > 0) {
 					int secondCheckpoint = Messagebox.show(
 						"THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
 						"WARNING", 
@@ -432,7 +446,17 @@ public class MarkerViewModel {
 				}
 				
 			
-				viewModelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
+				DeleteMarkersResult deleteMarkersResult = viewModelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
+				
+				if (deleteMarkersResult.isSuccess()) {
+					Window window = (Window)Executions.createComponents(
+							"/marker_delete_successful.zul", null, deleteMarkersResult.getMeta());
+					window.setPosition("center");
+					window.setClosable(true);
+					window.doModal();
+
+					BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
+				}
 
 			} catch (TimescopeException e) {
 				e.printStackTrace();
