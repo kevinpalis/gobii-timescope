@@ -57,7 +57,6 @@ public class UserViewModel {
 
 			selectedUsersList = new ListModelList<TimescoperEntity>();
 
-
 			userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
 
 
@@ -104,7 +103,6 @@ public class UserViewModel {
 				"/editUser.zul", null, args);
 		window.doModal();
 		window.setVisible(true);
-
 
 	}
 
