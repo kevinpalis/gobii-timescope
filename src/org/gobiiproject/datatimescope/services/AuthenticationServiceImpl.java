@@ -1,6 +1,6 @@
 /* 
-	
-*/
+
+ */
 package org.gobiiproject.datatimescope.services;
 
 import java.io.Serializable;
@@ -17,49 +17,43 @@ public class AuthenticationServiceImpl implements AuthenticationService,Serializ
 	private static final long serialVersionUID = 1L;
 
 
-    ViewModelService userInfoService = new ViewModelServiceImpl();
-	
+	ViewModelService userInfoService = new ViewModelServiceImpl();
+
 	@Override
 	public UserCredential getUserCredential(){
 		Session sess = Sessions.getCurrent();
 		UserCredential cre = (UserCredential)sess.getAttribute("userCredential");
-		
+
 		return cre;
 	}
-     
-    @Override
-    public boolean login(String nm, String pd) {
-    	
-    	//retrieve userInfo from database
-    	TimescoperRecord user;
-		try {
-			user = userInfoService.loginTimescoper(nm, pd);
-			//check if not empty and if password matches
-			if(user.getUsername()==null){
-				return false;
-			}
-			
-			//if still here, then checks passed. Update Sessions
-	        Session sess = Sessions.getCurrent();
-	        UserCredential cre = new UserCredential(user.getUsername(), user.getRole());
-	       
-	        List<DatasetSummaryEntity> datasetSummary = new ArrayList<DatasetSummaryEntity>(); 
-	        sess.setAttribute("userCredential",cre);
-	        sess.setAttribute("datasetSummary",datasetSummary);
-	        sess.setAttribute("markerSummary",datasetSummary);
-	 
-	        return true;
-		} catch (TimescopeException e) {
-			e.printStackTrace();
+
+	@Override
+	public boolean login(String nm, String pd) throws TimescopeException {
+
+		//retrieve userInfo from database
+		TimescoperRecord user = userInfoService.loginTimescoper(nm, pd);
+		//check if not empty and if password matches
+		if(user.getUsername()==null){
 			return false;
 		}
 
-        
-    }
- 
-    @Override
-    public void logout() {
-        Session sess = Sessions.getCurrent();
-        sess.removeAttribute("userCredential");
-    }
+		//if still here, then checks passed. Update Sessions
+		Session sess = Sessions.getCurrent();
+		UserCredential cre = new UserCredential(user.getUsername(), user.getRole());
+
+		List<DatasetSummaryEntity> datasetSummary = new ArrayList<DatasetSummaryEntity>(); 
+		sess.setAttribute("userCredential",cre);
+		sess.setAttribute("datasetSummary",datasetSummary);
+		sess.setAttribute("markerSummary",datasetSummary);
+
+		return true;
+
+
+	}
+
+	@Override
+	public void logout() {
+		Session sess = Sessions.getCurrent();
+		sess.removeAttribute("userCredential");
+	}
 }

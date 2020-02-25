@@ -213,91 +213,118 @@ public class DatasetViewModel {
 			}
 
 
-			int firstCheckpoint = Messagebox.show(
+			Messagebox.show(
 					"Are you sure you want to delete the following datasets?\n"+sb.toString(), 
 					"Confirm Delete",
 					Messagebox.YES | Messagebox.NO,
-					Messagebox.QUESTION
-					);
-
-			if (firstCheckpoint == Messagebox.NO) {
-				return;
-			}
-
-			int secondCheckpoint = Messagebox.show(
-					"THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
-					"WARNING",
-					Messagebox.YES | Messagebox.CANCEL,
-					Messagebox.EXCLAMATION
-					);
-
-			if (secondCheckpoint == Messagebox.CANCEL) {
-				return;
-			}
-
-			boolean successful = false;
-			DataSetDeleteInfo info = null;
-			try {
-				if(selectedDsList.size() == 1){  // just one user is selected
-					info = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
-					if (info.getDsListSize() == 1) {
-						Messagebox.show("Data set deleted", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
-					}
-				}else{
-					//bulk delete
-					int itemsDeleted = 0;
-					
-					try {
-						info = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, false, null);
-					} catch (CannotDeleteDataSetListException cde) {
-						int thirdCheckpoint = Messagebox.show(
-								cde.getMessage() + "\n\n Do you still want to continue?", 
-								"Some dataset can't be deleted",
-								Messagebox.YES | Messagebox.CANCEL,
-								Messagebox.QUESTION
-								);
-						if (thirdCheckpoint == Messagebox.CANCEL) {
-							return;
+					Messagebox.QUESTION,
+					new org.zkoss.zk.ui.event.EventListener(){
+						public void onEvent(Event e){
+							if(Messagebox.ON_YES.equals(e.getName())){
+								//OK is clicked
+								deleteSelectedDsListSecondCheckpoint();
+							}else if(Messagebox.ON_NO.equals(e.getName())){
+								//Cancel is clicked
+								return;
+							}
 						}
-
-						if(selectedDsList.size() == cde.getDataSetNames().size()){
-							Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
-							return;
-						}else{
-							//retry the call with true remove option
-							info = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, true, cde.getDataSetNames());
-						}
-
-
 					}
-					successful = info != null && info.getDsListSize() > 0;
-					if (successful) {
-						Messagebox.show(info.toString(), "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
-					}
-
-				}
-
-				if(successful){
-
-					BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
-					Session sess = Sessions.getCurrent();
-					sess.setAttribute("datasetSummary",datasetSummary);
-
-					if(datasetSummary.size()>0){
-						performedDeleteSuccesfully=true;
-					}
-				} else {
-
-				}
-			} catch (TimescopeException e) {
-				e.printStackTrace();
-				WebappUtil.showErrorDialog(e);
-			}
+					);
 
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void deleteSelectedDsListSecondCheckpoint() {
+		Messagebox.show(
+			"THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
+			"WARNING",
+			Messagebox.YES | Messagebox.CANCEL,
+			Messagebox.EXCLAMATION,
+			new org.zkoss.zk.ui.event.EventListener(){
+				public void onEvent(Event e){
+					if(Messagebox.ON_YES.equals(e.getName())){
+						//OK is clicked
+						deleteSelectedDsListFinalCheckpoint();
+					}else if(Messagebox.ON_CANCEL.equals(e.getName())){
+						//Cancel is clicked
+						return;
+					}
+				}
+			}
+		);
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private void deleteSelectedDsListFinalCheckpoint() {
+		boolean successful = false;
+		DataSetDeleteInfo info = null;
+		try {
+			if(selectedDsList.size() == 1){  // just one user is selected
+				info = viewModelService.deleteDataset(selectedDsList.get(0), datasetSummary ,datasetSummaryEntity);
+				if (info.getDsListSize() == 1) {
+					Messagebox.show("Data set deleted", "Successfully deleted dataset!",Messagebox.OK, Messagebox.INFORMATION);
+				}
+			}else{
+				//bulk delete
+				int itemsDeleted = 0;
+
+				try {
+					info = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, false, null);
+					successful = info != null && info.getDsListSize() > 0;
+					if (successful) {
+						Messagebox.show(info.toString(), "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
+					}
+					
+				} catch (CannotDeleteDataSetListException cde) {
+					Messagebox.show(
+						cde.getMessage() + "\n\n Do you still want to continue?", 
+						"Some dataset can't be deleted",
+						Messagebox.YES | Messagebox.CANCEL,
+						Messagebox.QUESTION,
+						new org.zkoss.zk.ui.event.EventListener(){
+							public void onEvent(Event e){
+								if(Messagebox.ON_YES.equals(e.getName())){
+									//OK is clicked
+									if(selectedDsList.size() == cde.getDataSetNames().size()){
+										Messagebox.show("Cannot delete the datafiles for all of the datasets selected ", "ERROR: Cannot delete datasets!", Messagebox.OK, Messagebox.ERROR);
+										return;
+									}else{
+										//retry the call with true remove option
+										try {
+											DataSetDeleteInfo info2 = viewModelService.deleteDatasets(selectedDsList, datasetSummary ,datasetSummaryEntity, true, cde.getDataSetNames());
+											if (info2 != null && info2.getDsListSize() > 0) {
+												Messagebox.show(info2.toString(), "Successfully deleted datasets!",Messagebox.OK, Messagebox.INFORMATION);
+											}
+										} catch (TimescopeException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									}
+
+								}else if(Messagebox.ON_CANCEL.equals(e.getName())){
+									//Cancel is clicked
+									return;
+								}
+							}
+						}
+					);
+
+				}
+			}
+			
+		
+
+		} catch (TimescopeException e) {
+			e.printStackTrace();
+			WebappUtil.showErrorDialog(e);
+		} finally {
+			BindUtils.postGlobalCommand(null, null, "retrieveDatasetList", null);
+			Session sess = Sessions.getCurrent();
+			sess.setAttribute("datasetSummary",datasetSummary);
+		}
+	}
 
 	@GlobalCommand("retrieveDatasetList")
 	@NotifyChange({"datasetList", "sizeDatasetList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})

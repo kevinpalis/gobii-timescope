@@ -190,7 +190,9 @@ public class LoginViewModel {
 		} catch (TimescopeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Test");
 			WebappUtil.showErrorDialog(e);
+			
 		} finally {
 			log.debug("Clearing busy state...");
 			Clients.clearBusy();

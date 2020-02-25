@@ -11,7 +11,14 @@ public class WebappUtil {
 	
 	
 	public static void showErrorDialog(TimescopeException exc) {
-		Messagebox.show(exc.getMessage(), exc.getErrorTitle(), Messagebox.OK, Messagebox.ERROR);
+		try {
+			Messagebox.show(exc.getMessage(), exc.getErrorTitle(), Messagebox.OK, Messagebox.ERROR);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+
 	}
 
 }

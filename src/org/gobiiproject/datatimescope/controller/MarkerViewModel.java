@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Stack;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
@@ -404,67 +405,93 @@ public class MarkerViewModel {
 
 			}
 
-			int firstCheckpoint = Messagebox.show(
+			Messagebox.show(
 					"Are you sure you want to delete "+sb.toString(), 
 					"Confirm Delete",
 					Messagebox.YES | Messagebox.CANCEL,
-					Messagebox.QUESTION
+					Messagebox.QUESTION,
+					new org.zkoss.zk.ui.event.EventListener(){
+						public void onEvent(Event e){
+							if(Messagebox.ON_YES.equals(e.getName())){
+								deleteMarkerSecondCheckPoint();
+							} else {
+								return;
+							}
+
+						}
+					}
 					);
 
-			if (firstCheckpoint == Messagebox.CANCEL) {
-				return;
-			}
-			
-			
-			try {
-				
-				
-				MarkersFilterResult filterResult= viewModelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
-				List<VMarkerSummaryEntity> unusedMarkersInGroupsOrDataset = filterResult.getResults();
-				
-				//check the meta
-				Map<String, Object> resultMeta = filterResult.getMeta();
-				if (resultMeta != null) {
-					List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList = (List<MarkerDeleteResultTableEntity>) resultMeta.get("markerDeleteResultTableEntityList");
-					if (markerDeleteResultTableEntityList != null && markerDeleteResultTableEntityList.size() > 0) {
-						Window window = (Window)Executions.createComponents(
-								"/markerDeleteWarning.zul", null, resultMeta);
-						window.doModal();
-					}
-				}
-				
-				if (unusedMarkersInGroupsOrDataset != null && unusedMarkersInGroupsOrDataset.size() > 0) {
-					int secondCheckpoint = Messagebox.show(
-						"THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
-						"WARNING", 
-						Messagebox.YES | Messagebox.CANCEL,
-						Messagebox.EXCLAMATION);
-					if (secondCheckpoint == Messagebox.CANCEL) return;
-				} else {
-					Messagebox.show("The marker(s) indicated are still being used.", "INFO", Messagebox.OK, Messagebox.INFORMATION);
-					return;
-				}
-				
-			
-				DeleteMarkersResult deleteMarkersResult = viewModelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
-				
-				if (deleteMarkersResult.isSuccess()) {
-					Window window = (Window)Executions.createComponents(
-							"/marker_delete_successful.zul", null, deleteMarkersResult.getMeta());
-					window.setPosition("center");
-					window.setClosable(true);
-					window.doModal();
 
-					BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
-				}
 
-			} catch (TimescopeException e) {
-				e.printStackTrace();
-				WebappUtil.showErrorDialog(e);
-			}
 
 
 		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void deleteMarkerSecondCheckPoint() {
+
+
+		MarkersFilterResult filterResult;
+		try {
+			filterResult = viewModelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
+		} catch (TimescopeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			WebappUtil.showErrorDialog(e1);
+			return;
+		}
+		List<VMarkerSummaryEntity> unusedMarkersInGroupsOrDataset = filterResult.getResults();
+
+		//check the meta
+		Map<String, Object> resultMeta = filterResult.getMeta();
+		if (resultMeta != null) {
+			List<MarkerDeleteResultTableEntity> markerDeleteResultTableEntityList = (List<MarkerDeleteResultTableEntity>) resultMeta.get("markerDeleteResultTableEntityList");
+			if (markerDeleteResultTableEntityList != null && markerDeleteResultTableEntityList.size() > 0) {
+				Window window = (Window)Executions.createComponents(
+						"/markerDeleteWarning.zul", null, resultMeta);
+				window.doModal();
+			}
+		}
+
+		if (unusedMarkersInGroupsOrDataset != null && unusedMarkersInGroupsOrDataset.size() > 0) {
+			Messagebox.show(
+				"THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+				"WARNING", 
+				Messagebox.YES | Messagebox.CANCEL,
+				Messagebox.EXCLAMATION,
+				new org.zkoss.zk.ui.event.EventListener(){
+					public void onEvent(Event e){
+						if(Messagebox.ON_YES.equals(e.getName())){
+							try {
+								DeleteMarkersResult deleteMarkersResult = viewModelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
+								if (deleteMarkersResult.isSuccess()) {
+									Window window = (Window)Executions.createComponents(
+											"/marker_delete_successful.zul", null, deleteMarkersResult.getMeta());
+									window.setPosition("center");
+									window.setClosable(true);
+									window.doModal();
+									BindUtils.postGlobalCommand(null, null, "retrieveMarkerList", null);
+								}
+							} catch (TimescopeException exc) {
+								exc.printStackTrace();
+								WebappUtil.showErrorDialog(exc);
+							}
+
+						} else {
+							return;
+						}
+
+					}
+				}
+
+			);
+		} else {
+			Messagebox.show("The marker(s) indicated are still being used.", "INFO", Messagebox.OK, Messagebox.INFORMATION);
+			return;
+		}
+
 	}
 
 	@GlobalCommand("retrieveMarkerList")
