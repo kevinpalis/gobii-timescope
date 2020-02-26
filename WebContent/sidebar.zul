@@ -1,11 +1,11 @@
 <vbox vflex="true">
 
 
-	<hbox vflex="3"
+	<hbox vflex="2"
 		apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
 			<image id="timescopeLogo" src="/imgs/datatimescope5.png" height="100px" onClick="@command('bringBackToHome')"/>
 	</hbox>
-	<hbox hflex="max" vflex="25">
+	<hbox hflex="max" vflex="10" pack="center" align="start">
 		<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
 			apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
 			<columns>
@@ -18,7 +18,7 @@
 
 	<hbox apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
-		hflex="1" vflex="1" pack="end" align="end">
+		hflex="1" vflex="1" pack="end" align="start">
 
 		<button label="Switch Database"
 			style="background-color:gray; font-size:14px; text-align:center; vertical-align:middle; padding: 0px;"
