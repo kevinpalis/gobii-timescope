@@ -10,10 +10,13 @@
 	<vlayout>
 
 		<label style=" font-size: 14px"
-			value="The following markers can't be deleted because they are being used in a dataset or a markergroup." />
+			value="The following markers can't be deleted because they are associated with a dataset or markergroup." />
 		<label style=" font-size: 14px" value="" />
-		<label style=" font-size: 14px"
-			value="Please delete or remove it from the associated datasets and markergroups first." />
+		<label style=" font-size: 12px; font-style:italic; "
+			value="*Datasets listed below must be deleted before markers can be deleted." />
+		<label style=" font-size: 14px" value="" />
+		<label style=" font-size: 12px; font-style:italic;" 
+			value="*Markers must be removed from markergroups listed below before markers can be deleted." />
 		<grid id="markerGrid"
 			model="@load(vm.markerDeleteResultTableEntityList)" mold="paging"
 			pageSize="5" pagingPosition="both">
