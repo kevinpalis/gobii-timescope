@@ -1,6 +1,8 @@
 package org.gobiiproject.datatimescope.controller;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -12,23 +14,38 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperReco
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
+import org.zkoss.bind.annotation.ContextParam;
+import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.zk.ui.AbstractComponent;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.Events;
+import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Listen;
+import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.ListModelList;
-import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 public class LoginViewModel {
 	final static Logger log = Logger.getLogger(LoginViewModel.class.getName());
 	//UI component
+
+	@Wire
+	Window loginWin;
+	
+	
 	boolean isCreateNew = false;
 
 	private ServerInfo serverInfo;
@@ -69,13 +86,14 @@ public class LoginViewModel {
 	}
 
 	@AfterCompose
-	public void afterCompose() {
+	public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
 		this.prefillServerInfoFromCookies();
+		Selectors.wireComponents(view, this, false);
 	}
-
+   
 	@Init
 	public void init() {
-		AuthenticationService authService = new AuthenticationServiceImpl();
+		AuthenticationService authService = ServiceFactory.getAuthenticationService();//new AuthenticationServiceImpl();
 
 		UserCredential cre = authService.getUserCredential();
 		if(cre==null){
@@ -85,7 +103,7 @@ public class LoginViewModel {
 
 			Map<String, Object> args = new HashMap<String, Object>();
 			args.put("isLoggedIn", false);
-			viewModelService = new ViewModelServiceImpl();
+			viewModelService = ServiceFactory.getViewModelService();
 		} else{
 			Executions.sendRedirect("/index.zul");
 			return;
@@ -100,11 +118,39 @@ public class LoginViewModel {
 		window.doModal();
 	}
 
-	@Command("login")
-	public void openDatabaseInfoDialog() {
+	private void disableLoginComponents() {
+		log.info("Disabling loginWindow");
+		setComponentEnabled(loginWin, true);
+	}
+	
+	private void enableLoginComponents() {
+		log.info("Enabling loginWindow");
+		setComponentEnabled(loginWin, false);
+	}
+
+	private void setComponentEnabled(AbstractComponent pComponent, boolean disabled) {
+		if (pComponent == null) return;
+		for( Object o : pComponent.getChildren() ) {
+
+			AbstractComponent ac = ( AbstractComponent ) o;
+			try {
+				Method m = ac.getClass().getMethod( "setDisabled", Boolean.TYPE );
+				m.invoke( ac, disabled);
+			} catch( Exception e ) {
+			}
+
+			List children = ac.getChildren();
+			if( children != null ) {
+				setComponentEnabled(ac, disabled);
+			}
+		}
+
+	}
+	
+	private void doLogin() throws InterruptedException{
 		try {
-			log.debug("Showing busy state...");
-			Clients.showBusy("Please wait...");
+			//.debug("Showing busy state...");
+			
 
 			//File configFile = new File( System.getProperty("user.dir")+"/config.properties");
 			try {
@@ -136,7 +182,7 @@ public class LoginViewModel {
 			viewModelService.connectToDB(serverInfo.getUserName(), serverInfo.getPassword(), serverInfo);
 
 
-			AuthenticationService authService =new AuthenticationServiceImpl();
+			AuthenticationService authService = ServiceFactory.getAuthenticationService();
 
 			if (authService.login(userAccount.getUsername(), userAccount.getPassword())){
 				log.info(String.format("Login successful for user %s", userAccount.getUsername()));
@@ -182,22 +228,44 @@ public class LoginViewModel {
 				//				}
 
 				//Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
-				Executions.sendRedirect("/index.zul");
+				
+				//Executions.sendRedirect("/index.zul");
+				Clients.clearBusy();
+				
+				Events.echoEvent(Events.ON_CLIENT_INFO, loginWin, "redirect");
 
 			}
 
 
-		} catch (TimescopeException e) {
+		} catch (TimescopeException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Test");
-			WebappUtil.showErrorDialog(e);
-			
-		} finally {
-			log.debug("Clearing busy state...");
+			e1.printStackTrace();
 			Clients.clearBusy();
-		}
+			this.enableLoginComponents();
+			WebappUtil.showErrorDialog(e1);
 
+		}
+	}
+	
+	@Command("login")
+	public void openDatabaseInfoDialog() {
+		this.disableLoginComponents();
+		Clients.showBusy("Logging in...");
+		//loginWin.removeEventListener(Events.ON_CLIENT_INFO, null);
+		loginWin.addEventListener(Events.ON_CLIENT_INFO, new EventListener<Event>() {
+	        @Override
+	        public void onEvent(Event event) throws Exception {
+	        	if (event.getData().toString().equals("login")) {
+	        		doLogin();
+	        	} else {
+	        		disableLoginComponents();
+	        		Executions.sendRedirect("/index.zul");
+	        	}
+	        	
+	            
+	        }
+	    });
+		Events.echoEvent("onClientInfo", loginWin, "login"); //echo an event back 
 	}
 
 	public TimescoperRecord getUserAccount() {

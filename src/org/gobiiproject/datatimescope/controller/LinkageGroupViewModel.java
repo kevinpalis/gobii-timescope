@@ -20,9 +20,9 @@ import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
@@ -80,7 +80,7 @@ public class LinkageGroupViewModel {
 
 			linkageGroupSummaryEntity= new LinkageGroupSummaryEntity();
 			selectedDsList = new ArrayList<VLinkageGroupSummaryEntity>();
-			viewModelService = new ViewModelServiceImpl();
+			viewModelService = ServiceFactory.getViewModelService();
 			contactsList = viewModelService.getAllContacts();
 			piList = viewModelService.getContactsByRoles(roles);
 			piList.add(0, selectAllPI);

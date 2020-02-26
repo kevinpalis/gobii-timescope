@@ -6,10 +6,9 @@ import java.util.Map;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
@@ -42,7 +41,7 @@ public class UserViewModel {
 	@AfterCompose
 	public void afterCompose() {
 		try {
-			viewModelService = new ViewModelServiceImpl();
+			viewModelService = ServiceFactory.getViewModelService();
 
 			setCbAllUsers(false);
 			UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
@@ -84,10 +83,8 @@ public class UserViewModel {
 
 	@Command("signout")
 	public void signout() {
-
-		AuthenticationService authService =new AuthenticationServiceImpl();
+		AuthenticationService authService = ServiceFactory.getAuthenticationService();
 		authService.logout();
-
 		Executions.sendRedirect("/index.zul");
 	}
 

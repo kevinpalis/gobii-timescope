@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
@@ -52,7 +52,7 @@ public class EditUserViewModel {
 			userAccount = user;
 			userAccount.changed(false);
 			setRoleList(new ListModelList<String>(Utils.getRoleList()));
-			userInfoService = new ViewModelServiceImpl();
+			userInfoService = ServiceFactory.getViewModelService();
 			UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
 
 			allUser = new ListModelList<TimescoperEntity>(userInfoService.getAllOtherUsers(userAccount.getUsername()), true);

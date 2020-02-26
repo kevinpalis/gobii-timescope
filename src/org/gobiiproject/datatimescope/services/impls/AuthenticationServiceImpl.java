@@ -1,7 +1,7 @@
 /* 
 
  */
-package org.gobiiproject.datatimescope.services;
+package org.gobiiproject.datatimescope.services.impls;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,6 +10,9 @@ import java.util.List;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.AuthenticationService;
+import org.gobiiproject.datatimescope.services.UserCredential;
+import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
 

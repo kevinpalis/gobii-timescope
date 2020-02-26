@@ -12,10 +12,9 @@ import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
@@ -59,8 +58,8 @@ public class SwitchDatabaseViewModel {
 
 		if(isLoggedIn) serverInfo = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
 
-		authService =new AuthenticationServiceImpl();
-		viewModelService = new ViewModelServiceImpl();
+		authService = ServiceFactory.getAuthenticationService();
+		viewModelService = ServiceFactory.getViewModelService();
 
 		//Figure out if this window was called to edit a user or to create one
 		if(isLoggedIn) setPageCaption("Modify Database Connection");

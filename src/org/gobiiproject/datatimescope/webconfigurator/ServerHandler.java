@@ -4,8 +4,8 @@ package org.gobiiproject.datatimescope.webconfigurator;
 //import org.apache.catalina.ant.UndeployTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.TomcatManagerUtil;
+import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.jooq.DSLContext;
 import org.w3c.dom.NodeList;
 
@@ -48,8 +48,7 @@ public class ServerHandler {
 	 * @param oldUserName the old username which is still needed to transition to the new name
 	 */
 	public void executePostgresChange(String oldUserName){
-		ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-		DSLContext context = tmpService.getDSLContext();
+		DSLContext context = WebappUtil.getDSLContext();
 		if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
 			context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
 			context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
@@ -172,8 +171,7 @@ public class ServerHandler {
 	 */
 	public boolean postgresRemoveCrop(String cropName, String cropDatabase){
 		boolean success = true;
-		ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-		DSLContext context = tmpService.getDSLContext();
+		DSLContext context = WebappUtil.getDSLContext();
 		try {
 			context.fetch("DROP DATABASE " + cropDatabase + ";");
 			writeToLog("ServerHandler.postgresRemoveCrop()", "You have successfully removed database for the crop " + cropName + ".", username);
@@ -201,11 +199,10 @@ public class ServerHandler {
 	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload) throws TimescopeException{
 		int success;
 		if (firstUpload) {
-			ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
 			ServerInfo tmpInfo = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), "gobii_dev",
 					xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-			tmpService.connectToDB(tmpInfo.getUserName(), tmpInfo.getPassword(), tmpInfo);
-			DSLContext context = tmpService.getDSLContext();
+			WebappUtil.connectToDB(tmpInfo.getUserName(), tmpInfo.getPassword(), tmpInfo);
+			DSLContext context = WebappUtil.getDSLContext();
 			if (!populateSeedData(context, currentCrop)) {
 				success = 1;
 				writeToLog("ServerHandler.postgresAddCrop()", "Populating the the liquibase data failed.", username);
@@ -222,14 +219,14 @@ public class ServerHandler {
 		}
 		ServerInfo info = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), currentCrop.getDatabaseName(),
 				xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-		ViewModelServiceImpl newService = new ViewModelServiceImpl();
-		newService.connectToDB(info.getUserName(), info.getPassword(), info);
-		DSLContext context = newService.getDSLContext();
+		
+		WebappUtil.connectToDB(info.getUserName(), info.getPassword(), info);
+		DSLContext context = WebappUtil.getDSLContext();
 		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
 		success = populateContactData(context, contactData, timescopeData);
 		info = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), "gobii_dev",
 				xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-		newService.connectToDB(info.getUserName(), info.getPassword(), info);
+		WebappUtil.connectToDB(info.getUserName(), info.getPassword(), info);
 		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
 		return success;
 	}

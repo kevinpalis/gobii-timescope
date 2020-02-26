@@ -17,9 +17,9 @@ import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.exceptions.CannotDeleteDataSetListException;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.DataSetDeleteInfo;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -64,7 +64,7 @@ public class DatasetViewModel {
 		try {
 			datasetSummaryEntity= new DatasetSummaryEntity();
 			selectedDsList = new ArrayList<VDatasetSummaryEntity>();
-			viewModelService = new ViewModelServiceImpl();
+			viewModelService = ServiceFactory.getViewModelService();
 			setDatasetEntity(new DatasetEntity());
 			setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
 			contactsList = viewModelService.getAllContacts();

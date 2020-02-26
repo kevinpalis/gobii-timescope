@@ -25,7 +25,6 @@
 					apply="org.zkoss.bind.BindComposer"
 					viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.LoginViewModel')"
 					style="border: 0px !important; padding:0px !important; margin:0px !important;background-color:white !important;" hflex="1" vflex="max">
-
 					<caption sclass="fn-caption" style="background-color:white !important;">
 						<image src="/imgs/datatimescope5.png"
 							width="200px" />
@@ -111,7 +110,7 @@
 						</grid>
 						<separator spacing="12px" />
 						<button label="Login" width="200px"
-							onClick="@command('login')" />
+							onClick="@command('login')" autodisable="true"/>
 						<separator spacing="5px" />
 
 						<label value="Need help?"

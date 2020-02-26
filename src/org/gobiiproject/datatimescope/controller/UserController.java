@@ -19,10 +19,9 @@ package org.gobiiproject.datatimescope.controller;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceImpl;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.zk.ui.Component;
@@ -55,8 +54,8 @@ public class UserController extends SelectorComposer<Component> {
 	Label role;
 
 	// services
-	AuthenticationService authService = new AuthenticationServiceImpl();
-	ViewModelService userInfoService = new ViewModelServiceImpl();
+	AuthenticationService authService = ServiceFactory.getAuthenticationService();
+	ViewModelService userInfoService = ServiceFactory.getViewModelService();
 
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
@@ -80,9 +79,6 @@ public class UserController extends SelectorComposer<Component> {
 			e.printStackTrace();
 			WebappUtil.showErrorDialog(e);
 		}
-
-		
-
 		//Clients.showNotification("Your profile was updated.");
 	}
 

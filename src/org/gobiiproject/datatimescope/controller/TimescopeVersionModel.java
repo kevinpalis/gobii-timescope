@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.zkoss.bind.annotation.AfterCompose;
 
 public class TimescopeVersionModel {
@@ -19,7 +19,7 @@ public class TimescopeVersionModel {
 
 	@AfterCompose
 	public void afterCompose() {
-		viewModelService = new ViewModelServiceImpl();
+		viewModelService = ServiceFactory.getViewModelService();
 
 		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
 		try {
@@ -39,17 +39,14 @@ public class TimescopeVersionModel {
 			}
 		} catch (FileNotFoundException ex) {
 			// file does not exist
-
 			log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
 		} catch (IOException ex) {
 			// I/O error
 			log.error("i/o exception"+ ex.getMessage());
 		} catch (NullPointerException ex) {
 			// file does not exist
-
 			log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
 		}
-
 	}
 
 	public String getVersion() {

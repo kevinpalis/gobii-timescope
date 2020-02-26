@@ -7,8 +7,8 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRec
 import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDetailLinkageGroupEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
@@ -41,7 +41,7 @@ public class MarkerDetailViewModel {
 			@ExecutionArgParam("markerDetailLinkageGroupList")  List<LinkageGroupRecord> markerDetailLinkageGroupList,
 			@ExecutionArgParam("markerAssociated") Boolean markerAssociated) {
 
-        viewModelService = new ViewModelServiceImpl();
+        viewModelService = ServiceFactory.getViewModelService();
 		try {
 			this.setMarkerDetailDatasetList(markerDetailDatasetList);
 		} catch (TimescopeException e) {

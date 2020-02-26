@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
+import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
@@ -27,7 +28,7 @@ import org.zkoss.zul.Window;
 public class IndexViewModel {
 	final static Logger log = Logger.getLogger(IndexViewModel.class.getName());
 
-	private ViewModelServiceImpl viewModelService;
+	private ViewModelService viewModelService;
 	private String datawarehouseVersion;
 	private ServerInfo serverInfo;
 
@@ -36,7 +37,7 @@ public class IndexViewModel {
 	@Init
 	public void init() {
 		log.debug("Initializing Index page");
-		viewModelService = new ViewModelServiceImpl();
+		viewModelService = ServiceFactory.getViewModelService();
 		
 		try {
 			setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());

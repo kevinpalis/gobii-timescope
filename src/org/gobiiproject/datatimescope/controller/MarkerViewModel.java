@@ -11,8 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Stack;
-
+import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
@@ -29,10 +28,11 @@ import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
 import org.gobiiproject.datatimescope.exceptions.TimescopeException;
 import org.gobiiproject.datatimescope.services.DeleteMarkersResult;
+import org.gobiiproject.datatimescope.services.MarkerModelService;
 import org.gobiiproject.datatimescope.services.MarkersFilterResult;
+import org.gobiiproject.datatimescope.services.ServiceFactory;
 //import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
-import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
 import org.gobiiproject.datatimescope.utils.WebappUtil;
 import org.zkoss.bind.BindUtils;
@@ -58,6 +58,7 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 public class MarkerViewModel {
+	final static Logger log = Logger.getLogger(MarkerViewModel.class.getName());
 	//UI component
 
 
@@ -68,7 +69,8 @@ public class MarkerViewModel {
 	@Wire("#lblDatasetFilter")
 	Textbox lblDatasetFilter;
 
-	ViewModelService viewModelService;
+	MarkerModelService modelService;
+	ViewModelService dataService;
 
 	private Integer sizeMarkerList=0;
 	private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
@@ -111,8 +113,8 @@ public class MarkerViewModel {
 		markerDetailLinkageGroupList = new ArrayList<LinkageGroupRecord>();
 		markerDetailDatasetList = new ArrayList<DatasetRecord>();
 		markerDetailsMarkerGroupList = new ArrayList<MarkerGroupRecord>();
-		viewModelService = new ViewModelServiceImpl();
-
+		modelService = ServiceFactory.getMarkerModelService();
+		dataService = ServiceFactory.getViewModelService();
 		backupVendorProtocolList =  new ArrayList<VendorProtocolRecord>();
 		backupProjectList =  new ArrayList<ProjectRecord>();
 		backupExperimentList =  new ArrayList<ExperimentRecord>();
@@ -140,9 +142,9 @@ public class MarkerViewModel {
 	@NotifyChange({"markerDetailDatasetList","markerDetailsMarkerGroupList", "markerDetailLinkageGroupList"})
 	public void showMarkerDetail(@BindingParam("markerId") Integer markerId, @BindingParam("markerName") String markerName){
 		try {
-			setMarkerDetailLinkageGroupList(viewModelService.getLinkageGroupsAssociatedToMarkerId(markerId));
-			setMarkerDetailsMarkerGroupList(viewModelService.getMarkerGroupsAssociatedToMarkerId(markerId));
-			setMarkerDetailDatasetList(viewModelService.getDatasetAssociatedToMarkerId(markerId));
+			setMarkerDetailLinkageGroupList(modelService.getLinkageGroupsAssociatedToMarkerId(markerId));
+			setMarkerDetailsMarkerGroupList(modelService.getMarkerGroupsAssociatedToMarkerId(markerId));
+			setMarkerDetailDatasetList(modelService.getDatasetAssociatedToMarkerId(markerId));
 
 			if(markerDetailsMarkerGroupList.size()<1 && markerDetailLinkageGroupList.size()<1 && markerDetailDatasetList.size()<1) {
 				setMarkerAssociated(false);
@@ -314,7 +316,7 @@ public class MarkerViewModel {
 	public void submitQuery(){
 		try {
 			if (markerList != null)  markerList.clear(); //clear the list first and then just add if there are any selected
-			setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity,markerSummaryEntity));
+			setMarkerList(modelService.getAllMarkersBasedOnQueryViaView(markerEntity,markerSummaryEntity));
 
 			setAllCbSelected(false);
 			setCbAllMarkers(false);
@@ -402,40 +404,30 @@ public class MarkerViewModel {
 			if (selectedMarkerList.size()>10){
 				sb =  new StringBuilder();
 				sb.append(Integer.toString(selectedMarkerList.size())+" markers?");
-
 			}
 
 			Messagebox.show(
-					"Are you sure you want to delete "+sb.toString(), 
-					"Confirm Delete",
-					Messagebox.YES | Messagebox.CANCEL,
-					Messagebox.QUESTION,
-					new org.zkoss.zk.ui.event.EventListener(){
-						public void onEvent(Event e){
-							if(Messagebox.ON_YES.equals(e.getName())){
-								deleteMarkerSecondCheckPoint();
-							} else {
-								return;
-							}
-
-						}
+				"Are you sure you want to delete "+sb.toString(), 
+				"Confirm Delete",
+				Messagebox.YES | Messagebox.CANCEL,
+				Messagebox.QUESTION,
+				new org.zkoss.zk.ui.event.EventListener(){
+					@Override
+					public void onEvent(Event e){
+						if(Messagebox.ON_YES.equals(e.getName())){
+							deleteMarkerSecondCheckPoint();
+						} 
 					}
-					);
-
-
-
-
-
+				}
+			);
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void deleteMarkerSecondCheckPoint() {
-
-
 		MarkersFilterResult filterResult;
 		try {
-			filterResult = viewModelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
+			filterResult = modelService.filterUnusedMarkersInGroupOrDataset(selectedMarkerList);
 		} catch (TimescopeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -462,10 +454,11 @@ public class MarkerViewModel {
 				Messagebox.YES | Messagebox.CANCEL,
 				Messagebox.EXCLAMATION,
 				new org.zkoss.zk.ui.event.EventListener(){
+					@Override
 					public void onEvent(Event e){
 						if(Messagebox.ON_YES.equals(e.getName())){
 							try {
-								DeleteMarkersResult deleteMarkersResult = viewModelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
+								DeleteMarkersResult deleteMarkersResult = modelService.deleteMarkers(unusedMarkersInGroupsOrDataset, markerSummary);
 								if (deleteMarkersResult.isSuccess()) {
 									Window window = (Window)Executions.createComponents(
 											"/marker_delete_successful.zul", null, deleteMarkersResult.getMeta());
@@ -479,19 +472,14 @@ public class MarkerViewModel {
 								WebappUtil.showErrorDialog(exc);
 							}
 
-						} else {
-							return;
 						}
-
 					}
 				}
 
 			);
 		} else {
 			Messagebox.show("The marker(s) indicated are still being used.", "INFO", Messagebox.OK, Messagebox.INFORMATION);
-			return;
 		}
-
 	}
 
 	@GlobalCommand("retrieveMarkerList")
@@ -499,7 +487,7 @@ public class MarkerViewModel {
 	public void retrieveMarkerList(){
 		//...
 		try {
-			setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity, markerSummaryEntity));
+			setMarkerList(modelService.getAllMarkersBasedOnQueryViaView(markerEntity, markerSummaryEntity));
 
 			selectedMarkerList.clear();
 
@@ -535,7 +523,6 @@ public class MarkerViewModel {
 	public void resetDSSummary(){
 		markerSummary = (List<DatasetSummaryEntity>) Sessions.getCurrent().getAttribute("markerSummary");
 
-
 		if(markerSummary.size()>0){
 			performedDeleteSuccesfully=true;
 		}
@@ -549,9 +536,7 @@ public class MarkerViewModel {
 		StringBuffer buffMap = new StringBuffer();
 
 		while (it.hasNext()) {
-
 			VMarkerSummaryEntity next = it.next();
-
 			if(it.nextIndex()==1){
 				buffMap.append(next.getHeaderDelimitedBy("\t"));
 			}
@@ -578,8 +563,6 @@ public class MarkerViewModel {
 
 	@Command("exportCurrentMarkerTablePage")
 	public void exportCurrentMarkerTablePage() {
-
-
 		int ActivePage = markerGrid.getActivePage();
 		int initial, last;
 		if(ActivePage==0){
@@ -589,7 +572,6 @@ public class MarkerViewModel {
 		}
 
 		StringBuffer buffMap = new StringBuffer();
-
 
 		List<Integer> indices = new ArrayList<Integer>();
 
@@ -630,83 +612,40 @@ public class MarkerViewModel {
 			InputStream is = new FileInputStream(file);
 			Filedownload.save(is, "text/plain", file.getName());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+
 
 	private void populateFilterLists() {
-		try {
-			setPlatformList(viewModelService.getAllPlatforms());
-		} catch (TimescopeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setVendorList(viewModelService.getAllVendors());
-		} catch (TimescopeException e) {
-			e.printStackTrace();
-			WebappUtil.showErrorDialog(e);
-		}
-		try {
-			setVendorProtocolList(viewModelService.getAllVendorProtocols());
-		} catch (TimescopeException e1) {
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setCallingAnalysisList(viewModelService.getAllCallingAnalysis());
-		} catch (TimescopeException e2) {
-			e2.printStackTrace();
-			WebappUtil.showErrorDialog(e2);
-		}
-		try {
-			setAnalysesList(viewModelService.getAllAnalyses());
-		} catch (TimescopeException e1) {
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setProjectList(viewModelService.getAllProjects());
-		} catch (TimescopeException e1) {
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setExperimentList(viewModelService.getAllExperiments());
-		} catch (TimescopeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setDatasetList(viewModelService.getAllDatasets());
-		} catch (TimescopeException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-			WebappUtil.showErrorDialog(e2);
-		}
-		try {
-			setMapsetList(viewModelService.getAllMapsets());
-		} catch (TimescopeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			WebappUtil.showErrorDialog(e1);
-		}
-		try {
-			setLinkageGroupList(viewModelService.getAllLinkageGroups());
-		} catch (TimescopeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			WebappUtil.showErrorDialog(e);
+		Procedure[] procs = new Procedure[] {
+			() -> setPlatformList(dataService.getAllPlatforms()),
+			() -> setVendorList(dataService.getAllVendors()),
+			() -> setVendorProtocolList(dataService.getAllVendorProtocols()),
+			() -> setCallingAnalysisList(dataService.getAllCallingAnalysis()),
+			() -> setAnalysesList(dataService.getAllAnalyses()),
+			() -> setProjectList(dataService.getAllProjects()),
+			() -> setExperimentList(dataService.getAllExperiments()),
+			() -> setDatasetList(dataService.getAllDatasets()),
+			() -> setMapsetList(dataService.getAllMapsets()),
+			() -> setLinkageGroupList(dataService.getAllLinkageGroups()),
+			() -> setDbAnalyses(Utils.isListNotNullOrEmpty(analysesList)),
+			() -> setDbMapset(Utils.isListNotNullOrEmpty(mapsetList)),
+			() -> setDbPlatforms(Utils.isListNotNullOrEmpty(platformList)),
+		};
+		
+		for (Procedure proc: procs) {
+			try {
+				proc.run();
+			} catch (Exception e) {
+				e.printStackTrace();
+				if (e instanceof TimescopeException) {
+					WebappUtil.showErrorDialog((TimescopeException) e);
+				}
+			}
 		}
 
-
-		// If List is noll or empty, make invisible.
-		setDbAnalyses(Utils.isListNotNullOrEmpty(analysesList));
-		setDbMapset(Utils.isListNotNullOrEmpty(mapsetList));
-		setDbPlatforms(Utils.isListNotNullOrEmpty(platformList));
 	}
 
 
@@ -731,9 +670,9 @@ public class MarkerViewModel {
 	public void updateVendorProtocolTab() {
 		try {
 			if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) {
-				setVendorProtocolList(viewModelService.getVendorProtocolByPlatformId(markerEntity.getPlatformList()));
+				setVendorProtocolList(dataService.getVendorProtocolByPlatformId(markerEntity.getPlatformList()));
 			}else{
-				setVendorProtocolList(viewModelService.getAllVendorProtocols());
+				setVendorProtocolList(dataService.getAllVendorProtocols());
 			}
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -756,9 +695,9 @@ public class MarkerViewModel {
 		try {
 			if(Utils.isListNotNullOrEmpty(markerEntity.getMapsetList())) {
 
-				setLinkageGroupList(viewModelService.getLinkageGroupByMapsetId(markerEntity.getMapsetList()));
+				setLinkageGroupList(dataService.getLinkageGroupByMapsetId(markerEntity.getMapsetList()));
 			}else{		
-				setLinkageGroupList(viewModelService.getAllLinkageGroups());
+				setLinkageGroupList(dataService.getAllLinkageGroups());
 			}
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -776,11 +715,11 @@ public class MarkerViewModel {
 	public void updateProjectsTab() { // Projects are connected to a platform and a vendor-protocol (via experiment)
 		try {
 			if(Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) { // if not empty, use vendor-protocol as filter
-				setProjectList(viewModelService.getProjectsByVendorProtocolID(markerEntity.getVendorProtocolList()));
+				setProjectList(dataService.getProjectsByVendorProtocolID(markerEntity.getVendorProtocolList()));
 			}else if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) { // check if platform filter is not empty and filter by that instead
-				setProjectList(viewModelService.getProjectsByPlatformID(markerEntity.getPlatformList()));
+				setProjectList(dataService.getProjectsByPlatformID(markerEntity.getPlatformList()));
 			}else{		
-				setProjectList(viewModelService.getAllProjects());	
+				setProjectList(dataService.getAllProjects());	
 			}
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -800,14 +739,14 @@ public class MarkerViewModel {
 	public void updateExperimentsTab() { // Experiments are connected to a specific project then a vendor-protocol and a platform
 		try {
 			if(Utils.isListNotNullOrEmpty(markerEntity.getProjectList())) { // if not empty, use project as filter
-				setExperimentList(viewModelService.getExperimentsByProjectID(markerEntity.getProjectList()));
+				setExperimentList(dataService.getExperimentsByProjectID(markerEntity.getProjectList()));
 			}
 			else if(Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) { // if not empty, use vendor-protocol as filter
-				setExperimentList(viewModelService.getExperimentsByVendorProtocolID(markerEntity.getVendorProtocolList()));
+				setExperimentList(dataService.getExperimentsByVendorProtocolID(markerEntity.getVendorProtocolList()));
 			}else if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) { // check if platform filter is not empty and filter by that instead
-				setExperimentList(viewModelService.getExperimentsByPlatformID(markerEntity.getPlatformList()));
+				setExperimentList(dataService.getExperimentsByPlatformID(markerEntity.getPlatformList()));
 			}else{
-				setExperimentList(viewModelService.getAllExperiments());
+				setExperimentList(dataService.getAllExperiments());
 			}
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -826,29 +765,29 @@ public class MarkerViewModel {
 		try {
 			if(Utils.isListNotNullOrEmpty(markerEntity.getExperimentList())) { // if not empty, use experiment as filter
 
-				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getDatasetsByExperimentIDandAnalysisId(markerEntity.getExperimentList(),markerEntity.getAnalysesList()));
-				else setDatasetList(viewModelService.getDatasetsByExperimentID(markerEntity.getExperimentList()));
+				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(dataService.getDatasetsByExperimentIDandAnalysisId(markerEntity.getExperimentList(),markerEntity.getAnalysesList()));
+				else setDatasetList(dataService.getDatasetsByExperimentID(markerEntity.getExperimentList()));
 
 			}
 			else if(Utils.isListNotNullOrEmpty(markerEntity.getProjectList())) { // if not empty, use project as filter
 
-				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(viewModelService.getDatasetsByProjectIDandAnalysisID(markerEntity.getProjectList(),markerEntity.getAnalysesList()));
-				else setDatasetList(viewModelService.getDatasetsByProjectID(markerEntity.getProjectList()));
+				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(dataService.getDatasetsByProjectIDandAnalysisID(markerEntity.getProjectList(),markerEntity.getAnalysesList()));
+				else setDatasetList(dataService.getDatasetsByProjectID(markerEntity.getProjectList()));
 			}
 			else if(Utils.isListNotNullOrEmpty(markerEntity.getVendorProtocolList())) { // if not empty, use vendor-protocol as filter
 
-				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(viewModelService.getDatasetsByVendorProtocolIDandAnalysisID(markerEntity.getVendorProtocolList(),markerEntity.getAnalysesList()));
-				else setDatasetList(viewModelService.getDatasetsByVendorProtocolID(markerEntity.getVendorProtocolList()));
+				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList()))setDatasetList(dataService.getDatasetsByVendorProtocolIDandAnalysisID(markerEntity.getVendorProtocolList(),markerEntity.getAnalysesList()));
+				else setDatasetList(dataService.getDatasetsByVendorProtocolID(markerEntity.getVendorProtocolList()));
 
 
 			}else if(Utils.isListNotNullOrEmpty(markerEntity.getPlatformList())) { // check if platform filter is not empty and filter by that instead
 
-				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getDatasetsByPlatformIDandAnalysisID(markerEntity.getPlatformList(),markerEntity.getAnalysesList()));
-				else setDatasetList(viewModelService.getDatasetsByPlatformID(markerEntity.getPlatformList()));
+				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(dataService.getDatasetsByPlatformIDandAnalysisID(markerEntity.getPlatformList(),markerEntity.getAnalysesList()));
+				else setDatasetList(dataService.getDatasetsByPlatformID(markerEntity.getPlatformList()));
 
 			}else{
-				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(viewModelService.getAllDatasetsByAnalysisID(markerEntity.getAnalysesList()));
-				else setDatasetList(viewModelService.getAllDatasets());
+				if(Utils.isListNotNullOrEmpty(markerEntity.getAnalysesList())) setDatasetList(dataService.getAllDatasetsByAnalysisID(markerEntity.getAnalysesList()));
+				else setDatasetList(dataService.getAllDatasets());
 			}
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -936,7 +875,7 @@ public class MarkerViewModel {
 	public void doSearchPlatform() {
 		List<PlatformRecord> allItems = null;
 		try {
-			allItems = viewModelService.getAllPlatforms();
+			allItems = dataService.getAllPlatforms();
 		} catch (TimescopeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -964,7 +903,7 @@ public class MarkerViewModel {
 	@Command
 	public void doSearchCallingAnalysis() {
 		try {
-			List<AnalysisRecord> allItems = viewModelService.getAllCallingAnalysis();
+			List<AnalysisRecord> allItems = dataService.getAllCallingAnalysis();
 			Utils.filterItems(callingAnalysisList, allItems, filterCallingAnalysis);
 		} catch (TimescopeException e) {
 			// TODO Auto-generated catch block
@@ -977,7 +916,7 @@ public class MarkerViewModel {
 	@Command
 	public void doSearchAnalyses() {
 		try {
-			List<AnalysisRecord> allItems = viewModelService.getAllAnalyses();
+			List<AnalysisRecord> allItems = dataService.getAllAnalyses();
 			Utils.filterItems(analysesList, allItems, filterAnalyses);
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -1010,7 +949,7 @@ public class MarkerViewModel {
 	@Command
 	public void doSearchMapset() {
 		try {
-			List<MapsetRecord> allItems = viewModelService.getAllMapsets();
+			List<MapsetRecord> allItems = dataService.getAllMapsets();
 			Utils.filterItems(mapsetList, allItems, filterMapset);
 		} catch (TimescopeException e) {
 			e.printStackTrace();
@@ -1080,7 +1019,7 @@ public class MarkerViewModel {
 	}
 
 	public void setPlatformList(List<PlatformRecord> platformList) {
-
+		log.info("Getting platform list");
 		setDbPlatforms(Utils.isListNotNullOrEmpty(platformList));
 		setPlatformTabLabel(platformList.size());
 		this.platformList = platformList;
@@ -1603,3 +1542,5 @@ public class MarkerViewModel {
 	}
 
 }
+
+
