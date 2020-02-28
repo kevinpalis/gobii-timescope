@@ -129,7 +129,8 @@ public class DatasetViewModel {
 		}catch(NullPointerException e){
 
 		}
-
+		
+		datasetGrid.setEmptyMessage("There are no datasets that match your search.");
 		setDatasetList(viewModelService.getAllDatasetsBasedOnQuery(datasetEntity,datasetSummaryEntity));
 
 		setiDBoxDisabled(false);
@@ -151,6 +152,8 @@ public class DatasetViewModel {
 		}
 		datasetEntity = new DatasetEntity();
 
+        
+        datasetGrid.setEmptyMessage("Looks like there are no datasets in the database yet.");
 		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
 		setiDBoxDisabled(false);
 		setnameListDisabled(false);

@@ -106,11 +106,13 @@ public class VMarkerSummaryEntity extends VMarkerSummaryRecord {
 
 		try{
 			String[] altsList =  (String[]) get(5);
-			sb.append("\"");
+			int ctr =0;
 			for(String i: altsList){
-				sb.append(i.toString()+",");
+	            if(ctr > 0 && !(i.toString().isBlank()))sb.append(",");
+	            
+				sb.append(i.toString());
+				ctr++;
 			}
-			sb.append("\"");
 			
 		}catch(NullPointerException npe){
 			return ("");
