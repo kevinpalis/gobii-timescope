@@ -325,6 +325,7 @@ public class MarkerViewModel {
 
         }
         //		setMarkerList(viewModelService.getAllMarkers(markerSummary));
+        markerGrid.setEmptyMessage("There are no markers that match your search.");
         setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity,markerSummaryEntity));
 
         setAllCbSelected(false);
@@ -336,6 +337,7 @@ public class MarkerViewModel {
         "dbAnalyses", "dbProjects", "dbExperiment", "dbMapset", "dbLinkageGroup", "dbDataset", "dbVendorProtocols",
         "linkageGroupTabLabel","vendorProtocolTabLabel","projectsTabLabel","experimentTabLabel","datasetTabLabel"})
     public void resetMarkerTab(){
+        markerGrid.setEmptyMessage("Filters cleared. There's nothing to see here.");
         try{
             markerList.clear(); //clear the list first and then just add if there are any selected
             selectedMarkerList.clear(); 
