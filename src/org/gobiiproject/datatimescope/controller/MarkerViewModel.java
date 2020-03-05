@@ -81,7 +81,7 @@ public class MarkerViewModel {
     ViewModelService viewModelService;
 
     private Integer sizeMarkerList=0;
-    private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
+    private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, roleUser=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
     private boolean markerAssociated=true, dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
     private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
     private List<PlatformRecord> platformList;
@@ -139,6 +139,9 @@ public class MarkerViewModel {
             performedDeleteSuccesfully=true;
         }
 
+        if(cre.getRole() == 3){
+            setRoleUser(true);
+        }
     }
 
     @AfterCompose
@@ -1465,6 +1468,14 @@ public class MarkerViewModel {
 
     public void setLinkageGroupTabLabel(Integer i) {
         this.linkageGroupTabLabel =  Utils.combineLabelWithNum("Linkage Groups", i );
+    }
+
+    public boolean isRoleUser() {
+        return roleUser;
+    }
+
+    public void setRoleUser(boolean roleUser) {
+        this.roleUser = roleUser;
     }
 
 }

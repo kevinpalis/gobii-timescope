@@ -396,6 +396,7 @@
 								<button label="Submit Query"
 									width="200px" onClick="@command('submitQuery')" />
 								<button id="deleteBtn"
+									visible="@load(not vm.roleUser)"
 									style="background-color: red" label="Delete Selected"
 									hflex="min" onClick="@command('deleteSelectedMarkers')" />
 							</div>
