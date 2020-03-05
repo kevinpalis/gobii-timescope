@@ -32,6 +32,7 @@ import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
@@ -51,7 +52,7 @@ public class SwitchDatabaseViewModel {
 
 	private boolean isLoggedIn = false;
 
-	private ServerInfo serverInfo;
+	private ServerInfo serverInfo, origServerInfo;
 
 	ViewModelService viewModelService;
 
@@ -68,8 +69,18 @@ public class SwitchDatabaseViewModel {
 	public void init(@ExecutionArgParam("isLoggedIn") Boolean isLoggedIn) {
 		this.isLoggedIn = isLoggedIn;
 		prevserverInfo = new ServerInfo();
+		serverInfo = new ServerInfo();
 
-		if(isLoggedIn) serverInfo = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
+		if(isLoggedIn) {
+		    origServerInfo = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
+		    serverInfo.setHost(origServerInfo.getHost());
+            serverInfo.setPort(origServerInfo.getPort());
+            serverInfo.setDbName(origServerInfo.getDbName());
+            
+            prevserverInfo.setHost(origServerInfo.getHost());
+            prevserverInfo.setPort(origServerInfo.getPort());
+            prevserverInfo.setDbName(origServerInfo.getDbName());
+		}
 
 		authService =new AuthenticationServiceChapter3Impl();
 		viewModelService = new ViewModelServiceImpl();
@@ -80,10 +91,6 @@ public class SwitchDatabaseViewModel {
 			setPageCaption("Specify Database");
 		}
 
-		prevserverInfo.setHost(serverInfo.getHost());
-		prevserverInfo.setPort(serverInfo.getPort());
-		prevserverInfo.setDbName(serverInfo.getDbName());
-		
 		prevUsercredential = authService.getUserCredential();
 	}
 
@@ -92,6 +99,14 @@ public class SwitchDatabaseViewModel {
 		Selectors.wireComponents(view, this, false);
 	}
 
+	@Command("reloadOrigDbConnection")
+    @NotifyChange("serverInfo")
+	public void reloadOrigDbConnection() {
+
+        serverInfo.setHost(prevserverInfo.getHost());
+        serverInfo.setPort(prevserverInfo.getPort());
+        serverInfo.setDbName(prevserverInfo.getDbName());
+	}
 
 	@Command
 	public void connectToDatabase(){
@@ -235,5 +250,13 @@ public class SwitchDatabaseViewModel {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+    public ServerInfo getOrigServerInfo() {
+        return origServerInfo;
+    }
+
+    public void setOrigServerInfo(ServerInfo origServerInfo) {
+        this.origServerInfo = origServerInfo;
+    }
 }
 
