@@ -81,7 +81,7 @@ public class MarkerViewModel {
     ViewModelService viewModelService;
 
     private Integer sizeMarkerList=0;
-    private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
+    private boolean cbAllMarkers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, roleUser=false, performedDeleteSuccesfully=false, paged=false, gridGroupVisible=true, shouldNextChangeResetOtherFilterValues=false;
     private boolean markerAssociated=true, dbPlatforms=true, dbVendors=true, dbVendorProtocols=true, dbAnalyses=true, dbProjects=true, dbLinkageGroup=true, dbExperiment=true, dbDataset=true, dbMapset=true, dbCallingAnalysis=true, dbFilterProject=true;
     private List<VMarkerSummaryEntity> markerList, selectedMarkerList;
     private List<PlatformRecord> platformList;
@@ -139,6 +139,9 @@ public class MarkerViewModel {
             performedDeleteSuccesfully=true;
         }
 
+        if(cre.getRole() == 3){
+            setRoleUser(true);
+        }
     }
 
     @AfterCompose
@@ -325,6 +328,7 @@ public class MarkerViewModel {
 
         }
         //		setMarkerList(viewModelService.getAllMarkers(markerSummary));
+        markerGrid.setEmptyMessage("There are no markers that match your search.");
         setMarkerList(viewModelService.getAllMarkersBasedOnQueryViaView(markerEntity,markerSummaryEntity));
 
         setAllCbSelected(false);
@@ -336,6 +340,7 @@ public class MarkerViewModel {
         "dbAnalyses", "dbProjects", "dbExperiment", "dbMapset", "dbLinkageGroup", "dbDataset", "dbVendorProtocols",
         "linkageGroupTabLabel","vendorProtocolTabLabel","projectsTabLabel","experimentTabLabel","datasetTabLabel"})
     public void resetMarkerTab(){
+        markerGrid.setEmptyMessage("Filters cleared. There's nothing to see here.");
         try{
             markerList.clear(); //clear the list first and then just add if there are any selected
             selectedMarkerList.clear(); 
@@ -1463,6 +1468,14 @@ public class MarkerViewModel {
 
     public void setLinkageGroupTabLabel(Integer i) {
         this.linkageGroupTabLabel =  Utils.combineLabelWithNum("Linkage Groups", i );
+    }
+
+    public boolean isRoleUser() {
+        return roleUser;
+    }
+
+    public void setRoleUser(boolean roleUser) {
+        this.roleUser = roleUser;
     }
 
 }

@@ -25,14 +25,14 @@
 		<label value="@load(vm.pageCaption)" style="font-weight:bold"/>
 	</caption>
 	<vlayout>
-		<grid hflex="min" vflex="min">
+		<grid hflex="min" vflex="true">
 			<columns>
 				<column align="right" hflex="min" />
 				<column />
 			</columns>
 			<rows>
 				<row>
-					<cell sclass="row-title">Host:</cell>
+					<cell sclass="row-title">Host :</cell>
 					<cell>
 						<textbox
 							constraint="no empty: Please enter a host name"
@@ -75,7 +75,7 @@
 		<div align = "center">
 			<hlayout>
 				<button id="switchDatabase" label="Connect" hflex="1" onClick="@command('connectToDatabase')"/>
-				<button id="reloadProfile" label="Reload" hflex="1" visible="@load(vm.loggedIn)"/>
+				<button id="reloadProfile" label="Reload" hflex="1" visible="@load(vm.loggedIn)" onClick="@command('reloadOrigDbConnection')"/>
 			</hlayout>
 		</div>
 	</vlayout>

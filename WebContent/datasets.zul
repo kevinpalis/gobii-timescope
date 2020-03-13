@@ -200,7 +200,8 @@
 							<div vflex="1" hflex="1">
 								<vbox vflex="1" hflex="1">
 									<grid id="datasetGrid"
-										model="@load(vm.datasetList)" mold="paging" pageSize="25" vflex="1" hflex="1">
+										model="@load(vm.datasetList)" mold="paging" pageSize="25" vflex="1" hflex="1" 
+										emptyMessage="Looks like there are no datasets in the database yet.">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox
