@@ -167,8 +167,8 @@
 											</cell>
 											<cell>
 												<combobox
-													autodrop="true" hflex="true" model="@load(vm.projectList)"
-													selectedItem="@bind(vm.datasetEntity.projectRecord)">
+													autodrop="true" hflex="true" model="@load(vm.experimentList)"
+													selectedItem="@bind(vm.datasetEntity.experimentRecord)">
 													<template
 														name="model">
 														<comboitem

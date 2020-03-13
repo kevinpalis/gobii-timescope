@@ -94,6 +94,7 @@ public class DatasetViewModel {
 		Integer [] roles = {1}; // PI only
 		piList = viewModelService.getContactsByRoles(roles);
         projectList = viewModelService.getAllProjects();
+        experimentList = viewModelService.getAllExperiments();
         
         ProjectRecord selectAllProject = new ProjectRecord(0, "SELECT ALL PROJECTS", "", "", 0, 0, null, 0, null, 0, null);
         projectList.add(0,selectAllProject);
@@ -101,8 +102,9 @@ public class DatasetViewModel {
 		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
 		piList.add(0, selectAllPI);
 		
-		ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL PROJECTS", "", 0, 0, "", 0, null, 0, null, 0, 0);
+		ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL Experiment", "", 0, 0, "", 0, null, 0, null, 0, 0);
 	    experimentList.add(0,selectAllExp);
+	    
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
@@ -537,6 +539,16 @@ public class DatasetViewModel {
 
     public void setProjectList(List<ProjectRecord> projectList) {
         this.projectList = projectList;
+    }
+
+
+    public List<ExperimentRecord> getExperimentList() {
+        return experimentList;
+    }
+
+
+    public void setExperimentList(List<ExperimentRecord> experimentList) {
+        this.experimentList = experimentList;
     }
 
 }
