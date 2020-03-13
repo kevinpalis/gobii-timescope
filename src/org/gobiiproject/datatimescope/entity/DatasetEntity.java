@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 
 /**
@@ -34,6 +35,7 @@ public class DatasetEntity implements Serializable,Cloneable {
 	private CvRecord datasetTypeRecord;
 	private ContactRecord piRecord;
 	private ProjectRecord projectRecord;
+	private ExperimentRecord experimentRecord;
 	private ContactRecord createdByContactRecord;
 	
 	public DatasetEntity(){
@@ -138,5 +140,13 @@ public class DatasetEntity implements Serializable,Cloneable {
 
     public void setProjectRecord(ProjectRecord projectRecord) {
         this.projectRecord = projectRecord;
+    }
+
+    public ExperimentRecord getExperimentRecord() {
+        return experimentRecord;
+    }
+
+    public void setExperimentRecord(ExperimentRecord experimentRecord) {
+        this.experimentRecord = experimentRecord;
     }
 }

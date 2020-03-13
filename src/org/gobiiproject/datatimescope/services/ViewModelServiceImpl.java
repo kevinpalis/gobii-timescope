@@ -862,6 +862,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                     queryCount++;
                 }
             }
+            if(datasetEntity.getExperimentRecord()!=null) {
+                if(datasetEntity.getExperimentRecord().getExperimentId()!=0) {
+                    checkPreviousAppends(dsNameCount, queryCount, sb);
+                    String id = Integer.toString(datasetEntity.getExperimentRecord().getExperimentId());
+                    sbFilteringCriteria.append("\n Experiment ID: "+id);
+                    sb.append(" e.experiment_id="+id);
+                    queryCount++;
+                }
+            }
             if (datasetEntity.getDatasetIDStartRange()!=null || datasetEntity.getDatasetIDEndRange()!=null){
 
                 //check which is not null
