@@ -118,6 +118,7 @@
 													onChange="@command('doSearchPlatform')" instant="true" />
 												<toolbarbutton
 													image="/imgs/info.png"
+													onMouseOver=""
 													onClick="@command('displayFilterDetails', category='platform')" />
 												<textbox
 													style="border: 0px; background-color:white !important;"
