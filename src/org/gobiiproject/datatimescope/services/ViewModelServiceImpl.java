@@ -812,7 +812,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbFilteringCriteria = new StringBuilder();
 
-            sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname, p.project_id, p.name as project_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on a.analysis_id=d.callinganalysis_id left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
+            sb.append("select d.dataset_id, d.name as dataset_name, d.experiment_id, e.name as experiment_name, d.callinganalysis_id, a.name as callingnalysis_name, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, c1.username created_by_username, d.created_date, c2.username as modified_by_username, d.modified_date, cv1.term as status_name, cv2.term as type_name, j.name as job_name, pi.contact_id as pi_id, pi.firstname as pi_firstname, pi.lastname as pi_lastname, p.project_id, p.name as project_name from dataset d left join experiment e on d.experiment_id=e.experiment_id left join project p on e.project_id=p.project_id join contact pi on p.pi_contact=pi.contact_id  left join analysis a on (a.analysis_id = ANY (d.analyses) OR a.analysis_id = d.callinganalysis_id) left join contact c1 on c1.contact_id=d.created_by left join contact c2 on c2.contact_id=d.modified_by left join cv cv1 on cv1.cv_id=d.status left join cv cv2 on cv2.cv_id=d.type_id left join job j on j.job_id=d.job_id ");
 
             if (datasetEntity.getDatasetNamesAsEnterSeparatedString()!=null && !datasetEntity.getDatasetNamesAsEnterSeparatedString().isEmpty()){
                 String names = datasetEntity.getSQLReadyDatasetNames();
@@ -868,6 +868,15 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                     String id = Integer.toString(datasetEntity.getExperimentRecord().getExperimentId());
                     sbFilteringCriteria.append("\n Experiment ID: "+id);
                     sb.append(" e.experiment_id="+id);
+                    queryCount++;
+                }
+            }
+            if(datasetEntity.getAnalysisRecord()!=null) {
+                if(datasetEntity.getAnalysisRecord().getAnalysisId()!=0) {
+                    checkPreviousAppends(dsNameCount, queryCount, sb);
+                    String id = Integer.toString(datasetEntity.getAnalysisRecord().getAnalysisId());
+                    sbFilteringCriteria.append("\n Analysis ID: "+id);
+                    sb.append(" a.analysis_id="+id);
                     queryCount++;
                 }
             }

@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.gobiiproject.datatimescope.db.generated.tables.Dataset;
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
@@ -79,6 +80,7 @@ public class DatasetViewModel {
 	private List<DatasetSummaryEntity> datasetSummary;
 	private List<ProjectRecord> projectList;
 	private List<ExperimentRecord> experimentList;
+	private List<AnalysisRecord> analysisList;
 	private DatasetSummaryEntity datasetSummaryEntity;
 	private DatasetEntity datasetEntity;
 
@@ -88,6 +90,7 @@ public class DatasetViewModel {
 		datasetSummaryEntity= new DatasetSummaryEntity();
 		selectedDsList = new ArrayList<VDatasetSummaryEntity>();
 		viewModelService = new ViewModelServiceImpl();
+		
 		setDatasetEntity(new DatasetEntity());
 		setDatasetList(viewModelService.getAllDatasets(datasetSummaryEntity));
 		contactsList = viewModelService.getAllContacts();
@@ -95,6 +98,7 @@ public class DatasetViewModel {
 		piList = viewModelService.getContactsByRoles(roles);
         projectList = viewModelService.getAllProjects();
         experimentList = viewModelService.getAllExperiments();
+        analysisList = viewModelService.getAllAnalyses();
         
         ProjectRecord selectAllProject = new ProjectRecord(0, "SELECT ALL PROJECTS", "", "", 0, 0, null, 0, null, 0, null);
         projectList.add(0,selectAllProject);
@@ -102,8 +106,11 @@ public class DatasetViewModel {
 		ContactRecord selectAllPI = new ContactRecord(0, "SELECT ALL PI", "All", "selectAll",  "c.record@gmail.com", roles, 1, null, 1, null, 1, "AllPI");
 		piList.add(0, selectAllPI);
 		
-		ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL Experiment", "", 0, 0, "", 0, null, 0, null, 0, 0);
+		ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL EXPERIMENT", "", 0, 0, "", 0, null, 0, null, 0, 0);
 	    experimentList.add(0,selectAllExp);
+	    
+	    AnalysisRecord selectAllAnalysis = new AnalysisRecord(0, "SELECT ALL ANALYSIS", null, 0, null, null, null, null, null, null, 0, null, null, 0, 0, null, 0, null);
+	    analysisList.add(selectAllAnalysis);
 	    
 		setDatasetTypes(viewModelService.getCvTermsByGroupName("dataset_type"));
 
@@ -552,6 +559,16 @@ public class DatasetViewModel {
 
     public void setExperimentList(List<ExperimentRecord> experimentList) {
         this.experimentList = experimentList;
+    }
+
+
+    public List<AnalysisRecord> getAnalysisList() {
+        return analysisList;
+    }
+
+
+    public void setAnalysisList(List<AnalysisRecord> analysisList) {
+        this.analysisList = analysisList;
     }
 
 }
