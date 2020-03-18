@@ -177,6 +177,22 @@
 												</combobox>
 											</cell>
 										</row>
+										<row>
+											<cell sclass="row-title">
+												Analysis:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.analysisList)"
+													selectedItem="@bind(vm.datasetEntity.analysisRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.name)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
 									</rows>
 								</grid>
 							</hlayout>
