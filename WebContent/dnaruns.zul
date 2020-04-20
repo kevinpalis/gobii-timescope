@@ -1,221 +1,231 @@
-<?page title="Manage Markers" contentType="text/html;charset=UTF-8"?>
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<window border="normal" hflex="1" vflex="1"
-	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerViewModel')">
-	<caption sclass="fn-caption" label="Markers" />
-	<vlayout>
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunViewModel')">
+	<caption sclass="fn-caption" label="DNA Runs" />
 
-		<groupbox>
-			<caption label="Filters: " />
-			<vlayout>
-				<hlayout>
-					<grid hflex="1" vflex="1">
-						<columns>
-							<column align="left" />
-							<column align="left" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Dnarun ID :
-								</cell>
-								<cell>
-									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
-										to
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
+	<tabbox
+		style="border: 0px !important; padding:0px !important; margin:0px !important;"
+		vflex="1" hflex="1">
+		<tabs visible="false">
+			<tab id="datasetSearchTab" label="Search" />
+			<tab id="datasetSummaryTab" label="Summary"
+				onClick="@command('resetDSSummary')" />
+		</tabs>
+		<tabpanels vflex="1">
+			<tabpanel vflex="1"
+				style="border: 0 !important; padding:0 !important; margin:0;">
+				<borderlayout vflex="1" hflex="true">
+					<north title="Filters:" style=" border: 0px;"
+						splittable="true" collapsible="true">
+						<vlayout vflex="1">
+							<hlayout vflex="1">
+								<grid hflex="1" vflex="1"
+									style="border: none; important!">
+									<columns>
+										<column align="left"
+											width="30%" />
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												DNA Run ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="DNA Run Names:" />
+											</cell>
+											<cell>
+												<textbox rows="6"
+													cols="40" hflex="true" vflex="true"
+													tooltiptext="Separate dataset names with a new line"
+														value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.nameListDisabled)"
+														onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+										<row>
+											<cell colspan="2">
+												<include
+													src="germplasm_filters.zul" />
+											</cell>
+										</row>
+									</rows>
+								</grid>
+								<label value="  " />
+								<label value="  " />
+								<grid hflex="1" vflex="1"
+									style="border: none; important!">
+									<columns>
+										<column align="left"
+											width="30%" />
+										<column align="left" />
+									</columns>
+									<rows>
+									<row>
+										<cell sclass="row-title">
+												Experiment Name:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true"
+													model="@load(vm.experimentList)"
+													selectedItem="@bind(vm.datasetEntity.experimentRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.name)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												Dataset Name:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.datasetList)"
+													selectedItem="@bind(vm.datasetEntity.experimentRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.datasetName)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
+										<row>
+											<cell colspan="2">
+												<include
+													src="dnasample_filters.zul" />
+											</cell>
+										</row>
+									</rows>
+								</grid>
+							</hlayout>
+
+							<div align="center" hflex="1">
+								<button label="Clear" width="200px"
+									onClick="@command('resetDatasetTab')" />
+								<button label="Submit Query"
+									width="200px" onClick="@command('submitQuery')" />
+								<button
+									visible="@load(not vm.isRoleUser)" id="deleteBtn"
+									style="background-color: red" label="Delete Selected"
+									hflex="min" onClick="@command('deleteSelectedDatasets')" />
+							</div>
+
+						</vlayout>
+					</north>
+
+					<center border="0" vflex="1" hflex="1">
+						<div vflex="1" hflex="1">
+							<div vflex="1" hflex="1">
+								<vbox vflex="1" hflex="1">
+									BUILD GRID HERE
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:" sclass="row-count" />
+										<label
+											value="@bind(vm.sizeDatasetList)" sclass="row-count" />
 									</hbox>
-								</cell>
-							</row>
-							<row>
-								<cell sclass="row-title">
-									Dnarun Names :
-								</cell>
-								<cell>
-									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate Dnarun names with comma" value="@bind(vm.markerEntity.markerNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
-									
-									</textbox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
+								</vbox>
+							</div>
+							<popup id="title" width="400px">
+								<label
+									value="Separate each name with a new line." />
+							</popup>
 
-					<grid hflex="true">
-						<columns>
-							<column align="left" width="40%" />
-							<column align="left" width="60%" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Experiment name :
-								</cell>
-								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.platformList)" selectedItem="@bind(vm.markerEntity.platform)">
-										<template name="model">
-											<comboitem
-												label="@load(each.name)" value="@load(each.platformId)" />
-										</template>
-									</combobox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
-				</hlayout>
+						</div>
+					</center>
 
-				<div align="center" hflex="1">
-					<button label="Clear" width="200px"  onClick="@command('resetMarkerTab')"/>
-					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
-					<button id="deleteBtn" style="background-color: red"
-						label="Delete Selected" hflex="min"
-						onClick="@command('deleteSelectedMarkers')" />
+				</borderlayout>
+			</tabpanel>
+			<tabpanel visible="false">
+
+				<div
+					visible="@load(not vm.performedDeleteSuccesfully)">
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
+
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="You have not deleted anything yet." />
+					</vbox>
 				</div>
 
-			</vlayout>
-		</groupbox>
+				<div visible="@load(vm.performedDeleteSuccesfully)">
 
-		<grid id="mgrid" model="@load(vm.markerList)" mold="paging"
-			pageSize="15" pagingPosition="both">
-			<columns sizable="true">
-				<column hflex="min">
-					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllMarkers)" />
-				</column>
-				<column hflex="min" sort="auto(markerId)">
-					<label value="Dnarun Id" />
-				</column>
-				<column hflex="min" sort="auto(markerName)">
-					<label value="Dnarun Name" />
-				</column>
-				<column hflex="min" sort="auto(platformId)">
-					<label value="Experiment Id" />
-				</column>
-				<column hflex="min" sort="auto(platformName)">
-					<label value="Experiment Name" />
-				</column>
-				<column hflex="min">
-					<label value="DNA Sample Id" />
-				</column>
-				<column hflex="min">
-					<label value="Code" />
-				</column>
-				<column hflex="min">
-					<label value="Ref" />
-				</column>
-				<column hflex="min">
-					<label value="Alts" />
-				</column>
-				<column hflex="min">
-					<label value="Sequence" />
-				</column>
-				<column hflex="min">
-					<label value="Reference Id" />
-				</column>
-				<column hflex="min">
-					<label value="Reference Name" />
-				</column>
-				<column hflex="min">
-					<label value="Primers" />
-				</column>
-				<column hflex="min">
-					<label value="Strand Id" />
-				</column>
-				<column hflex="min">
-					<label value="Strand Name" />
-				</column>
-				<column hflex="min">
-					<label value="Status" />
-				</column>
-				<column hflex="min">
-					<label value="Probsets" />
-				</column>
-				<column hflex="min">
-					<label value="Dataset Marker Idx" />
-				</column>
-				<column hflex="min">
-					<label value="Props" />
-				</column>
-				<column hflex="min">
-					<label value="Dataset Vendor Protocol" />
-				</column>
-			</columns>
-			<template name="model" var="marker">
-				<row>
-					<cell>
-						<checkbox value="@load(marker)"
-							checked="@load(vm.allCbSelected)"
-							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.markerId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.markerName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.platformId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.platformName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.variantId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.code)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.ref)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(marker.altsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.sequence)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.referenceId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.referenceName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.primersToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.strandId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.strandName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.status)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(marker.probsetsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.datasetMarkerIdxToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.propsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.datasetVendorProtocolToString)" />
-					</cell>
-				</row>
-			</template>
-		</grid>
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
 
-	</vlayout>
-	
-    <popup id="title" width="400px">
-		<label value="Separate marker names with a comma" />
-    </popup>
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="Succesfully deleted dataset(s)!" />
+
+						<label
+							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
+
+						<grid id="summarygrid"
+							model="@load(vm.datasetSummary)" mold="paging" pageSize="25"
+							pagingPosition="both" hflex="1">
+							<columns sizable="true">
+								<column label="Entity" />
+								<column label="Row Count" />
+								<column label="Filters" />
+								<column label="Duration" />
+							</columns>
+							<template name="model" var="entity">
+								<row>
+									<cell>
+										<label
+											value="@load(entity.entityName)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.rowCount)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.filter)" />
+									</cell>
+									<cell>
+										<label
+											value="@load(entity.duration)" />
+									</cell>
+								</row>
+							</template>
+						</grid>
+
+					</vbox>
+				</div>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	         
 </window>

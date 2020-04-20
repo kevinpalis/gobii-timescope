@@ -1,16 +1,4 @@
-<!-- 
-	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
-	firstname text COLLATE pg_catalog."default" NOT NULL,
-	lastname text COLLATE pg_catalog."default" NOT NULL,
-	username text COLLATE pg_catalog."default" NOT NULL,
-	password text COLLATE pg_catalog."default" NOT NULL,
-	email text COLLATE pg_catalog."default",
-	role integer DEFAULT 3,
-	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
-	CONSTRAINT username_key UNIQUE (username)
-	
-	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
--->
+
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
