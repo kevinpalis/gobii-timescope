@@ -1,0 +1,69 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<window id="germplasmFilters" border="normal"
+style="border: 0 !important; padding:0 !important; margin:0;"
+ hflex="1" vflex="1"
+	contentStyle="overflow:auto" closable="false"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunViewModel')">
+	<grid hflex="1" vflex="1"
+		style="border: none !important; padding:0 !important; margin:0;">
+									<columns>
+										<column align="left" width="30%"/>
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												Germplasm ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="Germplasm Name:" />
+											</cell>
+											<cell>
+												<textbox rows="6"
+													cols="40" hflex="true" vflex="true"
+													tooltiptext="Separate dataset names with a new line"
+													value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.nameListDisabled)"
+													onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+		</grid>
+</window>
