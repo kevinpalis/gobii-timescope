@@ -120,24 +120,24 @@ public class DnarunViewModel {
     @Command("submitQuery")
     @NotifyChange({"dnarunList","selectedDsList", "allCbSelected", "cbAllUsers","paged", "sizeDnarunList"})
     public void submitQuery(){
-        viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity);
-        viewModelService.getDnarunidsbyproject(6);
-//        try{
-//            dnarunList.clear(); //clear the list first and then just add if there are any selected
-//
-//            selectedDsList.clear();
-//
-//        }catch(NullPointerException e){
-//
-//        }
-//        
-//        dnarunGrid.setEmptyMessage("There are no dnaruns that match your search.");
-//        setDnarunList(viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity));
-//
-//        setiDBoxDisabled(false);
-//        setnameListDisabled(false);
-//        setAllCbSelected(false);
-//        setCbAllUsers(false);
+//        viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity);
+//        viewModelService.getDnarunidsbyproject(6);
+        try{
+            dnarunList.clear(); //clear the list first and then just add if there are any selected
+
+            selectedDsList.clear();
+
+        }catch(NullPointerException e){
+
+        }
+        
+        dnarunGrid.setEmptyMessage("There are no dnaruns that match your search.");
+        setDnarunList(viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity));
+
+        setiDBoxDisabled(false);
+        setnameListDisabled(false);
+        setAllCbSelected(false);
+        setCbAllUsers(false);
 
     }
 

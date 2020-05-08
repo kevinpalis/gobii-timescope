@@ -1,23 +1,25 @@
 
 package org.gobiiproject.datatimescope.entity;
 
-import org.gobiiproject.datatimescope.db.generated.tables.VMarkerSummary;
-
 public class DnarunViewEntity {
   
     private Integer dnarunId;
     private String dnarunName;
+    private Integer dnasampleId;
+    private String dnasampleName;
     private Integer experimentId;
     private String experimentName;
     private Integer projectId;
     private String projectName;
     
-    public DnarunViewEntity(Integer dnarunId, String dnarunName, Integer experimentId, String experimentName, Integer projectId, String projectName) {
+    public DnarunViewEntity(Integer dnarunId, String dnarunName, Integer dnasampleId, String dnasampleName, Integer experimentId, String experimentName, Integer projectId, String projectName) {
 
         setDnarunId(dnarunId);
+        setDnasampleId(dnasampleId);
         setExperimentId(experimentId);
         setProjectId(projectId);
         setDnarunName(dnarunName);
+        setDnasampleName(dnasampleName);
         setExperimentName(experimentName);
         setProjectName(projectName);
     }
@@ -57,6 +59,22 @@ public class DnarunViewEntity {
     }
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public Integer getDnasampleId() {
+        return dnasampleId;
+    }
+
+    public void setDnasampleId(Integer dnasampleId) {
+        this.dnasampleId = dnasampleId;
+    }
+
+    public String getDnasampleName() {
+        return dnasampleName;
+    }
+
+    public void setDnasampleName(String dnasampleName) {
+        this.dnasampleName = dnasampleName;
     }
     
 }

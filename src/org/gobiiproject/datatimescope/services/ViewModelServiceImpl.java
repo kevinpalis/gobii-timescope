@@ -2573,12 +2573,13 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         List<DnarunViewEntity> list = null;
         try{
 
-            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id").into(DnarunViewEntity.class);
+            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ").into(DnarunViewEntity.class);
 
 
         }catch(Exception e ){
+            e.printStackTrace();
 
-            Messagebox.show("There was an error while trying to retrieve DNARUNS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
 
         }
 
@@ -2600,7 +2601,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbWhere = new StringBuilder(); 
 
-            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ");
+            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ");
 
           
 
@@ -2609,27 +2610,89 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 //                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
                 sbWhere.append(" where LOWER(dr.name) in ("+dnarunEntity.getSQLReadyDnarunNames()+")");
                 dsNameCount++;  
-            }
+            } else if (dnarunEntity.getDnarunIDStartRange()!=null || dnarunEntity.getDnarunIDEndRange()!=null){ // build query for given DNArun IDs
+
+                //check which is not null
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                if(dnarunEntity.getDnarunIDStartRange()!=null && dnarunEntity.getDnarunIDEndRange()!=null){ //if both is not null
+                    Integer lowerID = dnarunEntity.getDnarunIDStartRange();
+                    Integer higherID = dnarunEntity.getDnarunIDEndRange();
+
+                    if(lowerID.compareTo(higherID)>0){
+                        lowerID = dnarunEntity.getDnarunIDEndRange();
+                        higherID = dnarunEntity.getDnarunIDStartRange();
+                    }
+//                    lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getDnarunIDEndRange());
+//                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    sbWhere.append(" dr.dnarun_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                }else{
+                    Integer ID = null;
+                    if(dnarunEntity.getDnarunIDStartRange()!=null) {
+                        ID = dnarunEntity.getDnarunIDStartRange();
+//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    }
+                    else {
+//                        lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getMarkerIDEndRange());
+                        ID = dnarunEntity.getDnarunIDEndRange();
+                    }
+
+                    sbWhere.append(" dr.dnarun_id = "+Integer.toString(ID));
+                }
+
+                queryCount++;
+            } // END build query for given DNArun IDs
 
             // build query for DNA Sample NAMES filter
             if (dnarunEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
     //              lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
-                  sbWhere.append(" where LOWER(dr.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
+
+                  sbWhere.append(" where LOWER(ds.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
                   dsNameCount++;  
-              }
+            } else if (dnarunEntity.getDnasampleIDStartRange()!=null || dnarunEntity.getDnasampleIDEndRange()!=null){ // build query for given DNAsample IDs
+
+                    //check which is not null
+                    checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                    if(dnarunEntity.getDnasampleIDStartRange()!=null && dnarunEntity.getDnasampleIDEndRange()!=null){ //if both is not null
+                        Integer lowerID = dnarunEntity.getDnasampleIDStartRange();
+                        Integer higherID = dnarunEntity.getDnasampleIDEndRange();
+
+                        if(lowerID.compareTo(higherID)>0){
+                            lowerID = dnarunEntity.getDnasampleIDEndRange();
+                            higherID = dnarunEntity.getDnasampleIDStartRange();
+                        }
+//                        lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getDnarunIDEndRange());
+//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                        sbWhere.append(" dr.dnasample_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                    }else{
+                        Integer ID = null;
+                        if(dnarunEntity.getDnasampleIDStartRange()!=null) {
+                            ID = dnarunEntity.getDnasampleIDStartRange();
+//                            lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                        }
+                        else {
+//                            lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getMarkerIDEndRange());
+                            ID = dnarunEntity.getDnasampleIDEndRange();
+                        }
+
+                        sbWhere.append(" dr.dnasample_id = "+Integer.toString(ID));
+                    }
+
+                    queryCount++;
+                } // END build query for given DNAsample IDs
 
             // build query for germplasm NAMES filter
-            if (dnarunEntity.getSQLReadyGermplasmNames()!=null && !dnarunEntity.getSQLReadyGermplasmNames().isEmpty()){
-//                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
-                sbWhere.append(" where LOWER(m.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
-                dsNameCount++;  
-            }
+//            if (dnarunEntity.getSQLReadyGermplasmNames()!=null && !dnarunEntity.getSQLReadyGermplasmNames().isEmpty()){
+////                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
+//                sbWhere.append(" where LOWER(m.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
+//                dsNameCount++;  
+//            }
 
             /* ADD THE "WHERE" CONDITIONS */
             
             //build query for 'none' selected on dataset filter
             
-
             // build query for PROJECTS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getProjectRecord())){
 //                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
@@ -2655,43 +2718,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
               queryCount++;
             }
 
-
-            // build query for given marker IDs
-//            if (markerEntity.getMarkerIDStartRange()!=null || markerEntity.getMarkerIDEndRange()!=null){
-//
-//                //check which is not null
-//                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-//
-//                if(markerEntity.getMarkerIDStartRange()!=null && markerEntity.getMarkerIDEndRange()!=null){ //if both is not null
-//                    Integer lowerID = markerEntity.getMarkerIDStartRange();
-//                    Integer higherID = markerEntity.getMarkerIDEndRange();
-//
-//                    if(lowerID.compareTo(higherID)>0){
-//                        lowerID = markerEntity.getMarkerIDEndRange();
-//                        higherID = markerEntity.getMarkerIDStartRange();
-//                    }
-//                    lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
-//                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
-//                    sbWhere.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
-//                }else{
-//                    Integer ID = null;
-//                    if(markerEntity.getMarkerIDStartRange()!=null) {
-//                        ID = markerEntity.getMarkerIDStartRange();
-//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
-//                    }
-//                    else {
-//                        lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
-//                        ID = markerEntity.getMarkerIDEndRange();
-//                    }
-//
-//                    sbWhere.append(" m.marker_id = "+Integer.toString(ID));
-//                }
-//
-//                queryCount++;
-//            }
-//
-//            sbWhere.append(";");
-//            sb.append(sbWhere.toString());
+            sbWhere.append(";");
+            sb.append(sbWhere.toString());
             
             String query = sb.toString();
             System.out.println(query);
@@ -2699,7 +2727,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
         }catch(Exception e ){
             e.printStackTrace();
-            Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
 
         }
         return list;

@@ -146,9 +146,9 @@
 						<div vflex="1" hflex="1">
 							<div vflex="1" hflex="1">
 								<vbox vflex="1" hflex="1">
-									<grid id="datasetGrid"
+									<grid id="dnarunGrid"
 										model="@load(vm.dnarunList)" mold="paging" pageSize="25" vflex="1" hflex="1" 
-										emptyMessage="Looks like there are no datasets in the database yet.">
+										emptyMessage="Looks like there are no dnaruns in the database yet.">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox
@@ -164,6 +164,14 @@
 												sort="auto(LOWER(dnarunName))">
 												<label
 													value="DNArun Name" />
+											</column>
+											<column hflex="min">
+												<label
+													value="DNAsample Id" />
+											</column>
+											<column hflex="min">
+												<label
+													value="DNAsample Name" />
 											</column>
 											<column hflex="min">
 												<label
@@ -197,6 +205,14 @@
 												<cell>
 													<label sclass="grid-row"
 															value="@load(dnarun.dnarunName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.dnasampleId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.dnasampleName)" />
 												</cell>
 												<cell>
 													<label sclass="grid-row"
