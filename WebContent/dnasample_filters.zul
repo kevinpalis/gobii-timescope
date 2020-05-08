@@ -1,16 +1,8 @@
 
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
-<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
-<window id="dnasampleFilters"
-	style="border: 0 !important; padding:0 !important; margin:0;"
-	hflex="1" vflex="1"
-	contentStyle="overflow:auto" closable="false"
-	apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunViewModel')">
-	<grid hflex="1" vflex="1"
-									style="border: none !important; padding:0 !important; margin:0;">
+<grid hflex="1" vflex="1" style="border: none !important; padding:0 !important; margin:0;">
 									<columns>
 										<column align="left" width="30%"/>
 										<column align="left" />
@@ -18,34 +10,18 @@
 									<rows>
 										<row>
 											<cell sclass="row-title">
-												Project:
-											</cell>
-											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.projectList)"
-													selectedItem="@bind(vm.datasetEntity.projectRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.name)" />
-													</template>
-												</combobox>
-											</cell>
-										</row>
-										<row>
-											<cell sclass="row-title">
 												DNA Sample ID:
 											</cell>
 											<cell>
 												<hbox hflex="true">
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														value="@bind(vm.dnarunEntity.dnasampleIDStartRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
 													to
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														value="@bind(vm.dnarunEntity.dnasampleIDEndRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
@@ -60,14 +36,29 @@
 											<cell>
 												<textbox rows="6"
 													cols="40" hflex="true" vflex="true"
-													tooltiptext="Separate dataset names with a new line"
-													value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
+													tooltiptext="Separate dnasample names with a new line"
+													value="@bind(vm.dnarunEntity.dnasampleNamesAsEnterSeparatedString)"
 													popup="title, position=start_before"
 													disabled="@bind(vm.nameListDisabled)"
 													onChange="@command('changeEnabled')">
 												</textbox>
 											</cell>
 										</row>
+										<row>
+											<cell sclass="row-title">
+												Project:
+											</cell>
+											<cell>
+												<combobox
+													autodrop="true" hflex="true" model="@load(vm.projectList)"
+													selectedItem="@bind(vm.dnarunEntity.projectRecord)">
+													<template
+														name="model">
+														<comboitem
+															label="@load(each.name)" />
+													</template>
+												</combobox>
+											</cell>
+										</row>
 									</rows>
 								</grid>
-</window>

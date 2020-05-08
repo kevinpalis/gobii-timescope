@@ -38,13 +38,13 @@
 											<cell>
 												<hbox hflex="true">
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														value="@bind(vm.dnarunEntity.dnarunIDStartRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
 													to
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														value="@bind(vm.dnarunEntity.dnarunIDEndRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
@@ -59,8 +59,8 @@
 											<cell>
 												<textbox rows="6"
 													cols="40" hflex="true" vflex="true"
-													tooltiptext="Separate dataset names with a new line"
-														value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
+													tooltiptext="Separate dnarun names with a new line"
+														value="@bind(vm.dnarunEntity.dnarunNamesAsEnterSeparatedString)"
 													popup="title, position=start_before"
 													disabled="@bind(vm.nameListDisabled)"
 														onChange="@command('changeEnabled')">
@@ -85,7 +85,13 @@
 										<column align="left" />
 									</columns>
 									<rows>
-									<row>
+										<row>
+											<cell colspan="2">
+												<include
+													src="dnasample_filters.zul" />
+											</cell>
+										</row>
+										<row>
 										<cell sclass="row-title">
 												Experiment Name:
 											</cell>
@@ -93,7 +99,7 @@
 												<combobox
 													autodrop="true" hflex="true"
 													model="@load(vm.experimentList)"
-													selectedItem="@bind(vm.datasetEntity.experimentRecord)">
+													selectedItem="@bind(vm.dnarunEntity.experimentRecord)">
 													<template
 														name="model">
 														<comboitem
@@ -109,19 +115,13 @@
 											<cell>
 												<combobox
 													autodrop="true" hflex="true" model="@load(vm.datasetList)"
-													selectedItem="@bind(vm.datasetEntity.experimentRecord)">
+													selectedItem="@bind(vm.dnarunEntity.datasetRecord)">
 													<template
 														name="model">
 														<comboitem
-															label="@load(each.datasetName)" />
+															label="@load(each.name)" />
 													</template>
 												</combobox>
-											</cell>
-										</row>
-										<row>
-											<cell colspan="2">
-												<include
-													src="dnasample_filters.zul" />
 											</cell>
 										</row>
 									</rows>
@@ -146,13 +146,83 @@
 						<div vflex="1" hflex="1">
 							<div vflex="1" hflex="1">
 								<vbox vflex="1" hflex="1">
-									BUILD GRID HERE
+									<grid id="datasetGrid"
+										model="@load(vm.dnarunList)" mold="paging" pageSize="25" vflex="1" hflex="1" 
+										emptyMessage="Looks like there are no datasets in the database yet.">
+										<columns sizable="true">
+											<column hflex="min">
+												<checkbox
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllUsers)" />
+											</column>
+											<column hflex="min"
+												sort="auto(dnarunId)">
+												<label
+													value="DNArun ID" />
+											</column>
+											<column hflex="min"
+												sort="auto(LOWER(dnarunName))">
+												<label
+													value="DNArun Name" />
+											</column>
+											<column hflex="min">
+												<label
+													value="Experiment Id" />
+											</column>
+											<column hflex="min">
+												<label
+													value="Experiment Name" />
+											</column>
+											<column hflex="min">
+												<label
+													value="Project Id" />
+											</column>
+											<column hflex="min">
+												<label
+													value="Project Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="dnarun">
+											<row>
+												<cell>
+													<checkbox
+														value="@load(dnarun)" checked="@load(vm.allCbSelected)"
+														onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.dnarunId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.dnarunName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.experimentId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.experimentName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.projectId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.projectName)" />
+												</cell>
+											</row>
+										</template>
+									</grid>
 									<hbox hflex="1" vflex="min"
 										pack="end" align="end">
 										<label
 											value="Total number of rows:" sclass="row-count" />
 										<label
-											value="@bind(vm.sizeDatasetList)" sclass="row-count" />
+											value="@bind(vm.sizeDnarunList)" sclass="row-count" />
 									</hbox>
 								</vbox>
 							</div>
@@ -186,41 +256,11 @@
 
 						<label
 							style="font-style: oblique; font-size: 20px"
-							value="Succesfully deleted dataset(s)!" />
+							value="Succesfully deleted dnaruns(s)!" />
 
 						<label
 							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
 
-						<grid id="summarygrid"
-							model="@load(vm.datasetSummary)" mold="paging" pageSize="25"
-							pagingPosition="both" hflex="1">
-							<columns sizable="true">
-								<column label="Entity" />
-								<column label="Row Count" />
-								<column label="Filters" />
-								<column label="Duration" />
-							</columns>
-							<template name="model" var="entity">
-								<row>
-									<cell>
-										<label
-											value="@load(entity.entityName)" />
-									</cell>
-									<cell>
-										<label
-											value="@load(entity.rowCount)" />
-									</cell>
-									<cell>
-										<label
-											value="@load(entity.filter)" />
-									</cell>
-									<cell>
-										<label
-											value="@load(entity.duration)" />
-									</cell>
-								</row>
-							</template>
-						</grid>
 
 					</vbox>
 				</div>

@@ -13,14 +13,6 @@
 -->
 <?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
 <?link rel="stylesheet" type="text/css" href="/style.css"?>
-<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
-
-<window id="germplasmFilters" border="normal"
-style="border: 0 !important; padding:0 !important; margin:0;"
- hflex="1" vflex="1"
-	contentStyle="overflow:auto" closable="false"
-	apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunViewModel')">
 	<grid hflex="1" vflex="1"
 		style="border: none !important; padding:0 !important; margin:0;">
 									<columns>
@@ -35,13 +27,13 @@ style="border: 0 !important; padding:0 !important; margin:0;"
 											<cell>
 												<hbox hflex="true">
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDStartRange)"
+														value="@bind(vm.dnarunEntity.germplasmIDStartRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
 													to
 													<intbox hflex="true"
-														value="@bind(vm.datasetEntity.datasetIDEndRange)"
+														value="@bind(vm.dnarunEntity.germplasmIDEndRange)"
 														constraint="no negative, no zero"
 														disabled="@bind(vm.iDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
@@ -56,8 +48,8 @@ style="border: 0 !important; padding:0 !important; margin:0;"
 											<cell>
 												<textbox rows="6"
 													cols="40" hflex="true" vflex="true"
-													tooltiptext="Separate dataset names with a new line"
-													value="@bind(vm.datasetEntity.datasetNamesAsEnterSeparatedString)"
+													tooltiptext="Separate germplasm names with a new line"
+													value="@bind(vm.dnarunEntity.germplasmNamesAsEnterSeparatedString)"
 													popup="title, position=start_before"
 													disabled="@bind(vm.nameListDisabled)"
 													onChange="@command('changeEnabled')">
@@ -66,4 +58,3 @@ style="border: 0 !important; padding:0 !important; margin:0;"
 										</row>
 									</rows>
 		</grid>
-</window>

@@ -10,6 +10,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.EXPERIMENT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
+import static org.gobiiproject.datatimescope.db.generated.Tables.DNARUN;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PROJECT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.REFERENCE;
@@ -46,6 +47,7 @@ import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnaruni
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkerindices;
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
 import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
+import org.gobiiproject.datatimescope.db.generated.routines.Getdnarunidsbyproject;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
 import org.gobiiproject.datatimescope.db.generated.tables.Display;
 import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
@@ -53,6 +55,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DnarunRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
@@ -68,6 +71,8 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.DnarunEntity;
+import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
@@ -2492,7 +2497,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         sb.insert(0, "(");
         
         return sb.toString();
-    }
+    } 
 
     private String buildQueryForGetMarkersInMapsetList(List<MapsetRecord> mapsetList) {
        StringBuilder sb = new StringBuilder();
@@ -2544,5 +2549,171 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
         UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
         return cre.getAccount();
+    }
+
+    @Override
+    public void getDnarunidsbyproject(int projectId) {
+        // TODO Auto-generated method stub
+
+        List<Integer> dnarunindicesList = null;
+        
+            DSLContext context = getDSLContext();
+
+            String query = "select * from getdnarunidsbyproject("+ Integer.toString(projectId) +");";
+            dnarunindicesList = context.fetch(query).into(Integer.class);    
+       
+        
+        System.out.println(Integer.toString(dnarunindicesList.size()));
+    }
+
+    @Override
+    public List<DnarunViewEntity> getAllDnaruns() {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DnarunViewEntity> list = null;
+        try{
+
+            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id").into(DnarunViewEntity.class);
+
+
+        }catch(Exception e ){
+
+            Messagebox.show("There was an error while trying to retrieve DNARUNS", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DnarunViewEntity> getAllDnarunsBasedOnQuery(DnarunEntity dnarunEntity) {
+        // TODO Auto-generated method stub
+        List<DnarunViewEntity> list = null;
+        
+        System.out.println(dnarunEntity.getCompleteFiltersAsText());
+        
+        int queryCount =0;
+        int dsNameCount = 0;
+        DSLContext context = getDSLContext();
+
+        try{ /* START building THE QUERY via StringBuilder */
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbWhere = new StringBuilder(); 
+
+            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ");
+
+          
+
+            // build query for DNA RUN NAMES filter
+            if (dnarunEntity.getDnarunNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnarunNamesAsEnterSeparatedString().isEmpty()){
+//                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
+                sbWhere.append(" where LOWER(dr.name) in ("+dnarunEntity.getSQLReadyDnarunNames()+")");
+                dsNameCount++;  
+            }
+
+            // build query for DNA Sample NAMES filter
+            if (dnarunEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
+    //              lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
+                  sbWhere.append(" where LOWER(dr.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
+                  dsNameCount++;  
+              }
+
+            // build query for germplasm NAMES filter
+            if (dnarunEntity.getSQLReadyGermplasmNames()!=null && !dnarunEntity.getSQLReadyGermplasmNames().isEmpty()){
+//                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
+                sbWhere.append(" where LOWER(m.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
+                dsNameCount++;  
+            }
+
+            /* ADD THE "WHERE" CONDITIONS */
+            
+            //build query for 'none' selected on dataset filter
+            
+
+            // build query for PROJECTS filter
+            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getProjectRecord())){
+//                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(" prj.project_id = "+ dnarunEntity.getProjectRecord().getProjectId().toString());
+                queryCount++;
+            }
+
+//            // build query for EXPERIMENTS filter
+            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getExperimentRecord())){
+//              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+              checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+              sbWhere.append(" e.experiment_id = "+ dnarunEntity.getExperimentRecord().getExperimentId().toString());
+              queryCount++;
+            }
+
+//            // build query for DATASETS filter
+            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getDatasetRecord())){
+//              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+              sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
+              checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+              sbWhere.append(" d.dataset_id = "+ dnarunEntity.getDatasetRecord().getDatasetId().toString());
+              queryCount++;
+            }
+
+
+            // build query for given marker IDs
+//            if (markerEntity.getMarkerIDStartRange()!=null || markerEntity.getMarkerIDEndRange()!=null){
+//
+//                //check which is not null
+//                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+//
+//                if(markerEntity.getMarkerIDStartRange()!=null && markerEntity.getMarkerIDEndRange()!=null){ //if both is not null
+//                    Integer lowerID = markerEntity.getMarkerIDStartRange();
+//                    Integer higherID = markerEntity.getMarkerIDEndRange();
+//
+//                    if(lowerID.compareTo(higherID)>0){
+//                        lowerID = markerEntity.getMarkerIDEndRange();
+//                        higherID = markerEntity.getMarkerIDStartRange();
+//                    }
+//                    lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+//                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+//                    sbWhere.append(" m.marker_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+//                }else{
+//                    Integer ID = null;
+//                    if(markerEntity.getMarkerIDStartRange()!=null) {
+//                        ID = markerEntity.getMarkerIDStartRange();
+//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+//                    }
+//                    else {
+//                        lastQueriedMarkerEntity.setMarkerIDEndRange(markerEntity.getMarkerIDEndRange());
+//                        ID = markerEntity.getMarkerIDEndRange();
+//                    }
+//
+//                    sbWhere.append(" m.marker_id = "+Integer.toString(ID));
+//                }
+//
+//                queryCount++;
+//            }
+//
+//            sbWhere.append(";");
+//            sb.append(sbWhere.toString());
+            
+            String query = sb.toString();
+            System.out.println(query);
+            list = context.fetch(query).into(DnarunViewEntity.class);
+
+        }catch(Exception e ){
+            e.printStackTrace();
+            Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+        return list;
+    }
+
+    @Override
+    public boolean deleteDnarun(DnarunRecord dnarunRecord) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean deleteDnaruns(List<DnarunRecord> selectedDsList) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
