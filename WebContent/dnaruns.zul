@@ -155,44 +155,46 @@
 													label="Select All" onCheck="@command('doSelectAll')"
 													checked="@bind(vm.cbAllUsers)" />
 											</column>
-											<column hflex="min"
+											<column hflex="1"
 												sort="auto(dnarunId)">
 												<label
 													value="DNArun ID" />
 											</column>
-											<column hflex="min"
+											<column hflex="1"
 												sort="auto(LOWER(dnarunName))">
 												<label
 													value="DNArun Name" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="DNAsample Id" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="DNAsample Name" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="Experiment Id" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="Experiment Name" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="Project Id" />
 											</column>
-											<column hflex="min">
+											<column hflex="1">
 												<label
 													value="Project Name" />
 											</column>
 										</columns>
 										<template name="model"
 											var="dnarun">
-											<row>
+											<row onClick="@command('showDnarunDetail', dnarunId=dnarun.dnarunId, dnarunName=dnarun.dnarunName)"
+												style="cursor:pointer"
+												tooltip="markerTooltip, position=after_pointer, delay=0">
 												<cell>
 													<checkbox
 														value="@load(dnarun)" checked="@load(vm.allCbSelected)"
@@ -246,7 +248,10 @@
 								<label
 									value="Separate each name with a new line." />
 							</popup>
-
+							<popup id="markerTooltip" hflex="1">
+								<label
+									value="Click to view additional DNArun details" />
+							</popup>
 						</div>
 					</center>
 

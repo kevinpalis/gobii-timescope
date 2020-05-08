@@ -1,0 +1,45 @@
+<window id="dnarunDetailWindow" mode="popup" popup="true" hflex="min"
+	vflex="min" closable="true" apply="org.zkoss.bind.BindComposer"
+	border="normal" position="right,top"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunDetailViewModel')">
+	<caption sclass="fn-caption" label="@load(vm.markerAssociated)" />
+		<vlayout visible="@load(not empty vm.dnarunDetailDatasetList)"
+			style="padding:10px;">
+			<separator spacing="5px" />
+			<grid model="@load(vm.dnarunDetailDatasetList)"
+				mold="paging" pageSize="5" style="overflow: auto !important;"
+				width="850px">
+				
+				<columns sizable="true">
+					<column hflex="min">Id</column>
+					<column>Name</column>
+					<column>Data file</column>
+					<column>Created date</column>
+				</columns>
+				<template name="model" var="each">
+					<row>
+						<cell>
+							<label value="@load(each.datasetId)" />
+						</cell>
+						<cell>
+							<label value="@load(each.name)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+						<cell>
+							<label value="@load(each.dataFile)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+						<cell>
+							<label value="@load(each.createdDate)"
+								style="font-size: 12px; text-align:left;" />
+						</cell>
+					</row>
+				</template>
+			</grid>
+		</vlayout>
+
+	<div align="center" style="margin: 10px">
+		<button id="exitMarkerDetail" label="OK" width="150px"
+			onClick="@command('exit')" />
+	</div>
+</window>

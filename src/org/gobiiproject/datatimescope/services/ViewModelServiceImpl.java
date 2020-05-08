@@ -2695,27 +2695,34 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             
             // build query for PROJECTS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getProjectRecord())){
+
+                if(dnarunEntity.getProjectRecord().getProjectId()!=0) {
 //                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-                sbWhere.append(" prj.project_id = "+ dnarunEntity.getProjectRecord().getProjectId().toString());
+                sbWhere.append(" p.project_id = "+ dnarunEntity.getProjectRecord().getProjectId().toString());
                 queryCount++;
+                }
             }
 
 //            // build query for EXPERIMENTS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getExperimentRecord())){
+                if(dnarunEntity.getExperimentRecord().getExperimentId()!=0) {
 //              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
-              checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-              sbWhere.append(" e.experiment_id = "+ dnarunEntity.getExperimentRecord().getExperimentId().toString());
-              queryCount++;
+                  checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                  sbWhere.append(" e.experiment_id = "+ dnarunEntity.getExperimentRecord().getExperimentId().toString());
+                  queryCount++;
+                }
             }
 
 //            // build query for DATASETS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getDatasetRecord())){
+                if(dnarunEntity.getDatasetRecord().getDatasetId()!=0) {
 //              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
-              sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
-              checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-              sbWhere.append(" d.dataset_id = "+ dnarunEntity.getDatasetRecord().getDatasetId().toString());
-              queryCount++;
+                  sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
+                  checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                  sbWhere.append(" d.dataset_id = "+ dnarunEntity.getDatasetRecord().getDatasetId().toString());
+                  queryCount++;
+                }
             }
 
             sbWhere.append(";");
@@ -2743,5 +2750,26 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     public boolean deleteDnaruns(List<DnarunRecord> selectedDsList) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public List<DatasetRecord> getDatasetAssociatedToDnarunId(Integer dnarunId) {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DatasetRecord> list = null;
+        try{
+            String query = "SELECT distinct on (d.dataset_id) d.dataset_id, d.experiment_id, d.callinganalysis_id, d.analyses, d.data_table, d.data_file, d.quality_table, d.quality_file, d.scores, d.created_by, d.created_date,d.modified_by, d.modified_date, d.status, d.type_id, d.name, d.job_id FROM dnarun dr LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) where dr.dnarun_id="+dnarunId.toString();
+            System.out.println(query);
+            list = context.fetch( query).into(DatasetRecord.class);
+
+
+        }catch(Exception e ){
+            e.printStackTrace();
+
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+
+        return list;
     }
 }

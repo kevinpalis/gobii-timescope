@@ -108,6 +108,10 @@ public class DnarunViewModel {
         ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL EXPERIMENT", "", 0, 0, "", 0, null, 0, null, 0, 0);
         experimentList.add(0,selectAllExp);
         
+        DatasetRecord selectAllDs = new DatasetRecord();
+        selectAllDs.setName("SELECT ALL DATASET");
+        datasetList.add(0,selectAllDs);
+        
     }
 
 
@@ -305,6 +309,29 @@ public class DnarunViewModel {
         }
     }
 
+    @Command("showDnarunDetail")
+    @NotifyChange({"dnarunDetailDatasetList"})
+    public void showDnarunDetail(@BindingParam("dnarunId") Integer dnarunId, @BindingParam("dnarunName") String dnarunName){
+        Boolean markerAssociated = false;
+        List<DatasetRecord> dnarunDetailDatasetList = viewModelService.getDatasetAssociatedToDnarunId(dnarunId);
+
+        if(dnarunDetailDatasetList.size()>0) {
+            markerAssociated = true;
+        }
+
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("dnarunName", dnarunName);
+        args.put("dnarunDetailDatasetList", dnarunDetailDatasetList);
+        args.put("markerAssociated", markerAssociated);
+
+        Window window = (Window)Executions.createComponents(
+                "/dnarun_detail.zul", null, args);
+        window.setPosition("center");
+        window.setClosable(true);
+        window.doModal();
+    }
+
+    
     @Command("exportDnarunTable")
     public void exportDnarunTable() {
 

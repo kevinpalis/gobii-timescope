@@ -182,5 +182,7 @@ public interface ViewModelService {
 
     public boolean deleteDnaruns(List<DnarunRecord> selectedDsList);
 
+    public List<DatasetRecord> getDatasetAssociatedToDnarunId(Integer dnarunId);
+
 
 }
