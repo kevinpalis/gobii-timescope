@@ -23,7 +23,6 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.DnarunRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.entity.DnarunEntity;
@@ -32,6 +31,7 @@ import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
+import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.bind.BindUtils;
@@ -69,7 +69,7 @@ public class DnarunViewModel {
 
 
     ViewModelService viewModelService;
-    private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false, paged=false;
+    private boolean cbAllUsers, isAllCbSelected=false, isIDBoxDisabled=false, isNameListDisabled=false, isDsIDBoxDisabled=false, isDsNameListDisabled=false, isGermplasmIDBoxDisabled=false, isGermplasmNameListDisabled=false, isIsRoleUser=false, performedDeleteSuccesfully=false, paged=false;
 
     @Wire("#dnarunGrid")
     Grid dnarunGrid;
@@ -78,7 +78,7 @@ public class DnarunViewModel {
     
     private List<ContactRecord> contactsList, piList;
     private List<DnarunViewEntity> dnarunList;
-    private List<DnarunRecord> selectedDsList;
+    private List<DnarunViewEntity> selectedList;
     private List<DatasetRecord> datasetList;
     private List<ProjectRecord> projectList;
     private List<ExperimentRecord> experimentList;
@@ -88,7 +88,7 @@ public class DnarunViewModel {
     @SuppressWarnings("unchecked")
     @Init
     public void init() {
-        selectedDsList = new ArrayList<DnarunRecord>();
+        selectedList = new ArrayList<DnarunViewEntity>();
         viewModelService = new ViewModelServiceImpl();
         
         setDnarunEntity(new DnarunEntity());
@@ -108,10 +108,8 @@ public class DnarunViewModel {
         ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL EXPERIMENT", "", 0, 0, "", 0, null, 0, null, 0, 0);
         experimentList.add(0,selectAllExp);
         
-        DatasetRecord selectAllDs = new DatasetRecord();
-        selectAllDs.setName("SELECT ALL DATASET");
+        DatasetRecord selectAllDs = new DatasetRecord(0, 0, 0, null, null, null, null, null, null, null, null, null, null, null, 0, "SELECT ALL DATASET", 0);
         datasetList.add(0,selectAllDs);
-        
     }
 
 
@@ -122,14 +120,14 @@ public class DnarunViewModel {
 
 
     @Command("submitQuery")
-    @NotifyChange({"dnarunList","selectedDsList", "allCbSelected", "cbAllUsers","paged", "sizeDnarunList"})
+    @NotifyChange({"dnarunList","selectedList", "allCbSelected", "cbAllUsers","paged", "sizeDnarunList"})
     public void submitQuery(){
 //        viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity);
 //        viewModelService.getDnarunidsbyproject(6);
         try{
             dnarunList.clear(); //clear the list first and then just add if there are any selected
 
-            selectedDsList.clear();
+            selectedList.clear();
 
         }catch(NullPointerException e){
 
@@ -146,11 +144,11 @@ public class DnarunViewModel {
     }
 
     @Command("resetDnarunTab")
-    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedDsList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled", "paged"})
+    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled", "paged"})
     public void resetDnarunTab(){
         try{
             dnarunList.clear(); //clear the list first and then just add if there are any selected
-            selectedDsList.clear(); 
+            selectedList.clear(); 
 
         }catch(NullPointerException e){
 
@@ -169,29 +167,34 @@ public class DnarunViewModel {
     @Command("doSelectAll")
     @NotifyChange("allCbSelected")
     public void doSelectAll(){
-//        List<DnarunViewEntity> dnarunListOnDisplay = getDnarunList();
-//
-//        selectedDsList.clear(); //clear the list first and then just add if there are any selected
-//
-//        setAllCbSelected(isCbAllUsers());
-//
-//        if (isCbAllUsers()) {
-//            try{
-//                for(DnarunRecord u: dnarunListOnDisplay){
-//                    selectedDsList.add(u);
-//                }
-//            }catch(NullPointerException npe){
-//                Messagebox.show("Submit an empty query to display all dnaruns", "There is nothing to select", Messagebox.OK, Messagebox.EXCLAMATION);
-//            }
-//        }
+        List<DnarunViewEntity> dnarunListOnDisplay = getDnarunList();
+
+        selectedList.clear(); //clear the list first and then just add if there are any selected
+
+        setAllCbSelected(isCbAllUsers());
+
+        if (isCbAllUsers()) {
+            try{
+                for(DnarunViewEntity u: dnarunListOnDisplay){
+                    selectedList.add(u);
+                }
+            }catch(NullPointerException npe){
+                Messagebox.show("Click submit query to display all dnaruns", "There is nothing to select", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
+        }
     }
 
     @Command("changeEnabled")
-    @NotifyChange({"iDBoxDisabled","nameListDisabled"})
+    @NotifyChange({"iDBoxDisabled","nameListDisabled", "dsIDBoxDisabled","dsNameListDisabled", "germplasmIDBoxDisabled","germplasmNameListDisabled"})
     public void changeEnabled(){
         isIDBoxDisabled = false; // reset
         isNameListDisabled= false; 
-
+        isDsIDBoxDisabled=false;
+        isDsNameListDisabled=false;
+        isGermplasmIDBoxDisabled=false;
+        isGermplasmNameListDisabled=false;
+        
+        //dnarun id range and names
         if(dnarunEntity.getDnarunNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnarunNamesAsEnterSeparatedString().isEmpty()){
             isIDBoxDisabled = true;
         }else if(dnarunEntity.getDnarunIDStartRange() != null ){
@@ -201,6 +204,32 @@ public class DnarunViewModel {
         }else if(dnarunEntity.getDnarunIDEndRange() !=null){
             if(dnarunEntity.getDnarunIDEndRange()>0){
                 isNameListDisabled=true;
+            }
+        }
+        
+        //dnasample id range and names
+        if(dnarunEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
+            isDsIDBoxDisabled = true;
+        }else if(dnarunEntity.getDnasampleIDStartRange() != null ){
+            if(dnarunEntity.getDnasampleIDStartRange() >0 ){
+                isDsNameListDisabled=true;
+            }
+        }else if(dnarunEntity.getDnasampleIDEndRange() !=null){
+            if(dnarunEntity.getDnasampleIDEndRange()>0){
+                isDsNameListDisabled=true;
+            }
+        }
+        
+        //germplasm id range and names
+        if(dnarunEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !dnarunEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
+            isGermplasmIDBoxDisabled = true;
+        }else if(dnarunEntity.getGermplasmIDStartRange() != null ){
+            if(dnarunEntity.getGermplasmIDStartRange() >0 ){
+                isGermplasmNameListDisabled=true;
+            }
+        }else if(dnarunEntity.getGermplasmIDStartRange() !=null){
+            if(dnarunEntity.getGermplasmIDStartRange()>0){
+                isGermplasmNameListDisabled=true;
             }
         }
     }
@@ -222,17 +251,23 @@ public class DnarunViewModel {
     @NotifyChange({"dnarunSummary","performedDeleteSuccesfully"})
     public void deleteSelectedDnaruns(){
 
-        if(selectedDsList.isEmpty()){ //Nothing is selected
+        if(selectedList.isEmpty()){ //Nothing is selected
             Messagebox.show("There are no dnaruns selected", "Warning", Messagebox.OK, Messagebox.EXCLAMATION);
         }
         else{
             StringBuilder sb = new StringBuilder();
-
-            for(DnarunRecord u: selectedDsList){
-                sb.append("\n"+u.getName());
+            sb.append("the following dnaruns?");
+            for(DnarunViewEntity u: selectedList){
+                sb.append("\n"+u.getDnarunName());
             }
            
-            Messagebox.show("Are you sure you want to delete the following dnaruns?\n"+sb.toString(), 
+            if (selectedList.size()>10){
+
+                sb =  new StringBuilder();
+                sb.append(Integer.toString(selectedList.size())+" dnaruns?");
+
+            }
+            Messagebox.show("Are you sure you want to delete "+sb.toString(), 
                     "Confirm Delete", Messagebox.YES | Messagebox.NO,
                     Messagebox.QUESTION,
                     new org.zkoss.zk.ui.event.EventListener(){
@@ -253,21 +288,14 @@ public class DnarunViewModel {
                                     //YES is clicked
                                     boolean successful;
 
-                                    if(selectedDsList.size() == 1){  // just one user is selected
-                                        successful = viewModelService.deleteDnarun(selectedDsList.get(0));
+                                    if(selectedList.size() == 1){  // 
+                                        successful = viewModelService.deleteDnarun(selectedList.get(0));
 
                                     }else{
                                         //bulk delete
-                                        successful = viewModelService.deleteDnaruns(selectedDsList);
+                                        successful = viewModelService.deleteDnaruns(selectedList);
                                     }
 
-                                    if(successful){
-                                        BindUtils.postGlobalCommand(null, null, "retrieveDnarunList", null);
-
-//                                        if(dnarunSummary.size()>0){
-//                                            performedDeleteSuccesfully=true;
-//                                        }
-                                    }
 
                                 }
                             }
@@ -278,28 +306,28 @@ public class DnarunViewModel {
         }
     }
 
-    @GlobalCommand("retrieveDnarunList")
-    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedDsList", "allCbSelected", "cbAllUsers","paged"})
-    public void retrieveUserList(){
+    @GlobalCommand("retrieveDNArunList")
+    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers","paged"})
+    public void retrieveDNArunList(){
         //...
 
         setDnarunList(viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity));
 
-        selectedDsList.clear();
+        selectedList.clear();
 
         setAllCbSelected(false);
         setCbAllUsers(false);
     }
 
     @Command("updateSelectDs")
-    @NotifyChange({"cbAllUsers", "selectedDsList"})
-    public void updateSelectDs(@BindingParam("dsChecked") DnarunRecord dsList, @BindingParam("isChecked") Boolean isChecked){
+    @NotifyChange({"cbAllUsers", "selectedList"})
+    public void updateSelectDs(@BindingParam("dsChecked") DnarunViewEntity dsList, @BindingParam("isChecked") Boolean isChecked){
         if(isChecked){
-            selectedDsList.add(dsList);
+            selectedList.add(dsList);
         }else{
             setCbAllUsers(false);
 
-            ListIterator<DnarunRecord> it = selectedDsList.listIterator();
+            ListIterator<DnarunViewEntity> it = selectedList.listIterator();
             while (it.hasNext()) {
                 if (it.next().getDnarunId().equals(dsList.getDnarunId())) {
                     it.remove();
@@ -312,17 +340,17 @@ public class DnarunViewModel {
     @Command("showDnarunDetail")
     @NotifyChange({"dnarunDetailDatasetList"})
     public void showDnarunDetail(@BindingParam("dnarunId") Integer dnarunId, @BindingParam("dnarunName") String dnarunName){
-        Boolean markerAssociated = false;
-        List<DatasetRecord> dnarunDetailDatasetList = viewModelService.getDatasetAssociatedToDnarunId(dnarunId);
-
-        if(dnarunDetailDatasetList.size()>0) {
-            markerAssociated = true;
+        Boolean associated = false;
+        List<DatasetRecord> dnarunDetailDatasetList = new ArrayList<DatasetRecord>();
+        dnarunDetailDatasetList = viewModelService.getDatasetAssociatedToDnarunId(dnarunId);
+        
+        if(Utils.isListNotNullOrEmpty(dnarunDetailDatasetList)) {
+            associated = true;
         }
 
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("dnarunName", dnarunName);
         args.put("dnarunDetailDatasetList", dnarunDetailDatasetList);
-        args.put("markerAssociated", markerAssociated);
+        args.put("associated", associated);
 
         Window window = (Window)Executions.createComponents(
                 "/dnarun_detail.zul", null, args);
@@ -331,99 +359,6 @@ public class DnarunViewModel {
         window.doModal();
     }
 
-    
-    @Command("exportDnarunTable")
-    public void exportDnarunTable() {
-
-//        ListIterator<DnarunRecord> it = dnarunList.listIterator();
-//        StringBuffer buffMap = new StringBuffer();
-//
-//        while (it.hasNext()) {
-//
-//            DnarunRecord next = it.next();
-//
-//            if(it.nextIndex()==1){
-//                buffMap.append(next.getHeaderDelimitedBy(","));
-//            }
-//            buffMap.append(next.getAllDelimitedBy(","));
-//
-//        }
-//
-//        FileWriter fw;
-//        try {
-//            File file = new File("timescope_dnarun.csv");
-//            fw = new FileWriter(file);
-//            BufferedWriter bw = new BufferedWriter(fw);
-//            bw.write(buffMap.toString());
-//            bw.flush();
-//            bw.close();
-//
-//            InputStream is = new FileInputStream(file);
-//            Filedownload.save(is, "text/csv", file.getName());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-    }
-
-    @Command("exportCurrentDnarunTablePage")
-    public void exportCurrentDnarunTablePage() {
-//
-//
-//        int ActivePage = dnarunGrid.getActivePage();
-//        int initial, last;
-//        if(ActivePage==0){
-//            initial=1;
-//        }else{
-//            initial=(ActivePage*dnarunGrid.getPageSize())+1;
-//        }
-//
-//        StringBuffer buffMap = new StringBuffer();
-//
-//
-//        List<Integer> indices = new ArrayList<Integer>();
-//
-//        last = initial+dnarunGrid.getPageSize();
-//        //get Indices
-//        for( int i = initial; i<last; i++){
-//
-//            indices.add(i);
-//
-//        }
-//
-//        ListIterator<DnarunRecord> it = dnarunList.listIterator();
-//
-//        while (it.hasNext()) {
-//
-//            DnarunRecord next = it.next();
-//            int nextIndex = it.nextIndex();
-//
-//            if(nextIndex==1){
-//                buffMap.append(next.getHeaderDelimitedBy(","));
-//            }
-//
-//            if(indices.contains(nextIndex)){
-//                buffMap.append(next.getAllDelimitedBy(","));
-//            }
-//
-//        }
-//
-//        FileWriter fw;
-//        try {
-//            File file = new File("timescope_dnarun_currentpage.csv");
-//            fw = new FileWriter(file);
-//            BufferedWriter bw = new BufferedWriter(fw);
-//            bw.write(buffMap.toString());
-//            bw.flush();
-//            bw.close();
-//
-//            InputStream is = new FileInputStream(file);
-//            Filedownload.save(is, "text/csv", file.getName());
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-    }
 
     public boolean isAllCbSelected() {
         return isAllCbSelected;
@@ -443,11 +378,12 @@ public class DnarunViewModel {
     }
 
     public void setDnarunList(List<DnarunViewEntity> dnarunList) {
-        
-//        if(dnarunList.size() > 25) setPaged(true);
-//        else setPaged(false);
-        
-        this.dnarunList = dnarunList;
+        if(dnarunList.size() > 0) {
+            if(dnarunList.size() > 25) setPaged(true);
+            else setPaged(false);
+            
+            this.dnarunList = dnarunList;
+        }
     }
 
     public List<ContactRecord> getContactsList() {
@@ -518,11 +454,9 @@ public class DnarunViewModel {
 
 
     public Integer getSizeDnarunList() {
-
-//        sizeDnarunList = dnarunList.size();
-//        
-//        if(dnarunList.size()<1) sizeDnarunList = 0;
-        
+        if(Utils.isListNotNullOrEmpty(dnarunList)) {
+            sizeDnarunList = dnarunList.size();
+        }else sizeDnarunList = 0;
         return sizeDnarunList;
     }
 
@@ -569,6 +503,46 @@ public class DnarunViewModel {
 
     public void setDatasetList(List<DatasetRecord> datasetList) {
         this.datasetList = datasetList;
+    }
+
+
+    public boolean isDsIDBoxDisabled() {
+        return isDsIDBoxDisabled;
+    }
+
+
+    public void setDsIDBoxDisabled(boolean isDsIDBoxDisabled) {
+        this.isDsIDBoxDisabled = isDsIDBoxDisabled;
+    }
+
+
+    public boolean isDsNameListDisabled() {
+        return isDsNameListDisabled;
+    }
+
+
+    public void setDsNameListDisabled(boolean isDsNameListDisabled) {
+        this.isDsNameListDisabled = isDsNameListDisabled;
+    }
+
+
+    public boolean isGermplasmIDBoxDisabled() {
+        return isGermplasmIDBoxDisabled;
+    }
+
+
+    public void setGermplasmIDBoxDisabled(boolean isGermplasmIDBoxDisabled) {
+        this.isGermplasmIDBoxDisabled = isGermplasmIDBoxDisabled;
+    }
+
+
+    public boolean isGermplasmNameListDisabled() {
+        return isGermplasmNameListDisabled;
+    }
+
+
+    public void setGermplasmNameListDisabled(boolean isGermplasmNameListDisabled) {
+        this.isGermplasmNameListDisabled = isGermplasmNameListDisabled;
     }
 
 }

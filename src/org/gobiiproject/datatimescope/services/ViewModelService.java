@@ -178,9 +178,9 @@ public interface ViewModelService {
 
     public List<DnarunViewEntity> getAllDnarunsBasedOnQuery(DnarunEntity dnarunEntity);
 
-    public boolean deleteDnarun(DnarunRecord dnarunRecord);
+    public boolean deleteDnarun(DnarunViewEntity dnarunViewEntity);
 
-    public boolean deleteDnaruns(List<DnarunRecord> selectedDsList);
+    public boolean deleteDnaruns(List<DnarunViewEntity> selectedDsList);
 
     public List<DatasetRecord> getDatasetAssociatedToDnarunId(Integer dnarunId);
 

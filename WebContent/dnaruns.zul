@@ -136,7 +136,7 @@
 								<button
 									visible="@load(not vm.isRoleUser)" id="deleteBtn"
 									style="background-color: red" label="Delete Selected"
-									hflex="min" onClick="@command('deleteSelectedDatasets')" />
+									hflex="min" onClick="@command('deleteSelectedDnaruns')" />
 							</div>
 
 						</vlayout>
@@ -165,27 +165,43 @@
 												<label
 													value="DNArun Name" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleId))">
 												<label
 													value="DNAsample Id" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleName))">
 												<label
 													value="DNAsample Name" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(germplasmId))">
+												<label
+													value="Germplasm Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(germplasmName))">
+												<label
+													value="Germplasm Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(experimentId))">
 												<label
 													value="Experiment Id" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(experimentName))">
 												<label
 													value="Experiment Name" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(projectId))">
 												<label
 													value="Project Id" />
 											</column>
-											<column hflex="1">
+											<column hflex="1"
+												sort="auto(LOWER(projectName))">
 												<label
 													value="Project Name" />
 											</column>
@@ -215,6 +231,14 @@
 												<cell>
 													<label sclass="grid-row"
 															value="@load(dnarun.dnasampleName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.germplasmId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(dnarun.germplasmName)" />
 												</cell>
 												<cell>
 													<label sclass="grid-row"

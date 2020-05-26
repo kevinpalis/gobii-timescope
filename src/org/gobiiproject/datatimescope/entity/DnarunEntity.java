@@ -12,6 +12,7 @@ timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::r
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,15 +32,23 @@ public class DnarunEntity implements Serializable,Cloneable {
 	
 	private Integer dnarunIDStartRange, dnasampleIDStartRange, germplasmIDStartRange;
 	private Integer dnarunIDEndRange, dnasampleIDEndRange, germplasmIDEndRange;
-	private String dnarunNamesAsEnterSeparatedString, dnasampleNamesAsEnterSeparatedString, germplasmNamesAsEnterSeparatedString;
+	private String dnarunNamesAsEnterSeparatedString, dnasampleNamesAsEnterSeparatedString, germplasmNamesAsEnterSeparatedString, dnarunNamesAsCommaSeparatedString, dnasampleNamesAsCommaSeparatedString, germplasmNamesAsCommaSeparatedString;
 	private Date creationDateStart;
 	private Date creationDateEnd;
 	private ProjectRecord projectRecord;
 	private ExperimentRecord experimentRecord;
 	private DatasetRecord datasetRecord;
-	
+
+    private List<ProjectRecord> projectList;
+    private List<ExperimentRecord> experimentList;
+    private List<DatasetRecord> datasetList;
+
+    private ArrayList<RowColEntity> filterListAsRows;
+    
 	public DnarunEntity(){
-		
+        setProjectList(new ArrayList<ProjectRecord>());
+        setExperimentList(new ArrayList<ExperimentRecord>());
+        setDatasetList(new ArrayList<DatasetRecord>());
 	}
 
     public String getSQLReadyDnarunNames() {
@@ -48,7 +57,7 @@ public class DnarunEntity implements Serializable,Cloneable {
         StringBuilder sb = new StringBuilder();
         String names = dnarunNamesAsEnterSeparatedString;
         
-        for(String s: names.split("\n")){
+        for(String s: names.replaceAll(" \n","\n").split("\n")){
             if(ctr>0)sb.append(",");
         sb.append(" '"+s.toLowerCase()+"' ");
         ctr++;
@@ -62,7 +71,7 @@ public class DnarunEntity implements Serializable,Cloneable {
         StringBuilder sb = new StringBuilder();
         String names = dnasampleNamesAsEnterSeparatedString;
         
-        for(String s: names.split("\n")){
+        for(String s: names.replaceAll(" \n","\n").split("\n")){
             if(ctr>0)sb.append(",");
         sb.append(" '"+s.toLowerCase()+"' ");
         ctr++;
@@ -76,7 +85,7 @@ public class DnarunEntity implements Serializable,Cloneable {
         StringBuilder sb = new StringBuilder();
         String names = germplasmNamesAsEnterSeparatedString;
         
-        for(String s: names.split("\n")){
+        for(String s: names.replaceAll(" \n","\n").split("\n")){
             if(ctr>0)sb.append(",");
         sb.append(" '"+s.toLowerCase()+"' ");
         ctr++;
@@ -133,23 +142,109 @@ public class DnarunEntity implements Serializable,Cloneable {
         return returnVal;
     }
     
+
+    public List<RowColEntity> getFilterListAsRows() {
+        filterListAsRows = new ArrayList<RowColEntity>();
+
+        RowColEntity rowColEntity = new RowColEntity();
+//        dnarunIDStartRange, dnasampleIDStartRange, germplasmIDStartRange;
+//        private Integer dnarunIDEndRange, dnasampleIDEndRange, germplasmIDEndRange;
+//        dnasampleNamesAsCommaSeparatedString, germplasmNamesAsCommaSeparatedString;
+        
+        
+        //dna runs
+        if(dnarunIDStartRange!=null || dnarunIDEndRange!=null){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("DNArun Id(s)");
+            rowColEntity.setSecondRow(Utils.getIdRangeAsString(dnarunIDStartRange,dnarunIDEndRange));
+            filterListAsRows.add(rowColEntity);
+            
+        }else if(dnarunNamesAsCommaSeparatedString!=null) {
+
+            if(!dnarunNamesAsCommaSeparatedString.isEmpty()) {
+                rowColEntity = new RowColEntity();
+                rowColEntity.setFirstRow("DNArun Name(s)");
+                rowColEntity.setSecondRow(dnarunNamesAsCommaSeparatedString);
+                filterListAsRows.add(rowColEntity);
+            }
+        }
+        
+        //dna samples
+        if(dnasampleIDStartRange!=null || dnasampleIDEndRange!=null){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("DNAsample Id(s)");
+            rowColEntity.setSecondRow(Utils.getIdRangeAsString(dnasampleIDStartRange,dnasampleIDEndRange));
+            filterListAsRows.add(rowColEntity);
+            
+        }else if(dnasampleNamesAsCommaSeparatedString!=null) {
+
+            if(!dnasampleNamesAsCommaSeparatedString.isEmpty()) {
+                rowColEntity = new RowColEntity();
+                rowColEntity.setFirstRow("DNAsample Name(s)");
+                rowColEntity.setSecondRow(dnasampleNamesAsCommaSeparatedString);
+                filterListAsRows.add(rowColEntity);
+            }
+        }
+        
+        //germplasm
+        if(germplasmIDStartRange!=null || germplasmIDEndRange!=null){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Germplasm Id(s)");
+            rowColEntity.setSecondRow(Utils.getIdRangeAsString(germplasmIDStartRange,germplasmIDEndRange));
+            filterListAsRows.add(rowColEntity);
+            
+        }else if(germplasmNamesAsCommaSeparatedString!=null) {
+
+            if(!germplasmNamesAsCommaSeparatedString.isEmpty()) {
+                rowColEntity = new RowColEntity();
+                rowColEntity.setFirstRow("Germplasm Name(s)");
+                rowColEntity.setSecondRow(germplasmNamesAsCommaSeparatedString);
+                filterListAsRows.add(rowColEntity);
+            }
+        }
+        
+        if(Utils.isListNotNullOrEmpty(getProjectList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Project(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getProjectList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+
+        if(Utils.isListNotNullOrEmpty(getExperimentList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Experiment(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        
+       if(Utils.isListNotNullOrEmpty(getDatasetList())){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Dataset(s)");
+            rowColEntity.setSecondRow(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15,  ", "));
+            filterListAsRows.add(rowColEntity);
+        }
+        
+        return filterListAsRows;
+    }
+    
     public String getFiltersAsTextWithDelimiter(String delim) {
         // TODO Auto-generated method stub
         StringBuilder sb = new StringBuilder();
-        
-        if(Utils.isRecordNotNullOrEmpty(projectRecord)){
-            sb.append("\nProject(s):\n");
-            sb.append(projectRecord.getName());
+
+        if(Utils.isListNotNullOrEmpty(getProjectList())){
+            sb.append("Project:");
+            sb.append(Utils.getListNamesToStringWithDelimiter(getProjectList(), 1, delim));
         }
 
-        if(Utils.isRecordNotNullOrEmpty(experimentRecord)){
-            sb.append("\nExperiment(s):\n");
-            sb.append(experimentRecord.getName());
+        if(Utils.isListNotNullOrEmpty(getExperimentList())){
+            sb.append("Experiment:");
+            sb.append(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1, delim));
         }
-        
-        if(Utils.isRecordNotNullOrEmpty(datasetRecord)){
-            sb.append("\nDataset(s):\n");
-            sb.append(datasetRecord.getName());
+
+        else if(Utils.isListNotNullOrEmpty(getDatasetList())){
+            sb.append("Dataset(s):");
+            sb.append(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15, delim));
         }
       
         return sb.toString();
@@ -265,5 +360,53 @@ public class DnarunEntity implements Serializable,Cloneable {
 
     public void setDatasetRecord(DatasetRecord datasetRecord) {
         this.datasetRecord = datasetRecord;
+    }
+
+    public String getDnarunNamesAsCommaSeparatedString() {
+        return dnarunNamesAsCommaSeparatedString;
+    }
+
+    public void setDnarunNamesAsCommaSeparatedString(String dnarunNamesAsCommaSeparatedString) {
+        this.dnarunNamesAsCommaSeparatedString = dnarunNamesAsCommaSeparatedString;
+    }
+
+    public String getDnasampleNamesAsCommaSeparatedString() {
+        return dnasampleNamesAsCommaSeparatedString;
+    }
+
+    public void setDnasampleNamesAsCommaSeparatedString(String dnasampleNamesAsCommaSeparatedString) {
+        this.dnasampleNamesAsCommaSeparatedString = dnasampleNamesAsCommaSeparatedString;
+    }
+
+    public String getGermplasmNamesAsCommaSeparatedString() {
+        return germplasmNamesAsCommaSeparatedString;
+    }
+
+    public void setGermplasmNamesAsCommaSeparatedString(String germplasmNamesAsCommaSeparatedString) {
+        this.germplasmNamesAsCommaSeparatedString = germplasmNamesAsCommaSeparatedString;
+    }
+
+    public List<ProjectRecord> getProjectList() {
+        return projectList;
+    }
+
+    public void setProjectList(List<ProjectRecord> projectList) {
+        this.projectList = projectList;
+    }
+
+    public List<ExperimentRecord> getExperimentList() {
+        return experimentList;
+    }
+
+    public void setExperimentList(List<ExperimentRecord> experimentList) {
+        this.experimentList = experimentList;
+    }
+
+    public List<DatasetRecord> getDatasetList() {
+        return datasetList;
+    }
+
+    public void setDatasetList(List<DatasetRecord> datasetList) {
+        this.datasetList = datasetList;
     }
 }

@@ -2,8 +2,8 @@
 	vflex="min" closable="true" apply="org.zkoss.bind.BindComposer"
 	border="normal" position="right,top"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunDetailViewModel')">
-	<caption sclass="fn-caption" label="@load(vm.markerAssociated)" />
-		<vlayout visible="@load(not empty vm.dnarunDetailDatasetList)"
+	<caption sclass="fn-caption" label="@load(vm.labelText)" />
+		<vlayout visible="@load(vm.associated)"
 			style="padding:10px;">
 			<separator spacing="5px" />
 			<grid model="@load(vm.dnarunDetailDatasetList)"

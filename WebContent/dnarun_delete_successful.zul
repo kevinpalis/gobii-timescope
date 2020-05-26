@@ -1,0 +1,47 @@
+<window id="deleteSuccessfulWindow" mode="popup" popup="true"
+	width="450px" vflex="min" closable="true"
+	apply="org.zkoss.bind.BindComposer" border="normal"
+	position="right,top"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.SuccessfulDeleteViewModel')">
+	<vlayout style="padding:10px;">
+
+		<label value="SUCCESS!"
+			style="font-size: 15px; font-weight: bold; text-align:center; color: #008000; " />
+		<grid model="@load(vm.successMessagesAsList)"
+			mold="paging" pageSize="5" hflex="max" style="border: none;">
+			<custom-attributes org.zkoss.zul.nativebar="false" />
+			<template name="model" var="each">
+				<row  style="border: none;">
+					<cell align="left"  style="border: none;">
+						<label width="min"
+							value="@load(each)"
+							style="font-size: 14px; text-align:left;" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+		<separator spacing="8px" />
+		<label value="Summary of filtering criteria:"
+			style="font-size: 14px; text-align:center;" />
+		<grid model="@load(vm.filterEntity)" mold="paging" pageSize="10"
+			style="overflow-y: hidden !important; border: none;" hflex="max"  >
+			<custom-attributes org.zkoss.zul.nativebar="false" />
+			<template name="model" var="each">
+				<row>
+					<cell width="150px" tooltiptext="@load(each.firstRow)">
+						<label value="@load(each.firstRow)" />
+					</cell>
+					<cell tooltiptext="@load(each.secondRow)">
+						<label value="@load(each.secondRow)"
+							style="font-size: 14px; text-align:left;" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+
+		<div align="center" style="margin: 10px">
+			<button id="exitWindow" label="OK" width="150px"
+				onClick="@command('exit')" />
+		</div>
+		</vlayout>
+</window>

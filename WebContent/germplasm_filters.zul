@@ -29,13 +29,13 @@
 													<intbox hflex="true"
 														value="@bind(vm.dnarunEntity.germplasmIDStartRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
+														disabled="@bind(vm.germplasmIDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
 													to
 													<intbox hflex="true"
 														value="@bind(vm.dnarunEntity.germplasmIDEndRange)"
 														constraint="no negative, no zero"
-														disabled="@bind(vm.iDBoxDisabled)"
+														disabled="@bind(vm.germplasmIDBoxDisabled)"
 														onChange="@command('changeEnabled')" />
 												</hbox>
 											</cell>
@@ -51,7 +51,7 @@
 													tooltiptext="Separate germplasm names with a new line"
 													value="@bind(vm.dnarunEntity.germplasmNamesAsEnterSeparatedString)"
 													popup="title, position=start_before"
-													disabled="@bind(vm.nameListDisabled)"
+													disabled="@bind(vm.germplasmNameListDisabled)"
 													onChange="@command('changeEnabled')">
 												</textbox>
 											</cell>

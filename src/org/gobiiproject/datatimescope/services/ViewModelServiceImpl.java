@@ -106,6 +106,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     final static Logger log = Logger.getLogger(ViewModelServiceImpl.class.getName());
     private MarkerRecordEntity lastQueriedMarkerEntity;
     private String lastDSQuery;
+    private DnarunEntity lastQueriedDNArunEntity;
     
     @Override
     public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -2573,7 +2574,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         List<DnarunViewEntity> list = null;
         try{
 
-            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ").into(DnarunViewEntity.class);
+            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ").into(DnarunViewEntity.class);
 
 
         }catch(Exception e ){
@@ -2591,7 +2592,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         // TODO Auto-generated method stub
         List<DnarunViewEntity> list = null;
         
-        System.out.println(dnarunEntity.getCompleteFiltersAsText());
+        lastQueriedDNArunEntity = new DnarunEntity();
         
         int queryCount =0;
         int dsNameCount = 0;
@@ -2601,13 +2602,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbWhere = new StringBuilder(); 
 
-            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id ");
+            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ");
 
           
 
             // build query for DNA RUN NAMES filter
             if (dnarunEntity.getDnarunNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnarunNamesAsEnterSeparatedString().isEmpty()){
-//                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
+                lastQueriedDNArunEntity.setDnarunNamesAsCommaSeparatedString(dnarunEntity.getSQLReadyDnarunNames());
+
                 sbWhere.append(" where LOWER(dr.name) in ("+dnarunEntity.getSQLReadyDnarunNames()+")");
                 dsNameCount++;  
             } else if (dnarunEntity.getDnarunIDStartRange()!=null || dnarunEntity.getDnarunIDEndRange()!=null){ // build query for given DNArun IDs
@@ -2623,17 +2625,17 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         lowerID = dnarunEntity.getDnarunIDEndRange();
                         higherID = dnarunEntity.getDnarunIDStartRange();
                     }
-//                    lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getDnarunIDEndRange());
-//                    lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                    lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
+                    lastQueriedDNArunEntity.setDnarunIDStartRange(dnarunEntity.getDnarunIDStartRange());
                     sbWhere.append(" dr.dnarun_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
                 }else{
                     Integer ID = null;
                     if(dnarunEntity.getDnarunIDStartRange()!=null) {
                         ID = dnarunEntity.getDnarunIDStartRange();
-//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                        lastQueriedDNArunEntity.setDnarunIDStartRange(dnarunEntity.getDnarunIDStartRange());
                     }
                     else {
-//                        lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getMarkerIDEndRange());
+                        lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
                         ID = dnarunEntity.getDnarunIDEndRange();
                     }
 
@@ -2645,8 +2647,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
             // build query for DNA Sample NAMES filter
             if (dnarunEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
-    //              lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(dnarunEntity.getMarkerNamesAsCommaSeparatedString());
-
+                lastQueriedDNArunEntity.setDnasampleNamesAsCommaSeparatedString(dnarunEntity.getSQLReadyDnasampleNames());
+                
                   sbWhere.append(" where LOWER(ds.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
                   dsNameCount++;  
             } else if (dnarunEntity.getDnasampleIDStartRange()!=null || dnarunEntity.getDnasampleIDEndRange()!=null){ // build query for given DNAsample IDs
@@ -2662,17 +2664,17 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                             lowerID = dnarunEntity.getDnasampleIDEndRange();
                             higherID = dnarunEntity.getDnasampleIDStartRange();
                         }
-//                        lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getDnarunIDEndRange());
-//                        lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                        lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
+                        lastQueriedDNArunEntity.setDnasampleIDStartRange(dnarunEntity.getDnasampleIDStartRange());
                         sbWhere.append(" dr.dnasample_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
                     }else{
                         Integer ID = null;
                         if(dnarunEntity.getDnasampleIDStartRange()!=null) {
                             ID = dnarunEntity.getDnasampleIDStartRange();
-//                            lastQueriedMarkerEntity.setMarkerIDStartRange(lastQueriedMarkerEntity.getMarkerIDStartRange());
+                            lastQueriedDNArunEntity.setDnasampleIDStartRange(dnarunEntity.getDnasampleIDStartRange());
                         }
                         else {
-//                            lastQueriedMarkerEntity.setMarkerIDEndRange(dnarunEntity.getMarkerIDEndRange());
+                            lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
                             ID = dnarunEntity.getDnasampleIDEndRange();
                         }
 
@@ -2682,22 +2684,53 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                     queryCount++;
                 } // END build query for given DNAsample IDs
 
-            // build query for germplasm NAMES filter
-//            if (dnarunEntity.getSQLReadyGermplasmNames()!=null && !dnarunEntity.getSQLReadyGermplasmNames().isEmpty()){
-////                lastQueriedMarkerEntity.setMarkerNamesAsCommaSeparatedString(markerEntity.getMarkerNamesAsCommaSeparatedString());
-//                sbWhere.append(" where LOWER(m.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
-//                dsNameCount++;  
-//            }
+//             build query for germplasm NAMES filter
+            if (dnarunEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !dnarunEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
+                lastQueriedDNArunEntity.setGermplasmNamesAsCommaSeparatedString(dnarunEntity.getSQLReadyGermplasmNames());
+                
+                sbWhere.append(" where LOWER(g.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
+                dsNameCount++;  
+            } else if (dnarunEntity.getGermplasmIDStartRange()!=null || dnarunEntity.getGermplasmIDEndRange()!=null){ // 
+                //check which is not null
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                if(dnarunEntity.getGermplasmIDStartRange()!=null && dnarunEntity.getGermplasmIDEndRange()!=null){ //if both is not null
+                    Integer lowerID = dnarunEntity.getGermplasmIDStartRange();
+                    Integer higherID = dnarunEntity.getGermplasmIDEndRange();
+
+                    if(lowerID.compareTo(higherID)>0){
+                        lowerID = dnarunEntity.getGermplasmIDEndRange();
+                        higherID = dnarunEntity.getGermplasmIDStartRange();
+                    }
+
+                    lastQueriedDNArunEntity.setGermplasmIDEndRange(dnarunEntity.getGermplasmIDEndRange());
+                    lastQueriedDNArunEntity.setGermplasmIDStartRange(dnarunEntity.getGermplasmIDStartRange());
+                    sbWhere.append(" g.germplasm_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                }else{
+                    Integer ID = null;
+                    if(dnarunEntity.getGermplasmIDStartRange()!=null) {
+                        ID = dnarunEntity.getGermplasmIDStartRange();
+                        lastQueriedDNArunEntity.setGermplasmIDStartRange(dnarunEntity.getGermplasmIDStartRange());
+                    }
+                    else {
+                        ID = dnarunEntity.getGermplasmIDEndRange();
+                        lastQueriedDNArunEntity.setGermplasmIDEndRange(dnarunEntity.getGermplasmIDEndRange());
+                    }
+
+                    sbWhere.append(" g.germplasm_id = "+Integer.toString(ID));
+                }
+
+                queryCount++;
+            } // END build query for given id names / ranges
 
             /* ADD THE "WHERE" CONDITIONS */
             
-            //build query for 'none' selected on dataset filter
             
             // build query for PROJECTS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getProjectRecord())){
 
                 if(dnarunEntity.getProjectRecord().getProjectId()!=0) {
-//                lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+                    lastQueriedDNArunEntity.getProjectList().add(dnarunEntity.getProjectRecord());
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" p.project_id = "+ dnarunEntity.getProjectRecord().getProjectId().toString());
                 queryCount++;
@@ -2707,7 +2740,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 //            // build query for EXPERIMENTS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getExperimentRecord())){
                 if(dnarunEntity.getExperimentRecord().getExperimentId()!=0) {
-//              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+                    lastQueriedDNArunEntity.getExperimentList().add(dnarunEntity.getExperimentRecord());
                   checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                   sbWhere.append(" e.experiment_id = "+ dnarunEntity.getExperimentRecord().getExperimentId().toString());
                   queryCount++;
@@ -2717,7 +2750,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 //            // build query for DATASETS filter
             if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getDatasetRecord())){
                 if(dnarunEntity.getDatasetRecord().getDatasetId()!=0) {
-//              lastQueriedMarkerEntity.getProjectList().addAll(markerEntity.getProjectList());
+                    lastQueriedDNArunEntity.getDatasetList().add(dnarunEntity.getDatasetRecord());
                   sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
                   checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                   sbWhere.append(" d.dataset_id = "+ dnarunEntity.getDatasetRecord().getDatasetId().toString());
@@ -2740,16 +2773,144 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         return list;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public boolean deleteDnarun(DnarunRecord dnarunRecord) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean deleteDnarun(DnarunViewEntity dnarunRecord) {
+        boolean successful = false;
+        List<DnarunViewEntity> selectedList = new ArrayList<DnarunViewEntity>();
+        selectedList.add(dnarunRecord);
+
+        if(selectedList.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        Integer id = selectedList.get(0).getDnarunId();
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+                        context.delete(DNARUN)
+                        .where(DNARUN.DNARUN_ID.eq(id))
+                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add("1 DNArun deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED A DNARUN\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for DNArun delete:\n"+lastQueriedDNArunEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.delete(DNARUN).where(\n"
+                                + "            DNARUN.DNARUN_ID.eq("+id.toString()+"))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] DNArun delete result:\n"+ "1 DNArun deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNArunEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveDNArunList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
+
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public boolean deleteDnaruns(List<DnarunRecord> selectedDsList) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean deleteDnaruns(List<DnarunViewEntity> selectedList) {
+        
+        boolean successful = false;
+
+
+        if(selectedList.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        int dnarunsDeleted = 0;
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+                        dnarunsDeleted = context.deleteFrom(DNARUN)
+                        .where(DNARUN.DNARUN_ID.in(selectedList
+                                .stream()
+                                .map(DnarunViewEntity::getDnarunId)
+                                .collect(Collectors.toList())))
+                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add(Integer.toString(dnarunsDeleted)+"  DNArun(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED DNARUN(S)\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for DNArun delete:\n"+lastQueriedDNArunEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.deleteFrom(DNARUN).where(\n"
+                                + "            DNARUN.DNARUN_ID.in(selectedList.stream().map(DnarunViewEntity::getDnarunId).collect(Collectors.toList()))))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] DNArun delete result:\n"+ Integer.toString(dnarunsDeleted)+" DNArun(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNArunEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveDNArunList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
     }
 
     @Override
