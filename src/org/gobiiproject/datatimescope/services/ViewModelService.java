@@ -25,6 +25,8 @@ import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.DnarunEntity;
 import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
@@ -183,6 +185,14 @@ public interface ViewModelService {
     public boolean deleteDnaruns(List<DnarunViewEntity> selectedDsList);
 
     public List<DatasetRecord> getDatasetAssociatedToDnarunId(Integer dnarunId);
+
+    public List<DnasampleViewEntity> getAllDnasamples();
+
+    public List<DnasampleViewEntity> getAllDnasamplesBasedOnQuery(DnasampleEntity dnasampleEntity);
+
+    public boolean deleteDnasample(DnasampleViewEntity dnasampleViewEntity);
+
+    public boolean deleteDnasamples(List<DnasampleViewEntity> selectedList);
 
 
 }

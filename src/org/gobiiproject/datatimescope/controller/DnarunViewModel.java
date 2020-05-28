@@ -92,7 +92,7 @@ public class DnarunViewModel {
         viewModelService = new ViewModelServiceImpl();
         
         setDnarunEntity(new DnarunEntity());
-        setDnarunList(viewModelService.getAllDnaruns());
+//        setDnarunList(viewModelService.getAllDnaruns());
         setDatasetList(viewModelService.getAllDatasets());
         
         contactsList = viewModelService.getAllContacts();
@@ -140,6 +140,10 @@ public class DnarunViewModel {
         setnameListDisabled(false);
         setAllCbSelected(false);
         setCbAllUsers(false);
+        setDsIDBoxDisabled(false);
+        setDsNameListDisabled(false);
+        setGermplasmIDBoxDisabled(false);
+        setGermplasmNameListDisabled(false);
 
     }
 
@@ -155,13 +159,15 @@ public class DnarunViewModel {
         }
         dnarunEntity = new DnarunEntity();
 
-        
-        dnarunGrid.setEmptyMessage("Looks like there are no dnaruns in the database yet.");
-        setDnarunList(viewModelService.getAllDnaruns());
+        dnarunGrid.setEmptyMessage("There's nothing to see here. Submit a query to search for DNAruns");
         setiDBoxDisabled(false);
         setnameListDisabled(false);
         setAllCbSelected(false);
         setCbAllUsers(false);
+        setDsIDBoxDisabled(false);
+        setDsNameListDisabled(false);
+        setGermplasmIDBoxDisabled(false);
+        setGermplasmNameListDisabled(false);
     }
 
     @Command("doSelectAll")

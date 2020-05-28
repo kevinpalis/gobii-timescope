@@ -130,7 +130,7 @@
 
 							<div align="center" hflex="1">
 								<button label="Clear" width="200px"
-									onClick="@command('resetDatasetTab')" />
+									onClick="@command('resetDnarunTab')" />
 								<button label="Submit Query"
 									width="200px" onClick="@command('submitQuery')" />
 								<button
@@ -148,7 +148,7 @@
 								<vbox vflex="1" hflex="1">
 									<grid id="dnarunGrid"
 										model="@load(vm.dnarunList)" mold="paging" pageSize="25" vflex="1" hflex="1" 
-										emptyMessage="Looks like there are no dnaruns in the database yet.">
+										emptyMessage="There's nothing to see here. Submit a query to search for DNAruns">
 										<columns sizable="true">
 											<column hflex="min">
 												<checkbox

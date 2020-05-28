@@ -73,6 +73,8 @@ import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.DnarunEntity;
 import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
@@ -107,6 +109,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     private MarkerRecordEntity lastQueriedMarkerEntity;
     private String lastDSQuery;
     private DnarunEntity lastQueriedDNArunEntity;
+    private DnasampleEntity lastQueriedDNAsampleEntity;
     
     @Override
     public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -2664,7 +2667,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                             lowerID = dnarunEntity.getDnasampleIDEndRange();
                             higherID = dnarunEntity.getDnasampleIDStartRange();
                         }
-                        lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
+                        lastQueriedDNArunEntity.setDnasampleIDEndRange(dnarunEntity.getDnasampleIDEndRange());
                         lastQueriedDNArunEntity.setDnasampleIDStartRange(dnarunEntity.getDnasampleIDStartRange());
                         sbWhere.append(" dr.dnasample_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
                     }else{
@@ -2674,7 +2677,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                             lastQueriedDNArunEntity.setDnasampleIDStartRange(dnarunEntity.getDnasampleIDStartRange());
                         }
                         else {
-                            lastQueriedDNArunEntity.setDnarunIDEndRange(dnarunEntity.getDnarunIDEndRange());
+                            lastQueriedDNArunEntity.setDnasampleIDEndRange(dnarunEntity.getDnasampleIDEndRange());
                             ID = dnarunEntity.getDnasampleIDEndRange();
                         }
 
@@ -2932,5 +2935,159 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         }
 
         return list;
+    }
+
+    @Override
+    public List<DnasampleViewEntity> getAllDnasamples() {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DnasampleViewEntity> list = null;
+        try{
+
+            list = context.fetch("SELECT distinct on (ds.dnasample_id) ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, ds.code as code, ds.platename as plateName, ds.well_row as wellRow, ds.well_col as wellCol, ds.uuid as uuid, g.germplasm_id as germplasmId, g.name as germplasmName, p.project_id as projectId, p.name AS projectName FROM dnasample ds LEFT JOIN project p ON ds.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id").into(DnasampleViewEntity.class);
+
+        }catch(Exception e ){
+            e.printStackTrace();
+
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DnasampleViewEntity> getAllDnasamplesBasedOnQuery(DnasampleEntity dnasampleEntity) {
+        List<DnasampleViewEntity> list = null;
+        
+        lastQueriedDNAsampleEntity = new DnasampleEntity();
+        
+        int queryCount =0;
+        int dsNameCount = 0;
+        DSLContext context = getDSLContext();
+
+        try{ /* START building THE QUERY via StringBuilder */
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbWhere = new StringBuilder(); 
+
+            sb.append("SELECT distinct on (ds.dnasample_id) ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, ds.code as code, ds.platename as plateName, ds.well_row as wellRow, ds.well_col as wellCol, ds.uuid as uuid, g.germplasm_id as germplasmId, g.name as germplasmName, p.project_id as projectId, p.name AS projectName FROM dnasample ds LEFT JOIN project p ON ds.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id");
+
+            // build query for DNA Sample NAMES filter
+            if (dnasampleEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnasampleEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
+                lastQueriedDNAsampleEntity.setDnasampleNamesAsCommaSeparatedString(dnasampleEntity.getSQLReadyDnasampleNames());
+                
+                  sbWhere.append(" where LOWER(ds.name) in ("+dnasampleEntity.getSQLReadyDnasampleNames()+")");
+                  dsNameCount++;  
+            } else if (dnasampleEntity.getDnasampleIDStartRange()!=null || dnasampleEntity.getDnasampleIDEndRange()!=null){ // build query for given DNAsample IDs
+
+                    //check which is not null
+                    checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                    if(dnasampleEntity.getDnasampleIDStartRange()!=null && dnasampleEntity.getDnasampleIDEndRange()!=null){ //if both is not null
+                        Integer lowerID = dnasampleEntity.getDnasampleIDStartRange();
+                        Integer higherID = dnasampleEntity.getDnasampleIDEndRange();
+
+                        if(lowerID.compareTo(higherID)>0){
+                            lowerID = dnasampleEntity.getDnasampleIDEndRange();
+                            higherID = dnasampleEntity.getDnasampleIDStartRange();
+                        }
+                        lastQueriedDNAsampleEntity.setDnasampleIDEndRange(dnasampleEntity.getDnasampleIDEndRange());
+                        lastQueriedDNAsampleEntity.setDnasampleIDStartRange(dnasampleEntity.getDnasampleIDStartRange());
+                        sbWhere.append(" ds.dnasample_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                    }else{
+                        Integer ID = null;
+                        if(dnasampleEntity.getDnasampleIDStartRange()!=null) {
+                            ID = dnasampleEntity.getDnasampleIDStartRange();
+                            lastQueriedDNAsampleEntity.setDnasampleIDStartRange(dnasampleEntity.getDnasampleIDStartRange());
+                        }
+                        else {
+                            lastQueriedDNAsampleEntity.setDnasampleIDEndRange(dnasampleEntity.getDnasampleIDEndRange());
+                            ID = dnasampleEntity.getDnasampleIDEndRange();
+                        }
+
+                        sbWhere.append(" ds.dnasample_id = "+Integer.toString(ID));
+                    }
+
+                    queryCount++;
+                } // END build query for given DNAsample IDs
+
+//             build query for germplasm NAMES filter
+            if (dnasampleEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !dnasampleEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
+                lastQueriedDNAsampleEntity.setGermplasmNamesAsCommaSeparatedString(dnasampleEntity.getSQLReadyGermplasmNames());
+                
+                sbWhere.append(" where LOWER(g.name) in ("+dnasampleEntity.getSQLReadyGermplasmNames()+")");
+                dsNameCount++;  
+            } else if (dnasampleEntity.getGermplasmIDStartRange()!=null || dnasampleEntity.getGermplasmIDEndRange()!=null){ // 
+                //check which is not null
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                if(dnasampleEntity.getGermplasmIDStartRange()!=null && dnasampleEntity.getGermplasmIDEndRange()!=null){ //if both is not null
+                    Integer lowerID = dnasampleEntity.getGermplasmIDStartRange();
+                    Integer higherID = dnasampleEntity.getGermplasmIDEndRange();
+
+                    if(lowerID.compareTo(higherID)>0){
+                        lowerID = dnasampleEntity.getGermplasmIDEndRange();
+                        higherID = dnasampleEntity.getGermplasmIDStartRange();
+                    }
+
+                    lastQueriedDNAsampleEntity.setGermplasmIDEndRange(dnasampleEntity.getGermplasmIDEndRange());
+                    lastQueriedDNAsampleEntity.setGermplasmIDStartRange(dnasampleEntity.getGermplasmIDStartRange());
+                    sbWhere.append(" g.germplasm_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                }else{
+                    Integer ID = null;
+                    if(dnasampleEntity.getGermplasmIDStartRange()!=null) {
+                        ID = dnasampleEntity.getGermplasmIDStartRange();
+                        lastQueriedDNAsampleEntity.setGermplasmIDStartRange(dnasampleEntity.getGermplasmIDStartRange());
+                    }
+                    else {
+                        ID = dnasampleEntity.getGermplasmIDEndRange();
+                        lastQueriedDNAsampleEntity.setGermplasmIDEndRange(dnasampleEntity.getGermplasmIDEndRange());
+                    }
+
+                    sbWhere.append(" g.germplasm_id = "+Integer.toString(ID));
+                }
+
+                queryCount++;
+            } // END build query for given id names / ranges
+
+            /* ADD THE "WHERE" CONDITIONS */
+            
+            
+            // build query for PROJECTS filter
+            if (Utils.isRecordNotNullOrEmpty(dnasampleEntity.getProjectRecord())){
+
+                if(dnasampleEntity.getProjectRecord().getProjectId()!=0) {
+                    lastQueriedDNAsampleEntity.getProjectList().add(dnasampleEntity.getProjectRecord());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(" p.project_id = "+ dnasampleEntity.getProjectRecord().getProjectId().toString());
+                queryCount++;
+                }
+            }
+
+            sbWhere.append(";");
+            sb.append(sbWhere.toString());
+            
+            String query = sb.toString();
+            System.out.println(query);
+            list = context.fetch(query).into(DnasampleViewEntity.class);
+
+        }catch(Exception e ){
+            e.printStackTrace();
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+        return list;
+    }
+
+    @Override
+    public boolean deleteDnasample(DnasampleViewEntity dnasampleViewEntity) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean deleteDnasamples(List<DnasampleViewEntity> selectedList) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
