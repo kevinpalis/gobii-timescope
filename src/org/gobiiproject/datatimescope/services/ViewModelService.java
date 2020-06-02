@@ -9,6 +9,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DnarunRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
@@ -22,6 +23,10 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.DnarunEntity;
+import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
@@ -168,6 +173,26 @@ public interface ViewModelService {
 
     public List<MarkerDetailLinkageGroupEntity> getAssociatedDetailsForEachLinkageGroup(
             List<LinkageGroupRecord> markerDetailLinkageGroupList);
+
+    public void getDnarunidsbyproject(int i);
+
+    public List<DnarunViewEntity> getAllDnaruns();
+
+    public List<DnarunViewEntity> getAllDnarunsBasedOnQuery(DnarunEntity dnarunEntity);
+
+    public boolean deleteDnarun(DnarunViewEntity dnarunViewEntity);
+
+    public boolean deleteDnaruns(List<DnarunViewEntity> selectedDsList);
+
+    public List<DatasetRecord> getDatasetAssociatedToDnarunId(Integer dnarunId);
+
+    public List<DnasampleViewEntity> getAllDnasamples();
+
+    public List<DnasampleViewEntity> getAllDnasamplesBasedOnQuery(DnasampleEntity dnasampleEntity);
+
+    public boolean deleteDnasample(DnasampleViewEntity dnasampleViewEntity);
+
+    public boolean deleteDnasamples(List<DnasampleViewEntity> selectedList);
 
 
 }

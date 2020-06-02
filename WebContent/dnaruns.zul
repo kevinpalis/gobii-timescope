@@ -1,221 +1,421 @@
-<?page title="Manage Markers" contentType="text/html;charset=UTF-8"?>
-<?link rel="stylesheet" type="text/css" href="/style.css"?>
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<window border="normal" hflex="1" vflex="1"
-	contentStyle="overflow-y:visible;" apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.MarkerViewModel')">
-	<caption sclass="fn-caption" label="Markers" />
-	<vlayout>
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.DnarunViewModel')">
+	<caption sclass="fn-caption" label="DNA Runs" />
 
-		<groupbox>
-			<caption label="Filters: " />
-			<vlayout>
-				<hlayout>
-					<grid hflex="1" vflex="1">
-						<columns>
-							<column align="left" />
-							<column align="left" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Dnarun ID :
-								</cell>
-								<cell>
-									<hbox hflex="true">
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDStartRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
-										to
-										<intbox hflex="true" value="@bind(vm.markerEntity.markerIDEndRange)" constraint="no negative, no zero" disabled="@bind(vm.iDBoxDisabled)" onChange="@command('changeEnabled')"/>
-									</hbox>
-								</cell>
-							</row>
-							<row>
-								<cell sclass="row-title">
-									Dnarun Names :
-								</cell>
-								<cell>
-									<textbox rows="8" cols="40"
-										hflex="true" vflex="true" tooltiptext="Separate Dnarun names with comma" value="@bind(vm.markerEntity.markerNamesAsCommaSeparatedString)" popup="title, position=start_before"  disabled="@bind(vm.nameListDisabled)" onChange="@command('changeEnabled')">
-									
-									</textbox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
+	<tabbox
+		style="border: 0px !important; padding:0px !important; margin:0px !important;"
+		vflex="1" hflex="1">
+		<tabs visible="false">
+			<tab id="datasetSearchTab" label="Search" />
+			<tab id="datasetSummaryTab" label="Summary"
+				onClick="@command('resetDSSummary')" />
+		</tabs>
+		<tabpanels vflex="1">
+			<tabpanel vflex="1"
+				style="border: 0 !important; padding:0 !important; margin:0;">
+				<borderlayout vflex="1" hflex="true">
+					<north title="Filters:" style=" border: 0px;"
+						splittable="true" collapsible="true">
+						<vlayout vflex="1">
+							<hlayout vflex="1">
+								<grid hflex="1" vflex="1"
+									style="border: none; important!">
+									<columns>
+										<column align="left"
+											width="30%" />
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												DNA Run ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.dnarunIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.dnarunIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="DNA Run Names:" />
+											</cell>
+											<cell>
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="true"
+													tooltiptext="Separate dnarun names with a new line"
+													value="@bind(vm.dnarunEntity.dnarunNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.nameListDisabled)"
+													onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+										<row>
+											<cell colspan="2">
+												<include
+													src="dnasample_filters.zul" />
+											</cell>
+										</row>
+										<row>
+											<cell colspan="2">
+												<include
+													src="germplasm_filters.zul" />
+											</cell>
+										</row>
+									</rows>
+								</grid>
+								<label value="  " width="50px" />
+								<label value="  " width="50px" />
+								<vbox hflex="2">
 
-					<grid hflex="true">
-						<columns>
-							<column align="left" width="40%" />
-							<column align="left" width="60%" />
-						</columns>
-						<rows>
-							<row>
-								<cell sclass="row-title">
-									Experiment name :
-								</cell>
-								<cell>
-									<combobox autodrop="true"
-										hflex="true" model="@load(vm.platformList)" selectedItem="@bind(vm.markerEntity.platform)">
-										<template name="model">
-											<comboitem
-												label="@load(each.name)" value="@load(each.platformId)" />
+									<tabbox orient="left" hflex="true"
+										height="250px" style="border:none;">
+										<tabs width="180px">
+											<tab id="F"
+												label="@load(vm.projectsTabLabel)" sclass="tab-title"
+												onSelect="@command('selectProjectsTab')" />
+											<tab id="G"
+												label="@load(vm.experimentTabLabel)" sclass="tab-title"
+												onSelect="@command('selectExperimentsTab')" />
+											<tab id="H"
+												label="@load(vm.datasetTabLabel)" sclass="tab-title" />
+										</tabs>
+										<tabpanels hflex="true">
+											<tabpanel>
+												<hbox>
+													<textbox
+														visible="@load(vm.dbProjects)"
+														value="@bind(vm.filterProject)"
+														onChange="@command('doSearchProject')" instant="true" />
+
+													<textbox
+														style="border: 0px; background-color:white !important;"
+														visible="@load(not vm.dbProjects)"
+														value="There's nothing to see here." disabled="true"
+														width="350px" />
+												</hbox>
+												<separator
+													spacing="12px" />
+												<listbox hflex="max"
+													visible="@load(vm.dbProjects)" vflex="1"
+													model="@load(vm.projectList)" multiple="true"
+													checkmark="true" style="border: 0px; padding:0px;"
+													selectedItems="@bind(vm.dnarunEntity.projectList)"
+													onSelect="@command('validateForReset', category='project')">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																tooltiptext="@load('Project Id: '.concat(item.projectId))"
+																label="@load(item.name)" style="font-size: 12px;" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<hbox>
+													<textbox
+														visible="@load(vm.dbExperiment)"
+														value="@bind(vm.filterExperiment)"
+														onChange="@command('doSearchExperiment')" instant="true" />
+
+													<textbox
+														style="border: 0px; background-color:white !important;"
+														visible="@load(not vm.dbExperiment)"
+														value="There's nothing to see here." disabled="true" />
+												</hbox>
+												<separator
+													spacing="12px" />
+												<listbox hflex="max"
+													visible="@load(vm.dbExperiment)" vflex="1"
+													model="@load(vm.experimentList)" multiple="true"
+													checkmark="true" style="border: 0px; padding:0px;"
+													selectedItems="@bind(vm.dnarunEntity.experimentList)"
+													onSelect="@command('validateForReset', category='experiment')">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)"
+																tooltiptext="@load('Project Id: '.concat(item.projectId))"
+																style="font-size: 12px;" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+											<tabpanel>
+												<hbox hflex="max">
+													<textbox
+														visible="@load(vm.dbDataset)"
+														value="@bind(vm.filterDataset)"
+														onChange="@command('doSearchDataset')" instant="true" />
+
+													<textbox
+														id="lblDatasetFilter"
+														style="border: 0px; background-color:white !important;"
+														visible="@load(not vm.dbDataset)"
+														value="There's nothing to see here." disabled="true"
+														width="350px" />
+												</hbox>
+												<separator
+													spacing="12px" visible="@load(vm.dbDataset)" />
+												<listbox hflex="max"
+													visible="@load(vm.dbDataset)" vflex="1"
+													model="@load(vm.datasetList)" multiple="true"
+													checkmark="true" style="border: 0px; padding:0px;"
+													selectedItems="@bind(vm.dnarunEntity.datasetList)"
+													onSelect="@command('validateForReset', category='dataset')">
+													<template
+														name="model" var="item">
+														<listitem>
+															<listcell
+																label="@load(item.name)"
+																tooltiptext="@load('Experiment Id: '.concat(item.experimentId))"
+																style="font-size: 12px;" />
+														</listitem>
+													</template>
+												</listbox>
+											</tabpanel>
+										</tabpanels>
+									</tabbox>
+									<grid hflex="1" vflex="1"
+										style="border: none !important; padding:0 !important; margin:0;">
+										<columns>
+											<column align="left"
+												width="180px" />
+											<column align="left" />
+										</columns>
+										<rows>
+											<row>
+												<cell
+													sclass="row-title">
+													Current Filters:
+												</cell>
+												<cell>
+													<textbox rows="8"
+														cols="40" hflex="true" vflex="max" multiline="true"
+														value="@bind(vm.currentFiltersAsText)" readonly="true"
+														style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
+
+													</textbox>
+												</cell>
+											</row>
+										</rows>
+									</grid>
+								</vbox>
+							</hlayout>
+
+
+							<div align="center" hflex="1">
+								<button label="Clear" width="200px"
+									onClick="@command('resetDnarunTab')" />
+								<button label="Submit Query"
+									width="200px" onClick="@command('submitQuery')" />
+								<button
+									visible="@load(not vm.isRoleUser)" id="deleteBtn"
+									style="background-color: red" label="Delete Selected"
+									hflex="min" onClick="@command('deleteSelectedDnaruns')" />
+							</div>
+
+						</vlayout>
+					</north>
+
+					<center border="0" vflex="1" hflex="1">
+						<div vflex="1" hflex="1">
+							<div vflex="1" hflex="1">
+								<vbox vflex="1" hflex="1">
+									<grid id="dnarunGrid"
+										model="@load(vm.dnarunList)" mold="paging" pageSize="25"
+										vflex="1" hflex="1"
+										emptyMessage="There's nothing to see here. Submit a query to search for DNAruns">
+										<columns sizable="true">
+											<column hflex="min">
+												<checkbox
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllUsers)" />
+											</column>
+											<column hflex="1"
+												sort="auto(dnarunId)">
+												<label
+													value="DNArun ID" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnarunName))">
+												<label
+													value="DNArun Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleId))">
+												<label
+													value="DNAsample Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleName))">
+												<label
+													value="DNAsample Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(uuid))">
+												<label value="UUID" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(germplasmId))">
+												<label
+													value="Germplasm Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(germplasmName))">
+												<label
+													value="Germplasm Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(experimentId))">
+												<label
+													value="Experiment Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(experimentName))">
+												<label
+													value="Experiment Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(projectId))">
+												<label
+													value="Project Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(projectName))">
+												<label
+													value="Project Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="dnarun">
+											<row
+												onClick="@command('showDnarunDetail', dnarunId=dnarun.dnarunId, dnarunName=dnarun.dnarunName)"
+												style="cursor:pointer"
+												tooltip="markerTooltip, position=after_pointer, delay=0">
+												<cell>
+													<checkbox
+														value="@load(dnarun)" checked="@load(vm.allCbSelected)"
+														onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.dnarunId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.dnarunName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.dnasampleId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.dnasampleName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.uuid)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.germplasmId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.germplasmName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.experimentId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.experimentName)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.projectId)" />
+												</cell>
+												<cell>
+													<label
+														sclass="grid-row" value="@load(dnarun.projectName)" />
+												</cell>
+											</row>
 										</template>
-									</combobox>
-								</cell>
-							</row>
-						</rows>
-					</grid>
-				</hlayout>
+									</grid>
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:" sclass="row-count" />
+										<label
+											value="@bind(vm.sizeDnarunList)" sclass="row-count" />
+									</hbox>
+								</vbox>
+							</div>
+							<popup id="title" width="400px">
+								<label
+									value="Separate each name with a new line." />
+							</popup>
+							<popup id="markerTooltip" hflex="1">
+								<label
+									value="Click to view additional DNArun details" />
+							</popup>
+						</div>
+					</center>
 
-				<div align="center" hflex="1">
-					<button label="Clear" width="200px"  onClick="@command('resetMarkerTab')"/>
-					<button label="Submit Query" width="200px" onClick="@command('submitQuery')"/>
-					<button id="deleteBtn" style="background-color: red"
-						label="Delete Selected" hflex="min"
-						onClick="@command('deleteSelectedMarkers')" />
+				</borderlayout>
+			</tabpanel>
+			<tabpanel visible="false">
+
+				<div
+					visible="@load(not vm.performedDeleteSuccesfully)">
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
+
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="You have not deleted anything yet." />
+					</vbox>
 				</div>
 
-			</vlayout>
-		</groupbox>
+				<div visible="@load(vm.performedDeleteSuccesfully)">
 
-		<grid id="mgrid" model="@load(vm.markerList)" mold="paging"
-			pageSize="15" pagingPosition="both">
-			<columns sizable="true">
-				<column hflex="min">
-					<checkbox label="Select All"
-						onCheck="@command('doSelectAll')" checked="@bind(vm.cbAllMarkers)" />
-				</column>
-				<column hflex="min" sort="auto(markerId)">
-					<label value="Dnarun Id" />
-				</column>
-				<column hflex="min" sort="auto(markerName)">
-					<label value="Dnarun Name" />
-				</column>
-				<column hflex="min" sort="auto(platformId)">
-					<label value="Experiment Id" />
-				</column>
-				<column hflex="min" sort="auto(platformName)">
-					<label value="Experiment Name" />
-				</column>
-				<column hflex="min">
-					<label value="DNA Sample Id" />
-				</column>
-				<column hflex="min">
-					<label value="Code" />
-				</column>
-				<column hflex="min">
-					<label value="Ref" />
-				</column>
-				<column hflex="min">
-					<label value="Alts" />
-				</column>
-				<column hflex="min">
-					<label value="Sequence" />
-				</column>
-				<column hflex="min">
-					<label value="Reference Id" />
-				</column>
-				<column hflex="min">
-					<label value="Reference Name" />
-				</column>
-				<column hflex="min">
-					<label value="Primers" />
-				</column>
-				<column hflex="min">
-					<label value="Strand Id" />
-				</column>
-				<column hflex="min">
-					<label value="Strand Name" />
-				</column>
-				<column hflex="min">
-					<label value="Status" />
-				</column>
-				<column hflex="min">
-					<label value="Probsets" />
-				</column>
-				<column hflex="min">
-					<label value="Dataset Marker Idx" />
-				</column>
-				<column hflex="min">
-					<label value="Props" />
-				</column>
-				<column hflex="min">
-					<label value="Dataset Vendor Protocol" />
-				</column>
-			</columns>
-			<template name="model" var="marker">
-				<row>
-					<cell>
-						<checkbox value="@load(marker)"
-							checked="@load(vm.allCbSelected)"
-							onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.markerId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.markerName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.platformId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.platformName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.variantId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.code)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.ref)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(marker.altsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.sequence)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.referenceId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.referenceName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.primersToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.strandId)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.strandName)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.status)" />
-					</cell>
-					<cell>
-						<label
-							value="@load(marker.probsetsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.datasetMarkerIdxToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.propsToString)" />
-					</cell>
-					<cell>
-						<label value="@load(marker.datasetVendorProtocolToString)" />
-					</cell>
-				</row>
-			</template>
-		</grid>
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
 
-	</vlayout>
-	
-    <popup id="title" width="400px">
-		<label value="Separate marker names with a comma" />
-    </popup>
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="Succesfully deleted dnaruns(s)!" />
+
+						<label
+							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
+
+
+					</vbox>
+				</div>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	         
 </window>

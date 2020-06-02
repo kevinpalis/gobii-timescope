@@ -1,0 +1,60 @@
+<!-- 
+	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
+	firstname text COLLATE pg_catalog."default" NOT NULL,
+	lastname text COLLATE pg_catalog."default" NOT NULL,
+	username text COLLATE pg_catalog."default" NOT NULL,
+	password text COLLATE pg_catalog."default" NOT NULL,
+	email text COLLATE pg_catalog."default",
+	role integer DEFAULT 3,
+	CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
+	CONSTRAINT username_key UNIQUE (username)
+	
+	Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
+-->
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+	<grid hflex="1" vflex="1"
+		style="border: none !important; padding:0 !important; margin:0;">
+									<columns>
+										<column align="left" width="30%"/>
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												Germplasm ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.germplasmIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.germplasmIDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.germplasmIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.germplasmIDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="Germplasm Name:" />
+											</cell>
+											<cell>
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate germplasm names with a new line"
+													value="@bind(vm.dnarunEntity.germplasmNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.germplasmNameListDisabled)"
+													onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+		</grid>

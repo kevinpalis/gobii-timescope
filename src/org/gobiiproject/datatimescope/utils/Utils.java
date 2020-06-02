@@ -144,6 +144,19 @@ public class Utils {
 
         return returnValue;
     }
+    
+    public static <T> Boolean isRecordNotNullOrEmpty( T record) {
+        Boolean returnValue = false;
+
+        try{
+            
+            if( record!=null) returnValue = true;
+            
+        } catch (NullPointerException npe) {
+            
+        }
+        return returnValue;
+    }
 
     public static String combineLabelWithNum(String string, Integer i) {
         // TODO Auto-generated method stub

@@ -15,8 +15,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 
 /**
  * User entity
@@ -32,12 +35,30 @@ public class DatasetEntity implements Serializable,Cloneable {
 	private Date creationDateEnd;
 	private CvRecord datasetTypeRecord;
 	private ContactRecord piRecord;
+	private ProjectRecord projectRecord;
+	private ExperimentRecord experimentRecord;
+	private AnalysisRecord analysisRecord;
 	private ContactRecord createdByContactRecord;
 	
 	public DatasetEntity(){
 		
 	}
-	
+
+    public String getSQLReadyDatasetNames() {
+        // TODO Auto-generated method stub
+        int ctr = 0;
+        StringBuilder sb = new StringBuilder();
+        String names = datasetNamesAsEnterSeparatedString;
+//      String removeSpaces = datasetNamesAsEnterSeparatedString.replaceAll(", ",",");
+//      String removeEnters = removeSpaces.replaceAll(",\n",",");
+        for(String s: names.split("\n")){
+            if(ctr>0)sb.append(",");
+        sb.append(" '"+s.toLowerCase()+"' ");
+        ctr++;
+        }
+        return sb.toString();
+    }
+    
 	public List<String> getDatasetNames() {
 		return datasetNames;
 	}
@@ -115,18 +136,27 @@ public class DatasetEntity implements Serializable,Cloneable {
 		
 	}
 
-	public String getSQLReadyDatasetNames() {
-		// TODO Auto-generated method stub
-		int ctr = 0;
-		StringBuilder sb = new StringBuilder();
-		String names = datasetNamesAsEnterSeparatedString;
-//		String removeSpaces = datasetNamesAsEnterSeparatedString.replaceAll(", ",",");
-//		String removeEnters = removeSpaces.replaceAll(",\n",",");
-		for(String s: names.split("\n")){
-			if(ctr>0)sb.append(",");
-		sb.append(" '"+s.toLowerCase()+"' ");
-		ctr++;
-		}
-		return sb.toString();
-	}
+    public ProjectRecord getProjectRecord() {
+        return projectRecord;
+    }
+
+    public void setProjectRecord(ProjectRecord projectRecord) {
+        this.projectRecord = projectRecord;
+    }
+
+    public ExperimentRecord getExperimentRecord() {
+        return experimentRecord;
+    }
+
+    public void setExperimentRecord(ExperimentRecord experimentRecord) {
+        this.experimentRecord = experimentRecord;
+    }
+
+    public AnalysisRecord getAnalysisRecord() {
+        return analysisRecord;
+    }
+
+    public void setAnalysisRecord(AnalysisRecord analysisRecord) {
+        this.analysisRecord = analysisRecord;
+    }
 }
