@@ -66,6 +66,31 @@
 											</cell>
 										</row>
 										<row>
+											<cell sclass="row-title" >
+												<label
+													value="DNA Sample UUID:" />
+											</cell>
+											<cell>
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate each UUID with a new line"
+													value="@bind(vm.dnasampleEntity.dnasampleUuidAsEnterSeparatedString)"
+													popup="title, position=start_before">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+								</grid>
+								<label value="  " />
+								<label value="  " />
+								<grid hflex="1" vflex="1"
+									style="border: none !important; padding:0 !important; margin:0;">
+									<columns>
+										<column align="left" width="30%"/>
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
 											<cell sclass="row-title">
 												Project:
 											</cell>
@@ -81,17 +106,6 @@
 												</combobox>
 											</cell>
 										</row>
-									</rows>
-								</grid>
-								<label value="  " />
-								<label value="  " />
-								<grid hflex="1" vflex="1"
-									style="border: none !important; padding:0 !important; margin:0;">
-									<columns>
-										<column align="left" width="30%"/>
-										<column align="left" />
-									</columns>
-									<rows>
 										<row>
 											<cell sclass="row-title">
 												Germplasm ID:
@@ -212,9 +226,7 @@
 										</columns>
 										<template name="model"
 											var="dnasample">
-											<row
-												style="cursor:pointer"
-												tooltip="markerTooltip, position=after_pointer, delay=0">
+											<row>
 												<cell>
 													<checkbox
 														value="@load(dnasample)" checked="@load(vm.allCbSelected)"
@@ -275,10 +287,6 @@
 							<popup id="title" width="400px">
 								<label
 									value="Separate each name with a new line." />
-							</popup>
-							<popup id="markerTooltip" hflex="1">
-								<label
-									value="Click to view additional DNAsample details" />
 							</popup>
 						</div>
 					</center>

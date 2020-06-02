@@ -11,6 +11,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.EXPERIMENT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DNARUN;
+import static org.gobiiproject.datatimescope.db.generated.Tables.DNASAMPLE;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PROJECT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.REFERENCE;
@@ -71,8 +72,10 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummar
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.DnarunDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.DnarunEntity;
 import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
@@ -2577,8 +2580,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         List<DnarunViewEntity> list = null;
         try{
 
-            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ").into(DnarunViewEntity.class);
-
+            list = context.fetch("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, ds.uuid as uuid, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ").into(DnarunViewEntity.class);
 
         }catch(Exception e ){
             e.printStackTrace();
@@ -2605,7 +2607,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbWhere = new StringBuilder(); 
 
-            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ");
+            sb.append("SELECT distinct on (dr.dnarun_id) dr.dnarun_id AS dnarunId, dr.name AS dnarunName, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, ds.uuid as uuid, g.germplasm_id as germplasmId, g.name as germplasmName, e.experiment_id AS experimentId, e.name AS experimentName, p.project_id as projectId, p.name AS projectName FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id LEFT JOIN experiment e ON dr.experiment_id = e.experiment_id LEFT JOIN project p ON e.project_id = p.project_id  LEFT JOIN germplasm g ON ds.germplasm_id=g.germplasm_id ");
 
           
 
@@ -2726,48 +2728,55 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 queryCount++;
             } // END build query for given id names / ranges
 
+            
+            //build query for UUID
+            if (dnarunEntity.getDnasampleUuidAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleUuidAsEnterSeparatedString().isEmpty()){
+                lastQueriedDNArunEntity.setDnasampleUuidAsCommaSeparatedString(dnarunEntity.getSQLReadyDnasampleUuidNames());
+                
+                sbWhere.append(" where LOWER(ds.uuid) in ("+dnarunEntity.getSQLReadyDnasampleUuidNames()+")");
+                dsNameCount++;  
+            } 
+            
             /* ADD THE "WHERE" CONDITIONS */
             
             
             // build query for PROJECTS filter
-            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getProjectRecord())){
-
-                if(dnarunEntity.getProjectRecord().getProjectId()!=0) {
-                    lastQueriedDNArunEntity.getProjectList().add(dnarunEntity.getProjectRecord());
+            if (Utils.isListNotNullOrEmpty(dnarunEntity.getProjectList())){
+                lastQueriedDNArunEntity.getProjectList().addAll(dnarunEntity.getProjectList());
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-                sbWhere.append(" p.project_id = "+ dnarunEntity.getProjectRecord().getProjectId().toString());
+                sbWhere.append(" p.project_id "+ getIDsToString(dnarunEntity.getProjectList()));
                 queryCount++;
-                }
             }
 
 //            // build query for EXPERIMENTS filter
-            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getExperimentRecord())){
-                if(dnarunEntity.getExperimentRecord().getExperimentId()!=0) {
-                    lastQueriedDNArunEntity.getExperimentList().add(dnarunEntity.getExperimentRecord());
+            if (Utils.isListNotNullOrEmpty(dnarunEntity.getExperimentList())){
+                lastQueriedDNArunEntity.getExperimentList().addAll(dnarunEntity.getExperimentList());
                   checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-                  sbWhere.append(" e.experiment_id = "+ dnarunEntity.getExperimentRecord().getExperimentId().toString());
+
+                  sbWhere.append(" e.experiment_id "+ getIDsToString(dnarunEntity.getExperimentList()));
                   queryCount++;
-                }
+                
             }
 
 //            // build query for DATASETS filter
-            if (Utils.isRecordNotNullOrEmpty(dnarunEntity.getDatasetRecord())){
-                if(dnarunEntity.getDatasetRecord().getDatasetId()!=0) {
-                    lastQueriedDNArunEntity.getDatasetList().add(dnarunEntity.getDatasetRecord());
+        if (Utils.isListNotNullOrEmpty(dnarunEntity.getDatasetList())){
+                lastQueriedDNArunEntity.getDatasetList().addAll(dnarunEntity.getDatasetList());
                   sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
                   checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-                  sbWhere.append(" d.dataset_id = "+ dnarunEntity.getDatasetRecord().getDatasetId().toString());
+                  sbWhere.append(" d.dataset_id "+ getIDsToString(dnarunEntity.getDatasetList()));
                   queryCount++;
                 }
-            }
-
-            sbWhere.append(";");
-            sb.append(sbWhere.toString());
             
-            String query = sb.toString();
-            System.out.println(query);
-            list = context.fetch(query).into(DnarunViewEntity.class);
-
+            if(sbWhere.length()>0) {
+                sbWhere.append(";");
+                sb.append(sbWhere.toString());
+                
+                String query = sb.toString();
+                System.out.println(query);
+                list = context.fetch(query).into(DnarunViewEntity.class);
+            } else {
+                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -2782,8 +2791,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         boolean successful = false;
         List<DnarunViewEntity> selectedList = new ArrayList<DnarunViewEntity>();
         selectedList.add(dnarunRecord);
+        
+        //check if Marker is not being used in a Marker Group or a Dataset
+        List<DnarunViewEntity> unusedInDataset = null;
 
-        if(selectedList.size()>0){
+        unusedInDataset = checkWhichDnarunsAreUsedInADataset(selectedList);
+        if(unusedInDataset.size()>0){
 
             Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
                     "WARNING", Messagebox.YES | Messagebox.CANCEL,
@@ -2845,16 +2858,84 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
     }
 
+    private List<DnarunViewEntity> checkWhichDnarunsAreUsedInADataset(List<DnarunViewEntity> selectedList) {
+        // TODO Auto-generated method stub
+
+        int totalNoOfCantBeDeleted = 0;
+
+        List<DnarunViewEntity> listOfCanBeDeleted =  new ArrayList<DnarunViewEntity>();
+        List<DnarunDeleteResultTableEntity> dnarunDeleteResultTableEntitList =  new ArrayList<DnarunDeleteResultTableEntity>();
+
+        boolean inDataset = false;
+
+        for(DnarunViewEntity dnarun: selectedList){
+            try{
+
+                DnarunDeleteResultTableEntity dnarunDeleteResultTableEntity= new DnarunDeleteResultTableEntity();
+                //set initial values
+
+                inDataset = false;
+                dnarunDeleteResultTableEntity.setDnarun_id(dnarun.getDnarunId());
+                dnarunDeleteResultTableEntity.setDnarun_name(dnarun.getDnarunName());
+
+
+                //check if the marker id is being used in a dataset
+
+                List<DatasetRecord> inDatasetList = getDatasetAssociatedToDnarunId(dnarun.getDnarunId());
+                if(inDatasetList.size()>0) {
+                    inDataset = true;
+                    dnarunDeleteResultTableEntity.setDataset_name(setDatasetIdDetails(inDatasetList));
+                }
+
+                if(!inDataset){
+                    listOfCanBeDeleted.add(dnarun);
+                }else{
+                    if(totalNoOfCantBeDeleted<10) dnarunDeleteResultTableEntitList.add(dnarunDeleteResultTableEntity);
+                    totalNoOfCantBeDeleted++;
+
+                }
+
+                totalNoOfCantBeDeleted = totalNoOfCantBeDeleted-10;
+            }catch(Exception e ){
+
+                Messagebox.show("There was an error while trying to retrieve Dnaruns", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+            }
+
+        }
+        if(dnarunDeleteResultTableEntitList.size()>0){
+
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("dnarunDeleteResultTableEntityList", dnarunDeleteResultTableEntitList);
+            args.put("totalNumOfDnarunsThatCantBeDeleted", totalNoOfCantBeDeleted);
+            Window window = (Window)Executions.createComponents(
+                    "/dnarunDeleteWarning.zul", null, args);
+            window.doModal();
+        }
+        return listOfCanBeDeleted;
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean deleteDnaruns(List<DnarunViewEntity> selectedList) {
         
         boolean successful = false;
 
+        //check if Marker is not being used in a Marker Group or a Dataset
+        List<DnarunViewEntity> unusedInDataset = null;
 
-        if(selectedList.size()>0){
+        unusedInDataset = checkWhichDnarunsAreUsedInADataset(selectedList);
+        String warningMessage = Integer.toString(unusedInDataset.size()) + 
+                " dnarun(s) can still be deleted. Do you want to continue?\n";
+        
+        if(unusedInDataset.size() == selectedList.size()) {warningMessage ="Do you want to continue?\n";
+        }  
 
-            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+        final List<DnarunViewEntity> finalListThatcanBeDeleted = unusedInDataset;
+            
+        if(unusedInDataset.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n "+ warningMessage, 
                     "WARNING", Messagebox.YES | Messagebox.CANCEL,
                     Messagebox.EXCLAMATION,
                     new org.zkoss.zk.ui.event.EventListener(){
@@ -2870,7 +2951,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         startTime = System.currentTimeMillis();
                         
                         dnarunsDeleted = context.deleteFrom(DNARUN)
-                        .where(DNARUN.DNARUN_ID.in(selectedList
+                        .where(DNARUN.DNARUN_ID.in(finalListThatcanBeDeleted
                                 .stream()
                                 .map(DnarunViewEntity::getDnarunId)
                                 .collect(Collectors.toList())))
@@ -2888,7 +2969,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         logSB.append("["+user+ "] Filtering criteria for DNArun delete:\n"+lastQueriedDNArunEntity.getCompleteFiltersAsText());
                         logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
                                 "context.deleteFrom(DNARUN).where(\n"
-                                + "            DNARUN.DNARUN_ID.in(selectedList.stream().map(DnarunViewEntity::getDnarunId).collect(Collectors.toList()))))\n"
+                                + "            DNARUN.DNARUN_ID.in(finalListThatcanBeDeleted.stream().map(DnarunViewEntity::getDnarunId).collect(Collectors.toList()))))\n"
                                         + "            .execute();");
           
                         logSB.append("\n\n["+user+"] DNArun delete result:\n"+ Integer.toString(dnarunsDeleted)+" DNArun(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
@@ -2927,13 +3008,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             list = context.fetch( query).into(DatasetRecord.class);
 
 
+            if(list.get(0).getDatasetId()==null){
+                list = new ArrayList<DatasetRecord>();
+            }
         }catch(Exception e ){
+            list = new ArrayList<DatasetRecord>();
             e.printStackTrace();
 
             Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
 
         }
-
         return list;
     }
 
@@ -3051,6 +3135,14 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             } // END build query for given id names / ranges
 
             /* ADD THE "WHERE" CONDITIONS */
+
+            //build query for UUID
+            if (dnasampleEntity.getDnasampleUuidAsEnterSeparatedString()!=null && !dnasampleEntity.getDnasampleUuidAsEnterSeparatedString().isEmpty()){
+                lastQueriedDNAsampleEntity.setDnasampleUuidAsCommaSeparatedString(dnasampleEntity.getSQLReadyDnasampleUuidNames());
+                
+                sbWhere.append(" where LOWER(ds.uuid) in ("+dnasampleEntity.getSQLReadyDnasampleUuidNames()+")");
+                dsNameCount++;  
+            } 
             
             
             // build query for PROJECTS filter
@@ -3063,14 +3155,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 queryCount++;
                 }
             }
-
-            sbWhere.append(";");
-            sb.append(sbWhere.toString());
-            
-            String query = sb.toString();
-            System.out.println(query);
-            list = context.fetch(query).into(DnasampleViewEntity.class);
-
+            if(sbWhere.length()>0) {
+                sbWhere.append(";");
+                sb.append(sbWhere.toString());
+                
+                String query = sb.toString();
+                System.out.println(query);
+                list = context.fetch(query).into(DnasampleViewEntity.class);
+            } else {
+                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -3079,15 +3173,251 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         return list;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean deleteDnasample(DnasampleViewEntity dnasampleViewEntity) {
-        // TODO Auto-generated method stub
-        return false;
+        boolean successful = false;
+        List<DnasampleViewEntity> selectedList = new ArrayList<DnasampleViewEntity>();
+        selectedList.add(dnasampleViewEntity);
+        
+        //check if Marker is not being used in a Marker Group or a Dataset
+        List<DnasampleViewEntity> unusedInDnarun = null;
+
+        unusedInDnarun = checkWhichDnasamplessAreUsedInADnarun(selectedList);
+        if(unusedInDnarun.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        Integer id = selectedList.get(0).getDnasampleId();
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+                        context.delete(DNASAMPLE)
+                        .where(DNASAMPLE.DNASAMPLE_ID.eq(id))
+                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add("1 DNAsample deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED A DNASAMPLE\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for DNAsample delete:\n"+lastQueriedDNAsampleEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.delete(DNASAMPLE).where(\n"
+                                + "            DNASAMPLE.DNASAMPLE_ID.eq("+id.toString()+"))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] DNAsample delete result:\n"+ "1 DNAsample deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveDNAsampleList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
     }
 
+    private List<DnasampleViewEntity> checkWhichDnasamplessAreUsedInADnarun(List<DnasampleViewEntity> selectedList) {
+        // TODO Auto-generated method stub
+
+        int totalNoOfCantBeDeleted = 0;
+
+        List<DnasampleViewEntity> listOfCanBeDeleted =  new ArrayList<DnasampleViewEntity>();
+        List<DnasampleDeleteResultTableEntity> dnasampleDeleteResultTableEntityList =  new ArrayList<DnasampleDeleteResultTableEntity>();
+
+        boolean inDnarun = false;
+
+        for(DnasampleViewEntity dnasample: selectedList){
+            try{
+
+                DnasampleDeleteResultTableEntity dnasampleDeleteResultTableEntity= new DnasampleDeleteResultTableEntity();
+                //set initial values
+
+                inDnarun = false;
+                
+                dnasampleDeleteResultTableEntity.setDnasample_id(dnasample.getDnasampleId());
+                dnasampleDeleteResultTableEntity.setDnasample_name(dnasample.getDnasampleName());
+
+                List<DnarunRecord> inDnarunList = getDnarunsbyDnasampleId(dnasample.getDnasampleId());
+                if(inDnarunList.size()>0) {
+                    inDnarun = true;
+                    dnasampleDeleteResultTableEntity.setDnarun_name(setDnarunIdDetails(inDnarunList));
+                }
+                
+                if(!inDnarun){
+                    listOfCanBeDeleted.add(dnasample);
+                }else{
+                    if(totalNoOfCantBeDeleted<10) dnasampleDeleteResultTableEntityList.add(dnasampleDeleteResultTableEntity);
+                    totalNoOfCantBeDeleted++;
+
+                }
+
+                totalNoOfCantBeDeleted = totalNoOfCantBeDeleted-10;
+            }catch(Exception e ){
+
+                Messagebox.show("There was an error while trying to retrieve Dnasamples", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+            }
+
+        }
+        if(dnasampleDeleteResultTableEntityList.size()>0){
+
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("dnasampleDeleteResultTableEntityList", dnasampleDeleteResultTableEntityList);
+            args.put("totalNumOfDnasamplesThatCantBeDeleted", totalNoOfCantBeDeleted);
+            Window window = (Window)Executions.createComponents(
+                    "/dnasampleDeleteWarning.zul", null, args);
+            window.doModal();
+        }
+        return listOfCanBeDeleted;
+    }
+
+    private List<DnarunRecord> getDnarunsbyDnasampleId(Integer dnasampleId) {
+        // TODO Auto-generated method stub
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DnarunRecord> list = null;
+        try{
+            String query = "select * FROM dnarun dr LEFT JOIN dnasample ds ON dr.dnasample_id = ds.dnasample_id where ds.dnasample_id="+dnasampleId.toString()+"";
+            list = context.fetch( query).into(DnarunRecord.class);
+
+
+            if(list.get(0).getDnarunId()==null){
+                list = new ArrayList<DnarunRecord>();
+            }
+        }catch(Exception e ){
+            list = new ArrayList<DnarunRecord>();
+            e.printStackTrace();
+
+
+        }
+        return list;
+    }
+
+    private String setDnarunIdDetails(List<DnarunRecord> inDnarunList) {
+        // TODO Auto-generated method stub
+
+
+            StringBuilder sb = new StringBuilder();
+            for(DnarunRecord mgr : inDnarunList){
+
+                if(sb.length()>0) sb.append(", ");
+                sb.append(" "+mgr.getName()+" ("+mgr.getDnarunId()+")");
+
+            }
+
+            return(sb.toString());
+
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public boolean deleteDnasamples(List<DnasampleViewEntity> selectedList) {
         // TODO Auto-generated method stub
-        return false;
+        
+        boolean successful = false;
+
+        //check if Marker is not being used in a Marker Group or a Dataset
+        List<DnasampleViewEntity> unusedInDnarun = null;
+
+        unusedInDnarun = checkWhichDnasamplessAreUsedInADnarun(selectedList);
+        String warningMessage = Integer.toString(unusedInDnarun.size()) + 
+                " dnasample(s) can still be deleted. Do you want to continue?\n";
+        
+        if(unusedInDnarun.size() == selectedList.size()) {warningMessage ="Do you want to continue?\n";
+        }  
+
+        final List<DnasampleViewEntity> finalListThatcanBeDeleted = unusedInDnarun;
+            
+        if(unusedInDnarun.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n "+ warningMessage, 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        int dnasamplesDeleted = 0;
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+                        dnasamplesDeleted = context.deleteFrom(DNASAMPLE)
+                        .where(DNASAMPLE.DNASAMPLE_ID.in(finalListThatcanBeDeleted
+                                .stream()
+                                .map(DnasampleViewEntity::getDnasampleId)
+                                .collect(Collectors.toList())))
+                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add(Integer.toString(dnasamplesDeleted)+"  DNAsample(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED DNASAMPLES(S)\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for DNAsample delete:\n"+lastQueriedDNAsampleEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.deleteFrom(DNASAMPLE).where(\n"
+                                + "            DNASAMPLE.DNASAMPLE_ID.in(finalListThatcanBeDeleted.stream().map(DnasampleViewEntity::getDnasampleId).collect(Collectors.toList()))))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] DNAsample delete result:\n"+ Integer.toString(dnasamplesDeleted)+" DNAsample(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveDNAsampleList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
     }
 }

@@ -32,7 +32,7 @@ public class DnarunEntity implements Serializable,Cloneable {
 	
 	private Integer dnarunIDStartRange, dnasampleIDStartRange, germplasmIDStartRange;
 	private Integer dnarunIDEndRange, dnasampleIDEndRange, germplasmIDEndRange;
-	private String dnarunNamesAsEnterSeparatedString, dnasampleNamesAsEnterSeparatedString, germplasmNamesAsEnterSeparatedString, dnarunNamesAsCommaSeparatedString, dnasampleNamesAsCommaSeparatedString, germplasmNamesAsCommaSeparatedString;
+	private String dnarunNamesAsEnterSeparatedString, dnasampleNamesAsEnterSeparatedString, dnasampleUuidAsEnterSeparatedString, germplasmNamesAsEnterSeparatedString, dnarunNamesAsCommaSeparatedString, dnasampleNamesAsCommaSeparatedString, dnasampleUuidAsCommaSeparatedString, germplasmNamesAsCommaSeparatedString;
 	private Date creationDateStart;
 	private Date creationDateEnd;
 	private ProjectRecord projectRecord;
@@ -93,6 +93,22 @@ public class DnarunEntity implements Serializable,Cloneable {
         return sb.toString();
     }
     
+
+    public String getSQLReadyDnasampleUuidNames() {
+        // TODO Auto-generated method stub
+        int ctr = 0;
+        StringBuilder sb = new StringBuilder();
+        String names = dnasampleUuidAsEnterSeparatedString;
+        
+        for(String s: names.replaceAll(" \n","\n").split("\n")){
+            if(ctr>0)sb.append(",");
+        sb.append(" '"+s.toLowerCase()+"' ");
+        ctr++;
+        }
+        return sb.toString();
+    }
+
+
     public String getCompleteFiltersAsText() {
         String returnVal = " (not filtered)";
         StringBuilder sb = new StringBuilder();
@@ -202,6 +218,16 @@ public class DnarunEntity implements Serializable,Cloneable {
                 filterListAsRows.add(rowColEntity);
             }
         }
+        //uuid
+        if(dnasampleUuidAsCommaSeparatedString!=null) {
+
+            if(!dnasampleUuidAsCommaSeparatedString.isEmpty()) {
+                rowColEntity = new RowColEntity();
+                rowColEntity.setFirstRow("UUID(s)");
+                rowColEntity.setSecondRow(dnasampleUuidAsCommaSeparatedString);
+                filterListAsRows.add(rowColEntity);
+            }
+        }
         
         if(Utils.isListNotNullOrEmpty(getProjectList())){
             rowColEntity = new RowColEntity();
@@ -242,7 +268,7 @@ public class DnarunEntity implements Serializable,Cloneable {
             sb.append(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1, delim));
         }
 
-        else if(Utils.isListNotNullOrEmpty(getDatasetList())){
+       if(Utils.isListNotNullOrEmpty(getDatasetList())){
             sb.append("Dataset(s):");
             sb.append(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15, delim));
         }
@@ -409,4 +435,21 @@ public class DnarunEntity implements Serializable,Cloneable {
     public void setDatasetList(List<DatasetRecord> datasetList) {
         this.datasetList = datasetList;
     }
+
+    public String getDnasampleUuidAsEnterSeparatedString() {
+        return dnasampleUuidAsEnterSeparatedString;
+    }
+
+    public void setDnasampleUuidAsEnterSeparatedString(String dnasampleUuidAsEnterSeparatedString) {
+        this.dnasampleUuidAsEnterSeparatedString = dnasampleUuidAsEnterSeparatedString;
+    }
+
+    public String getDnasampleUuidAsCommaSeparatedString() {
+        return dnasampleUuidAsCommaSeparatedString;
+    }
+
+    public void setDnasampleUuidAsCommaSeparatedString(String dnasampleUuidAsCommaSeparatedString) {
+        this.dnasampleUuidAsCommaSeparatedString = dnasampleUuidAsCommaSeparatedString;
+    }
+
 }

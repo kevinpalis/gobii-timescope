@@ -75,41 +75,36 @@ public class DnarunViewModel {
     Grid dnarunGrid;
     
     private Integer sizeDnarunList=0;
+    private String filterProject, projectsTabLabel;
+
+    private String filterExperiment, experimentTabLabel;
+    private String filterDataset, datasetTabLabel;
+    private String currentFiltersAsText;
     
+    private boolean dbProjects=true, dbExperiment=true, dbDataset=true,  shouldNextChangeResetOtherFilterValues=false;
     private List<ContactRecord> contactsList, piList;
     private List<DnarunViewEntity> dnarunList;
     private List<DnarunViewEntity> selectedList;
-    private List<DatasetRecord> datasetList;
-    private List<ProjectRecord> projectList;
-    private List<ExperimentRecord> experimentList;
+    private List<DatasetRecord> datasetList, backupDatasetList;
+    private List<ProjectRecord> projectList, backupProjectList;
+    private List<ExperimentRecord> experimentList, backupExperimentList;
     private List<AnalysisRecord> analysisList;
     private DnarunEntity dnarunEntity;
 
-    @SuppressWarnings("unchecked")
     @Init
     public void init() {
         selectedList = new ArrayList<DnarunViewEntity>();
+        backupProjectList =  new ArrayList<ProjectRecord>();
+        backupExperimentList =  new ArrayList<ExperimentRecord>();
+        backupDatasetList  =  new ArrayList<DatasetRecord>();
+        
         viewModelService = new ViewModelServiceImpl();
         
         setDnarunEntity(new DnarunEntity());
-//        setDnarunList(viewModelService.getAllDnaruns());
         setDatasetList(viewModelService.getAllDatasets());
+        setExperimentList(viewModelService.getAllExperiments());
+        setProjectList(viewModelService.getAllProjects());
         
-        contactsList = viewModelService.getAllContacts();
-        Integer [] roles = {1}; // PI only
-        piList = viewModelService.getContactsByRoles(roles);
-        projectList = viewModelService.getAllProjects();
-        experimentList = viewModelService.getAllExperiments();
-        analysisList = viewModelService.getAllAnalyses();
-        
-        ProjectRecord selectAllProject = new ProjectRecord(0, "SELECT ALL PROJECTS", "", "", 0, 0, null, 0, null, 0, null);
-        projectList.add(0,selectAllProject);
-           
-        ExperimentRecord selectAllExp = new ExperimentRecord(0, "SELECT ALL EXPERIMENT", "", 0, 0, "", 0, null, 0, null, 0, 0);
-        experimentList.add(0,selectAllExp);
-        
-        DatasetRecord selectAllDs = new DatasetRecord(0, 0, 0, null, null, null, null, null, null, null, null, null, null, null, 0, "SELECT ALL DATASET", 0);
-        datasetList.add(0,selectAllDs);
     }
 
 
@@ -158,6 +153,8 @@ public class DnarunViewModel {
 
         }
         dnarunEntity = new DnarunEntity();
+        currentFiltersAsText = "";
+
 
         dnarunGrid.setEmptyMessage("There's nothing to see here. Submit a query to search for DNAruns");
         setiDBoxDisabled(false);
@@ -277,29 +274,28 @@ public class DnarunViewModel {
                     "Confirm Delete", Messagebox.YES | Messagebox.NO,
                     Messagebox.QUESTION,
                     new org.zkoss.zk.ui.event.EventListener(){
+                
                 @Override
                 public void onEvent(Event event) throws Exception {
                     // TODO Auto-generated method stub
                     if(Messagebox.ON_YES.equals(event.getName())){
                         //YES is clicked
 
-                        Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
-                                "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                        Messagebox.show("Please have at least one backup of your data before proceeding to allow recoverability in case of user mistakes.", 
+                                "WARNING", Messagebox.OK | Messagebox.CANCEL,
                                 Messagebox.EXCLAMATION,
                                 new org.zkoss.zk.ui.event.EventListener(){
                             @Override
                             public void onEvent(Event event) throws Exception {
-                                // TODO Auto-generated method stub
-                                if(Messagebox.ON_YES.equals(event.getName())){
+                                
+                                if(Messagebox.ON_OK.equals(event.getName())){
                                     //YES is clicked
-                                    boolean successful;
-
                                     if(selectedList.size() == 1){  // 
-                                        successful = viewModelService.deleteDnarun(selectedList.get(0));
+                                       viewModelService.deleteDnarun(selectedList.get(0));
 
                                     }else{
                                         //bulk delete
-                                        successful = viewModelService.deleteDnaruns(selectedList);
+                                         viewModelService.deleteDnaruns(selectedList);
                                     }
 
 
@@ -352,19 +348,149 @@ public class DnarunViewModel {
         
         if(Utils.isListNotNullOrEmpty(dnarunDetailDatasetList)) {
             associated = true;
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("dnarunDetailDatasetList", dnarunDetailDatasetList);
+            args.put("associated", associated); 
+
+            Window window = (Window)Executions.createComponents(
+                    "/dnarun_detail.zul", null, args);
+            window.setPosition("center");
+            window.setClosable(true);
+            window.doModal();
         }
-
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("dnarunDetailDatasetList", dnarunDetailDatasetList);
-        args.put("associated", associated);
-
-        Window window = (Window)Executions.createComponents(
-                "/dnarun_detail.zul", null, args);
-        window.setPosition("center");
-        window.setClosable(true);
-        window.doModal();
+        else {
+            Messagebox.show("The DNArun '" + dnarunName + "' is not associated to any dataset", "There's nothing to display", Messagebox.OK, null);
+        }
     }
 
+    @Command("validateForReset")
+    @NotifyChange({"dnarunEntity", "currentFiltersAsText"})
+    public void validateForReset(@BindingParam("category") String category){
+
+        //if reset required then: if(shouldNextChangeResetOtherFilterValues)  
+
+        //whether reset or not, update no. of lists being displayed beside the label by calling the postGlobalCommand
+        switch(category){
+
+     
+        case "project":
+            if(Utils.isListNotNullOrEmpty(dnarunEntity.getExperimentList())) {
+                if(shouldNextChangeResetOtherFilterValues) dnarunEntity.getExperimentList().clear();
+            }
+
+            BindUtils.postGlobalCommand(null, null, "updateDnaRunsExperimentsTab", null);
+        case "experiment":
+            if(Utils.isListNotNullOrEmpty(dnarunEntity.getDatasetList())) {
+                if(shouldNextChangeResetOtherFilterValues) dnarunEntity.getDatasetList().clear();
+            }
+
+            BindUtils.postGlobalCommand(null, null, "updateDnaRunsDatasetsTab", null);
+            break;
+        default: 
+            break; 
+        }
+        //once resets are done, update boolean
+        shouldNextChangeResetOtherFilterValues=false;
+        setCurrentFiltersAsText(dnarunEntity.getFiltersAsTextWithDelimiter(System.getProperty("line.separator")));
+    }
+    
+    @NotifyChange({"experimentList","experimentTabLabel", "dbExperiment"})
+    @GlobalCommand
+    public void updateDnaRunsExperimentsTab() { // Experiments are connected to a specific project then a vendor-protocol and a platform
+
+        if(Utils.isListNotNullOrEmpty(dnarunEntity.getProjectList())) { // if not empty, use project as filter
+
+            setExperimentList(viewModelService.getExperimentsByProjectID(dnarunEntity.getProjectList()));
+
+        }else{
+
+            setExperimentList(viewModelService.getAllExperiments());
+        }
+    }
+    
+    @NotifyChange({"datasetList","datasetTabLabel", "dbDataset"}) 
+    @GlobalCommand
+    public void updateDnaRunsDatasetsTab() {
+
+        if(Utils.isListNotNullOrEmpty(dnarunEntity.getExperimentList())) { // if not empty, use experiment as filter
+            setDatasetList(viewModelService.getDatasetsByExperimentID(dnarunEntity.getExperimentList()));
+
+        }
+        else if(Utils.isListNotNullOrEmpty(dnarunEntity.getProjectList())) { // if not empty, use project as filter
+            setDatasetList(viewModelService.getDatasetsByProjectID(dnarunEntity.getProjectList()));
+        }
+        else{
+            setDatasetList(viewModelService.getAllDatasets());
+        }
+
+    }
+    
+    @Command
+    public void selectProjectsTab() { // Projects are connected to a platform and a vendor-protocol (via experiment)
+
+        showInfoPopUp("project");
+    }
+
+    @Command
+    public void selectExperimentsTab() { // Experiments are connected to a specific project then a vendor-protocol and a platform
+
+        showInfoPopUp("experiment");
+    }
+    public void showInfoPopUp(String category) {
+        StringBuilder sb = new StringBuilder();
+
+        switch(category){
+
+        case "project":
+            if(Utils.isListNotNullOrEmpty(dnarunEntity.getExperimentList())) {
+                sb.append(Utils.checkIfCommaNeeded(sb,"\n Experiments"));
+            }
+        case "experiment":
+            if(Utils.isListNotNullOrEmpty(dnarunEntity.getDatasetList())) {
+                sb.append(Utils.checkIfCommaNeeded(sb, "\n Datasets"));
+            }
+            break;
+        default: 
+            break; 
+        } 
+
+        if(!sb.toString().isEmpty()) {
+            shouldNextChangeResetOtherFilterValues = true;
+            sb.insert(0, "Changing the selected values here will reset the selections you already made on the  tab(s): \n");
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("message", sb.toString());
+
+            Window window = (Window)Executions.createComponents(
+                    "/info_popup.zul", null, args);
+            window.setPosition("center");
+            window.setClosable(true);
+            window.doModal();
+        }
+        else shouldNextChangeResetOtherFilterValues = false;
+    }
+
+    
+    
+    @NotifyChange("projectList")
+    @Command
+    public void doSearchProject() {
+
+        Utils.filterItems(projectList, backupProjectList, filterProject);
+    }
+
+    @NotifyChange("experimentList")
+    @Command
+    public void doSearchExperiment() {
+
+        Utils.filterItems(experimentList, backupExperimentList, filterExperiment);
+    }       
+
+    @NotifyChange("datasetList")
+    @Command
+    public void doSearchDataset() {
+
+        Utils.filterItems(datasetList, backupDatasetList, filterDataset,15);
+    }       
 
     public boolean isAllCbSelected() {
         return isAllCbSelected;
@@ -384,7 +510,7 @@ public class DnarunViewModel {
     }
 
     public void setDnarunList(List<DnarunViewEntity> dnarunList) {
-        if(dnarunList.size() > 0) {
+        if(Utils.isListNotNullOrEmpty(dnarunList)) {
             if(dnarunList.size() > 25) setPaged(true);
             else setPaged(false);
             
@@ -478,7 +604,12 @@ public class DnarunViewModel {
 
 
     public void setProjectList(List<ProjectRecord> projectList) {
+        backupProjectList.clear();
+        backupProjectList.addAll(projectList);
+        setProjectsTabLabel(projectList.size());
+        setDbProjects(Utils.isListNotNullOrEmpty(projectList));
         this.projectList = projectList;
+        
     }
 
 
@@ -488,6 +619,10 @@ public class DnarunViewModel {
 
 
     public void setExperimentList(List<ExperimentRecord> experimentList) {
+        backupExperimentList.clear();
+        backupExperimentList.addAll(experimentList);
+        setExperimentTabLabel(experimentList.size());
+        setDbExperiment(Utils.isListNotNullOrEmpty(experimentList));
         this.experimentList = experimentList;
     }
 
@@ -508,6 +643,10 @@ public class DnarunViewModel {
 
 
     public void setDatasetList(List<DatasetRecord> datasetList) {
+        backupDatasetList.clear();
+        backupDatasetList.addAll(datasetList);
+        setDatasetTabLabel(datasetList.size());
+        setDbDataset(Utils.isListNotNullOrEmpty(datasetList));
         this.datasetList = datasetList;
     }
 
@@ -549,6 +688,119 @@ public class DnarunViewModel {
 
     public void setGermplasmNameListDisabled(boolean isGermplasmNameListDisabled) {
         this.isGermplasmNameListDisabled = isGermplasmNameListDisabled;
+    }
+
+
+    public String getProjectsTabLabel() {
+        return projectsTabLabel;
+    }
+
+
+    public void setProjectsTabLabel(Integer i) {
+        this.projectsTabLabel = Utils.combineLabelWithNum("Projects", i );
+    }
+
+
+    public String getExperimentTabLabel() {
+        return experimentTabLabel;
+    }
+
+
+    public void setExperimentTabLabel(Integer i) {
+        this.experimentTabLabel = Utils.combineLabelWithNum("Experiments", i );
+    }
+
+
+    public String getDatasetTabLabel() {
+        return datasetTabLabel;
+    }
+
+
+    public void setDatasetTabLabel(Integer i) {
+        this.datasetTabLabel = Utils.combineLabelWithNum("Datasets", i );
+    }
+
+
+    public boolean isDbProjects() {
+        return dbProjects;
+    }
+
+
+    public void setDbProjects(boolean dbProjects) {
+        this.dbProjects = dbProjects;
+    }
+
+
+    public boolean isDbExperiment() {
+        return dbExperiment;
+    }
+
+
+    public void setDbExperiment(boolean dbExperiment) {
+        this.dbExperiment = dbExperiment;
+    }
+
+
+    public boolean isDbDataset() {
+        return dbDataset;
+    }
+
+
+    public void setDbDataset(boolean dbDataset) {
+        this.dbDataset = dbDataset;
+    }
+
+
+    public String getCurrentFiltersAsText() {
+        return currentFiltersAsText;
+    }
+
+
+    public void setCurrentFiltersAsText(String currentFiltersAsText) {
+        this.currentFiltersAsText = currentFiltersAsText;
+    }
+    public String getFilterProject() {
+        return filterProject;
+    }
+
+
+    public void setFilterProject(String filterProject) {
+        this.filterProject = filterProject;
+    }
+
+
+    public String getFilterExperiment() {
+        return filterExperiment;
+    }
+
+
+    public void setFilterExperiment(String filterExperiment) {
+        this.filterExperiment = filterExperiment;
+    }
+
+
+    public String getFilterDataset() {
+        return filterDataset;
+    }
+
+
+    public void setFilterDataset(String filterDataset) {
+        this.filterDataset = filterDataset;
+    }
+
+
+    public void setProjectsTabLabel(String projectsTabLabel) {
+        this.projectsTabLabel = projectsTabLabel;
+    }
+
+
+    public void setExperimentTabLabel(String experimentTabLabel) {
+        this.experimentTabLabel = experimentTabLabel;
+    }
+
+
+    public void setDatasetTabLabel(String datasetTabLabel) {
+        this.datasetTabLabel = datasetTabLabel;
     }
 
 }

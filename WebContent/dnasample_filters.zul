@@ -34,8 +34,8 @@
 													value="DNA Sample Names:" />
 											</cell>
 											<cell>
-												<textbox rows="6"
-													cols="40" hflex="true" vflex="true"
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="max"
 													tooltiptext="Separate dnasample names with a new line"
 													value="@bind(vm.dnarunEntity.dnasampleNamesAsEnterSeparatedString)"
 													popup="title, position=start_before"
@@ -45,20 +45,19 @@
 											</cell>
 										</row>
 										<row>
-											<cell sclass="row-title">
-												Project:
+											<cell sclass="row-title" >
+												<label
+													value="DNA Sample UUID:" />
 											</cell>
 											<cell>
-												<combobox
-													autodrop="true" hflex="true" model="@load(vm.projectList)"
-													selectedItem="@bind(vm.dnarunEntity.projectRecord)">
-													<template
-														name="model">
-														<comboitem
-															label="@load(each.name)" />
-													</template>
-												</combobox>
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate each UUID with a new line"
+													value="@bind(vm.dnarunEntity.dnasampleUuidAsEnterSeparatedString)"
+													popup="title, position=start_before">
+												</textbox>
 											</cell>
 										</row>
 									</rows>
+									
 								</grid>

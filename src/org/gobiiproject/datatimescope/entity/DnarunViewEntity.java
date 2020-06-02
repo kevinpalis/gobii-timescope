@@ -13,8 +13,9 @@ public class DnarunViewEntity {
     private String experimentName;
     private Integer projectId;
     private String projectName;
+    private String uuid;
     
-    public DnarunViewEntity(Integer dnarunId, String dnarunName, Integer dnasampleId, String dnasampleName, Integer germplasmId, String germplasmName, Integer experimentId, String experimentName, Integer projectId, String projectName) {
+    public DnarunViewEntity(Integer dnarunId, String dnarunName, Integer dnasampleId, String dnasampleName, String uuid, Integer germplasmId, String germplasmName, Integer experimentId, String experimentName, Integer projectId, String projectName) {
 
         setDnarunId(dnarunId);
         setDnasampleId(dnasampleId);
@@ -26,6 +27,7 @@ public class DnarunViewEntity {
         setGermplasmName(germplasmName);
         setExperimentName(experimentName);
         setProjectName(projectName);
+        setUuid(uuid);
     }
     
     public Integer getDnarunId() {
@@ -95,6 +97,14 @@ public class DnarunViewEntity {
 
     public void setGermplasmName(String germplasmName) {
         this.germplasmName = germplasmName;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
     
 }

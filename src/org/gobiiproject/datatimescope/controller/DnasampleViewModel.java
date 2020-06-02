@@ -230,14 +230,14 @@ public class DnasampleViewModel {
                     if(Messagebox.ON_YES.equals(event.getName())){
                         //YES is clicked
 
-                        Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\nDo you want to continue?\n", 
-                                "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                        Messagebox.show("Please have at least one backup of your data before proceeding to allow recoverability in case of user mistakes.", 
+                                "WARNING", Messagebox.OK | Messagebox.CANCEL,
                                 Messagebox.EXCLAMATION,
                                 new org.zkoss.zk.ui.event.EventListener(){
                             @Override
                             public void onEvent(Event event) throws Exception {
                                 // TODO Auto-generated method stub
-                                if(Messagebox.ON_YES.equals(event.getName())){
+                                if(Messagebox.ON_OK.equals(event.getName())){
                                     //YES is clicked
                                     boolean successful;
 
@@ -308,7 +308,7 @@ public class DnasampleViewModel {
     }
 
     public void setDnasampleList(List<DnasampleViewEntity> dnasampleList) {
-        if(dnasampleList.size() > 0) {
+        if(Utils.isListNotNullOrEmpty(dnasampleList)) {
             if(dnasampleList.size() > 25) setPaged(true);
             else setPaged(false);
             
