@@ -12,6 +12,7 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DNARUN;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DNASAMPLE;
+import static org.gobiiproject.datatimescope.db.generated.Tables.GERMPLASM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PLATFORM;
 import static org.gobiiproject.datatimescope.db.generated.Tables.PROJECT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.REFERENCE;
@@ -57,6 +58,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DatasetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.DnarunRecord;
+import org.gobiiproject.datatimescope.db.generated.tables.records.DnasampleRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
@@ -78,6 +80,9 @@ import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleDeleteResultTableEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmDeleteResultTableEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDeleteResultTableEntity;
@@ -113,6 +118,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     private String lastDSQuery;
     private DnarunEntity lastQueriedDNArunEntity;
     private DnasampleEntity lastQueriedDNAsampleEntity;
+    private GermplasmEntity lastQueriedGermplasmEntity;
     
     @Override
     public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
@@ -2732,7 +2738,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             //build query for UUID
             if (dnarunEntity.getDnasampleUuidAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleUuidAsEnterSeparatedString().isEmpty()){
                 lastQueriedDNArunEntity.setDnasampleUuidAsCommaSeparatedString(dnarunEntity.getSQLReadyDnasampleUuidNames());
-                
+
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 sbWhere.append(" where LOWER(ds.uuid) in ("+dnarunEntity.getSQLReadyDnasampleUuidNames()+")");
                 dsNameCount++;  
             } 
@@ -3411,6 +3418,345 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         window.doModal();
                         
                         BindUtils.postGlobalCommand(null, null, "retrieveDNAsampleList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
+    }
+
+    @Override
+    public List<GermplasmViewEntity> getAllGermplasms() {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<GermplasmViewEntity> list = null;
+        try{
+
+            list = context.fetch("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id").into(GermplasmViewEntity.class);
+
+        }catch(Exception e ){
+            e.printStackTrace();
+
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<GermplasmViewEntity> getAllGermplasmsBasedOnQuery(GermplasmEntity germplasmEntity) {
+        // TODO Auto-generated method stub
+        List<GermplasmViewEntity> list = null;
+        
+        lastQueriedGermplasmEntity = new GermplasmEntity();
+        
+        int queryCount =0;
+        int dsNameCount = 0;
+        DSLContext context = getDSLContext();
+
+        try{ /* START building THE QUERY via StringBuilder */
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbWhere = new StringBuilder(); 
+
+            sb.append("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_idSELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id");
+
+//             build query for germplasm NAMES filter
+            if (germplasmEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !germplasmEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
+                lastQueriedGermplasmEntity.setGermplasmNamesAsCommaSeparatedString(germplasmEntity.getSQLReadyGermplasmNames());
+                
+                sbWhere.append(" where LOWER(g.name) in ("+germplasmEntity.getSQLReadyGermplasmNames()+")");
+                dsNameCount++;  
+            } else if (germplasmEntity.getGermplasmIDStartRange()!=null || germplasmEntity.getGermplasmIDEndRange()!=null){ // 
+                //check which is not null
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+
+                if(germplasmEntity.getGermplasmIDStartRange()!=null && germplasmEntity.getGermplasmIDEndRange()!=null){ //if both is not null
+                    Integer lowerID = germplasmEntity.getGermplasmIDStartRange();
+                    Integer higherID = germplasmEntity.getGermplasmIDEndRange();
+
+                    if(lowerID.compareTo(higherID)>0){
+                        lowerID = germplasmEntity.getGermplasmIDEndRange();
+                        higherID = germplasmEntity.getGermplasmIDStartRange();
+                    }
+
+                    lastQueriedGermplasmEntity.setGermplasmIDEndRange(germplasmEntity.getGermplasmIDEndRange());
+                    lastQueriedGermplasmEntity.setGermplasmIDStartRange(germplasmEntity.getGermplasmIDStartRange());
+                    sbWhere.append(" g.germplasm_id between "+Integer.toString(lowerID)+" and "+Integer.toString(higherID));
+                }else{
+                    Integer ID = null;
+                    if(germplasmEntity.getGermplasmIDStartRange()!=null) {
+                        ID = germplasmEntity.getGermplasmIDStartRange();
+                        lastQueriedGermplasmEntity.setGermplasmIDStartRange(germplasmEntity.getGermplasmIDStartRange());
+                    }
+                    else {
+                        ID = germplasmEntity.getGermplasmIDEndRange();
+                        lastQueriedGermplasmEntity.setGermplasmIDEndRange(germplasmEntity.getGermplasmIDEndRange());
+                    }
+
+                    sbWhere.append(" g.germplasm_id = "+Integer.toString(ID));
+                }
+
+                queryCount++;
+            } // END build query for given id names / ranges
+
+            if(sbWhere.length()>0) {
+                sbWhere.append(";");
+                sb.append(sbWhere.toString());
+                
+                String query = sb.toString();
+                System.out.println(query);
+                list = context.fetch(query).into(GermplasmViewEntity.class);
+            } else {
+                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
+        }catch(Exception e ){
+            e.printStackTrace();
+            Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+        }
+        return list;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public boolean deleteGermplasm(GermplasmViewEntity germplasmViewEntity) {
+        // TODO Auto-generated method stub
+        boolean successful = false;
+        List<GermplasmViewEntity> selectedList = new ArrayList<GermplasmViewEntity>();
+        selectedList.add(germplasmViewEntity);
+        
+        //check if Germplasm is not being used in a Dnasample
+        List<GermplasmViewEntity> unusedInGermplasm = null;
+
+        unusedInGermplasm = checkWhichGermplasmsAreUsedInADnasample(selectedList);
+        if(unusedInGermplasm.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n Do you want to continue?\n", 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        Integer id = selectedList.get(0).getGermplasmId();
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+//                        context.delete(GERMPLASM)
+//                        .where(GERMPLASM.GERMPLASM_ID.eq(id))
+//                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add("1 Germplasm deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED A GERMPLASM\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for germplasm delete:\n"+lastQueriedGermplasmEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.delete(GERMPLASM).where(\n"
+                                + "            GERMPLASM.GERMPLASM_ID.eq("+id.toString()+"))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] Germplasm delete result:\n"+ "1 Germplasm deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveGermplasmList", null);
+                        
+                    }
+
+                }
+            });
+        }
+
+        return successful;
+    }
+
+    private List<GermplasmViewEntity> checkWhichGermplasmsAreUsedInADnasample(List<GermplasmViewEntity> selectedList) {
+        // TODO Auto-generated method stub
+
+        int totalNoOfCantBeDeleted = 0;
+
+        List<GermplasmViewEntity> listOfCanBeDeleted =  new ArrayList<GermplasmViewEntity>();
+        List<GermplasmDeleteResultTableEntity> germplasmDeleteResultTableEntityList =  new ArrayList<GermplasmDeleteResultTableEntity>();
+
+        boolean inDnasample = false;
+
+        for(GermplasmViewEntity germplasm: selectedList){
+            try{
+
+                GermplasmDeleteResultTableEntity germplasmDeleteResultTableEntity= new GermplasmDeleteResultTableEntity();
+                //set initial values
+
+                inDnasample = false;
+                
+                germplasmDeleteResultTableEntity.setGermplasm_id(germplasm.getGermplasmId());
+                germplasmDeleteResultTableEntity.setGermplasm_name(germplasm.getGermplasmName());
+
+                List<DnasampleRecord> inDnasampleList = getDnasamplesbyGermplasmId(germplasm.getGermplasmId());
+                if(inDnasampleList.size()>0) {
+                    inDnasample = true;
+                    germplasmDeleteResultTableEntity.setDnasample_name(setDnasampleIdDetails(inDnasampleList));
+                }
+                
+                if(!inDnasample){
+                    listOfCanBeDeleted.add(germplasm);
+                }else{
+                    if(totalNoOfCantBeDeleted<10) germplasmDeleteResultTableEntityList.add(germplasmDeleteResultTableEntity);
+                    totalNoOfCantBeDeleted++;
+
+                }
+
+                totalNoOfCantBeDeleted = totalNoOfCantBeDeleted-10;
+            }catch(Exception e ){
+
+                Messagebox.show("There was an error while trying to retrieve Germplasms", "ERROR", Messagebox.OK, Messagebox.ERROR);
+
+            }
+
+        }
+        if(germplasmDeleteResultTableEntityList.size()>0){
+
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("germplasmDeleteResultTableEntityList", germplasmDeleteResultTableEntityList);
+            args.put("totalNumOfGermplasmsThatCantBeDeleted", totalNoOfCantBeDeleted);
+            Window window = (Window)Executions.createComponents(
+                    "/germplasmDeleteWarning.zul", null, args);
+            window.doModal();
+        }
+        return listOfCanBeDeleted;
+    }
+
+    private List<DnasampleRecord> getDnasamplesbyGermplasmId(Integer germplasmId) {
+        // TODO Auto-generated method stub
+        DSLContext context = getDSLContext();
+        List<DnasampleRecord> list = null;
+        try{
+            String query = "select * FROM dnasample ds LEFT JOIN germplasm g ON ds.germplasm_id = g.germplasm_id where g.germplasm_id ="+germplasmId.toString()+"";
+            list = context.fetch( query).into(DnasampleRecord.class);
+
+
+            if(list.get(0).getDnasampleId()==null){
+                list = new ArrayList<DnasampleRecord>();
+            }
+        }catch(Exception e ){
+            list = new ArrayList<DnasampleRecord>();
+            e.printStackTrace();
+
+
+        }
+        return list;
+    }
+
+    private String setDnasampleIdDetails(List<DnasampleRecord> inDnarunList) {
+        // TODO Auto-generated method stub
+
+        StringBuilder sb = new StringBuilder();
+        for(DnasampleRecord mgr : inDnarunList){
+
+            if(sb.length()>0) sb.append(", ");
+            sb.append(" "+mgr.getName()+" ("+mgr.getDnasampleId()+")");
+
+        }
+
+        return(sb.toString());
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public boolean deleteGermplasms(List<GermplasmViewEntity> selectedList) {
+        // TODO Auto-generated method stub
+
+        boolean successful = false;
+        
+        //check if Germplasm is not being used in a Dnasample
+        List<GermplasmViewEntity> unusedInGermplasm = null;
+
+        unusedInGermplasm = checkWhichGermplasmsAreUsedInADnasample(selectedList);
+        String warningMessage = Integer.toString(unusedInGermplasm.size()) + 
+                " germplasm(s) can still be deleted. Do you want to continue?\n";
+        
+        if(unusedInGermplasm.size() == selectedList.size()) {warningMessage ="Do you want to continue?\n";
+        }  
+
+        final List<GermplasmViewEntity> finalListThatcanBeDeleted = unusedInGermplasm;
+            
+        if(unusedInGermplasm.size()>0){
+
+            Messagebox.show("THIS ACTION IS NOT REVERSIBLE.\n\n "+ warningMessage, 
+                    "WARNING", Messagebox.YES | Messagebox.CANCEL,
+                    Messagebox.EXCLAMATION,
+                    new org.zkoss.zk.ui.event.EventListener(){
+                @Override
+                public void onEvent(Event event) throws Exception {
+                    // TODO Auto-generated method stub
+                    if(Messagebox.ON_YES.equals(event.getName())){
+                        DSLContext context = getDSLContext();
+                        
+                        int germplasmsDeleted = 0;
+                        double startTime = 0, endTime=0;
+
+                        startTime = System.currentTimeMillis();
+                        
+//                        germplasmsDeleted = context.deleteFrom(GERMPLASM)
+//                        .where(GERMPLASM.GERMPLASM_ID.in(finalListThatcanBeDeleted
+//                                .stream()
+//                                .map(GermplasmViewEntity::getGermplasmId)
+//                                .collect(Collectors.toList())))
+//                        .execute();
+
+                        endTime = System.currentTimeMillis();
+                        double rowDeleteSeconds = (endTime - startTime) / 1000;
+
+                        List<String> successMessagesAsList = new ArrayList<String>();
+                        successMessagesAsList.add(Integer.toString(germplasmsDeleted)+"  Germplasm(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)" );
+                       
+                        String user = getUser();
+                        StringBuilder logSB = new StringBuilder();
+                        logSB.append("["+user+ "] DELETED GERMPLASM(S)\n\n"); 
+                        logSB.append("["+user+ "] Filtering criteria for germplasms delete:\n"+lastQueriedGermplasmEntity.getCompleteFiltersAsText());
+                        logSB.append("\n\n["+user+"] Background JOOQ commands that ran:\n\n"+
+                                "context.deleteFrom(GERMPLASM).where(\n"
+                                + "            GERMPLASM.GERMPLASM_ID.in(finalListThatcanBeDeleted.stream().map(GermplasmViewEntity::getGermplasmId).collect(Collectors.toList()))))\n"
+                                        + "            .execute();");
+          
+                        logSB.append("\n\n["+user+"] Germplasm delete result:\n"+ Integer.toString(germplasmsDeleted)+" Germplasm(s) deleted. ("+Double.toString(rowDeleteSeconds)+" sec)");
+
+                        logSB.append("\n--------------------------------------------------");
+                        log.info(logSB.toString());
+                        Map<String, Object> args = new HashMap<String, Object>();
+                        args.put("successMessagesAsList", successMessagesAsList);
+                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+
+                        Window window = (Window)Executions.createComponents(
+                                "/marker_delete_successful.zul", null, args);
+                        window.setPosition("center");
+                        window.setClosable(true);
+                        window.doModal();
+                        
+                        BindUtils.postGlobalCommand(null, null, "retrieveGermplasmList", null);
                         
                     }
 

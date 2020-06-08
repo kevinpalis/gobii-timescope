@@ -1,0 +1,61 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<window id="germplasmDeleteWarningDialog" title="Warning" border="normal" width="640px"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.GermplasmDeleteWarningModel')"
+	position="center,center" closable="true"
+	action="show: slideDown;show: slideUp">
+
+	<vlayout>
+
+		<label style=" font-size: 14px"
+			value="The following germplasm(s) can't be deleted because they are associated with a dnasample" />
+		<label style=" font-size: 14px" value="" />
+		<label style=" font-size: 12px; font-style:italic; "
+			value="*Dnasamples listed below must be deleted before the corresponding germplasm can be deleted." />
+		
+		<grid id="germplasmGrid"
+			model="@load(vm.germplasmDeleteResultTableEntityList)" mold="paging"
+			pageSize="5" pagingPosition="both">
+			<columns sizable="true">
+				<column hflex="min">
+					<label value="Germplasm Id" />
+				</column>
+				<column hflex="1">
+					<label value="Germplasm Name" />
+				</column>
+				<column hflex="1">
+					<label value="In Dnasample(s)" />
+				</column>
+			</columns>
+			<template name="model" var="germplasm">
+				<row>
+					<cell>
+						<label value="@load(germplasm.germplasm_id)" />
+					</cell>
+					<cell>
+						<label value="@load(germplasm.germplasm_name)" />
+					</cell>
+					<cell>
+						<label value="@load(germplasm.dnasample_name)" />
+					</cell>
+				</row>
+			</template>
+		</grid>
+		<hbox align="center" pack="right">
+		<button label="Export All" width="200px"  hflex="min"
+			onClick="@command('exportGermplasmsThatCantBeDeleted')" />
+		
+		<button id="closeBtn" hflex="min" width="200px" label="Continue"
+			onClick="@command('closeModalDialog')" />
+		</hbox>
+		<hbox visible="@load(vm.itemsMoreThanTen)">
+			<label value="...and " />
+			<label
+				value="@load(vm.totalNumOfGermplasmsThatCantBeDeleted) " />
+			<label
+				value=" other germplasm(s) are associated with a dnasample" />
+		</hbox>
+	</vlayout>
+</window>
