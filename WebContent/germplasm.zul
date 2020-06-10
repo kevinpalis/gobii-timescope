@@ -5,7 +5,7 @@
 	style="border: 0 !important; padding:0 !important; margin:0;"
 	apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.GermplasmViewModel')">
-	<caption sclass="fn-caption" label="DNA Samples" />
+	<caption sclass="fn-caption" label="Germplasms" />
 
 	<tabbox
 		style="border: 0px !important; padding:0px !important; margin:0px !important;"

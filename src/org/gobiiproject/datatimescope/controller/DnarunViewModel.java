@@ -115,7 +115,7 @@ public class DnarunViewModel {
 
 
     @Command("submitQuery")
-    @NotifyChange({"dnarunList","selectedList", "allCbSelected", "cbAllUsers","paged", "sizeDnarunList"})
+    @NotifyChange({"dnarunList","selectedList", "allCbSelected", "cbAllUsers","paged", "sizeDnarunList","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled"})
     public void submitQuery(){
 //        viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity);
 //        viewModelService.getDnarunidsbyproject(6);
@@ -131,19 +131,14 @@ public class DnarunViewModel {
         dnarunGrid.setEmptyMessage("There are no dnaruns that match your search.");
         setDnarunList(viewModelService.getAllDnarunsBasedOnQuery(dnarunEntity));
 
-        setiDBoxDisabled(false);
-        setnameListDisabled(false);
+      
         setAllCbSelected(false);
         setCbAllUsers(false);
-        setDsIDBoxDisabled(false);
-        setDsNameListDisabled(false);
-        setGermplasmIDBoxDisabled(false);
-        setGermplasmNameListDisabled(false);
 
     }
 
     @Command("resetDnarunTab")
-    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled", "paged"})
+    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled", "paged"})
     public void resetDnarunTab(){
         try{
             dnarunList.clear(); //clear the list first and then just add if there are any selected

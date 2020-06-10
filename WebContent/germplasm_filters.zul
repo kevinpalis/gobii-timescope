@@ -46,7 +46,7 @@
 													value="Germplasm Name:" />
 											</cell>
 											<cell>
-												<textbox rows="4"
+												<textbox rows="2"
 													cols="40" hflex="true" vflex="max"
 													tooltiptext="Separate germplasm names with a new line"
 													value="@bind(vm.dnarunEntity.germplasmNamesAsEnterSeparatedString)"

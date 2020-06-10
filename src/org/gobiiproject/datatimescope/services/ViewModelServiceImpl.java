@@ -1130,12 +1130,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 queryCount++;
             }
 
-            sbWhere.append(";");
-            sb.append(sbWhere.toString());
-            String query = sb.toString();
-            System.out.println(query);
-            markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
-
+            if(sbWhere.length()>0) {
+                sbWhere.append(";");
+                sb.append(sbWhere.toString());
+                String query = sb.toString();
+                System.out.println(query);
+                markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+            }
+            else {
+                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show("There was an error while trying to retrieve markers", "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -2659,8 +2663,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             // build query for DNA Sample NAMES filter
             if (dnarunEntity.getDnasampleNamesAsEnterSeparatedString()!=null && !dnarunEntity.getDnasampleNamesAsEnterSeparatedString().isEmpty()){
                 lastQueriedDNArunEntity.setDnasampleNamesAsCommaSeparatedString(dnarunEntity.getSQLReadyDnasampleNames());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 
-                  sbWhere.append(" where LOWER(ds.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
+                  sbWhere.append(" LOWER(ds.name) in ("+dnarunEntity.getSQLReadyDnasampleNames()+")");
                   dsNameCount++;  
             } else if (dnarunEntity.getDnasampleIDStartRange()!=null || dnarunEntity.getDnasampleIDEndRange()!=null){ // build query for given DNAsample IDs
 
@@ -2698,8 +2703,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 //             build query for germplasm NAMES filter
             if (dnarunEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !dnarunEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
                 lastQueriedDNArunEntity.setGermplasmNamesAsCommaSeparatedString(dnarunEntity.getSQLReadyGermplasmNames());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 
-                sbWhere.append(" where LOWER(g.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
+                sbWhere.append(" LOWER(g.name) in ("+dnarunEntity.getSQLReadyGermplasmNames()+")");
                 dsNameCount++;  
             } else if (dnarunEntity.getGermplasmIDStartRange()!=null || dnarunEntity.getGermplasmIDEndRange()!=null){ // 
                 //check which is not null
@@ -2740,7 +2746,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 lastQueriedDNArunEntity.setDnasampleUuidAsCommaSeparatedString(dnarunEntity.getSQLReadyDnasampleUuidNames());
 
                 checkPreviousAppends(dsNameCount, queryCount, sbWhere);
-                sbWhere.append(" where LOWER(ds.uuid) in ("+dnarunEntity.getSQLReadyDnasampleUuidNames()+")");
+                sbWhere.append(" LOWER(ds.uuid) in ("+dnarunEntity.getSQLReadyDnasampleUuidNames()+")");
                 dsNameCount++;  
             } 
             
@@ -2784,6 +2790,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             } else {
                 Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
             }
+            
+            
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -3105,8 +3113,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 //             build query for germplasm NAMES filter
             if (dnasampleEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !dnasampleEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
                 lastQueriedDNAsampleEntity.setGermplasmNamesAsCommaSeparatedString(dnasampleEntity.getSQLReadyGermplasmNames());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 
-                sbWhere.append(" where LOWER(g.name) in ("+dnasampleEntity.getSQLReadyGermplasmNames()+")");
+                sbWhere.append(" LOWER(g.name) in ("+dnasampleEntity.getSQLReadyGermplasmNames()+")");
                 dsNameCount++;  
             } else if (dnasampleEntity.getGermplasmIDStartRange()!=null || dnasampleEntity.getGermplasmIDEndRange()!=null){ // 
                 //check which is not null
@@ -3146,8 +3155,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             //build query for UUID
             if (dnasampleEntity.getDnasampleUuidAsEnterSeparatedString()!=null && !dnasampleEntity.getDnasampleUuidAsEnterSeparatedString().isEmpty()){
                 lastQueriedDNAsampleEntity.setDnasampleUuidAsCommaSeparatedString(dnasampleEntity.getSQLReadyDnasampleUuidNames());
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
                 
-                sbWhere.append(" where LOWER(ds.uuid) in ("+dnasampleEntity.getSQLReadyDnasampleUuidNames()+")");
+                sbWhere.append(" LOWER(ds.uuid) in ("+dnasampleEntity.getSQLReadyDnasampleUuidNames()+")");
                 dsNameCount++;  
             } 
             
@@ -3169,9 +3179,11 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 String query = sb.toString();
                 System.out.println(query);
                 list = context.fetch(query).into(DnasampleViewEntity.class);
-            } else {
-                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            } else if (Utils.isRecordNotNullOrEmpty(dnasampleEntity.getProjectRecord())){
+                      Messagebox.show("Please add more filters","Too broad", Messagebox.OK, Messagebox.EXCLAMATION);
             }
+            else Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            
         }catch(Exception e ){
             e.printStackTrace();
             Messagebox.show(e.getMessage(), "ERROR", Messagebox.OK, Messagebox.ERROR);
@@ -3462,7 +3474,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbWhere = new StringBuilder(); 
 
-            sb.append("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_idSELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id");
+            sb.append("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id");
 
 //             build query for germplasm NAMES filter
             if (germplasmEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !germplasmEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){
@@ -3550,9 +3562,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                         startTime = System.currentTimeMillis();
                         
-//                        context.delete(GERMPLASM)
-//                        .where(GERMPLASM.GERMPLASM_ID.eq(id))
-//                        .execute();
+                        context.delete(GERMPLASM)
+                        .where(GERMPLASM.GERMPLASM_ID.eq(id))
+                        .execute();
 
                         endTime = System.currentTimeMillis();
                         double rowDeleteSeconds = (endTime - startTime) / 1000;
@@ -3575,7 +3587,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
-                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+                        args.put("filterEntity", lastQueriedGermplasmEntity.getFilterListAsRows());
 
                         Window window = (Window)Executions.createComponents(
                                 "/marker_delete_successful.zul", null, args);
@@ -3720,12 +3732,12 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                         startTime = System.currentTimeMillis();
                         
-//                        germplasmsDeleted = context.deleteFrom(GERMPLASM)
-//                        .where(GERMPLASM.GERMPLASM_ID.in(finalListThatcanBeDeleted
-//                                .stream()
-//                                .map(GermplasmViewEntity::getGermplasmId)
-//                                .collect(Collectors.toList())))
-//                        .execute();
+                        germplasmsDeleted = context.deleteFrom(GERMPLASM)
+                        .where(GERMPLASM.GERMPLASM_ID.in(finalListThatcanBeDeleted
+                                .stream()
+                                .map(GermplasmViewEntity::getGermplasmId)
+                                .collect(Collectors.toList())))
+                        .execute();
 
                         endTime = System.currentTimeMillis();
                         double rowDeleteSeconds = (endTime - startTime) / 1000;
@@ -3748,7 +3760,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                         log.info(logSB.toString());
                         Map<String, Object> args = new HashMap<String, Object>();
                         args.put("successMessagesAsList", successMessagesAsList);
-                        args.put("filterEntity", lastQueriedDNAsampleEntity.getFilterListAsRows());
+                        args.put("filterEntity", lastQueriedGermplasmEntity.getFilterListAsRows());
 
                         Window window = (Window)Executions.createComponents(
                                 "/marker_delete_successful.zul", null, args);
