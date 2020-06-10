@@ -48,7 +48,6 @@ public class GermplasmViewModel {
         viewModelService = new ViewModelServiceImpl();
         
         setGermplasmEntity(new GermplasmEntity());
-        setGermplasmList(viewModelService.getAllGermplasms());
         
     }
 
