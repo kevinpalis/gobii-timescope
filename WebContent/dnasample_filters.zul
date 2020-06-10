@@ -34,7 +34,7 @@
 													value="DNA Sample Names:" />
 											</cell>
 											<cell>
-												<textbox rows="4"
+												<textbox rows="2"
 													cols="40" hflex="true" vflex="max"
 													tooltiptext="Separate dnasample names with a new line"
 													value="@bind(vm.dnarunEntity.dnasampleNamesAsEnterSeparatedString)"
@@ -50,7 +50,7 @@
 													value="DNA Sample UUID:" />
 											</cell>
 											<cell>
-												<textbox rows="4"
+												<textbox rows="2"
 													cols="40" hflex="true" vflex="max"
 													tooltiptext="Separate each UUID with a new line"
 													value="@bind(vm.dnarunEntity.dnasampleUuidAsEnterSeparatedString)"

@@ -66,7 +66,7 @@ public class DnasampleViewModel {
 
 
     @Command("submitQuery")
-    @NotifyChange({"dnasampleList","selectedList", "allCbSelected", "cbAllUsers","paged", "sizeDnasampleList"})
+    @NotifyChange({"dnasampleList","selectedList", "allCbSelected", "cbAllUsers","paged", "sizeDnasampleList","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled"})
     public void submitQuery(){
 //        viewModelService.getAllDnasamplesBasedOnQuery(dnasampleEntity);
 //        viewModelService.getDnasampleidsbyproject(6);
@@ -82,19 +82,13 @@ public class DnasampleViewModel {
         dnasampleGrid.setEmptyMessage("There are no dnasamples that match your search.");
         setDnasampleList(viewModelService.getAllDnasamplesBasedOnQuery(dnasampleEntity));
 
-        setiDBoxDisabled(false);
-        setnameListDisabled(false);
         setAllCbSelected(false);
         setCbAllUsers(false);
-        setDsIDBoxDisabled(false);
-        setDsNameListDisabled(false);
-        setGermplasmIDBoxDisabled(false);
-        setGermplasmNameListDisabled(false);
 
     }
 
     @Command("resetDnasampleTab")
-    @NotifyChange({"dnasampleList", "sizeDnasampleList", "selectedList", "allCbSelected", "cbAllUsers", "dnasampleEntity","iDBoxDisabled","nameListDisabled", "paged"})
+    @NotifyChange({"dnasampleList", "sizeDnasampleList", "selectedList", "allCbSelected", "cbAllUsers", "dnasampleEntity","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled", "paged"})
     public void resetDnasampleTab(){
         try{
             dnasampleList.clear(); //clear the list first and then just add if there are any selected

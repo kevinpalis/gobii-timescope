@@ -1,0 +1,206 @@
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
+
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.GermplasmViewModel')">
+	<caption sclass="fn-caption" label="Germplasms" />
+
+	<tabbox
+		style="border: 0px !important; padding:0px !important; margin:0px !important;"
+		vflex="1" hflex="1">
+		<tabs visible="false">
+			<tab id="datasetSearchTab" label="Search" />
+			<tab id="datasetSummaryTab" label="Summary"
+				onClick="@command('resetDSSummary')" />
+		</tabs>
+		<tabpanels vflex="1">
+			<tabpanel vflex="1"
+				style="border: 0 !important; padding:0 !important; margin:0;">
+				<borderlayout vflex="1" hflex="true">
+					<north title="Filters:" style=" border: 0px;"
+						splittable="true" collapsible="true">
+						<vlayout vflex="1">
+							<hlayout vflex="2">
+								<grid hflex="1" vflex="1" style="border: none !important; padding:0 !important; margin:0;">
+									<columns>
+										<column align="left" width="30%"/>
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												Germplasm ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.germplasmEntity.germplasmIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.germplasmEntity.germplasmIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.iDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="Germplasm Name:" />
+											</cell>
+											<cell>
+												<textbox rows="4"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate germplasm names with a new line"
+													value="@bind(vm.germplasmEntity.germplasmNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.nameListDisabled)"
+													onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+								</grid>
+							</hlayout>
+
+							<div align="center" hflex="1">
+								<button label="Clear" width="200px"
+									onClick="@command('resetGermplasmTab')" />
+								<button label="Submit Query"
+									width="200px" onClick="@command('submitQuery')" />
+								<button
+									visible="@load(not vm.isRoleUser)" id="deleteBtn"
+									style="background-color: red" label="Delete Selected"
+									hflex="min" onClick="@command('deleteSelectedGermplasms')" />
+							</div>
+
+						</vlayout>
+					</north>
+
+					<center border="0" vflex="1" hflex="1">
+						<div vflex="1" hflex="1">
+							<div vflex="1" hflex="1">
+								<vbox vflex="1" hflex="1">
+									<grid id="germplasmGrid"
+										model="@load(vm.germplasmList)" mold="paging" pageSize="25" vflex="1" hflex="1" 
+										emptyMessage="There's nothing to see here. Submit a query to search for Germplasms.">
+										<columns sizable="true">
+											<column hflex="min">
+												<checkbox
+													label="Select All" onCheck="@command('doSelectAll')"
+													checked="@bind(vm.cbAllUsers)" />
+											</column>
+											<column hflex="1"
+												sort="auto(germplasmId)">
+												<label
+													value="Germplasm ID" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(germplasmName))">
+												<label
+													value="Germplasm Name" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(externalCode))">
+												<label
+													value="External Code Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleId))">
+												<label
+													value="DNAsample Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnasampleName))">
+												<label
+													value="DNAsample Name" />
+											</column>
+										</columns>
+										<template name="model"
+											var="germplasm">
+											<row>
+												<cell>
+													<checkbox
+														value="@load(germplasm)" checked="@load(vm.allCbSelected)"
+														onCheck="@command('updateSelectDs', dsChecked=self.value, isChecked=self.checked)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.germplasmId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.germplasmName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.externalCode)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.dnasampleId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.dnasampleName)" />
+												</cell>
+											</row>
+										</template>
+									</grid>
+									<hbox hflex="1" vflex="min"
+										pack="end" align="end">
+										<label
+											value="Total number of rows:" sclass="row-count" />
+										<label
+											value="@bind(vm.sizeGermplasmList)" sclass="row-count" />
+									</hbox>
+								</vbox>
+							</div>
+							<popup id="title" width="400px">
+								<label
+									value="Separate each name with a new line." />
+							</popup>
+						</div>
+					</center>
+
+				</borderlayout>
+			</tabpanel>
+			<tabpanel visible="false">
+
+				<div
+					visible="@load(not vm.performedDeleteSuccesfully)">
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
+
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="You have not deleted anything yet." />
+					</vbox>
+				</div>
+
+				<div visible="@load(vm.performedDeleteSuccesfully)">
+
+					<vbox vflex="1" hflex="1" align="center"
+						pack="center" spacing="50px">
+
+						<label
+							style="font-style: oblique; font-size: 20px"
+							value="Succesfully deleted Germplasm(s)" />
+
+						<label
+							style="font-style: oblique; font-size: 50px" value="SUMMARY" />
+
+
+					</vbox>
+				</div>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	         
+</window>

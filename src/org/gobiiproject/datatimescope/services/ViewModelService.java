@@ -27,6 +27,8 @@ import org.gobiiproject.datatimescope.entity.DnarunEntity;
 import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmViewEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupEntity;
 import org.gobiiproject.datatimescope.entity.LinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.MarkerDetailDatasetEntity;
@@ -193,6 +195,14 @@ public interface ViewModelService {
     public boolean deleteDnasample(DnasampleViewEntity dnasampleViewEntity);
 
     public boolean deleteDnasamples(List<DnasampleViewEntity> selectedList);
+
+    public List<GermplasmViewEntity> getAllGermplasms();
+
+    public List<GermplasmViewEntity> getAllGermplasmsBasedOnQuery(GermplasmEntity germplasmEntity);
+
+    public boolean deleteGermplasm(GermplasmViewEntity germplasmViewEntity);
+
+    public boolean deleteGermplasms(List<GermplasmViewEntity> selectedList);
 
 
 }

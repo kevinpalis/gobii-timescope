@@ -57,7 +57,7 @@
 													value="DNA Run Names:" />
 											</cell>
 											<cell>
-												<textbox rows="4"
+												<textbox rows="2"
 													cols="40" hflex="true" vflex="true"
 													tooltiptext="Separate dnarun names with a new line"
 													value="@bind(vm.dnarunEntity.dnarunNamesAsEnterSeparatedString)"
@@ -86,7 +86,7 @@
 								<vbox hflex="2">
 
 									<tabbox orient="left" hflex="true"
-										height="250px" style="border:none;">
+										height="200px" style="border:none;">
 										<tabs width="180px">
 											<tab id="F"
 												label="@load(vm.projectsTabLabel)" sclass="tab-title"
@@ -195,7 +195,7 @@
 											</tabpanel>
 										</tabpanels>
 									</tabbox>
-									<grid hflex="1" vflex="1"
+									<grid hflex="1" vflex="min"
 										style="border: none !important; padding:0 !important; margin:0;">
 										<columns>
 											<column align="left"
@@ -206,10 +206,10 @@
 											<row>
 												<cell
 													sclass="row-title">
-													Current Filters:
+													Selected Filters:
 												</cell>
 												<cell>
-													<textbox rows="8"
+													<textbox rows="5"
 														cols="40" hflex="true" vflex="max" multiline="true"
 														value="@bind(vm.currentFiltersAsText)" readonly="true"
 														style="resize:none; background-color: white !important; border: 0px !important; overflow:auto !important; color: #787878 !important; font-size: .9em;">
