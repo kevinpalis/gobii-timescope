@@ -8,15 +8,19 @@ public class GermplasmViewEntity {
     private String externalCode;
     private Integer dnasampleId;
     private String dnasampleName;
+    private Integer dnarunId;
+    private String dnarunName;
     
     
-    public GermplasmViewEntity(Integer germplasmId, String germplasmName, String externalCode, Integer dnasampleId, String dnasampleName) {
+    public GermplasmViewEntity(Integer germplasmId, String germplasmName, String externalCode, Integer dnasampleId, String dnasampleName, Integer dnarunId, String dnarunName) {
 
         setDnasampleId(dnasampleId);
         setDnasampleName(dnasampleName);
         setExternalCode(externalCode);
         setGermplasmId(germplasmId);
         setGermplasmName(germplasmName);
+        setDnarunId(dnarunId);
+        setDnarunName(dnarunName);
     }
     
     public Integer getDnasampleId() {
@@ -55,5 +59,21 @@ public class GermplasmViewEntity {
     }
     public void setExternalCode(String externalCode) {
         this.externalCode = externalCode;
+    }
+
+    public Integer getDnarunId() {
+        return dnarunId;
+    }
+
+    public void setDnarunId(Integer dnarunId) {
+        this.dnarunId = dnarunId;
+    }
+
+    public String getDnarunName() {
+        return dnarunName;
+    }
+
+    public void setDnarunName(String dnarunName) {
+        this.dnarunName = dnarunName;
     }
 }

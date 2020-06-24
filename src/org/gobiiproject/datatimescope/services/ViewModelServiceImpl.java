@@ -3447,7 +3447,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         List<GermplasmViewEntity> list = null;
         try{
 
-            list = context.fetch("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id").into(GermplasmViewEntity.class);
+            list = context.fetch("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, dr.dnarun_id AS dnarunId, dr.name AS dnarunName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id LEFT JOIN dnarun dr ON dr.dnasample_id = ds.dnasample_id").into(GermplasmViewEntity.class);
 
         }catch(Exception e ){
             e.printStackTrace();
@@ -3474,7 +3474,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             StringBuilder sb = new StringBuilder();
             StringBuilder sbWhere = new StringBuilder(); 
 
-            sb.append("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id");
+            sb.append("SELECT distinct on (g.germplasm_id) g.germplasm_id as germplasmId, g.name as germplasmName, g.external_code as externalCode, ds.dnasample_id AS dnasampleId, ds.name AS dnasampleName, dr.dnarun_id AS dnarunId, dr.name AS dnarunName FROM germplasm g LEFT JOIN dnasample ds ON ds.germplasm_id=g.germplasm_id LEFT JOIN dnarun dr ON dr.dnasample_id = ds.dnasample_id");
 
 //             build query for germplasm NAMES filter
             if (germplasmEntity.getGermplasmNamesAsEnterSeparatedString()!=null && !germplasmEntity.getGermplasmNamesAsEnterSeparatedString().isEmpty()){

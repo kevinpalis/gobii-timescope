@@ -121,6 +121,16 @@
 												<label
 													value="DNAsample Name" />
 											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnarunId))">
+												<label
+													value="DNArun Id" />
+											</column>
+											<column hflex="1"
+												sort="auto(LOWER(dnasrunName))">
+												<label
+													value="DNArun Name" />
+											</column>
 										</columns>
 										<template name="model"
 											var="germplasm">
@@ -149,6 +159,14 @@
 												<cell>
 													<label sclass="grid-row"
 															value="@load(germplasm.dnasampleName)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.dnarunId)" />
+												</cell>
+												<cell>
+													<label sclass="grid-row"
+															value="@load(germplasm.dnarunName)" />
 												</cell>
 											</row>
 										</template>
