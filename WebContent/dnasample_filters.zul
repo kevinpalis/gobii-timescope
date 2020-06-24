@@ -1,0 +1,63 @@
+
+<?page title="Manage Users" contentType="text/html;charset=UTF-8"?>
+<?link rel="stylesheet" type="text/css" href="/style.css"?>
+
+<grid hflex="1" vflex="1" style="border: none !important; padding:0 !important; margin:0;">
+									<columns>
+										<column align="left" width="30%"/>
+										<column align="left" />
+									</columns>
+									<rows>
+										<row>
+											<cell sclass="row-title">
+												DNA Sample ID:
+											</cell>
+											<cell>
+												<hbox hflex="true">
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.dnasampleIDStartRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.dsIDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+													to
+													<intbox hflex="true"
+														value="@bind(vm.dnarunEntity.dnasampleIDEndRange)"
+														constraint="no negative, no zero"
+														disabled="@bind(vm.dsIDBoxDisabled)"
+														onChange="@command('changeEnabled')" />
+												</hbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title">
+												<label
+													value="DNA Sample Names:" />
+											</cell>
+											<cell>
+												<textbox rows="2"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate dnasample names with a new line"
+													value="@bind(vm.dnarunEntity.dnasampleNamesAsEnterSeparatedString)"
+													popup="title, position=start_before"
+													disabled="@bind(vm.dsNameListDisabled)"
+													onChange="@command('changeEnabled')">
+												</textbox>
+											</cell>
+										</row>
+										<row>
+											<cell sclass="row-title" >
+												<label
+													value="DNA Sample UUID:" />
+											</cell>
+											<cell>
+												<textbox rows="2"
+													cols="40" hflex="true" vflex="max"
+													tooltiptext="Separate each UUID with a new line"
+													value="@bind(vm.dnarunEntity.dnasampleUuidAsEnterSeparatedString)"
+													popup="title, position=start_before">
+												</textbox>
+											</cell>
+										</row>
+									</rows>
+									
+								</grid>
