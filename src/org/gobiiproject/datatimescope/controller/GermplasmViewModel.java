@@ -263,11 +263,14 @@ public class GermplasmViewModel {
     }
 
     public void setGermplasmList(List<GermplasmViewEntity> germplasmList) {
+        
         if(Utils.isListNotNullOrEmpty(germplasmList)) {
             if(germplasmList.size() > 25) setPaged(true);
             else setPaged(false);
             
             this.germplasmList = germplasmList;
+        }else {
+            this.germplasmList =  new ArrayList<GermplasmViewEntity>();
         }
     }
     

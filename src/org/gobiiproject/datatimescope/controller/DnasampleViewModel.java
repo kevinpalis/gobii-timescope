@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.entity.DnasampleEntity;
 import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
+import org.gobiiproject.datatimescope.entity.GermplasmViewEntity;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.Utils;
@@ -307,6 +308,8 @@ public class DnasampleViewModel {
             else setPaged(false);
             
             this.dnasampleList = dnasampleList;
+        } else {
+            this.dnasampleList =  new ArrayList<DnasampleViewEntity>();
         }
     }
     

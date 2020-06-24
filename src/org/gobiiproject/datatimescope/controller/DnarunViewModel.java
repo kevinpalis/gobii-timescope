@@ -27,6 +27,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentReco
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.entity.DnarunEntity;
 import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
+import org.gobiiproject.datatimescope.entity.DnasampleViewEntity;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
@@ -510,6 +511,8 @@ public class DnarunViewModel {
             else setPaged(false);
             
             this.dnarunList = dnarunList;
+        }else {
+            this.dnarunList =  new ArrayList<DnarunViewEntity>();
         }
     }
 
