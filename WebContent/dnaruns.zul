@@ -176,6 +176,14 @@
 												</hbox>
 												<separator
 													spacing="12px" visible="@load(vm.dbDataset)" />
+												<checkbox id="l1"
+												checked="@load(vm.dnarunEntity.dnarunNotInDatasets)"
+												label="None" visible="@load(not empty vm.datasetList)"
+												tooltip="Search for dnaruns that are not associated with any dataset"
+												onCheck="@command('noDatasetsSelectedAsFilter', isChecked=self.checked)"
+												Style="margin-left: 3px;}" />
+												<separator spacing="12px"
+												visible="@load(not vm.dbDataset)" />
 												<listbox hflex="max"
 													visible="@load(vm.dbDataset)" vflex="1"
 													model="@load(vm.datasetList)" multiple="true"
