@@ -10,10 +10,10 @@
 	<vlayout>
 
 		<label style=" font-size: 14px"
-			value="The following germplasm(s) can't be deleted because they are associated with a dnasample" />
+			value="The following germplasm(s) can't be deleted because they are associated with a dnasample or dnarun" />
 		<label style=" font-size: 14px" value="" />
 		<label style=" font-size: 12px; font-style:italic; "
-			value="*Dnasamples listed below must be deleted before the corresponding germplasm can be deleted." />
+			value="*Dnasamples and Dnaruns listed below must be deleted before the corresponding germplasm can be deleted." />
 		
 		<grid id="germplasmGrid"
 			model="@load(vm.germplasmDeleteResultTableEntityList)" mold="paging"
@@ -26,7 +26,10 @@
 					<label value="Germplasm Name" />
 				</column>
 				<column hflex="1">
-					<label value="In Dnasample(s)" />
+					<label value="In Dnasample" />
+				</column>
+				<column hflex="1">
+					<label value="In Dnarun" />
 				</column>
 			</columns>
 			<template name="model" var="germplasm">
@@ -35,10 +38,13 @@
 						<label value="@load(germplasm.germplasm_id)" />
 					</cell>
 					<cell>
-						<label value="@load(germplasm.germplasm_name)" />
+						<label style=" font-size: .9em;" value="@load(germplasm.germplasm_name)" />
 					</cell>
 					<cell>
-						<label value="@load(germplasm.dnasample_name)" />
+						<label style=" font-size: .9em;" value="@load(germplasm.dnasample_name)" />
+					</cell>
+					<cell>
+						<label style=" font-size: .9em;" value="@load(germplasm.dnarun_name)" />
 					</cell>
 				</row>
 			</template>

@@ -63,6 +63,7 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Rows;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 public class DnarunViewModel {
@@ -74,6 +75,8 @@ public class DnarunViewModel {
 
     @Wire("#dnarunGrid")
     Grid dnarunGrid;
+    @Wire("#lblDatasetFilter")
+    Textbox lblDatasetFilter;
     
     private Integer sizeDnarunList=0;
     private String filterProject, projectsTabLabel;
@@ -139,7 +142,7 @@ public class DnarunViewModel {
     }
 
     @Command("resetDnarunTab")
-    @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled", "paged"})
+    @NotifyChange({"dnarunList", "currentFiltersAsText", "sizeDnarunList", "dbDataset","projectsTabLabel","experimentTabLabel","datasetTabLabel", "selectedList", "dbProjects", "dbExperiment", "projectList", "experimentList", "datasetList", "allCbSelected", "cbAllUsers", "dnarunEntity","iDBoxDisabled","nameListDisabled","dsIDBoxDisabled","dsNameListDisabled","germplasmIDBoxDisabled","germplasmNameListDisabled", "paged"})
     public void resetDnarunTab(){
         try{
             dnarunList.clear(); //clear the list first and then just add if there are any selected
@@ -151,6 +154,9 @@ public class DnarunViewModel {
         dnarunEntity = new DnarunEntity();
         currentFiltersAsText = "";
 
+        setProjectList(viewModelService.getAllProjects());
+        setExperimentList(viewModelService.getAllExperiments());
+        setDatasetList(viewModelService.getAllDatasets());
 
         dnarunGrid.setEmptyMessage("There's nothing to see here. Submit a query to search for DNAruns");
         setiDBoxDisabled(false);
@@ -304,6 +310,26 @@ public class DnarunViewModel {
         }
     }
 
+    @Command("noDatasetsSelectedAsFilter")
+    @NotifyChange({"dbDataset","lblDatasetFilter","currentFiltersAsText"})
+    public void noDatasetsSelectedAsFilter(@BindingParam("isChecked") Boolean isChecked){
+        if(isChecked){
+            dnarunEntity.setDnarunNotInDatasets(true);
+            dbDataset=false;
+            lblDatasetFilter.setValue("Will search for dnaruns that are not associated with any dataset.");
+        }else{
+            if(!Utils.isListNotNullOrEmpty(datasetList)) { // if dataset is empty just change the label
+                dbDataset=false;
+                lblDatasetFilter.setValue("There's nothing to see here");
+            }else { //not empty then display search bar
+                dbDataset=true;
+            }
+            dnarunEntity.setDnarunNotInDatasets(false);
+        }
+
+        currentFiltersAsText = dnarunEntity.getFiltersAsTextWithDelimiter(System.getProperty("line.separator"));
+    }
+    
     @GlobalCommand("retrieveDNArunList")
     @NotifyChange({"dnarunList", "sizeDnarunList", "selectedList", "allCbSelected", "cbAllUsers","paged"})
     public void retrieveDNArunList(){

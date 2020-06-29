@@ -35,10 +35,10 @@
 						<label value="@load(dnasample.dnasample_id)" />
 					</cell>
 					<cell>
-						<label value="@load(dnasample.dnasample_name)" />
+						<label style=" font-size: .9em;" value="@load(dnasample.dnasample_name)" />
 					</cell>
 					<cell>
-						<label value="@load(dnasample.dnarun_name)" />
+						<label style=" font-size: .9em;" value="@load(dnasample.dnarun_name)" />
 					</cell>
 				</row>
 			</template>

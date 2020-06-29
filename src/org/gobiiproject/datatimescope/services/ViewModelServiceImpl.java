@@ -1131,11 +1131,11 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             }
 
             if(sbWhere.length()>0) {
-                sbWhere.append(";");
-                sb.append(sbWhere.toString());
-                String query = sb.toString();
-                System.out.println(query);
-                markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+                    sbWhere.append(";");
+                    sb.append(sbWhere.toString());
+                    String query = sb.toString();
+                    System.out.println(query);
+                    markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
             }
             else {
                 Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
@@ -2424,11 +2424,18 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
                 queryCount++;
             }
-
-            sbWhere.append(";");
-            sb.append(sbWhere.toString());
-            String query = sb.toString();
-            markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+            
+            
+            if(sbWhere.length()>0) {
+                    sbWhere.append(";");
+                    sb.append(sbWhere.toString());
+                    String query = sb.toString();
+                    markerList = context.fetch(query).into(VMarkerSummaryEntity.class);
+            }
+            else {
+                Messagebox.show("Please specify filters", "There is nothing selected", Messagebox.OK, Messagebox.EXCLAMATION);
+            }
+           
 
         }catch(Exception e ){
             e.printStackTrace();
@@ -2772,7 +2779,16 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             }
 
 //            // build query for DATASETS filter
-        if (Utils.isListNotNullOrEmpty(dnarunEntity.getDatasetList())){
+
+            //build query for 'none' selected on dataset filter
+            if(dnarunEntity.isDnarunNotInDatasets()) {
+                sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
+                lastQueriedDNArunEntity.setDnarunNotInDatasets(true);
+                checkPreviousAppends(dsNameCount, queryCount, sbWhere);
+                sbWhere.append(" dr.dataset_dnarun_idx = '{}' ");
+                queryCount++;
+            }
+            else if (Utils.isListNotNullOrEmpty(dnarunEntity.getDatasetList())){
                 lastQueriedDNArunEntity.getDatasetList().addAll(dnarunEntity.getDatasetList());
                   sb.append(" LEFT JOIN dataset d ON jsonb_exists(dr.dataset_dnarun_idx, d.dataset_id::text) ");
                   checkPreviousAppends(dsNameCount, queryCount, sbWhere);
@@ -3607,7 +3623,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     }
 
     private List<GermplasmViewEntity> checkWhichGermplasmsAreUsedInADnasample(List<GermplasmViewEntity> selectedList) {
-        // TODO Auto-generated method stub
 
         int totalNoOfCantBeDeleted = 0;
 
@@ -3630,7 +3645,25 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
                 List<DnasampleRecord> inDnasampleList = getDnasamplesbyGermplasmId(germplasm.getGermplasmId());
                 if(inDnasampleList.size()>0) {
                     inDnasample = true;
-                    germplasmDeleteResultTableEntity.setDnasample_name(setDnasampleIdDetails(inDnasampleList));
+                    
+                    //setDnasampleIdDetails
+                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sbDnarun = new StringBuilder();
+                    for(DnasampleRecord mgr : inDnasampleList){
+
+                        if(sb.length()>0) sb.append(", ");
+                        sb.append(" "+mgr.getName()+" ("+mgr.getDnasampleId()+")");
+
+                        //checkIfDnasampleisinaDataset
+                      List<DnarunRecord> inDnarunList = getDnarunsbyDnasampleId(mgr.getDnasampleId());
+                      if(inDnarunList.size()>0) {
+                          sbDnarun.append(setDnarunIdDetails(inDnarunList));
+                      }
+                    }
+                    
+                    germplasmDeleteResultTableEntity.setDnasample_name(sb.toString());
+                    germplasmDeleteResultTableEntity.setDnarun_name(sbDnarun.toString());
+                    
                 }
                 
                 if(!inDnasample){
@@ -3680,20 +3713,6 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
 
         }
         return list;
-    }
-
-    private String setDnasampleIdDetails(List<DnasampleRecord> inDnarunList) {
-        // TODO Auto-generated method stub
-
-        StringBuilder sb = new StringBuilder();
-        for(DnasampleRecord mgr : inDnarunList){
-
-            if(sb.length()>0) sb.append(", ");
-            sb.append(" "+mgr.getName()+" ("+mgr.getDnasampleId()+")");
-
-        }
-
-        return(sb.toString());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

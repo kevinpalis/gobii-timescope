@@ -29,7 +29,8 @@ import org.gobiiproject.datatimescope.utils.Utils;
  */
 public class DnarunEntity implements Serializable,Cloneable {
 	private static final long serialVersionUID = 1L;
-	
+
+    private boolean dnarunNotInDatasets;
 	private Integer dnarunIDStartRange, dnasampleIDStartRange, germplasmIDStartRange;
 	private Integer dnarunIDEndRange, dnasampleIDEndRange, germplasmIDEndRange;
 	private String dnarunNamesAsEnterSeparatedString, dnasampleNamesAsEnterSeparatedString, dnasampleUuidAsEnterSeparatedString, germplasmNamesAsEnterSeparatedString, dnarunNamesAsCommaSeparatedString, dnasampleNamesAsCommaSeparatedString, dnasampleUuidAsCommaSeparatedString, germplasmNamesAsCommaSeparatedString;
@@ -46,6 +47,7 @@ public class DnarunEntity implements Serializable,Cloneable {
     private ArrayList<RowColEntity> filterListAsRows;
     
 	public DnarunEntity(){
+	    setDnarunNotInDatasets(false);
         setProjectList(new ArrayList<ProjectRecord>());
         setExperimentList(new ArrayList<ExperimentRecord>());
         setDatasetList(new ArrayList<DatasetRecord>());
@@ -243,7 +245,12 @@ public class DnarunEntity implements Serializable,Cloneable {
             filterListAsRows.add(rowColEntity);
         }
         
-        
+        if(dnarunNotInDatasets){
+            rowColEntity = new RowColEntity();
+            rowColEntity.setFirstRow("Dataset(s)");
+            rowColEntity.setSecondRow("*Should not be in a dataset");
+            filterListAsRows.add(rowColEntity);
+        }
        if(Utils.isListNotNullOrEmpty(getDatasetList())){
             rowColEntity = new RowColEntity();
             rowColEntity.setFirstRow("Dataset(s)");
@@ -268,7 +275,10 @@ public class DnarunEntity implements Serializable,Cloneable {
             sb.append(Utils.getListNamesToStringWithDelimiter(getExperimentList(), 1, delim));
         }
 
-       if(Utils.isListNotNullOrEmpty(getDatasetList())){
+        if(dnarunNotInDatasets){
+            sb.append("Dataset(s):\n\t*Should not be in a dataset");
+        }
+        else if(Utils.isListNotNullOrEmpty(getDatasetList())){
             sb.append("Dataset(s):");
             sb.append(Utils.getListNamesToStringWithDelimiter(getDatasetList(), 15, delim));
         }
@@ -450,6 +460,14 @@ public class DnarunEntity implements Serializable,Cloneable {
 
     public void setDnasampleUuidAsCommaSeparatedString(String dnasampleUuidAsCommaSeparatedString) {
         this.dnasampleUuidAsCommaSeparatedString = dnasampleUuidAsCommaSeparatedString;
+    }
+
+    public boolean isDnarunNotInDatasets() {
+        return dnarunNotInDatasets;
+    }
+
+    public void setDnarunNotInDatasets(boolean dnarunNotInDatasets) {
+        this.dnarunNotInDatasets = dnarunNotInDatasets;
     }
 
 }
