@@ -40,13 +40,13 @@
 						<label value="@load(marker.marker_id)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.marker_name)" />
+						<label style=" font-size: .9em;" value="@load(marker.marker_name)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.dataset_name)" />
+						<label style=" font-size: .9em;" value="@load(marker.dataset_name)" />
 					</cell>
 					<cell>
-						<label value="@load(marker.marker_group_name)" />
+						<label style=" font-size: .9em;" value="@load(marker.marker_group_name)" />
 					</cell>
 				</row>
 			</template>

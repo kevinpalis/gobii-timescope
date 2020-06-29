@@ -35,10 +35,10 @@
 						<label value="@load(dnarun.dnarun_id)" />
 					</cell>
 					<cell>
-						<label value="@load(dnarun.dnarun_name)" />
+						<label style=" font-size: .9em;" value="@load(dnarun.dnarun_name)" />
 					</cell>
 					<cell>
-						<label value="@load(dnarun.dataset_name)" />
+						<label style=" font-size: .9em;" value="@load(dnarun.dataset_name)" />
 					</cell>
 				</row>
 			</template>
