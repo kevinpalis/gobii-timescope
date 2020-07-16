@@ -29,6 +29,7 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
+import org.gobiiproject.datatimescope.entity.DnarunViewEntity;
 import org.gobiiproject.datatimescope.entity.MarkerRecordEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
@@ -936,11 +937,14 @@ public class MarkerViewModel {
     }
 
     public void setMarkerList(List<VMarkerSummaryEntity> list) {
-
-        if(list.size() > 25) setPaged(true);
-        else setPaged(false);
-
-        this.markerList = list;
+        if(Utils.isListNotNullOrEmpty(list)) {
+            if(list.size() > 25) setPaged(true);
+            else setPaged(false);
+    
+            this.markerList = list;
+        }else {
+            this.markerList =  new ArrayList<VMarkerSummaryEntity>();
+        }
     }
 
     public List<PlatformRecord> getPlatformList() {
