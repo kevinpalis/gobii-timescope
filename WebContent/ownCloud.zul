@@ -1,0 +1,71 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Integrations - OwnCloud</label>
+    <grid id="ownCloudGrid" width="800px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Decrypt:</cell>
+                <cell>
+                    <textbox disabled="@load(vm.documentLocked)" constraint="no empty"
+                             width="300px" value="@load(vm.xmlHandler.ownCloudDecrypt) @save(vm.xmlHandler.ownCloudDecrypt, before='disableEdit')">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Host:</cell>
+                <cell>
+                    <textbox
+                             width="300px" value="@load(vm.xmlHandler.ownCloudHost) @save(vm.xmlHandler.ownCloudHost, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Context Path:</cell>
+                <cell>
+                    <textbox
+                             width="300px" value="@load(vm.xmlHandler.ownCloudContextPath) @save(vm.xmlHandler.ownCloudContextPath, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Port:</cell>
+                <cell>
+                    <intbox  constraint="no empty, no negative" width="300px"
+                             value="@load(vm.xmlHandler.ownCloudPort) @save(vm.xmlHandler.ownCloudPort, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Is Active:</cell>
+                <cell>
+                    <textbox constraint="no empty" width="300px"
+                             value="@load(vm.xmlHandler.ownCloudIsActive) @save(vm.xmlHandler.ownCloudIsActive, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Status Check Interval Seconds:</cell>
+                <cell>
+                    <intbox constraint="no empty, no negative" width="300px"
+                            value="@load(vm.xmlHandler.ownCloudStatusCheckIntervalSecs) @save(vm.xmlHandler.ownCloudStatusCheckIntervalSecs, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Maximum Status Check Minutes:</cell>
+                <cell>
+                    <intbox constraint="no empty, no negative" width="300px"
+                            value="@load(vm.xmlHandler.ownCloudMaxStatusCheckMins) @save(vm.xmlHandler.ownCloudMaxStatusCheckMins, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('tomcatModification')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

@@ -189,7 +189,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     }
 
 
-    private DSLContext getDSLContext() {
+    public DSLContext getDSLContext() {
         // TODO Auto-generated method stub
 
         Configuration contextConfiguration = (Configuration) Sessions.getCurrent().getAttribute("contextConfiguration");
