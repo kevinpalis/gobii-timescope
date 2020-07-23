@@ -1,0 +1,71 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Integrations - KDCompute</label>
+    <grid id="kdComputeGrid" width="800px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Decrypt:</cell>
+                <cell>
+                    <textbox disabled="@load(vm.documentLocked)" constraint="no empty"
+                                width="300px" value="@load(vm.xmlHandler.kdComputeDecrypt) @save(vm.xmlHandler.kdComputeDecrypt, before='disableEdit')">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Host:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                             width="300px" value="@load(vm.xmlHandler.kdComputeHost) @save(vm.xmlHandler.kdComputeHost, before='disableEdit')" disabled="@load(vm.documentLocked)">
+                    </textbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Context Path:</cell>
+                <cell>
+                    <textbox constraint="no empty"
+                             width="300px" value="@load(vm.xmlHandler.kdComputeContextPath) @save(vm.xmlHandler.kdComputeContextPath, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Port:</cell>
+                <cell>
+                    <intbox  constraint="no empty, no negative, no zero" width="300px"
+                              value="@load(vm.xmlHandler.kdComputePort) @save(vm.xmlHandler.kdComputePort, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Is Active:</cell>
+                <cell>
+                    <textbox constraint="no empty" width="300px"
+                             value="@load(vm.xmlHandler.kdComputeIsActive) @save(vm.xmlHandler.kdComputeIsActive, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Status Check Interval Seconds:</cell>
+                <cell>
+                    <intbox constraint="no empty, no negative, no zero" width="300px"
+                            value="@load(vm.xmlHandler.kdComputeStatusCheckIntervalSecs) @save(vm.xmlHandler.kdComputeStatusCheckIntervalSecs, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Maximum Status Check Minutes:</cell>
+                <cell>
+                    <intbox constraint="no empty, no negative, no zero" width="300px"
+                            value="@load(vm.xmlHandler.kdComputeMaxStatusCheckMins) @save(vm.xmlHandler.kdComputeMaxStatusCheckMins, before='disableEdit')" disabled="@load(vm.documentLocked)"/>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="save" label="Save" onClick="@command('tomcatModification')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

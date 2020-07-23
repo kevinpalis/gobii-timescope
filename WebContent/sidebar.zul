@@ -1,6 +1,31 @@
 <vbox vflex="true">
 
 
+	<hbox vflex="2" />
+	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" vflex="25" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+		<tabs>
+			<tab id="Data"> Data</tab>
+			<tab id="Configuration" visible="@load(vm.isSuperAdmin)"> Configuration</tab>
+		</tabs>
+		<tabpanels>
+			<tabpanel hflex="max" vflex="25">
+				<hbox hflex="max" vflex="25">
+					<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
+						  apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
+						<columns>
+							<column width="45px" />
+							<column />
+						</columns>
+						<rows />
+					</grid>
+				</hbox>
+			</tabpanel>
+			<tabpanel hflex="max" vflex="25">
+				<include src="configTab.zul"/>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+
 	<hbox vflex="2"
 		apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
 			<image id="timescopeLogo" src="/imgs/datatimescope5.png" height="100px" onClick="@command('bringBackToHome')"/>

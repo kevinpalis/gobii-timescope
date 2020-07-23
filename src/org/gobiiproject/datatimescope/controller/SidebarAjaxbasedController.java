@@ -77,6 +77,7 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 //
 //					while(ite.hasNext()){
 
+						//Find mainContent on fnList,getPage() (can be replaced with getPage())
 						Include include = (Include)Selectors.iterable(fnList.getPage(), "#mainContent")
 								.iterator().next();
 						include.setSrc(locationUri);

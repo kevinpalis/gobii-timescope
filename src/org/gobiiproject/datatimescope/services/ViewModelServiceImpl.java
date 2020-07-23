@@ -132,9 +132,22 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         }
         try  {
 
-            String url = "jdbc:postgresql://"+serverInfo.getHost()+":"+serverInfo.getPort()+"/"+serverInfo.getDbName();
-            Connection conn = DriverManager.getConnection(url, userName, password);        
+	public ViewModelServiceImpl(){};
 
+	@Override
+	public boolean connectToDB(String userName, String password, ServerInfo serverInfo) {
+		// TODO Auto-generated method stub
+		boolean isConnected = false;
+		try {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e1) {
+			//TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try  {
+
+			String url = "jdbc:postgresql://"+serverInfo.getHost()+":"+serverInfo.getPort()+"/"+serverInfo.getDbName();
+			Connection conn = DriverManager.getConnection(url, userName, password);        
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
             Sessions.getCurrent().setAttribute("contextConfiguration", context.configuration());
             Sessions.getCurrent().setAttribute("serverInfo", serverInfo);
