@@ -54,17 +54,17 @@ public class UtilityFunctions {
     }
 
     public static void writeToLog(String context, String message, String username){
-        if (!configured){
-            try {
-                SimpleFormatter simpleFormatter = new SimpleFormatter();
-                FileHandler fileHandler = new FileHandler("../logs/ConfigManager.log");
-                log.addHandler(fileHandler);
-                fileHandler.setFormatter(simpleFormatter);
-                configured = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (!configured){
+//            try {
+//                SimpleFormatter simpleFormatter = new SimpleFormatter();
+//                FileHandler fileHandler = new FileHandler("../logs/ConfigManager.log");
+//                log.addHandler(fileHandler);
+//                fileHandler.setFormatter(simpleFormatter);
+//                configured = true;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
         log.info(username + ": The calling function is " + context  + ", with following message:\n\t" + message);
         // Somehow on shutdown need to get rid of the handlers
     }

@@ -1,44 +1,25 @@
 package org.gobiiproject.datatimescope.controller;
 
-import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
-import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.ContextParam;
-import org.zkoss.bind.annotation.ContextType;
-import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.Init;
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.ListModelList;
-import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 public class IndexViewModel {
@@ -52,44 +33,69 @@ public class IndexViewModel {
 
 	@Init
 	public void init() {
-		
+		log.debug("Initializing Index page");
 		viewModelService = new ViewModelServiceImpl();
 		
 		setDatawarehouseVersion(viewModelService.getDatawarehouseVersion());
-		
-		setServerInfo(new ServerInfo());
+		ServerInfo current = (ServerInfo) Sessions.getCurrent().getAttribute("serverInfo");
+		if (current == null || current.getHost() == null || current.getHost() == "" ) {
+			log.info("Loading default DB values from cookie");
+			ServerInfo serverInfo = new ServerInfo();
+			//Load cookies --
+			HttpServletRequest request = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
+			Cookie[] cookies = request.getCookies();
 
-		setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
+			for (Cookie cookie: cookies) {
+				if (cookie.getName().equals("DB_HOST")) {
+					serverInfo.setHost(cookie.getValue());
+				}
+				else if (cookie.getName().equals("DB_PORT")) {
+					serverInfo.setPort(cookie.getValue());
+				}
+				else if (cookie.getName().equals("DB_NAME")) {
+					serverInfo.setDbName(cookie.getValue());
+				}
+			}
 
-
-		File configFile = new File( System.getProperty("user.dir")+"/config.properties");
-		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-			InputStream reader = classLoader.getResourceAsStream("config.properties");
-			
-//		    FileReader reader = new FileReader(configFile);
-		    Properties props = new Properties();
-		    props.load(reader);
-		 
-		    String tsversion = props.getProperty("version");
-
-		    if(tsversion != null){
-		    reader.close();
-			setVersion(tsversion);
-			
-		    }
-		} catch (FileNotFoundException ex) {
-		    // file does not exist
-
-			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
-		} catch (IOException ex) {
-		    // I/O error
-			 log.error("i/o exception"+ ex.getMessage());
-		} catch (NullPointerException ex) {
-		    // file does not exist
-
-			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+			setServerInfo(serverInfo);
+		} else {
+			setServerInfo(current);
 		}
+		//setServerInfo((ServerInfo) Sessions.getCurrent().getAttribute("serverInfo"));
+		//getting the version
+		ServletContext context = Executions.getCurrent().getDesktop().getWebApp().getServletContext();
+		String version = (String) context.getAttribute("VERSION");
+		if (version != null) {
+			setVersion(version);
+		}
+
+//
+//		//File configFile = new File( System.getProperty("user.dir")+"/config.properties");
+//		try {
+//			//TODO: Move this to startup servlet and store the contents of config.properties to application scope.
+//			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//			InputStream reader = classLoader.getResourceAsStream("config.properties");
+//			
+//		    //FileReader reader = new FileReader(configFile);
+//		    Properties props = new Properties();
+//		    props.load(reader);
+//		 
+//		    String tsversion = props.getProperty("version");
+//
+//		    if(tsversion != null){
+//		    	setVersion(tsversion);
+//		    }
+//		    reader.close();
+//		} catch (FileNotFoundException ex) {
+//		    // file does not exist
+//			 log.error("cannot find config properties file: "+ configFile.getAbsolutePath());
+//		} catch (IOException ex) {
+//		    // I/O error
+//			 log.error("i/o exception"+ ex.getMessage());
+//		} catch (NullPointerException ex) {
+//		    // file does not exist
+//			 log.error("Null values were retrieved from config properties file: "+ configFile.getAbsolutePath());
+//		}
 	}
 
 	
@@ -116,6 +122,7 @@ public class IndexViewModel {
 	}
 
 	public void setServerInfo(ServerInfo serverInfo) {
+		log.debug(String.format("Set serverInfo called: %s %s %s", serverInfo.getHost(), serverInfo.getPort(), serverInfo.getDbName()));
 		this.serverInfo = serverInfo;
 	}
 

@@ -1,7 +1,10 @@
 <vbox vflex="true">
 
 
-	<hbox vflex="2" />
+	<hbox vflex="3"
+		apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
+			<image id="timescopeLogo" src="/imgs/datatimescope5.png" height="100px" onClick="@command('bringBackToHome')"/>
+	</hbox>
 	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" vflex="25" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 		<tabs>
 			<tab id="Data"> Data</tab>
