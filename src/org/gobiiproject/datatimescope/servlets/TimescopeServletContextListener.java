@@ -45,7 +45,6 @@ public class TimescopeServletContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce)  { 
          // TODO Auto-generated method stub
     	log.info("Timescope application is starting up.");
-    	
     	//start up activities
     	//load database connection properties to application scope.
     	try {
@@ -60,16 +59,13 @@ public class TimescopeServletContextListener implements ServletContextListener {
 		    String version = (String) props.get("version");
 		    
 		    if (username == null || username == ""  || password == null || password == "") {
-		    	log.warn("No database credentials are found config.");
-		    
+		    	log.warn("No database credentials are found config."); 
 		    }
 		    
 		    sce.getServletContext().setAttribute(DB_USERNAME, username);
 		    sce.getServletContext().setAttribute(DB_PASSWORD, password);
 		    sce.getServletContext().setAttribute(VERSION, version);
-		    
 		    log.info("Global database credentials set.");
-		    
 		    //TODO:  get username/password combo from env vars
 		    reader.close();
     	} catch (FileNotFoundException fnfe) {
@@ -78,8 +74,7 @@ public class TimescopeServletContextListener implements ServletContextListener {
     	} catch (IOException e) {
 			log.error("Error loading db properties -- check config file");
 			e.printStackTrace();
-		}
-    	
+		}	
     }
 	
 }
