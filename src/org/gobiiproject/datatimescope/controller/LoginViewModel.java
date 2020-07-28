@@ -175,7 +175,7 @@ public class LoginViewModel {
 //					e.printStackTrace();
 //				}
 
-				Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
+				//Messagebox.show("Login successful!", "", Messagebox.OK, Messagebox.INFORMATION);
 				Executions.sendRedirect("/index.zul");
 				return;
 
