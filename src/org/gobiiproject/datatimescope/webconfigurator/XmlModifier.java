@@ -90,24 +90,7 @@ public class XmlModifier extends SelectorComposer<Component> {
 	private static String portForReloadXPath = "//serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::port";
 
 	static {
-		String gobiiBundleDir = "";
-
-		try {
-			gobiiBundleDir = System.getenv("GOBII_DATA_BUNDLE_DIR");
-			if (gobiiBundleDir == "" || gobiiBundleDir == null) {
-				gobiiBundleDir = "/data/gobii_bundle/config/";
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		gobiiBundleDir = gobiiBundleDir.trim();
-		if (!gobiiBundleDir.endsWith("/")) {
-			gobiiBundleDir += "/";
-		}
-		path = String.format("%sgobii-web.xml", gobiiBundleDir);
-		log.debug(String.format("XmlModifier path: %s", path));
-
+		path = EnvUtil.getGobiiWebXmlFilename();
 	}
 
 	public XmlModifier(String name){

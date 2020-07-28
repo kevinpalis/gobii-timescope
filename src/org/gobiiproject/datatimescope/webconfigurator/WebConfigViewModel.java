@@ -104,16 +104,18 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
 	}
 
-
-
+    
+    
 
     /**
      * A function to create a copy of the current gobii-web.xml to enable a button to revert changes made.
      */
     private void copyCurrentSettings(){
         try {
-            Runtime.getRuntime().exec("cp /data/gobii_bundle/config/gobii-web.xml /usr/local/tomcat/temp/gobii-web-tmp.xml");
-            //Runtime.getRuntime().exec("cp /data/gobii_bundle/config/gobii-web.xml /home/fvgoldman/Documents/apache-tomcat-7.0.94/temp/gobii-web-tmp.xml");
+            Runtime.getRuntime().exec(
+            	String.format("cp %s %sgobii-web-tmp.xml", EnvUtil.getGobiiWebXmlFilename(), EnvUtil.getTempDir())
+            	//"cp /data/gobii_bundle/config/gobii-web.xml /usr/local/tomcat/temp/gobii-web-tmp.xml"
+            );
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully created temporary copy of gobii-web.xml.", username);
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,28 +130,33 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void revertAllSessionChanges(){
         ListModelList<String> oldCrops = xmlHandler.getCropList();
         try {
-            Runtime.getRuntime().exec("cp /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
-            //Runtime.getRuntime().exec("cp /home/fvgoldman/Documents/apache-tomcat-7.0.94/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
+            Runtime.getRuntime().exec(
+            	String.format("cp %sgobii-web-tmp.xml %sgobii-web-tmp.xml", EnvUtil.getTempDir(), EnvUtil.getGobiiBundleDir())
+            	//"cp /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml"
+            );
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Successfully copied temporary copy of gobii-web.xml.", username);
         } catch (IOException e) {
             e.printStackTrace();
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Copying of temporary copy of gobii-web.xml failed.", username);
         }
         String oldPostgresName = xmlHandler.getPostgresUserName();
-        xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
+        xmlHandler.setPath(String.format("%sgobii-web-tmp.xml", EnvUtil.getGobiiBundleDir()));
         ListModelList<String> newCrops = xmlHandler.getCropList();
         if (!oldCrops.equals(newCrops)){
             alert("Can't revert changes as a crop has been added or deleted during this session.");
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Can't revert changes as a crop has been added or deleted during this session.", username);
         } else {
             try {
-                Runtime.getRuntime().exec("mv /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web.xml");
-                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                Runtime.getRuntime().exec(
+                	String.format("mv %sgobii-web-tmp.xml %s", EnvUtil.getTempDir(), EnvUtil.getGobiiWebXmlFilename())
+                	//"mv /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web.xml"
+                );
+                xmlHandler.setPath(EnvUtil.getGobiiWebXmlFilename());
                 serverHandler.executePostgresChange(oldPostgresName);
                 alert("You have successfully reverted the changes made this session. The settings changed for the BackUp schedule and the Scheduler modifications have NOT been reverted.");
                 writeToLog("WebConfigViewModel.copyCurrentSettings()", "You have successfully reverted the changes made this session. The settings changed for the BackUp schedule and the Scheduler modifications have NOT been reverted.", username);
             } catch (IOException e) {
-                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                xmlHandler.setPath(EnvUtil.getGobiiWebXmlFilename());
                 e.printStackTrace();
                 writeToLog("WebConfigViewModel.copyCurrentSettings()", "Making temporary gobii-web.xml the main gobii-web.xml failed.", username);
             }
@@ -262,7 +269,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("exportXML")
     public void exportXML(@ContextParam(ContextType.BINDER) Binder binder){
         try {
-            InputStream is = new FileInputStream("/data/gobii_bundle/config/gobii-web.xml");
+            InputStream is = new FileInputStream(EnvUtil.getGobiiWebXmlFilename());
             Filedownload.save(is, "text/xml", "gobii-web.xml");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -334,7 +341,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             writeToLog("WebConfigViewModel.importXML()", "Imported file is valid.", username);
             if (scriptExecutor("importExportXml.sh", params)){
                 String oldPGname = xmlHandler.getPostgresUserName();
-                xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+                xmlHandler.setPath(EnvUtil.getGobiiWebXmlFilename());
                 warningComposer.warningTomcat(binder, this, "WebConfigViewModel.importXML()", "Imported XML is now being used.");
                 serverHandler.executePostgresChange(oldPGname);
             } else {
@@ -342,7 +349,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
                 writeToLog("WebConfigViewModel.importXML()", "After successful validation script for renaming failed.", username);
             }
         } else {
-            xmlHandler.setPath("/data/gobii_bundle/config/gobii-web.xml");
+            xmlHandler.setPath(EnvUtil.getGobiiWebXmlFilename());
             params = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "failed"));
             if (!scriptExecutor("importExportXml.sh", params)){
                 alert(validator.getErrorMessage() + "\nCouldn't remove the imported file from server.");
