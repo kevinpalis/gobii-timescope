@@ -1,10 +1,9 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.*;
-
-import org.zkoss.zk.ui.Executions;
 
 import static org.zkoss.zk.ui.util.Clients.alert;
 
@@ -61,7 +60,7 @@ public class UtilityFunctions {
         boolean success;
         //String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts" + scriptName;
-        String scriptPath = SCRIPTS_DIR + scriptName;
+        String scriptPath = getScriptPath(scriptName);
         
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
@@ -73,6 +72,14 @@ public class UtilityFunctions {
             success = false;
         }
         return success;
+    }
+    
+    public static String getScriptPath(String scriptName) {
+    	String scriptPath =  SCRIPTS_DIR + scriptName;
+    	if (!(new File(scriptPath)).exists()) {
+    		log.warning(String.format("Script file for %s does not exist", scriptName));
+    	}
+    	return scriptPath;
     }
 
 
