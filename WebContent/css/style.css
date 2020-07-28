@@ -170,3 +170,24 @@ div .z-caption-content {
     -ms-transform:rotateX(180deg); /* IE 9 */
     -webkit-transform:rotateX(180deg); /* Safari and Chrome */
 }
+
+.z-tree-icon .z-tree-open {
+	background-image: url("/imgs/minus.png");
+	background-repeat: no-repeat;
+	width: 100%;
+}
+
+.z-tree-icon .z-tree-close {
+	background-image: url("/imgs/plus_tree.png");
+	background-size: cover;
+	width: 100%;
+}
+
+.z-tree-spacer:nth-last-child(2):before {
+	font-family: fontawesome;
+	content: "\f085";
+} /*remove the font awesome
+		icon*/
+.z-tree-icon .z-tree-open::before, .z-tree-icon .z-tree-close::before {
+	content: '';
+}
