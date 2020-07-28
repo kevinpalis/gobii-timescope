@@ -1,13 +1,8 @@
 package org.gobiiproject.datatimescope.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
-import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
@@ -19,31 +14,18 @@ import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.ContextParam;
-import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.GlobalCommand;
-import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.CheckEvent;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Button;
-import org.zkoss.zul.Checkbox;
-import org.zkoss.zul.Column;
-import org.zkoss.zul.Columns;
-import org.zkoss.zul.Grid;
-import org.zkoss.zul.ListModel;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Row;
-import org.zkoss.zul.Rows;
 import org.zkoss.zul.Window;
+import org.apache.log4j.Logger;
 
 public class UserViewModel {
+	final static Logger log = Logger.getLogger(UserViewModel.class.getName());
 	//UI component
 	ViewModelService viewModelService;
 
@@ -52,7 +34,7 @@ public class UserViewModel {
 	private TimescoperEntity userAccount;
 
 	private ListModelList<String> roleList;
-	
+
 	private ListModelList<TimescoperEntity> userlist, selectedUsersList;
 
 	@AfterCompose
@@ -61,10 +43,13 @@ public class UserViewModel {
 
 		setCbAllUsers(false);
 		UserCredential cre = (UserCredential) Sessions.getCurrent().getAttribute("userCredential");
+		
+		
 
 		String accountUsername = cre.getAccount();
 
 		userAccount = viewModelService.getUserInfo(accountUsername);
+		log.debug(String.format("User account is role: %s", userAccount.getRolename()) );
 
 		roleList= new ListModelList<String>(Utils.getRoleList());
 
@@ -73,8 +58,10 @@ public class UserViewModel {
 		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
 
 		userlist.setMultiple(true);
-		
+
 		if(userAccount.getRolename().contains("Super")) superUser=true;
+		log.debug(String.format("User account is superUser: %b", superUser));
+		
 
 	}
 
@@ -86,16 +73,16 @@ public class UserViewModel {
 
 	}
 
-	
+
 	@Command("signout")
 	public void signout() {
-		
+
 		AuthenticationService authService =new AuthenticationServiceChapter3Impl();
 		authService.logout();
 
 		Executions.sendRedirect("/index.zul");
 	}
-	
+
 	@Command
 	public void editProfile(){
 
@@ -182,8 +169,8 @@ public class UserViewModel {
 		Window window = (Window)Executions.createComponents(
 				"/editUser.zul", null, args);
 		window.doModal();
-		
-			
+
+
 	}
 
 
@@ -251,10 +238,10 @@ public class UserViewModel {
 		userlist = new ListModelList<TimescoperEntity>(viewModelService.getAllOtherUsers(accountUsername), true);
 
 		userlist.setMultiple(true);
-		
+
 		if(userAccount.getRolename().contains("Super")) superUser=true;
 		else  superUser=false;
-		
+
 
 	}
 
@@ -276,7 +263,7 @@ public class UserViewModel {
 		}
 	}
 
-	
+
 	public TimescoperEntity getUserAccount() {
 		return userAccount;
 	}
@@ -334,5 +321,5 @@ public class UserViewModel {
 	public void setSuperUser(boolean superUser) {
 		this.superUser = superUser;
 	}
-	
+
 }
