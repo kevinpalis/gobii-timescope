@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.*;
 
+import org.zkoss.zk.ui.Executions;
+
 import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
@@ -17,6 +19,23 @@ public class UtilityFunctions {
     private static final Logger log = Logger.getLogger("../logs/ConfigManager");
     @SuppressWarnings("unused")
 	private static boolean configured = false;
+    
+    private static String SCRIPTS_DIR = "";
+    
+    static {
+    	//check if the script path is in env
+    	String envPath = System.getenv("WEBCONFIGURATOR_SCRIPTS_DIR");
+    	if (envPath != null && envPath != "") {
+    		SCRIPTS_DIR = envPath;
+    	} else {
+    		SCRIPTS_DIR = UtilityFunctions.class.getResource("./scripts/").getFile();
+    	}
+    	
+    	SCRIPTS_DIR = SCRIPTS_DIR.trim();
+    	if (!SCRIPTS_DIR.endsWith("/")) SCRIPTS_DIR += "/";
+    	log.info(String.format("WebConfigurator Scripts Dir : %s", SCRIPTS_DIR));
+    }
+    	
 
     /**
      * @param messages List of messages to be concatenated into one Alert error message
@@ -40,8 +59,10 @@ public class UtilityFunctions {
      */
     public static boolean scriptExecutor(String scriptName, List<String> scriptParameters){
         boolean success;
-        String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
+        //String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts" + scriptName;
+        String scriptPath = SCRIPTS_DIR + scriptName;
+        
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
         try {
@@ -53,6 +74,7 @@ public class UtilityFunctions {
         }
         return success;
     }
+
 
     public static void writeToLog(String context, String message, String username){
 //        if (!configured){
