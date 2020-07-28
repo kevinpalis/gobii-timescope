@@ -229,7 +229,10 @@ public class BackupHandler {
                 writer.write(str + System.lineSeparator());
             }
             writer.close();
-            Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
+            Runtime.getRuntime().exec(
+            	String.format("%s %s", UtilityFunctions.getScriptPath("dockerCopyCron.sh"),  hostFromXml)
+            );
+            //		"/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
             success = true;
             writeToLog("BackUpHandler.saveDataToCrons()", "New Backup preferences transferred to the server succesfully correctly.", username);
