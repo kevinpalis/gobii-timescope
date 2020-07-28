@@ -4,6 +4,7 @@ import org.gobiiproject.datatimescope.services.UserCredential;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
@@ -15,6 +16,8 @@ import org.zkoss.zul.Window;
 
 import java.io.*;
 import java.util.*;
+
+import javax.servlet.ServletContext;
 
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.*;
 
@@ -67,15 +70,39 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     }
 
     private void instantiate(){
+    	
         xmlHandler = new XmlModifier(username);
         backupHandler = new BackupHandler(username);
-        serverHandler = new ServerHandler(xmlHandler, username);
+        
+        
+        ServletContext context = (ServletContext)Executions.getCurrent().getDesktop().getWebApp().getServletContext();
+        String propsFile = context.getRealPath("/WEB-INF/classes/gobii-configurator.properties");
+        Properties properties = readPropertiesFile(propsFile);
+        propertyHandler = new PropertyHandler(username, properties);
+        serverHandler = new ServerHandler(xmlHandler, propertyHandler);
         cronHandler = new CronHandler(username);
         xmlCropHandler = new XmlCropHandler(username);
         warningComposer = new WarningComposer(xmlHandler, username);
-        propertyHandler = new PropertyHandler(username);
+        
         currentCrop = new Crop(username);
     }
+    
+    private Properties readPropertiesFile(String fileName) {
+		 
+		try {
+			FileReader reader=new FileReader(fileName);  
+
+			Properties p=new Properties(); 
+			p.load(reader);
+			return p;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		return new Properties(); //default empty
+
+	}
+
 
 
 
