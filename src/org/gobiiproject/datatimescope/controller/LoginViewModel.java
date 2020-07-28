@@ -10,23 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
-import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
 import org.gobiiproject.datatimescope.services.AuthenticationServiceChapter3Impl;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
-import org.gobiiproject.datatimescope.utils.Utils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 public class LoginViewModel {
@@ -43,13 +37,6 @@ public class LoginViewModel {
 	private ListModelList<String> roleList;
 
 	ViewModelService viewModelService;
-	
-	//referenced UI elements
-	private Textbox hostName;
-	private Textbox hostPort;
-	private Textbox hostDb;
-	private Textbox account;
-	private Textbox password;
 	
 	
 	private void prefillServerInfoFromCookies() {

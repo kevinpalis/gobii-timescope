@@ -12,11 +12,6 @@ timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::r
 package org.gobiiproject.datatimescope.entity;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
-import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
 
 /**
  * User entity

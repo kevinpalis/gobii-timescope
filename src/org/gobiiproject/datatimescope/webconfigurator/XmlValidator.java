@@ -228,7 +228,8 @@ public class XmlValidator {
     private boolean isNullOrEmpty(String value){
         return (null == value || value.isEmpty());
     }
-    private boolean isNullOrEmpty(int value){
+    @SuppressWarnings("unused")
+	private boolean isNullOrEmpty(int value){
         return (value == 0);
     }
 

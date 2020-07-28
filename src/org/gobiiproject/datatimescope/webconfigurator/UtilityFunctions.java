@@ -15,7 +15,8 @@ public class UtilityFunctions {
 
 
     private static final Logger log = Logger.getLogger("../logs/ConfigManager");
-    private static boolean configured = false;
+    @SuppressWarnings("unused")
+	private static boolean configured = false;
 
     /**
      * @param messages List of messages to be concatenated into one Alert error message

@@ -28,6 +28,7 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.*;
  *
  */
 
+@SuppressWarnings("serial")
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public ServerHandler serverHandler;
@@ -125,7 +126,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("revertAllSessionChanges")
     public void revertAllSessionChanges(){
-        ListModelList oldCrops = xmlHandler.getCropList();
+        ListModelList<String> oldCrops = xmlHandler.getCropList();
         try {
             Runtime.getRuntime().exec("cp /usr/local/tomcat/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
             //Runtime.getRuntime().exec("cp /home/fvgoldman/Documents/apache-tomcat-7.0.94/temp/gobii-web-tmp.xml /data/gobii_bundle/config/gobii-web-tmp.xml");
@@ -136,7 +137,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         String oldPostgresName = xmlHandler.getPostgresUserName();
         xmlHandler.setPath("/data/gobii_bundle/config/gobii-web-tmp.xml");
-        ListModelList newCrops = xmlHandler.getCropList();
+        ListModelList<String> newCrops = xmlHandler.getCropList();
         if (!oldCrops.equals(newCrops)){
             alert("Can't revert changes as a crop has been added or deleted during this session.");
             writeToLog("WebConfigViewModel.copyCurrentSettings()", "Can't revert changes as a crop has been added or deleted during this session.", username);
@@ -368,7 +369,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("addCropToDatabase")
     public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
-        List currentCrops = xmlHandler.getCropList();
+        List<String> currentCrops = xmlHandler.getCropList();
         if (currentCrops.contains(currentCrop.getName())){
             alert("This crop already has a database associated with it. Please choose another crop.");
             writeToLog("WebConfigViewModel.addCropToDatabase()", "This crop already has a database associated with it. Please choose another crop.", username);

@@ -23,7 +23,8 @@ public class Crop {
     private boolean activityChanged;
     private XmlModifier xmlHandler;
     private String contactData;
-    private String contactDataShort;
+    @SuppressWarnings("unused")
+	private String contactDataShort;
     private String typedName;
     private boolean hideContactData = true;
     private String username;

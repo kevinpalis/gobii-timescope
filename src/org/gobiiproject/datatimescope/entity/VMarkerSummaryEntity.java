@@ -1,7 +1,5 @@
 package org.gobiiproject.datatimescope.entity;
 
-import java.sql.Date;
-
 import org.gobiiproject.datatimescope.db.generated.tables.records.VMarkerSummaryRecord;
 import org.gobiiproject.datatimescope.utils.Utils;
 

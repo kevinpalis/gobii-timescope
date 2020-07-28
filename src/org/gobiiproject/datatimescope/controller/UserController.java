@@ -1,6 +1,6 @@
 /* 
 	@author Kevin Palis
-	
+
 	timescoper_id integer NOT NULL DEFAULT nextval('timescoper_timescoper_id_seq'::regclass),
     firstname text COLLATE pg_catalog."default" NOT NULL,
     lastname text COLLATE pg_catalog."default" NOT NULL,
@@ -10,13 +10,11 @@
     role integer DEFAULT 3,
     CONSTRAINT pk_timescoper PRIMARY KEY (timescoper_id),
     CONSTRAINT username_key UNIQUE (username)
-    
+
     Roles: 1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests)
 
-*/
+ */
 package org.gobiiproject.datatimescope.controller;
-
-import java.util.Set;
 
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
 import org.gobiiproject.datatimescope.services.AuthenticationService;
@@ -30,12 +28,8 @@ import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.Datebox;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModelList;
-import org.zkoss.zul.Listbox;
-import org.zkoss.zul.Textbox;
-
 //For convenience, always static import your generated tables and jOOQ functions to decrease verbosity:
 import static org.gobiiproject.datatimescope.db.generated.Tables.*;
 import org.jooq.impl.DSL;

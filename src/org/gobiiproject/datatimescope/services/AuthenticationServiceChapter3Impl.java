@@ -11,7 +11,6 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperReco
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zul.Messagebox;
 
 public class AuthenticationServiceChapter3Impl implements AuthenticationService,Serializable{
 	private static final long serialVersionUID = 1L;
@@ -19,6 +18,7 @@ public class AuthenticationServiceChapter3Impl implements AuthenticationService,
 
     ViewModelService userInfoService = new ViewModelServiceImpl();
 	
+	@Override
 	public UserCredential getUserCredential(){
 		Session sess = Sessions.getCurrent();
 		UserCredential cre = (UserCredential)sess.getAttribute("userCredential");
