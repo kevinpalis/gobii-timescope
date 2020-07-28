@@ -171,13 +171,17 @@ div .z-caption-content {
     -webkit-transform:rotateX(180deg); /* Safari and Chrome */
 }
 
+
+/* 
+
+
 .z-apply-mask,
 .z-modal-mask {
     background: black;
     opacity: 1.0;
 }
 
-/* .z-tree-icon .z-tree-open {
+.z-tree-icon .z-tree-open {
 	background-image: url("/imgs/minus.png");
 	background-repeat: no-repeat;
 	width: 100%;

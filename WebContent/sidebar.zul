@@ -1,20 +1,9 @@
 <vbox vflex="true">
-
-
 	<hbox vflex="2"
 		apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
 			<image id="timescopeLogo" src="/imgs/datatimescope5.png" height="100px" onClick="@command('bringBackToHome')"/>
 	</hbox>
-	<hbox hflex="max" vflex="10" pack="center" align="start">
-		<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
-			apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
-			<columns>
-				<column width="45px" />
-				<column />
-			</columns>
-			<rows />
-		</grid>
-	</hbox>
+	
 	<hbox vflex="2" />
 	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" vflex="25" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 		<tabs>

@@ -12,13 +12,13 @@
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
-                    <treecell label="System Credentials" style="font-size:15px !important;"/>
+                    <treecell label="System Credentials"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow onClick="@command('ldapSystemUser')">
                             <treecell>
-                                <label value="LDAP System" style="font-size:15px !important;">
+                                <label value="LDAP System">
                                 </label>
                             </treecell>
                         </treerow>
@@ -26,7 +26,7 @@
                     <treeitem>
                         <treerow onClick="@command('ldapUnitUser')">
                             <treecell>
-                                <label value="LDAP Unit Test" style="font-size:15px !important;">
+                                <label value="LDAP Unit Test">
                                 </label>
                             </treecell>
                         </treerow>
@@ -34,7 +34,7 @@
                     <treeitem>
                         <treerow onClick="@command('postgresSystemUser')">
                             <treecell>
-                                <label value="Postgres" style="font-size:15px !important;">
+                                <label value="Postgres">
                                 </label>
                             </treecell>
                         </treerow>
@@ -46,13 +46,13 @@
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
-                    <treecell label="Notifications" style="font-size:15px !important;"/>
+                    <treecell label="Notifications"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow onClick="@command('emailNotifications')">
                             <treecell>
-                                <label value="E Mail" style="font-size:15px !important;"
+                                <label value="E Mail"
                                         >
                                 </label>
                             </treecell>
@@ -61,7 +61,7 @@
                     <treeitem>
                         <treerow>
                             <treecell>
-                                <label value="Push" style="font-size:15px !important;"/>
+                                <label value="Push"/>
                             </treecell>
                         </treerow>
                     </treeitem>
@@ -69,27 +69,27 @@
             </treeitem>
             <treeitem open="false">
                 <treerow>
-                    <treecell label="Crops" style="font-size:15px !important;"/>
+                    <treecell label="Crops"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow onClick="@command('addCrop')">
                             <treecell>
-                                <label value="Add crop" style="font-size:15px !important;"/>
+                                <label value="Add crop"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow onClick="@command('deleteCrop')">
                             <treecell>
-                                <label value="Delete crop" style="font-size:15px !important;"/>
+                                <label value="Delete crop"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow onClick="@command('modifyCrop')">
                             <treecell>
-                                <label value="Modify crop" style="font-size:15px !important;"/>
+                                <label value="Modify crop"/>
                             </treecell>
                         </treerow>
                     </treeitem>
@@ -100,27 +100,27 @@
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
-                    <treecell label="Logging" style="font-size:15px !important;"/>
+                    <treecell label="Logging"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow>
                             <treecell>
-                                <label value="Settings" style="font-size:15px !important;"/>
+                                <label value="Settings"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow>
                             <treecell>
-                                <label value="Linkage" style="font-size:15px !important;"/>
+                                <label value="Linkage"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow>
                             <treecell>
-                                <label value="Marker" style="font-size:15px !important;"/>
+                                <label value="Marker"/>
                             </treecell>
                         </treerow>
                     </treeitem>
@@ -131,27 +131,27 @@
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
-                    <treecell label="Integrations" style="font-size:15px !important;"/>
+                    <treecell label="Integrations"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow onClick="@command('kdCompute')">
                             <treecell>
-                                <label value="KDCompute" style="font-size:15px !important;"/>
+                                <label value="KDCompute"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow onClick="@command('ownCloud')">
                             <treecell>
-                                <label value="Own Cloud" style="font-size:15px !important;"/>
+                                <label value="Own Cloud"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow>
                             <treecell>
-                                <label value="Galaxy" style="font-size:15px !important;"/>
+                                <label value="Galaxy"/>
                             </treecell>
                         </treerow>
                     </treeitem>
@@ -159,7 +159,7 @@
             </treeitem>
             <treeitem>
                 <treerow onClick="@command('scheduler')">
-                    <treecell label="Scheduler" style="font-size:15px !important;">
+                    <treecell label="Scheduler">
                     </treecell>
                 </treerow>
             </treeitem>
@@ -168,33 +168,33 @@
             		self.setOpen(!self.isOpen());
             	</attribute>
                 <treerow>
-                    <treecell label="Import/Export" style="font-size:15px !important;"/>
+                    <treecell label="Import/Export"/>
                 </treerow>
                 <treechildren>
                     <treeitem>
                         <treerow onClick="@command('import')">
                             <treecell>
-                                <label value="Import" style="font-size:15px !important;"/>
+                                <label value="Import"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                     <treeitem>
                         <treerow onClick="@command('export')">
                             <treecell>
-                                <label value="Export" style="font-size:15px !important;"/>
+                                <label value="Export"/>
                             </treecell>
                         </treerow>
                     </treeitem>
                 </treechildren>
             </treeitem>
             <treeitem>
-                <treerow onClick="@command('backup')" >
-                    <treecell label="Backup" style="font-size:15px !important;"/>
+                <treerow onClick="@command('backup')">
+                    <treecell label="Backup"/>
                 </treerow>
             </treeitem>
             <treeitem>
-                <treerow onClick="@command('revert')" >
-                    <treecell label="Revert" style="font-size:15px !important;"/>
+                <treerow onClick="@command('revert')">
+                    <treecell label="Revert"/>
                 </treerow>
             </treeitem>
         </treechildren>
