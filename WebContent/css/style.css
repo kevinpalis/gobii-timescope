@@ -171,7 +171,7 @@ div .z-caption-content {
     -webkit-transform:rotateX(180deg); /* Safari and Chrome */
 }
 
-.z-tree-icon .z-tree-open {
+/* .z-tree-icon .z-tree-open {
 	background-image: url("/imgs/minus.png");
 	background-repeat: no-repeat;
 	width: 100%;
@@ -186,8 +186,8 @@ div .z-caption-content {
 .z-tree-spacer:nth-last-child(2):before {
 	font-family: fontawesome;
 	content: "\f085";
-} /*remove the font awesome
-		icon*/
+} remove the font awesome
+		icon
 .z-tree-icon .z-tree-open::before, .z-tree-icon .z-tree-close::before {
 	content: '';
-}
+} */

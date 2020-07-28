@@ -46,9 +46,13 @@
 										Database Host:
 									</cell>
 									<cell>
-										<textbox
+										<textbox id="hostName"
 											constraint="no empty: Please enter a host name" width="300px"
-											value="@bind(vm.serverInfo.host)" />
+											value="@bind(vm.serverInfo.host)">
+											<attribute name="onOK">
+												hostPort.setFocus(true);
+											</attribute>
+										</textbox>
 									</cell>
 								</row>
 								<row>
@@ -56,9 +60,13 @@
 										Database Port:
 									</cell>
 									<cell>
-										<textbox
+										<textbox id="hostPort"
 											constraint="no empty: Please enter a database port"
-											width="300px" value="@bind(vm.serverInfo.port)" />
+											width="300px" value="@bind(vm.serverInfo.port)" >
+											<attribute name="onOK">
+												hostDb.setFocus(true);
+											</attribute>
+										</textbox>
 									</cell>
 								</row>
 								<row>
@@ -66,9 +74,13 @@
 										Database Name:
 									</cell>
 									<cell>
-										<textbox
+										<textbox id="hostDb"
 											constraint="no empty: Please enter a database name"
-											width="300px" value="@bind(vm.serverInfo.dbName)" />
+											width="300px" value="@bind(vm.serverInfo.dbName)">
+											<attribute name="onOK">
+												account.setFocus(true);
+											</attribute>
+										</textbox>
 									</cell>
 								</row>
 								<row>
@@ -77,7 +89,11 @@
 									</cell>
 									<cell>
 										<textbox id="account"
-											width="300px" value="@bind(vm.userAccount.username)" />
+											width="300px" value="@bind(vm.userAccount.username)" >
+											<attribute name="onOK">
+												password.setFocus(true);
+											</attribute>
+										</textbox>
 									</cell>
 								</row>
 								<row>
@@ -87,7 +103,8 @@
 									<cell>
 										<textbox id="password"
 											type="password" width="300px"
-											value="@bind(vm.userAccount.password)" />
+											value="@bind(vm.userAccount.password)" onOK="@command('login')"/>
+
 									</cell>
 								</row>
 							</rows>
