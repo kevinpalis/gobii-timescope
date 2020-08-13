@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.*;
 
+import org.zkoss.zul.Messagebox;
+
 import static org.zkoss.zk.ui.util.Clients.alert;
 
 /**
@@ -60,14 +62,16 @@ public class UtilityFunctions {
     public static boolean scriptExecutor(String scriptName, List<String> scriptParameters){
         boolean success;
         //String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
-        //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts" + scriptName;
+        //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         String scriptPath = getScriptPath(scriptName);
         
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
+        Messagebox.show(generateAlertMessage(scriptParameters), "Script that ran", Messagebox.OK, Messagebox.EXCLAMATION);
         try {
             new ProcessBuilder(fullCommand).start();
             success = true;
+            
         } catch (IOException e) {
             alert("Script " + scriptName + " execution failed with following error: \n" + e.toString());
             success = false;
@@ -96,7 +100,9 @@ public class UtilityFunctions {
 //                e.printStackTrace();
 //            }
 //        }
-        log.info(username + ": The calling function is " + context  + ", with following message:\n\t" + message);
+        String msg = username + ": The calling function is " + context  + ", with following message:\n\t" + message;
+        Messagebox.show(msg, "writeToLog", Messagebox.OK, Messagebox.EXCLAMATION);
+        log.info(msg);
         // Somehow on shutdown need to get rid of the handlers
     }
 }
