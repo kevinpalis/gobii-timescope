@@ -39,6 +39,7 @@ import org.gobiiproject.datatimescope.entity.TimescoperEntity;
 import org.gobiiproject.datatimescope.entity.VDatasetSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VLinkageGroupSummaryEntity;
 import org.gobiiproject.datatimescope.entity.VMarkerSummaryEntity;
+import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.zkoss.zul.ListModelList;
@@ -203,6 +204,8 @@ public interface ViewModelService {
     public boolean deleteGermplasm(GermplasmViewEntity germplasmViewEntity);
 
     public boolean deleteGermplasms(List<GermplasmViewEntity> selectedList);
+
+    public DSLContext getDSLContext();
 
 
 }

@@ -3,6 +3,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 //import org.apache.catalina.ant.ReloadTask;
 //import org.apache.catalina.ant.UndeployTask;
 import org.gobiiproject.datatimescope.entity.ServerInfo;
+import org.gobiiproject.datatimescope.services.ViewModelService;
 import org.gobiiproject.datatimescope.services.ViewModelServiceImpl;
 import org.gobiiproject.datatimescope.utils.TomcatManagerUtil;
 import org.jooq.DSLContext;
@@ -12,11 +13,15 @@ import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
 import org.gobiiproject.datatimescope.db.generated.Routines;
 import org.zkoss.util.Pair;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Messagebox;
 
 
@@ -32,23 +37,50 @@ public class ServerHandler {
 	//private ReloadTask reloadRequest = new ReloadTask();
 	private PropertyHandler prop;
 	private String username;
+    private ServerInfo serverInfo;
+    private ViewModelService viewModelService;
 
 	public ServerHandler (XmlModifier xmlHandler, PropertyHandler prop){
 		this.xmlHandler = xmlHandler;
 		username = prop.getUsername();
 		this.prop = prop;
+		setServerInfo(getServerInfoFromCookies());
+		viewModelService = new ViewModelServiceImpl();
+       
 		//configureTomcatReloadRequest();
 	}
 
 	
 
-	/**
+	private ServerInfo getServerInfoFromCookies() {
+        // TODO Auto-generated method stub
+	    //Load cookies --
+	    ServerInfo serverInfo = new ServerInfo();
+        HttpServletRequest request = (HttpServletRequest) Executions.getCurrent().getNativeRequest();
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals("DB_HOST")) {
+                serverInfo.setHost(cookie.getValue());
+            }
+            else if (cookie.getName().equals("DB_PORT")) {
+                serverInfo.setPort(cookie.getValue());
+            }
+            else if (cookie.getName().equals("DB_NAME")) {
+                serverInfo.setDbName(cookie.getValue());
+            }
+        }
+        return serverInfo;
+    }
+
+
+
+    /**
 	 * Modify Postgres User Credentials
 	 * @param oldUserName the old username which is still needed to transition to the new name
 	 */
 	public void executePostgresChange(String oldUserName){
-		ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-		DSLContext context = tmpService.getDSLContext();
+		DSLContext context = viewModelService.getDSLContext();
 		if (!oldUserName.equals(xmlHandler.getPostgresUserName())){
 			context.fetch("ALTER USER " + oldUserName + " RENAME to " + xmlHandler.getPostgresUserName() + ";");
 			context.fetch("ALTER USER " + xmlHandler.getPostgresUserName() + " PASSWORD '" + xmlHandler.getPostgresPassword() + "';");
@@ -171,8 +203,7 @@ public class ServerHandler {
 	 */
 	public boolean postgresRemoveCrop(String cropName, String cropDatabase){
 		boolean success = true;
-		ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-		DSLContext context = tmpService.getDSLContext();
+		DSLContext context = viewModelService.getDSLContext();
 		try {
 			context.fetch("DROP DATABASE " + cropDatabase + ";");
 			writeToLog("ServerHandler.postgresRemoveCrop()", "You have successfully removed database for the crop " + cropName + ".", username);
@@ -197,14 +228,11 @@ public class ServerHandler {
 	 *  0, upon complete success
 	 */
 	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload){
-		int success;
+		int success=0;
 		if (firstUpload) {
-			ViewModelServiceImpl tmpService = new ViewModelServiceImpl();
-			ServerInfo tmpInfo = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), "gobii_dev",
-					xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-			tmpService.connectToDB(tmpInfo.getUserName(), tmpInfo.getPassword(), tmpInfo);
-			DSLContext context = tmpService.getDSLContext();
-			if (!populateSeedData(context, currentCrop)) {
+			
+			DSLContext context = viewModelService.getDSLContext();
+			if (!populateSeedData(context, currentCrop)) { //This is where the database is created and liquibase.sh is called
 				success = 1;
 				writeToLog("ServerHandler.postgresAddCrop()", "Populating the the liquibase data failed.", username);
 				return success;
@@ -213,22 +241,18 @@ public class ServerHandler {
 			//Connecting to the database created a race condition, through trial and error I found 7 seconds to be the lower
 			//bound by seconds so that the program runs correctly.
 			try {
-				TimeUnit.SECONDS.sleep(7);
+				TimeUnit.SECONDS.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		ServerInfo info = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), currentCrop.getDatabaseName(),
-				xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-		ViewModelServiceImpl newService = new ViewModelServiceImpl();
-		newService.connectToDB(info.getUserName(), info.getPassword(), info);
-		DSLContext context = newService.getDSLContext();
-		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
-		success = populateContactData(context, contactData, timescopeData);
-		info = new ServerInfo(xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(), "gobii_dev",
-				xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
-		newService.connectToDB(info.getUserName(), info.getPassword(), info);
-		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
+		
+		//uncomment the next 4 lines to allow an option for the user to upload a tab-delimited contacts file---If upload is going to be allowed, modify UI to provide template for proper format
+//        DSLContext context = viewModelService.getDSLContext();  
+//		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
+//		success = populateContactData(context, contactData, timescopeData); 
+//		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
+
 		return success;
 	}
 
@@ -260,7 +284,7 @@ public class ServerHandler {
 			return false;
 		}
 		writeToLog("ServerHandler.populateSeedData()", "The database for the crop " + currentCrop.getName() + " was successfully created.", username);
-		List<String> populate = new ArrayList<>(Arrays.asList(xmlHandler.getPostgresHost(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName()));
+		List<String> populate = new ArrayList<>(Arrays.asList(serverInfo.getHost(), xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword(), xmlHandler.getPostgresHost(), xmlHandler.getPostgresPort(),  currentCrop.getDatabaseName(), serverInfo.getPort()));
 		if (!scriptExecutor("liquibase.sh", populate)){
 			writeToLog("ServerHandler.populateSeedData()", "The database couldn't be populated with liquibase data.", username);
 			success = false;
@@ -268,7 +292,7 @@ public class ServerHandler {
 		return success;
 	}
 
-	/**
+    /**
 	 * Fill the contact table as specified:
 	 * https://gobiiproject.atlassian.net/browse/I19-53
 	 * Validation is done by querying the information directly from the database
@@ -334,4 +358,16 @@ public class ServerHandler {
 		success = 0;
 		return success;
 	}
+
+
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+
+
+    public void setServerInfo(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
+    }
 }

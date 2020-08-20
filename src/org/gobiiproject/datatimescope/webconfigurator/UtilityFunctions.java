@@ -1,7 +1,9 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.logging.*;
 
@@ -60,17 +62,40 @@ public class UtilityFunctions {
      * @return true if script executed correctly
      */
     public static boolean scriptExecutor(String scriptName, List<String> scriptParameters){
-        boolean success;
+        boolean success = false;
         //String scriptPath = "/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         //String scriptPath = "/home/fvgoldman/gobiidatatimescope/src/org/gobiiproject/datatimescope/webconfigurator/scripts/" + scriptName;
         String scriptPath = getScriptPath(scriptName);
         
         scriptParameters.add(0, scriptPath);
         String[] fullCommand = scriptParameters.toArray(new String[0]);
-        Messagebox.show(generateAlertMessage(scriptParameters), "Script that ran", Messagebox.OK, Messagebox.EXCLAMATION);
+//        Messagebox.show(generateAlertMessage(scriptParameters), "Script that ran", Messagebox.OK, Messagebox.EXCLAMATION);
         try {
-            new ProcessBuilder(fullCommand).start();
-            success = true;
+            //make sure the script is runnable
+            String makeExecutable = "chmod +x "+ scriptPath;
+            Process p = Runtime.getRuntime().exec(makeExecutable);
+            
+            ProcessBuilder pb = new ProcessBuilder(fullCommand);
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            
+            //uncomment for debug mode
+//            //Read output and show as a messageBox
+//            StringBuilder out = new StringBuilder();
+//            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//            String line = null, previous = null;
+//            while ((line = br.readLine()) != null) {
+//                if (!line.equals(previous)) {
+//                    previous = line;
+//                    out.append(line).append('\n');
+//
+//                }
+//            }
+//            Messagebox.show(out.toString(), "Script output of "+ scriptName, Messagebox.OK, Messagebox.EXCLAMATION);
+
+          success = true;
+
+            
             
         } catch (IOException e) {
             alert("Script " + scriptName + " execution failed with following error: \n" + e.toString());
@@ -101,7 +126,7 @@ public class UtilityFunctions {
 //            }
 //        }
         String msg = username + ": The calling function is " + context  + ", with following message:\n\t" + message;
-        Messagebox.show(msg, "writeToLog", Messagebox.OK, Messagebox.EXCLAMATION);
+//        Messagebox.show(msg, "writeToLog", Messagebox.OK, Messagebox.EXCLAMATION);
         log.info(msg);
         // Somehow on shutdown need to get rid of the handlers
     }

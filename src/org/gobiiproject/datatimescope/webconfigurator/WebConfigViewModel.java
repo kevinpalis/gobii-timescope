@@ -60,7 +60,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             if (cre.getRole() == 1) {
                 isSuperAdmin = true;
                 username = cre.getAccount();
-                keygen();
+//                keygen();
                 instantiate();
                 copyCurrentSettings();
                 writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
