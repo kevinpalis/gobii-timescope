@@ -1,5 +1,6 @@
 package org.gobiiproject.datatimescope.webconfigurator;
 
+import org.gobiiproject.datatimescope.entity.ServerInfo;
 import org.gobiiproject.datatimescope.services.UserCredential;
 import org.zkoss.bind.Binder;
 import org.zkoss.bind.annotation.*;
@@ -32,6 +33,7 @@ import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.*;
 public class WebConfigViewModel extends SelectorComposer<Component> {
 
     public ServerHandler serverHandler;
+    private ServerInfo serverInfo;
     public CronHandler cronHandler;
     private XmlModifier xmlHandler;
     private BackupHandler backupHandler;
@@ -81,7 +83,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         Properties properties = readPropertiesFile(propsFile);
         propertyHandler = new PropertyHandler(username, properties);
         serverHandler = new ServerHandler(xmlHandler, propertyHandler);
-        cronHandler = new CronHandler(username);
+        serverInfo = serverHandler.getServerInfoFromCookies();
+        cronHandler = new CronHandler(username, serverInfo);
         xmlCropHandler = new XmlCropHandler(username);
         warningComposer = new WarningComposer(xmlHandler, username);
         
@@ -410,7 +413,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         firstUpload = true;
         xmlCropHandler.appendCrop(currentCrop);
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The crop " + currentCrop.getName() + " has successfully been added to the XML.", username);
-        List<String> createFiles = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
+        List<String> createFiles = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "1" , String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", createFiles)){
             xmlCropHandler.removeCrop(currentCrop);
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
@@ -423,7 +426,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         List<String> duplicateWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "1" , currentCrop.getWARName(), oldWar));
         if (!scriptExecutor("WARHandler.sh", duplicateWAR)){
             xmlCropHandler.removeCrop(currentCrop);
-            List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+            List<String> removeBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
             scriptExecutor("cropFileManagement.sh", removeBundle);
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit",null);
@@ -433,6 +436,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The crop " + currentCrop.getName() + "war file was successfully copied and deployed.", username);
         cronHandler.modifyCron("create", xmlHandler.getHostForReload(), currentCrop);
         currentCrop.setHideContactData(true);
+        
+        //Add crop to xml file
+        List<String> updatePortal = new ArrayList<>(Arrays.asList(currentCrop.getName(), serverInfo.getHost()));
+        if (!scriptExecutor("updateGobiiPortal.sh", updatePortal)){
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            return;
+        }
+        
         alert("You have successfully created a new crop " + currentCrop.getName());
         writeToLog("WebConfigViewModel.addCropToDatabase()", "You have successfully created a new crop " + currentCrop.getName(), username);
         binder.sendCommand("disableEdit", null);
@@ -513,7 +524,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         writeToLog("WebConfigViewModel.executeRemoval()", "The database for the crop " + currentCrop.getName() + " has been removed.", username);
         xmlCropHandler.removeCrop(currentCrop);
         writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed from the XML.", username);
-        List<String> removeBundle = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
+        List<String> removeBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
         if (!scriptExecutor("cropFileManagement.sh", removeBundle)) {
             binder.sendCommand("disableEdit", null);
             writeToLog("WebConfigViewModel.executeRemoval()", "Removing the crop files failed.", username);

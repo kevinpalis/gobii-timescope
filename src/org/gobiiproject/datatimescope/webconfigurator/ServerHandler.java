@@ -52,7 +52,7 @@ public class ServerHandler {
 
 	
 
-	private ServerInfo getServerInfoFromCookies() {
+	public ServerInfo getServerInfoFromCookies() {
         // TODO Auto-generated method stub
 	    //Load cookies --
 	    ServerInfo serverInfo = new ServerInfo();

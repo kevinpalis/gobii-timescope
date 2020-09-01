@@ -73,15 +73,16 @@ public class UtilityFunctions {
         try {
             //make sure the script is runnable
             String makeExecutable = "chmod +x "+ scriptPath;
-            Process p = Runtime.getRuntime().exec(makeExecutable);
+            Runtime.getRuntime().exec(makeExecutable);
             
             ProcessBuilder pb = new ProcessBuilder(fullCommand);
             pb.redirectErrorStream(true);
             Process process = pb.start();
             
-            //uncomment for debug mode
-//            //Read output and show as a messageBox
+          //  uncomment for debug mode
+            //Read output and show as a messageBox
 //            StringBuilder out = new StringBuilder();
+//            out.append("Script that ran: "+ generateAlertMessage(scriptParameters)+ "\n");
 //            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 //            String line = null, previous = null;
 //            while ((line = br.readLine()) != null) {

@@ -5,7 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.gobiiproject.datatimescope.entity.ServerInfo;
+
+import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.scriptExecutor;
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 import static org.zkoss.zk.ui.util.Clients.alert;
 
@@ -20,8 +25,11 @@ public class CronHandler {
 
     private ArrayList<String> errorMessages = new ArrayList<>();
 
-    public CronHandler(String name){
+    private ServerInfo serverinfo;
+
+    public CronHandler(String name, ServerInfo serverinfo){
         username = name;
+        this.setServerinfo(serverinfo);
     }
 
     /**
@@ -41,7 +49,7 @@ public class CronHandler {
             errorMessages.add("Please choose a valid value between 1 and 59. The default setting is 2.");
             writeToLog("CronHandler.reloadCrons()", "Invalid minute selection for the crop " + currentCrop.getName() + ".", username);
         } else {
-            if (modifyCron("update", hostFromXml, currentCrop)) {
+            if (modifyCron("update", getServerinfo().getHost(), currentCrop)) {
                 writeToLog("CronHandler.reloadCrons()", "CRON jobs for the crop " + currentCrop.getName() + " have been adjusted.", username);
                 success = true;
             } else {
@@ -62,13 +70,18 @@ public class CronHandler {
      * @param currentCrop The crop we are applying the CRON job change to
      */
     public boolean modifyCron(String modification, String hostFromXml, Crop currentCrop){
+        String sshHost = "gadm@"+ getServerinfo().getHost();
+        String scriptPath = UtilityFunctions.getScriptPath("dockerCopyCron.sh");
+        
         String[] read = {
                 "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
+                sshHost,
                 "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
         };
         try {
             //Read the current crontab into a Buffer
+            
+            
             Process proc = new ProcessBuilder(read).start();
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             switch (modification) {
@@ -85,17 +98,31 @@ public class CronHandler {
                     break;
                 }
             }
+
+            String makeExecutable = "chmod +x "+ scriptPath;
+            Process p = Runtime.getRuntime().exec(makeExecutable);
             //Send the new CRONs back to the server
             Runtime.getRuntime().exec(
-                	String.format("%s %s", UtilityFunctions.getScriptPath("dockerCopyCron.sh"),  hostFromXml)
+                	String.format("%s %s", scriptPath,  getServerinfo().getHost())
             );
-            //Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
+            //Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + getServerinfo().getHost());
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server succeeded.", username);
+            
+
+            String scriptPath2 = UtilityFunctions.getScriptPath("runCronJob.sh");
+            String makeExecutable2 = "chmod +x "+ scriptPath2;
+            Runtime.getRuntime().exec(makeExecutable2);
+            
+            List<String> runCrobJobSH = new ArrayList<>(Arrays.asList(getServerinfo().getHost(),currentCrop.getName()));
+            if (!scriptExecutor("runCronJob.sh", runCrobJobSH)){
+                writeToLog("CronHandler.modifyCron()", "Runnung the runCronJob sh file failed.", username);
+            }
+            
             return true;
-            //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + hostFromXml);
+            //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + getServerinfo().getHost());
         } catch (IOException e){
             e.printStackTrace();
-            alert("Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed.");
+            alert("Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed. "+e.getLocalizedMessage()+"\n"+e.getMessage()+"\n");
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server failed.", username);
             return false;
         }
@@ -178,5 +205,13 @@ public class CronHandler {
 
     public ArrayList<String> getErrorMessages() {
         return errorMessages;
+    }
+
+    public ServerInfo getServerinfo() {
+        return serverinfo;
+    }
+
+    public void setServerinfo(ServerInfo serverinfo) {
+        this.serverinfo = serverinfo;
     }
 }
