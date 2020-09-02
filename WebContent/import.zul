@@ -1,0 +1,32 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Import Configuration</label>
+    <grid width="700px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell>
+                    <button upload="true" label="Choose File" onUpload="@command('selectFileForImport', upload=event)" disabled="@load(vm.locationSet)">
+                    </button>
+                </cell>
+            </row>
+            <row visible="@bind(vm.locationSet)">
+                <cell sclass="row-title">
+                    Selected File:
+                </cell>
+                <cell>
+                    <label value="@bind(vm.newXMLShort)">
+                    </label>
+                </cell>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="import" label="Import" onClick="@command('importXML')" visible="@bind(vm.locationSet)" />
+    </div>
+</vlayout>

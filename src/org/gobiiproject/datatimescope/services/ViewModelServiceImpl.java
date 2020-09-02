@@ -8,7 +8,6 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.ANALYSIS;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CV;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CVGROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.EXPERIMENT;
-import static org.gobiiproject.datatimescope.db.generated.Tables.TIMESCOPER;
 import static org.gobiiproject.datatimescope.db.generated.Tables.CONTACT;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DNARUN;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DNASAMPLE;
@@ -19,13 +18,11 @@ import static org.gobiiproject.datatimescope.db.generated.Tables.REFERENCE;
 import static org.gobiiproject.datatimescope.db.generated.Tables.ORGANIZATION;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MAPSET;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER;
-import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_GROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.DATASET;
 import static org.gobiiproject.datatimescope.db.generated.Tables.VENDOR_PROTOCOL;
 import static org.gobiiproject.datatimescope.db.generated.Tables.LINKAGE_GROUP;
 import static org.gobiiproject.datatimescope.db.generated.Tables.MARKER_LINKAGE_GROUP;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.DirectoryNotEmptyException;
@@ -36,7 +33,6 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,11 +44,8 @@ import org.gobiiproject.datatimescope.db.generated.routines.Crypt;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetdnarunindices;
 import org.gobiiproject.datatimescope.db.generated.routines.Deletedatasetmarkerindices;
 import org.gobiiproject.datatimescope.db.generated.routines.GenSalt2;
-import org.gobiiproject.datatimescope.db.generated.routines.Getcvtermsbycvgroupname;
 import org.gobiiproject.datatimescope.db.generated.routines.Getdnarunidsbyproject;
 import org.gobiiproject.datatimescope.db.generated.routines.Gettimescoper;
-import org.gobiiproject.datatimescope.db.generated.tables.Display;
-import org.gobiiproject.datatimescope.db.generated.tables.VDatasetSummary;
 import org.gobiiproject.datatimescope.db.generated.tables.records.AnalysisRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ContactRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.CvRecord;
@@ -63,14 +56,11 @@ import org.gobiiproject.datatimescope.db.generated.tables.records.ExperimentReco
 import org.gobiiproject.datatimescope.db.generated.tables.records.LinkageGroupRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MapsetRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerGroupRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerLinkageGroupRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.MarkerRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.OrganizationRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.PlatformRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ProjectRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.ReferenceRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.TimescoperRecord;
-import org.gobiiproject.datatimescope.db.generated.tables.records.VDatasetSummaryRecord;
 import org.gobiiproject.datatimescope.db.generated.tables.records.VendorProtocolRecord;
 import org.gobiiproject.datatimescope.entity.DatasetEntity;
 import org.gobiiproject.datatimescope.entity.DatasetSummaryEntity;
@@ -98,12 +88,9 @@ import org.gobiiproject.datatimescope.utils.Utils;
 import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.SQLDialect;
-import org.jooq.Select;
 import org.jooq.impl.DSL;
 import org.zkoss.bind.BindUtils;
-import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
@@ -189,8 +176,9 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     }
 
 
-    private DSLContext getDSLContext() {
-        // TODO Auto-generated method stub
+
+	public DSLContext getDSLContext() {
+		// TODO Auto-generated method stub
 
         Configuration contextConfiguration = (Configuration) Sessions.getCurrent().getAttribute("contextConfiguration");
         DSLContext context = DSL.using(contextConfiguration);
@@ -257,7 +245,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
     }
 
 
-    public TimescoperRecord loginTimescoper(String username, String password){
+    @Override
+	public TimescoperRecord loginTimescoper(String username, String password){
         boolean successful= false;
         TimescoperRecord user = new TimescoperRecord();
         Gettimescoper gettimescoper = new Gettimescoper();
@@ -315,7 +304,8 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
         return cvRecordList;
     }
 
-    public synchronized TimescoperEntity getUserInfo(String username){
+    @Override
+	public synchronized TimescoperEntity getUserInfo(String username){
 
         TimescoperEntity user = new TimescoperEntity();
 
@@ -642,7 +632,7 @@ public class ViewModelServiceImpl implements ViewModelService,Serializable{
             DatasetSummaryEntity datasetSummaryEntity)  {
         // TODO Auto-generated method stub
 
-        int dsCount = selectedDsList.size();
+        //int dsCount = selectedDsList.size();
         boolean successful = false;
 
 

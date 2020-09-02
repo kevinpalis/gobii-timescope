@@ -1,11 +1,8 @@
 package org.gobiiproject.datatimescope.controller;
 
-import java.util.Iterator;
-
 import org.gobiiproject.datatimescope.configurator.SidebarPageConfigAjaxBasedImpl;
 import org.gobiiproject.datatimescope.services.SidebarPage;
 import org.gobiiproject.datatimescope.services.SidebarPageConfig;
-import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
@@ -64,6 +61,7 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 		EventListener<Event> onActionListener = new SerializableEventListener<Event>(){
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void onEvent(Event event) throws Exception {
 				//redirect current url to new location
 				if(locationUri.startsWith("http")){
@@ -77,6 +75,7 @@ public class SidebarAjaxbasedController extends SelectorComposer<Component>{
 //
 //					while(ite.hasNext()){
 
+						//Find mainContent on fnList,getPage() (can be replaced with getPage())
 						Include include = (Include)Selectors.iterable(fnList.getPage(), "#mainContent")
 								.iterator().next();
 						include.setSrc(locationUri);

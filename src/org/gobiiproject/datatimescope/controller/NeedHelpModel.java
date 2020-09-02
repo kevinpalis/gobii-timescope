@@ -1,7 +1,6 @@
 package org.gobiiproject.datatimescope.controller;
 
 import org.apache.log4j.Logger;
-import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;

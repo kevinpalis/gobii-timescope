@@ -26,7 +26,9 @@ This requires the usual login page as a landing page. A registration page, howev
 
 ##### ROLES:
 
-1=Super Admin, 2=Admin, 3=User (reserved for foreseen functionality requests, ex. users of type 3 can only update data and not delete them)
+* 1=Super Admin
+* 2=Admin
+* 3=User (reserved for foreseen functionality requests, ex. users of type 3 can only update data and not delete them)
 
 
 This form will connect directly to the table *timescoper* in a GOBii database, which means *each GDM instance (crop) will have its own auth set –* ie. to be able to delete data from one crop, the user account needs to be set for that particular crop database.
@@ -39,11 +41,16 @@ This form will connect directly to the table *timescoper* in a GOBii database,
 Levels of authorization per user type:
 
 * Super Admin
+
 	* Ability to delete database entities
 	* Ability to update database entities
 	* Ability to manage users (create, edit, delete)
+	
 * Admin
+
 	* Ability to delete database entities
 	* Ability to update database entities
+	
 * User
+
 	* Ability to view database entities

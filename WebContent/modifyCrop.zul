@@ -1,0 +1,40 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+    <label>Crops - Modify Crop</label>
+    <grid width="500px">
+        <columns>
+            <column align="right" hflex="min"/>
+            <column/>
+        </columns>
+        <rows>
+            <row>
+                <cell sclass="row-title">Crop Name:</cell>
+                <cell>
+                    <listbox model="@load(vm.xmlHandler.cropList)" selectedItem="@bind(vm.currentCrop.name)"
+                             width="200px" mold="select" disabled="@load(vm.documentLocked)">
+                        <template name="model">
+                            <listitem label="@load(each)" />
+                        </template>
+                    </listbox>
+                </cell>
+            </row>
+            <row>
+                <cell sclass="row-title">Currently Active:</cell>
+                <textbox value="@bind(vm.currentCrop.isActive)" disabled="true"/>
+            </row>
+            <row>
+                <cell sclass="row-title">Change Activity:</cell>
+                <checkbox checked="@load(vm.currentCrop.changeActivity) @save(vm.currentCrop.changeActivity, before='disableEdit')" disabled="@bind(vm.documentLocked)"/>
+            </row>
+        </rows>
+    </grid>
+    <div align="left">
+        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
+        <hlayout>
+            <button id="remove" label="Save" onClick="@command('modifyCropActive')" visible="@bind(not vm.documentLocked)" />
+            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+        </hlayout>
+    </div>
+</vlayout>

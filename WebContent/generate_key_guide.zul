@@ -1,0 +1,31 @@
+<vbox align="center" pack="center" vflex="true">
+	
+ <html>
+   <div style="text-align: left" >
+   
+  	<p><h4 style="color: #7d7d7d;"> The SSH Key hasn't been set</h4></p>
+   
+	<P style="font-weight: bold; color: #107896; font-size: 13px !important;"> Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. </P>
+	<P style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;"> To be able to view the configuration tab, the web-node docker that is running timescope needs to have performed a key exchange with the host(s). This has to be done manually once upon deployment as described below. </P>
+	
+	<P style="font-weight: bold; color: #93A661; font-size: 13px !important;"> Step-by-step guide to enabling configurator usage: </P>
+	
+
+	
+	<ol>
+	<li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">  Open a terminal and connect to the docker web-node which will run timescope as the user gadm </li>
+	<br/><li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Run the command: <i><h4>su -l gadm</h4></i> </li>
+	<li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Run the command: <i><h4>ssh-keygen -t rsa</h4></i></li>
+	<li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Press ENTER a total of three times when prompted</li>
+	
+	<br/><li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Run the command: <i><h4>ssh-copy-id gadm@host</h4></i> (for example: gadm@cbsugobiixvm14.biohpc.cornell.edu)</li>
+		
+	<br/><li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Type yes, if prompted with a yes/no option</li>
+	<br/><li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Enter the password for the above host when prompted</li>
+	<br/><li style="font-weight: bold; color: #7d7d7d; font-size: 12px !important;">Repeat all the steps but this time, during step 1, connect to the docker compute-node.</li>
+	</ol>
+
+	<a href="https://www.ssh.com/ssh/keygen/" label="(see keygen for additional info)" sclass="row-title" />
+	</div>
+</html>
+</vbox>
