@@ -121,6 +121,8 @@ public class XmlCropHandler extends XmlModifier {
         Element contextPath = doc.createElement("contextPath");
         contextPath.appendChild(doc.createTextNode(crop.getDatabaseName()));
         serverConfig.appendChild(contextPath);
+        Element errorContextPath = doc.createElement("errorContextPath");
+        serverConfig.appendChild(errorContextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPostgresPort()));
         serverConfig.appendChild(port);
@@ -161,6 +163,8 @@ public class XmlCropHandler extends XmlModifier {
         Element contextPath = doc.createElement("contextPath");
         contextPath.appendChild(doc.createTextNode("/" + crop.getContextPath()));
         serverConfig.appendChild(contextPath);
+        Element errorContextPath = doc.createElement("errorContextPath");
+        serverConfig.appendChild(errorContextPath);
         Element port = doc.createElement("port");
         port.appendChild(doc.createTextNode(getPortForReload()));
         serverConfig.appendChild(port);
@@ -179,12 +183,14 @@ public class XmlCropHandler extends XmlModifier {
     }
 
     private Node resourceProfilesByRestRequestId(Document doc){
+        Element resourceProfilesByRestRequestId = doc.createElement("resourceProfilesByRestRequestId");
         Element entry = doc.createElement("entry");
         Element restResourceId = doc.createElement("restResourceId");
         restResourceId.appendChild(doc.createTextNode("GOBII_NAMES"));
         entry.appendChild(restResourceId);
         entry.appendChild(restResourceProfile(doc));
-        return entry;
+        resourceProfilesByRestRequestId.appendChild(entry);
+        return resourceProfilesByRestRequestId;
     }
 
     private Node restResourceProfile(Document doc){

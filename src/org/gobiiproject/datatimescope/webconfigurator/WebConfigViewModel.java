@@ -62,7 +62,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             if (cre.getRole() == 1) {
                 isSuperAdmin = true;
                 username = cre.getAccount();
-//                keygen();
                 instantiate();
                 copyCurrentSettings();
                 writeToLog("WebConfigViewModel.init()", "Configuration setup performed correctly.", username);
@@ -169,31 +168,30 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     /**
      * This function checks if keygen has been run for later ssh commands which are needed in the backend
      */
-    private void keygen() {
+    private boolean keygen() {
     	
     	//check env for id rsa
     	String sshFile = "";
+    	Boolean keygenSuccessful = false;
     	
     	try {
     		sshFile = System.getenv("SSH_PUBLIC_KEY_FILE");
-    		
     	} catch (SecurityException se) {
     		
     	}
     	
     	if (sshFile == "" || sshFile == null) {
-			sshFile = System.getProperty("user.dir") + "/.ssh/id_rsa.pub"; //TODO: remove this
+			sshFile = "/home/gadm/.ssh/id_rsa.pub"; //TODO: remove this
 		}
-    	
     	writeToLog("WebConfigViewModel.keygen()", String.format("Using file: %s",  sshFile), username);
  
-        if (!new File(sshFile).exists()) {
-            alert("Please perform a key generation for the gobii-web-node instance to the host by hand and log in again. Instructions can be found here: \n" +
-                    "http://cbsugobii05.biohpc.cornell.edu:6084/pages/viewpage.action?spaceKey=IN19&title=Webconfigurator");
-            isKeySet = false;
-            writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
+        if (new File(sshFile).exists()) {
+       
+            keygenSuccessful = true;
         }
         writeToLog("WebConfigViewModel.keygen()", "The ssh Key has previously been set", username);
+        
+        return keygenSuccessful;
     }
 
     /**
@@ -383,21 +381,22 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("addCropToDatabase")
     public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
+        
         List<String> currentCrops = xmlHandler.getCropList();
         if (currentCrops.contains(currentCrop.getName())){
             alert("This crop already has a database associated with it. Please choose another crop.");
             writeToLog("WebConfigViewModel.addCropToDatabase()", "This crop already has a database associated with it. Please choose another crop.", username);
             return;
         }
-        if (currentCrop.getContactData() == null){
-            alert("Please upload a contact data file, otherwise the database cannot be created.");
-            binder.sendCommand("disableEdit",null);
-            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
-            return;
-        }
-        ArrayList<String> contacts = readInContactData();
+//        if (currentCrop.getContactData() == null){
+//            alert("Please upload a contact data file, otherwise the database cannot be created.");
+//            binder.sendCommand("disableEdit",null);
+//            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
+//            return;
+//        }
+//        ArrayList<String> contacts = readInContactData();
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
-        int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
+        int seedData = serverHandler.postgresAddCrop(currentCrop, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit", null);
@@ -623,11 +622,22 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("addCrop")
     public void addCrop () {
-        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
-                .iterator().next();
-        include.setSrc("/addCrop.zul");
-        getPage().getDesktop().setBookmark("p_" + "addCrop");
-        writeToLog("WebConfigViewModel.addCrop()", "Navigated to addCrop.", username);
+        if(!keygen()) {
+            
+            //show error guide
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();
+            include.setSrc("/generate_key_guide.zul");
+           
+            isKeySet = false;
+            writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
+        }else {
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();
+            include.setSrc("/addCrop.zul");
+            getPage().getDesktop().setBookmark("p_" + "addCrop");
+            writeToLog("WebConfigViewModel.addCrop()", "Navigated to addCrop.", username);
+        }
     }
 
     @Command("deleteCrop")

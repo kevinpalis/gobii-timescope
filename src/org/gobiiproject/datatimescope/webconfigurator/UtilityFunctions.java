@@ -79,8 +79,8 @@ public class UtilityFunctions {
             pb.redirectErrorStream(true);
             Process process = pb.start();
             
-          //  uncomment for debug mode
-            //Read output and show as a messageBox
+//          //  uncomment for debug mode
+//            //Read output and show as a messageBox
 //            StringBuilder out = new StringBuilder();
 //            out.append("Script that ran: "+ generateAlertMessage(scriptParameters)+ "\n");
 //            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));

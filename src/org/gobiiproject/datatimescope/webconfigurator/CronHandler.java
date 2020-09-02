@@ -113,7 +113,7 @@ public class CronHandler {
             String makeExecutable2 = "chmod +x "+ scriptPath2;
             Runtime.getRuntime().exec(makeExecutable2);
             
-            List<String> runCrobJobSH = new ArrayList<>(Arrays.asList(getServerinfo().getHost(),currentCrop.getName()));
+            List<String> runCrobJobSH = new ArrayList<>(Arrays.asList(getServerinfo().getHost(),currentCrop.getName(),"+2"));
             if (!scriptExecutor("runCronJob.sh", runCrobJobSH)){
                 writeToLog("CronHandler.modifyCron()", "Runnung the runCronJob sh file failed.", username);
             }

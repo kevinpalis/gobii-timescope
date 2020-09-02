@@ -102,6 +102,24 @@ span .z-label{
 	font-size: 12px !important;
 }
 
+.blue-title {
+	font-weight: bold;
+	color: #107896;;
+	font-size: 12px !important;
+}
+
+.green-title {
+	font-weight: bold;
+	color: #93A661;;
+	font-size: 12px !important;
+}
+
+.container {
+  width: 80em;
+  margin: 2em auto;
+  background-color: rgba(235, 150, 108, 0.1);
+}
+
 .tab-title {
 	font-weight: bold;
 	color: #7d7d7d;

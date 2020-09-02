@@ -227,7 +227,7 @@ public class ServerHandler {
 	 * -1, if the provided contact data had an error
 	 *  0, upon complete success
 	 */
-	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload){
+	public int postgresAddCrop(Crop currentCrop, boolean firstUpload){
 		int success=0;
 		if (firstUpload) {
 			
