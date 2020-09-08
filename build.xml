@@ -19,6 +19,7 @@
         <pathelement location="build/classes"/>
         <pathelement path="lib/javax.annotation.jar"/>
         <pathelement path="lib/jaxb-api-2.3.1.jar"/>
+        <pathelement path="lib/servlet-api.jar"/>
         <path refid="Web App Libraries.libraryclasspath"/>
         <path refid="EAR Libraries.libraryclasspath"/>
     </path>
