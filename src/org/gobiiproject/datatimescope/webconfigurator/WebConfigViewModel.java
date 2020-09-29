@@ -642,11 +642,22 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
 
     @Command("deleteCrop")
     public void deleteCrop () {
+        if(!keygen()) {
+            
+            //show error guide
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();
+            include.setSrc("/generate_key_guide.zul");
+           
+            isKeySet = false;
+            writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
+        }else {
         Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
         include.setSrc("/deleteCrop.zul");
         getPage().getDesktop().setBookmark("p_" + "deleteCrop");
         writeToLog("WebConfigViewModel.deleteCrop()", "Navigated to deleteCrop.", username);
+        }
     }
 
     @Command("modifyCrop")

@@ -14,6 +14,13 @@
                    </treecell>
                  </treerow>
             </treeitem>
+            <treeitem>
+                <treerow onClick="@command('deleteCrop')">
+                   <treecell>
+                      <label value="Delete crop"/>
+                   </treecell>
+                 </treerow>
+            </treeitem>
         </treechildren>
     </tree>
 </zk>
