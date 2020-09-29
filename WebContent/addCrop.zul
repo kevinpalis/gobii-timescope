@@ -39,6 +39,19 @@
                             <cell>
                             </cell>
                         </row>
+                        <row>
+                            <cell>
+                                <button upload="true" onUpload="@command('setLocationForSeeddata', upload=event)" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
+                                </button>
+                            </cell>
+                            <cell sclass="row-title">
+                                Selected File Name:
+                            </cell>
+                            <cell>
+                                <label value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
+                                </label>
+                            </cell>
+                        </row>
                     </rows>
                 </grid>
                 <div align="left">

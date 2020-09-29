@@ -222,12 +222,13 @@ public class ServerHandler {
 	 * @param currentCrop
 	 * @param contactData each cell is a tab delimited string containing the contact data
 	 * @param firstUpload A flag that allows users to retry filling the contact data if it was invalid on the first try
+	 * @param contactData 
 	 * @return
 	 *  1, if the liquibase population of basic seed data failed
 	 * -1, if the provided contact data had an error
 	 *  0, upon complete success
 	 */
-	public int postgresAddCrop(Crop currentCrop, boolean firstUpload){
+	public int postgresAddCrop(Crop currentCrop, boolean firstUpload, ArrayList<String> contactData){
 		int success=0;
 		if (firstUpload) {
 			
@@ -248,10 +249,10 @@ public class ServerHandler {
 		}
 		
 		//uncomment the next 4 lines to allow an option for the user to upload a tab-delimited contacts file---If upload is going to be allowed, modify UI to provide template for proper format
-//        DSLContext context = viewModelService.getDSLContext();  
-//		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
-//		success = populateContactData(context, contactData, timescopeData); 
-//		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
+        DSLContext context = viewModelService.getDSLContext();  
+		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
+		success = populateContactData(context, contactData, timescopeData); 
+		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
 
 		return success;
 	}

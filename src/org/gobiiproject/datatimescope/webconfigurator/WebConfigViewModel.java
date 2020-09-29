@@ -388,15 +388,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             writeToLog("WebConfigViewModel.addCropToDatabase()", "This crop already has a database associated with it. Please choose another crop.", username);
             return;
         }
-//        if (currentCrop.getContactData() == null){
-//            alert("Please upload a contact data file, otherwise the database cannot be created.");
-//            binder.sendCommand("disableEdit",null);
-//            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
-//            return;
-//        }
-//        ArrayList<String> contacts = readInContactData();
+        if (currentCrop.getContactData() == null){
+            alert("Please upload a contact data file, otherwise the database cannot be created.");
+            binder.sendCommand("disableEdit",null);
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
+            return;
+        }
+        ArrayList<String> contacts = readInContactData();
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
-        int seedData = serverHandler.postgresAddCrop(currentCrop, firstUpload);
+        int seedData = serverHandler.postgresAddCrop(currentCrop, firstUpload, contacts);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit", null);
