@@ -531,6 +531,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
         binder.sendCommand("disableEdit", null);
+        
+        //Remove crop from xml file
+        List<String> updatePortal = new ArrayList<>(Arrays.asList(currentCrop.getName(), serverInfo.getHost()));
+        if (!scriptExecutor("removeCropFromGobiiPortal.sh", updatePortal)){
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            return;
+        }
         writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed.", username);
         goToHome();
     }

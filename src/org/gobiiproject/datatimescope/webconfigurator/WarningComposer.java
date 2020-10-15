@@ -117,9 +117,10 @@ public class WarningComposer{
 				public void onEvent(Event evt) {
 					if (evt.getName().equals("onOK")) {
 						if (xmlHandler.getCropList().size() > 1) {
+			//			    writeToLog("WarningComposer.warningRemoval()", "Will now execute model.executeRemoval", username);
 							model.executeRemoval(binder);
 						} else {
-							alert("This the only database. Please add another crop before deleting this database.");
+							alert("This is the only database. Please add another crop before deleting this database.");
 							writeToLog("WarningComposer.warningRemoval()", "Tried to remove only database.", username);
 							model.cancelChanges();
 						}

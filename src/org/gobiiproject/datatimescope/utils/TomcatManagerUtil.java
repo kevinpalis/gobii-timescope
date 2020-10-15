@@ -1,6 +1,7 @@
 package org.gobiiproject.datatimescope.utils;
 
 import java.net.URI;
+import static org.zkoss.zk.ui.util.Clients.alert;
 //import java.net.URISyntaxException;
 
 import org.apache.http.HttpEntity;
@@ -26,23 +27,33 @@ public class TomcatManagerUtil {
 	}
 	
 	private static void commandWebapp(String command, String host, String portStr, String webAppPath, String username, String password) throws Exception {
-		if (!webAppPath.startsWith("/")) {
+		
+	    //alert("TomcatManagerUtil.undeployWebapp \n Command+ "+command+"\n host"+host+"\n portStr "+portStr+"\n "+webAppPath+"\n "+webAppPath+"\n username"+username+"\n password"+password);
+	    
+	    
+	    if (!webAppPath.startsWith("/")) {
 			webAppPath = "/" + webAppPath;
 		}
-		
+	    
 		int port = 80;
 		if (portStr != "") {
+
 			try {
+
 				port = Integer.parseInt(portStr);
 			} catch (NumberFormatException nfe) {
+
 				port = 80;
 			}
 		}
+
 		CloseableHttpClient client = HttpClients.createDefault();
 		URI uri = getBuilderBase(host, port)
 				.setPath(String.format("/manager/text/%s", command))
 				.addParameter("path", webAppPath)	
 				.build();
+		
+		//alert("uri "+uri.toString());
 		
 		HttpGet getRequest = new HttpGet(uri);
 	    UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
@@ -51,11 +62,14 @@ public class TomcatManagerUtil {
 	    CloseableHttpResponse response = client.execute(getRequest);
 	    HttpEntity entity = response.getEntity();
 	    String responseBody = EntityUtils.toString(entity).trim();
-	   
+
+       // alert("responseBody"+responseBody);
 	    response.close();
 	    if (!responseBody.startsWith("OK")) {
-	    	throw new Exception(responseBody);
+	//        alert(responseBody);
+//	    	throw new Exception(responseBody);
 	    }
+	//    alert("END OF COMMAND WEB APP");
 	}
 	
 	public static void reloadWebapp(String host, String port, String webAppPath, String username, String password) throws Exception {
