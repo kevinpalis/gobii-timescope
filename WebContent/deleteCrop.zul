@@ -1,9 +1,14 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<vlayout apply="org.zkoss.bind.BindComposer"
-         viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
-    <label>Crops - Delete Crop</label>
-    <grid width="600px">
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
+             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	<caption sclass="fn-caption" label="Delete Crop" />
+	
+<vlayout>
+    <grid width="600px" style="border: 0 !important; padding:0 !important; margin:0;">
         <columns>
             <column align="right" hflex="min"/>
             <column/>
@@ -21,7 +26,7 @@
                 </cell>
             </row>
             <row>
-                <cell sclass="row-title">Type the name of the crop to be removed:</cell>
+                <cell sclass="row-title">Type the name of the crop to be deleted:</cell>
                 <cell>
                     <textbox constraint="no empty" value="@save(vm.currentCrop.typedName, before='removeCropFromDatabase')"></textbox>
                 </cell>
@@ -31,8 +36,9 @@
     <div align="left">
         <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
         <hlayout>
-            <button id="remove" label="Remove" onClick="@command('removeCropFromDatabase')" visible="@bind(not vm.documentLocked)" />
+            <button id="remove" label="Delete" style="background-color: red" onClick="@command('removeCropFromDatabase')" visible="@bind(not vm.documentLocked)" />
             <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
         </hlayout>
     </div>
 </vlayout>
+</window>
