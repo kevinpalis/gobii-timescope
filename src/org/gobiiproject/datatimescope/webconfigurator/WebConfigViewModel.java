@@ -396,7 +396,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         ArrayList<String> contacts = readInContactData();
         writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
-        int seedData = serverHandler.postgresAddCrop(currentCrop, firstUpload, contacts);
+        int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
             binder.sendCommand("disableEdit", null);

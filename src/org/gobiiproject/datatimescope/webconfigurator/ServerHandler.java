@@ -228,7 +228,7 @@ public class ServerHandler {
 	 * -1, if the provided contact data had an error
 	 *  0, upon complete success
 	 */
-	public int postgresAddCrop(Crop currentCrop, boolean firstUpload, ArrayList<String> contactData){
+	public int postgresAddCrop(Crop currentCrop, ArrayList<String> contactData, boolean firstUpload){
 		int success=0;
 		if (firstUpload) {
 			
@@ -248,12 +248,18 @@ public class ServerHandler {
 			}
 		}
 		
-		//uncomment the next 4 lines to allow an option for the user to upload a tab-delimited contacts file---If upload is going to be allowed, modify UI to provide template for proper format
-        DSLContext context = viewModelService.getDSLContext();  
-		Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(context);
-		success = populateContactData(context, contactData, timescopeData); 
-		writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
-
+		ServerInfo info = new ServerInfo(serverInfo.getHost(), serverInfo.getPort(), currentCrop.getDatabaseName(),
+                xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
+        ViewModelServiceImpl newService = new ViewModelServiceImpl();
+        newService.connectToDB(info.getUserName(), info.getPassword(), info);
+        DSLContext newContext = newService.getDSLContext();
+        Pair<Integer, java.sql.Date> timescopeData = populateTimescopeArray(newContext);
+        success = populateContactData(newContext, contactData, timescopeData);
+        info = new ServerInfo(serverInfo.getHost(), serverInfo.getPort(), "gobii_dev",
+                xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
+        newService.connectToDB(info.getUserName(), info.getPassword(), info);
+        writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
+        
 		return success;
 	}
 
@@ -265,6 +271,8 @@ public class ServerHandler {
 	private Pair<Integer, java.sql.Date> populateTimescopeArray(DSLContext context){
 		java.util.Date utilDat = new java.util.Date();
 		Integer gdmSuperID = (Integer) context.fetch("select contact_id from contact where username = 'gadm';").get(0).getValue(0);
+		writeToLog("ServerHandler.populateTimescopeArray()", "GADM id is " + Integer.toString(gdmSuperID) + ".", username);
+
 		return new Pair<>(gdmSuperID, new java.sql.Date(utilDat.getTime()));
 	}
 
