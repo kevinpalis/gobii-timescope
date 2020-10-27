@@ -1,0 +1,3 @@
+GOBII	User1	default_user_1	user1.gobii@gobii.org	Admin,PI,Curator	GOBII Cornell Team	USER_READER
+GOBII Ldap	User2	default_user_2	user2.gobii@gobii.org	Admin,PI,Curator	GOBII Cornell Team	gobii-user2
+Lastname	Firstname	Code	Email	Roles	Organization	Username

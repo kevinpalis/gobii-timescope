@@ -9,6 +9,9 @@
 		<treechildren>
             <treeitem>
                 <treerow onClick="@command('addCrop')">
+                	<treecell>
+                        <image src="/imgs/add.png" />
+                    </treecell>
                    <treecell>
                       <label value="Add crop"/>
                    </treecell>
@@ -16,6 +19,9 @@
             </treeitem>
             <treeitem>
                 <treerow onClick="@command('deleteCrop')">
+                	<treecell>
+                        <image src="/imgs/delete.png" />
+                   </treecell>
                    <treecell>
                       <label value="Delete crop"/>
                    </treecell>

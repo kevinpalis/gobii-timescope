@@ -1,15 +1,19 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
-<vlayout>
-    <label>Crops - Add Crop</label>
-    <hlayout apply="org.zkoss.bind.BindComposer"
-             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')" >
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin:0;"
+	apply="org.zkoss.bind.BindComposer"
+             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	<caption sclass="fn-caption" label="Add Crop" />
+	
+    <hlayout>
             <vlayout>
                 <grid width="800px">
                     <columns>
                         <column align="right" hflex="min"/>
                         <column/>
-                        <column align="left" />
+                        <column align="right" />
                     </columns>
                     <rows>
                         <row>
@@ -45,18 +49,20 @@
                                 </button>
                             </cell>
                             <cell sclass="row-title">
-                                Selected File Name:
+                             	<label value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
+                                </label>
                             </cell>
                             <cell>
-                                <label value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
-                                </label>
+                                <button label="Download sample contact data" visible="@bind(not vm.documentLocked)">
+   									 <attribute name="onClick"><![CDATA[Filedownload.save("/imgs/contacts.txt", null);]]></attribute>
+								</button>
                             </cell>
                         </row>
                     </rows>
                 </grid>
                 <div align="left">
-                    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
-                    <hlayout>
+                     <hlayout>
+	                    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
                         <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" disabled="@bind(not vm.currentCrop.hideContactData)"/>
                         <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
                     </hlayout>
@@ -72,5 +78,5 @@
                 </row>
             </template>
         </grid>
-    </hlayout>
-</vlayout>
+    </hlayout>  
+</window>
