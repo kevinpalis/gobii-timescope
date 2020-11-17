@@ -51,6 +51,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private boolean setUpisDone = false;
 
     private String username;
+    private String newname;
 
     @Init
     public void init() {
@@ -381,21 +382,21 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      */
     @Command("addCropToDatabase")
     public void addCropToDatabase(@ContextParam(ContextType.BINDER) Binder binder){
-        
+        ArrayList<String>  contacts = new ArrayList<String>();
         List<String> currentCrops = xmlHandler.getCropList();
         if (currentCrops.contains(currentCrop.getName())){
             alert("This crop already has a database associated with it. Please choose another crop.");
             writeToLog("WebConfigViewModel.addCropToDatabase()", "This crop already has a database associated with it. Please choose another crop.", username);
             return;
         }
-        if (currentCrop.getContactData() == null){
-            alert("Please upload a contact data file, otherwise the database cannot be created.");
-            binder.sendCommand("disableEdit",null);
-            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
-            return;
+        if (currentCrop.getContactData() != null){
+            contacts = readInContactData();
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
+//            alert("Please upload a contact data file, otherwise the database cannot be created.");
+//            binder.sendCommand("disableEdit",null);
+//            writeToLog("WebConfigViewModel.addCropToDatabase()", "Please upload a contact data file, otherwise the database cannot be created.", username);
+//            return;
         }
-        ArrayList<String> contacts = readInContactData();
-        writeToLog("WebConfigViewModel.addCropToDatabase()", "The contact data for the crop " + currentCrop.getName() + " has successfully been read in.", username);
         int seedData = serverHandler.postgresAddCrop(currentCrop, contacts, firstUpload);
         if (seedData == 1){ //Liquibase failed => Delete Crop, to not leave in an inconsistent state
             serverHandler.postgresRemoveCrop(currentCrop.getName(), currentCrop.getDatabaseName());
@@ -832,5 +833,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public PropertyHandler getPropertyHandler() {
         return propertyHandler;
     }
+
 }
 

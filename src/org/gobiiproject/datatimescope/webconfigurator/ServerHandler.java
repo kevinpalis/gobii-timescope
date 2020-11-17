@@ -242,12 +242,13 @@ public class ServerHandler {
 			//Connecting to the database created a race condition, through trial and error I found 7 seconds to be the lower
 			//bound by seconds so that the program runs correctly.
 			try {
-				TimeUnit.SECONDS.sleep(10);
+				TimeUnit.SECONDS.sleep(15);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 		
+		if(contactData.size()>0) {
 		ServerInfo info = new ServerInfo(serverInfo.getHost(), serverInfo.getPort(), currentCrop.getDatabaseName(),
                 xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
         ViewModelServiceImpl newService = new ViewModelServiceImpl();
@@ -259,7 +260,7 @@ public class ServerHandler {
                 xmlHandler.getPostgresUserName(), xmlHandler.getPostgresPassword());
         newService.connectToDB(info.getUserName(), info.getPassword(), info);
         writeToLog("ServerHandler.postgresAddCrop()", "The contact data was successfully added to the database of crop " + currentCrop.getName() + ".", username);
-        
+		}
 		return success;
 	}
 
@@ -379,4 +380,5 @@ public class ServerHandler {
     public void setServerInfo(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
     }
+
 }
