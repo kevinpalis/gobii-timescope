@@ -2,43 +2,76 @@
 <?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
 <window border="none" hflex="1" vflex="1"
-	style="border: 0 !important; padding:0 !important; margin:0;"
+	style="border: 0 !important; padding:0 !important; margin-top:200px !important;"
 	apply="org.zkoss.bind.BindComposer"
-             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 	<caption sclass="fn-caption" label="Delete Crop" />
-	
-<vlayout>
-    <grid width="600px" style="border: 0 !important; padding:0 !important; margin:0;">
-        <columns>
-            <column align="right" hflex="min"/>
-            <column/>
-        </columns>
-        <rows>
-            <row>
-                <cell sclass="row-title">Crop Name:</cell>
-                <cell>
-                    <listbox model="@bind(vm.xmlHandler.cropList)" selectedItem="@bind(vm.currentCrop.name)"
-                             width="200px" mold="select" disabled="@load(vm.documentLocked)">
-                        <template name="model">
-                            <listitem label="@bind(each)" />
-                        </template>
-                    </listbox>
-                </cell>
-            </row>
-            <row>
-                <cell sclass="row-title">Type the name of the crop to be deleted:</cell>
-                <cell>
-                    <textbox constraint="no empty" value="@save(vm.currentCrop.typedName, before='removeCropFromDatabase')"></textbox>
-                </cell>
-            </row>
-        </rows>
-    </grid>
-    <div align="left">
-        <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
-        <hlayout>
-            <button id="remove" label="Delete" style="background-color: red" onClick="@command('removeCropFromDatabase')" visible="@bind(not vm.documentLocked)" />
-            <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
-        </hlayout>
-    </div>
-</vlayout>
+
+	<hlayout>
+		<vlayout>
+			<div align="left">
+				<checkbox mold="switch" id="edit" sclass="side-notes"
+					label="Toggle this switch to enable delete crop. "
+					checked="@load(not vm.documentLocked)"
+					onCheck="@command('enableEdit')"
+					visible="@bind(vm.documentLocked)" />
+			</div>
+			<grid width="800px"
+				style="border: 0 !important; padding:0 !important; margin:0;">
+				<columns>
+					<column align="right" hflex="min" />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<cell sclass="row-title">Crop Name:</cell>
+						<cell>
+							<listbox
+								model="@bind(vm.xmlHandler.cropList)"
+								selectedItem="@bind(vm.currentCrop.name)" width="200px"
+								mold="select" disabled="@load(vm.documentLocked)">
+								<template name="model">
+									<listitem label="@bind(each)" />
+								</template>
+							</listbox>
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">
+							Type the name of the crop to be deleted:
+						</cell>
+						<cell>
+							<textbox constraint="no empty" width="200px"
+								value="@save(vm.currentCrop.typedName, before='removeCropFromDatabase')">
+							</textbox>
+						</cell>
+					</row>
+				</rows>
+			</grid>
+			<div align="left">
+				<hlayout>
+					<button id="remove" width="100px" label="Delete"
+						style="background-color: red"
+						onClick="@command('removeCropFromDatabase')"
+						visible="@bind(not vm.documentLocked)" />
+					<button id="cancel" width="100px" label="Cancel"
+						onClick="@command('cancelChanges')"
+						visible="@bind(not vm.documentLocked)" />
+				</hlayout>
+			</div>
+		</vlayout>
+		<grid model="@load(vm.xmlHandler.cropList)">
+			<columns>
+				<column hflex="min" align="center">
+					Current Crops
+				</column>
+			</columns>
+			<template name="model">
+				<row>
+					<label value="@load(each)" />
+				</row>
+			</template>
+		</grid>
+	</hlayout>
+	  
 </window>

@@ -182,6 +182,12 @@ div .z-caption-content {
 	font-style: oblique;
 }
 
+.side-notes{
+	font-weight: bold;
+	color: #7d7d7d;
+	font-size: 11px;
+}
+
 .Flipped, .Flipped .Content
 {
     transform:rotateX(180deg);

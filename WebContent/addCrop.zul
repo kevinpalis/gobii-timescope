@@ -2,59 +2,77 @@
 <?link rel="stylesheet" type="text/css" href="/css/style.css"?>
 
 <window border="none" hflex="1" vflex="1"
-	style="border: 0 !important; padding:0 !important; margin:0;"
+	style="border: 0 !important; padding:0 !important; margin-top:200px !important;"
 	apply="org.zkoss.bind.BindComposer"
-             viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 	<caption sclass="fn-caption" label="Add Crop" />
-	
-    <hlayout>
-            <vlayout>
-                <grid width="800px">
-                    <columns>
-                        <column align="right" hflex="min"/>
-                        <column/>
-                        <column align="right" />
-                    </columns>
-                    <rows>
-                        <row>
-                            <cell sclass="row-title">Crop Name:</cell>
-                            <cell>
-                                <textbox constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_-]+$/: Please only use alphanumeric characters, hyphens and underscores."
-                                        width="200px" value="@save(vm.currentCrop.name), before = 'addCropToDatabase')" disabled="@load(vm.documentLocked)">
-                                </textbox>
-                            </cell>
-                            <cell/>
-                        </row>
-                        <row>
-                            <cell sclass="row-title">Database Name:</cell>
-                            <cell>
-                                <textbox
-                                    width="200px" value="@bind(vm.currentCrop.databaseName)" disabled="true">
-                                </textbox>
-                            </cell>
-                            <cell/>
-                        </row>
-                        <row>
-                            <cell sclass="row-title">Web Application (WAR) Name:</cell>
-                            <cell>
-                                    <textbox width="200px" value="@load(vm.currentCrop.WARName)" disabled="true">
-                                    </textbox>
-                            </cell>
-                            <cell>
-                            </cell>
-                        </row>
-                        <row>
-                            <cell>
-                                <button upload="true" onUpload="@command('setLocationForSeeddata', upload=event)" label="Upload tab-delimited contact data file" disabled="@load(vm.documentLocked)">
-                                </button>
-                            </cell>
-                            <cell sclass="row-title">
-                             	<label value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')" visible="@bind(vm.currentCrop.hideContactData)">
-                                </label>
-                            </cell>
-                            <cell>
-                                <button label="Download sample contact data" visible="@bind(not vm.documentLocked)">
-   									 <attribute name="onClick"><![CDATA[Filedownload.save("/imgs/contacts.txt", null);]]></attribute>
+
+	<hlayout>
+		<vlayout>
+			<div align="left">
+				<checkbox mold="switch" id="edit" sclass="side-notes"
+					label="Toggle this switch to enable add crop"
+					checked="@load(not vm.documentLocked)"
+					onCheck="@command('enableEdit')"
+					visible="@bind(vm.documentLocked)" />
+			</div>
+			<grid width="800px">
+				<columns>
+					<column align="right" hflex="min" />
+					<column />
+					<column align="right" />
+				</columns>
+				<rows>
+					<row>
+						<cell sclass="row-title">Crop Name:</cell>
+						<cell>
+							<textbox
+								constraint="no empty : Please set a name for the new crop. , /^[a-zA-Z0-9_-]+$/: Please only use alphanumeric characters, hyphens and underscores."
+								width="200px"
+								value="@save(vm.currentCrop.name), before = 'addCropToDatabase')"
+								disabled="@load(vm.documentLocked)">
+							</textbox>
+						</cell>
+						<cell />
+					</row>
+					<row>
+						<cell sclass="row-title">Database Name:</cell>
+						<cell>
+							<textbox width="200px"
+								value="@bind(vm.currentCrop.databaseName)" disabled="true">
+							</textbox>
+						</cell>
+						<cell />
+					</row>
+					<row>
+						<cell sclass="row-title">
+							Web Application (WAR) Name:
+						</cell>
+						<cell>
+							<textbox width="200px"
+								value="@load(vm.currentCrop.WARName)" disabled="true">
+							</textbox>
+						</cell>
+						<cell></cell>
+					</row>
+					<row>
+						<cell>
+							<button upload="true"
+								onUpload="@command('setLocationForSeeddata', upload=event)"
+								label="Upload tab-delimited contact data file"
+								disabled="@load(vm.documentLocked)">
+							</button>
+						</cell>
+						<cell sclass="row-title">
+							<label
+								value="@load(vm.currentCrop.contactDataShort, after = 'setLocationForSeeddata')"
+								visible="@bind(vm.currentCrop.hideContactData)">
+							</label>
+						</cell>
+						<cell>
+							<button label="Download sample contact data"
+								visible="@bind(not vm.documentLocked)">
+								<attribute name="onClick"><![CDATA[Filedownload.save("/imgs/contacts.txt", null);]]></attribute>
 								</button>
                             </cell>
                         </row>
@@ -62,9 +80,8 @@
                 </grid>
                 <div align="left">
                      <hlayout>
-	                    <button id="edit" label="Edit" onClick="@command('enableEdit')" visible="@bind(vm.documentLocked)" />
-                        <button id="save" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" disabled="@bind(not vm.currentCrop.hideContactData)"/>
-                        <button id="cancel" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
+                        <button id="save"  width="100px" label="Save" onClick="@command('addCropToDatabase')" visible="@bind(not vm.documentLocked)" disabled="@bind(not vm.currentCrop.hideContactData)"/>
+                        <button id="cancel" width="100px" label="Cancel" onClick="@command('cancelChanges')" visible="@bind(not vm.documentLocked)" />
                     </hlayout>
                 </div>
             </vlayout>

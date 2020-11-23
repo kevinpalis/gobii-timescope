@@ -1,7 +1,16 @@
 <?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
 
 <zk>
-	<tree rows="14" apply="org.zkoss.bind.BindComposer"
+<style>
+  .z-tree-line {
+    display: inline-block;
+    width: 0px;
+    height: 0px;
+    line-height: 0px;
+    vertical-align: middle;
+	}
+  </style>
+	<tree  style="border: 0 !important;" rows="3" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 		<treecols>
 			<treecol />
@@ -9,21 +18,25 @@
 		<treechildren>
             <treeitem>
                 <treerow onClick="@command('addCrop')">
-                	<treecell>
-                        <image src="/imgs/add.png" />
-                    </treecell>
-                   <treecell>
-                      <label value="Add crop"/>
+               		 <treecell hflex="min">
+                        <image height="27px" width="27px" src="/imgs/health.png" />
+                        <label hflex="true" value="Add crop" />
                    </treecell>
                  </treerow>
             </treeitem>
             <treeitem>
                 <treerow onClick="@command('deleteCrop')">
-                	<treecell>
-                        <image src="/imgs/delete.png" />
+                	<treecell hflex="min">
+                        <image  height="27px" width="27px" src="/imgs/bomb.png" />
+                        <label hflex="true" value="Delete crop" />
                    </treecell>
-                   <treecell>
-                      <label value="Delete crop"/>
+                 </treerow>
+            </treeitem>
+             <treeitem>
+                <treerow onClick="@command('modifyCrop')">
+                	<treecell>
+                        <image hflex="min" height="27px" width="27px" src="/imgs/molecule.png" />
+                        <label hflex="true" value="Modify crop" />
                    </treecell>
                  </treerow>
             </treeitem>

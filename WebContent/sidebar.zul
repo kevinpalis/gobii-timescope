@@ -1,19 +1,17 @@
 <vbox vflex="true">
-	<hbox vflex="2"
+	<hbox height="200px"
 		apply="org.gobiiproject.datatimescope.controller.NeedHelpModel">
 			<image id="timescopeLogo" src="/imgs/datatimescope5.png" height="100px" onClick="@command('bringBackToHome')"/>
 	</hbox>
-	
-	<hbox vflex="2" />
-	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" vflex="25" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	<tabbox apply="org.zkoss.bind.BindComposer" id = 'tabbox' hflex="max" maximalHeight="true" mold="accordion" viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
 		<tabs>
 			<tab id="Data"> Data</tab>
 			<tab id="Configuration" visible="@load(vm.isSuperAdmin)"> Configuration</tab>
 		</tabs>
 		<tabpanels>
-			<tabpanel hflex="max" vflex="25">
-				<hbox hflex="max" vflex="25">
-					<grid hflex="1" vflex="true" sclass="sidebar" id="fnList"
+			<tabpanel hflex="max" vflex="max">
+				<hbox hflex="max" vflex="max" align="start">
+					<grid hflex="1" vflex="true" sclass="sidebar" id="fnList" style="border: 0 !important;"
 						  apply="org.gobiiproject.datatimescope.controller.SidebarAjaxbasedController">
 						<columns>
 							<column width="45px" />
@@ -31,7 +29,7 @@
 
 	<hbox apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('org.gobiiproject.datatimescope.controller.IndexViewModel')"
-		hflex="1" vflex="1" pack="end" align="start">
+		hflex="1" vflex="true" pack="end" align="end">
 
 		<button label="Switch Database"
 			style="background-color:gray; font-size:14px; text-align:center; vertical-align:middle; padding: 0px;"
