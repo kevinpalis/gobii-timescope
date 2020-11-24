@@ -3,6 +3,7 @@ package org.gobiiproject.datatimescope.webconfigurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.zkoss.bind.annotation.NotifyChange;
 
 import java.io.*;
@@ -31,6 +32,33 @@ public class XmlCropHandler extends XmlModifier {
         modifyDocument(doc, path);
     }
 
+    
+    @NotifyChange("cropList")
+    public void renameCrop(Crop oldCrop, String newName){
+        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
+       
+        //Change entry for warname
+        String path = "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
+        Node nodeWarName = evaluateXPathExpression(path, doc).item(0);
+        nodeWarName.setTextContent("/gobii-"+newName);
+        
+       //Change entry for databasename
+        String postgresContextPathXPath = "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
+        Node nodeDbName = evaluateXPathExpression(postgresContextPathXPath, doc).item(0);
+        nodeDbName.setTextContent("gobii_"+newName);
+      
+        //change entry, gobiicropconfig, gobiicroptype
+        Node nodeGobiiCropType = evaluateXPathExpression("//gobiiCropType[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
+        nodeGobiiCropType.setTextContent(newName);
+        
+        //change entry, string
+        Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
+        cropRoot.setTextContent(newName);
+     
+        removeEmptyLines();
+        modifyDocument(doc, path);
+    }
+    
     private void removeChildren(Node node){
         while (node.hasChildNodes())
             node.removeChild(node.getFirstChild());

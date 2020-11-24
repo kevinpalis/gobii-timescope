@@ -89,6 +89,10 @@ public class CronHandler {
                     createCron(stdInput, currentCrop);
                     break;
                 }
+                case ("rename"): {
+                    renameCron(stdInput, currentCrop, currentCrop.getRename());
+                    break;
+                }
                 case ("update"): {
                     updateCron(stdInput, currentCrop);
                     break;
@@ -168,6 +172,33 @@ public class CronHandler {
                 input[7] = "+" + currentCrop.getFileAge();
                 input[0] = "*/" + currentCrop.getCron();
                 newJobs.add(String.join(" ", input));
+            } else {
+                newJobs.add(line);
+            }
+        }
+        FileWriter writer = new FileWriter("newCrons.txt");
+        for(String str: newJobs) {
+            writer.write(str + System.lineSeparator());
+        }
+        writer.close();
+    }
+    
+    /**
+     * Renames the current CRON jobs for the provided Crop to the new cropname
+     * @param stdInput A buffer containing all the current CRONs
+     * @param currentCrop The Crop for which we are changing the jobs
+     */
+    private void renameCron(BufferedReader stdInput, Crop currentCrop, String newCropName) throws IOException {
+        ArrayList<String> newJobs = new ArrayList<>();
+        String line;
+        while ((line = stdInput.readLine()) != null) {
+            if (line.equals("")){
+                break;
+            }
+            String [] input = line.split(" ");
+            if (input[6].equals(currentCrop.getName())){
+                input[6]=newCropName;
+                newJobs.add(line);
             } else {
                 newJobs.add(line);
             }

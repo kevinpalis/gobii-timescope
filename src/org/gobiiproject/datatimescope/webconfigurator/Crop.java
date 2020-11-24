@@ -25,6 +25,7 @@ public class Crop {
     private String contactData;
     @SuppressWarnings("unused")
 	private String contactDataShort;
+    private String rename;
     private String typedName;
     private boolean hideContactData = true;
     private String username;
@@ -149,5 +150,13 @@ public class Crop {
 
     public String getTypedName() {
         return typedName;
+    }
+
+    public String getRename() {
+        return rename;
+    }
+
+    public void setRename(String rename) {
+        this.rename = rename;
     }
 }

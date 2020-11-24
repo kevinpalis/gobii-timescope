@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# $1 is the new crop name
-# $2 is flag for deletion or creation (1 == create)
-# $3 is other crop name to copy confidentiality.txt from
+# $2 is the current crop name
+# $3 is flag for deletion or creation (1 is create, 2 is rename)
+# $4 is other crop name to copy confidentiality.txt from OR new cropname (for modify feature)
 
 x=1
+y=2
 if [[ $3 == ${x} ]]
 then
     mkdir /data/gobii_bundle/crops/$2
@@ -23,6 +24,10 @@ then
     mkdir /data/gobii_bundle/crops/$2/loader/qc
     mkdir /data/gobii_bundle/crops/$2/notices
     cp /data/gobii_bundle/crops/$4/notices/confidentiality.txt /data/gobii_bundle/crops/$2/notices/confidentiality.txt
+elif [[ $3 == ${y} ]]
+then
+    mv /data/gobii_bundle/crops/$2 /data/gobii_bundle/crops/$5
+	
 else
     rm -r /data/gobii_bundle/crops/$2
 fi

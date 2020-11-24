@@ -133,7 +133,35 @@ public class WarningComposer{
 		);
 	}
 
-
+	   /**
+     * Opens a warning box and if acknowledged performs the renaming of the database of the chosen crop
+     * */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void warningRename(@ContextParam(ContextType.BINDER) Binder binder, WebConfigViewModel model){
+        Messagebox.Button[] buttons = new Messagebox.Button[]{Messagebox.Button.OK, Messagebox.Button.CANCEL};
+        Map<String, String> params = new HashMap<>();
+        params.put("width", "500");
+        Messagebox.show(
+            "This operation will permanently rename this database and all its associated information." +
+            "\nPlease make sure that there are no active sessions prior to proceeding. \nAre you sure" +
+            " you want to rename the database now?",
+            "Warning",
+            buttons,
+            null,
+            Messagebox.EXCLAMATION,
+            null,
+            new org.zkoss.zk.ui.event.EventListener() {
+                public void onEvent(Event evt) {
+                    if (evt.getName().equals("onOK")) {
+                        model.executeRename(binder);
+                    } else {
+                        writeToLog("WarningComposer.warningRename()", "Didn't accept warning box.", username);
+                        model.cancelChanges();
+                    }
+                }
+            }, params
+        );
+    }
 	/**
 	 * Opens a warning box and if acknowledged performs the restart of only the web-application associated with the crop
 	 * Otherwise stages it for later and upon next restart the effects will take place

@@ -481,6 +481,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         currentCrop.setWARName(xmlHandler.getWARName(currentCrop.getName()));
         warningComposer.warningActivityTomcat(binder, this, currentCrop);
     }
+    
+    /**
+     * Removes the chosen crop from the database and all the associated locations (XML, Tomcat, CRON)
+     * The Crop is chosen by dropdown menu
+     */
+    @NotifyChange("cropList")
+    @Command("modifyCropByRename")
+    public void modifyCropByRename (@ContextParam(ContextType.BINDER) Binder binder){
+
+        List<String> currentCrops = xmlHandler.getCropList();
+        if (currentCrops.contains(currentCrop.getRename())){
+            alert("The name "+ currentCrop.getRename() +" already has a database associated with it. Please choose a different crop name.");
+            writeToLog("WebConfigViewModel.modifyCropByRename()", "This crop already has a database associated with it. Please choose another crop.", username);
+            return;
+        }
+
+        warningComposer.warningRename(binder, this);
+       
+    }
 
     /**
      * Removes the chosen crop from the database and all the associated locations (XML, Tomcat, CRON)
@@ -543,6 +562,63 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         goToHome();
     }
 
+    /**
+     * Performs the actual rename of database.
+     * This function should never be called by hand and instead always be called by the warning form WarningHandler
+     * The function drops the database, renames the .war, renmaes the gobii_bundle directory and subdirectory,
+     * renames the CRON tasks and renames the crop from the XML.
+     * @param binder
+     */
+    public void executeRename(@ContextParam(ContextType.BINDER) Binder binder){
+        if (!serverHandler.undeployFromTomcat(currentCrop)){
+            alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ".\nPlease make sure that there are no active sessions before trying again.");
+            writeToLog("WebConfigViewModel.executeRename()", "Undeployment of the war file failed.", username);
+            return;
+        } 
+
+        List<String> renameWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "2", xmlHandler.getWARName(currentCrop.getName()), "gobii-" + currentCrop.getRename()));
+        if (!scriptExecutor("WARHandler.sh", renameWAR)) {
+            binder.sendCommand("disableEdit", null);
+            writeToLog("WebConfigViewModel.executeRename()", "Renaming of the .war file failed.", username);
+            return;
+        }        
+        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " .war file has been renamed.", username);
+        
+        if (!serverHandler.postgresRenameCropDb(currentCrop.getName(), currentCrop.getDatabaseName(), currentCrop.getRename())) {
+            writeToLog("WebConfigViewModel.executeRename()", "Removal of the database was unsuccessful.", username);
+            return;
+        }
+        writeToLog("WebConfigViewModel.executeRename()", "The database for the crop " + currentCrop.getName() + " has been renamed.", username);
+        
+        xmlCropHandler.renameCrop(currentCrop, currentCrop.getRename());
+        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been removed from the XML.", username);
+        
+        List<String> renameBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "2", currentCrop.getRename()));
+        if (!scriptExecutor("cropFileManagement.sh", renameBundle)) {
+            binder.sendCommand("disableEdit", null);
+            writeToLog("WebConfigViewModel.executeRename()", "Renaming the crop files failed.", username);
+            return;
+        }
+        cronHandler.modifyCron("rename", xmlHandler.getHostForReload(), currentCrop);
+        binder.sendCommand("disableEdit", null);
+        
+        //Remove old crop name from xml file
+        List<String> editPortal = new ArrayList<>(Arrays.asList(currentCrop.getName(), serverInfo.getHost()));
+        if (!scriptExecutor("removeCropFromGobiiPortal.sh", editPortal)){
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            return;
+        }
+        
+        //Add new crop name to xml file
+        List<String> updatePortal = new ArrayList<>(Arrays.asList(currentCrop.getRename(), serverInfo.getHost()));
+        if (!scriptExecutor("updateGobiiPortal.sh", updatePortal)){
+            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            return;
+        }
+        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been renamed in the portal.", username);
+        goToHome();
+    }
+    
 
     @Command("disableEdit")
     @NotifyChange("documentLocked")
@@ -672,7 +748,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     public void manageCrop () {
         Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
                 .iterator().next();
-        include.setSrc("/modifyCrop.zul");
+        include.setSrc("/editCrop.zul");
         getPage().getDesktop().setBookmark("p_" + "modifyCrop");
         writeToLog("WebConfigViewModel.manageCrop()", "Navigated to manageCrop.", username);
     }

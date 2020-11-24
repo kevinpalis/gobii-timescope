@@ -215,7 +215,29 @@ public class ServerHandler {
 		}
 		return success;
 	}
-
+	 
+	/**
+     * Renames the database of the selected crop
+     * @param cropName
+     * @param cropDatabase
+     * @param newName
+     * @return true upon success
+     */
+    public boolean postgresRenameCropDb(String cropName, String cropDatabase, String newName){
+        boolean success = true;
+        DSLContext context = viewModelService.getDSLContext();
+        try {
+            context.fetch("ALTER DATABASE " + cropDatabase + "to gobii_"+newName+";");
+            writeToLog("ServerHandler.postgresRenameCropDb()", "You have successfully renamed database for the crop " + cropName + "to gobii_"+ newName +".", username);
+        } catch (Exception e) {
+            alert("The database could not be renamed. Stacktrace of the error: \n" + e.toString());
+            writeToLog("ServerHandler.postgresRemoveCrop()", "The database for the crop " + cropName + " failed to be renamed.", username);
+            e.printStackTrace();
+            success = false;
+        }
+        return success;
+    }
+	
 	/**
 	 * Create a database for the current Crop and populate it with basic seed data and contact data
 	 * The ViewModel operations enable relative smooth switching of databases for the queries

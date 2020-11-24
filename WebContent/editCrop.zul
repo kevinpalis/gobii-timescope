@@ -1,0 +1,75 @@
+<?init class="org.gobiiproject.datatimescope.services.AuthenticationInit"?>
+<?link rel="stylesheet" type="text/css" href="/css/style.css"?>
+
+<window border="none" hflex="1" vflex="1"
+	style="border: 0 !important; padding:0 !important; margin-top:200px !important;"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('org.gobiiproject.datatimescope.webconfigurator.WebConfigViewModel')">
+	<caption sclass="fn-caption" label="Modify Crop" />
+
+	<hlayout>
+		<vlayout>
+			<div align="left">
+				<checkbox mold="switch" id="edit" sclass="side-notes"
+					label="Toggle this switch to rename a crop"
+					checked="@load(not vm.documentLocked)"
+					onCheck="@command('enableEdit')"
+					visible="@bind(vm.documentLocked)" />
+			</div>
+			<grid width="800px"
+				style="border: 0 !important; padding:0 !important; margin:0;">
+				<columns>
+					<column align="right" hflex="min" />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<cell sclass="row-title">Select the crop you want to rename:</cell>
+						<cell>
+							<listbox
+								model="@bind(vm.xmlHandler.cropList)"
+								selectedItem="@bind(vm.currentCrop.name)" width="200px"
+								mold="select" disabled="@load(vm.documentLocked)">
+								<template name="model">
+									<listitem label="@bind(each)" />
+								</template>
+							</listbox>
+						</cell>
+					</row>
+					<row>
+						<cell sclass="row-title">New name:</cell>
+						<cell>
+							<textbox constraint="no empty"  width="200px"
+								value="@save(vm.currentCrop.rename, before='modifyCropByRename')">
+							</textbox>
+						</cell>
+					</row>
+				</rows>
+			</grid>
+			<div align="left">
+				<hlayout>
+					<button id="modify" width="100px" label="Modify"
+						style="background-color: red"
+						onClick="@command('modifyCropByRename')"
+						visible="@bind(not vm.documentLocked)" />
+					<button id="cancel" width="100px" label="Cancel"
+						onClick="@command('cancelChanges')"
+						visible="@bind(not vm.documentLocked)" />
+				</hlayout>
+			</div>
+		</vlayout>
+
+		<grid model="@load(vm.xmlHandler.cropList)">
+			<columns>
+				<column hflex="min" align="center">
+					Current Crops
+				</column>
+			</columns>
+			<template name="model">
+				<row>
+					<label value="@load(each)" />
+				</row>
+			</template>
+		</grid>
+	</hlayout>
+</window>
