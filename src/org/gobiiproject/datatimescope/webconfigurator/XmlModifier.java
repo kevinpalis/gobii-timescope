@@ -651,7 +651,7 @@ public class XmlModifier extends SelectorComposer<Component> {
 			transformer.transform(source, result);
 		} catch (TransformerException e) {
 			e.printStackTrace();
-			writeToLog( "xmlModifier.modifyDocument()", "Modification of gobii-web.xml failed.", username);
+			writeToLog( "xmlModifier.modifyDocument()", "Modification of gobii-web.xml failed."+ e.getLocalizedMessage() +"\n"+e.getLocalizedMessage(), username);
 		}
 	}
 

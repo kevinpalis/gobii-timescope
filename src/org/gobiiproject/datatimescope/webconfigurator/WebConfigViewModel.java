@@ -575,23 +575,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             writeToLog("WebConfigViewModel.executeRename()", "Undeployment of the war file failed.", username);
             return;
         } 
+        
+        
+        if (!serverHandler.postgresRenameCropDb(currentCrop.getName(), currentCrop.getDatabaseName(), currentCrop.getRename())) {
+            writeToLog("WebConfigViewModel.executeRename()", "Renaming of the database was unsuccessful.", username);
+            return;
+        }
+        writeToLog("WebConfigViewModel.executeRename()", "The database for the crop " + currentCrop.getName() + " has been renamed.", username);
 
-        List<String> renameWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "2", xmlHandler.getWARName(currentCrop.getName()), "gobii-" + currentCrop.getRename()));
+        List<String> renameWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "2", xmlHandler.getWARName(currentCrop.getName()), "/gobii-" + currentCrop.getRename()));
         if (!scriptExecutor("WARHandler.sh", renameWAR)) {
             binder.sendCommand("disableEdit", null);
             writeToLog("WebConfigViewModel.executeRename()", "Renaming of the .war file failed.", username);
             return;
         }        
         writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " .war file has been renamed.", username);
-        
-        if (!serverHandler.postgresRenameCropDb(currentCrop.getName(), currentCrop.getDatabaseName(), currentCrop.getRename())) {
-            writeToLog("WebConfigViewModel.executeRename()", "Removal of the database was unsuccessful.", username);
-            return;
-        }
-        writeToLog("WebConfigViewModel.executeRename()", "The database for the crop " + currentCrop.getName() + " has been renamed.", username);
+      
         
         xmlCropHandler.renameCrop(currentCrop, currentCrop.getRename());
-        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been removed from the XML.", username);
+        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been renamed in the GOBII-WEB XML.", username);
         
         List<String> renameBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "2", currentCrop.getRename()));
         if (!scriptExecutor("cropFileManagement.sh", renameBundle)) {

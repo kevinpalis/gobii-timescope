@@ -227,7 +227,7 @@ public class ServerHandler {
         boolean success = true;
         DSLContext context = viewModelService.getDSLContext();
         try {
-            context.fetch("ALTER DATABASE " + cropDatabase + "to gobii_"+newName+";");
+            context.fetch("ALTER DATABASE " + cropDatabase + " RENAME TO gobii_"+newName+";");
             writeToLog("ServerHandler.postgresRenameCropDb()", "You have successfully renamed database for the crop " + cropName + "to gobii_"+ newName +".", username);
         } catch (Exception e) {
             alert("The database could not be renamed. Stacktrace of the error: \n" + e.toString());

@@ -26,7 +26,7 @@ then
     cp /data/gobii_bundle/crops/$4/notices/confidentiality.txt /data/gobii_bundle/crops/$2/notices/confidentiality.txt
 elif [[ $3 == ${y} ]]
 then
-    mv /data/gobii_bundle/crops/$2 /data/gobii_bundle/crops/$5
+    mv /data/gobii_bundle/crops/$2 /data/gobii_bundle/crops/$4
 	
 else
     rm -r /data/gobii_bundle/crops/$2

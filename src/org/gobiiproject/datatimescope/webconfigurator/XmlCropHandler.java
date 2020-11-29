@@ -35,30 +35,70 @@ public class XmlCropHandler extends XmlModifier {
     
     @NotifyChange("cropList")
     public void renameCrop(Crop oldCrop, String newName){
-        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
        
+
+        //Change entry for databasename
+        changeDatabaseName(oldCrop, newName);
+        
         //Change entry for warname
-        String path = "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_WEB']/following-sibling::contextPath";
-        Node nodeWarName = evaluateXPathExpression(path, doc).item(0);
-        nodeWarName.setTextContent("/gobii-"+newName);
-        
-       //Change entry for databasename
-        String postgresContextPathXPath = "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
-        Node nodeDbName = evaluateXPathExpression(postgresContextPathXPath, doc).item(0);
-        nodeDbName.setTextContent("gobii_"+newName);
-      
+        changeWarName(oldCrop, newName);
+
         //change entry, gobiicropconfig, gobiicroptype
-        Node nodeGobiiCropType = evaluateXPathExpression("//gobiiCropType[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
-        nodeGobiiCropType.setTextContent(newName);
-        
+        changeCropType(oldCrop, newName);
+       
         //change entry, string
+        changeMainString(oldCrop, newName);
+      
+        removeEmptyLines();
+    }
+    
+    private void changeMainString(Crop oldCrop, String newName) {
+
+        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
+        
         Node cropRoot = evaluateXPathExpression("//string[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
         cropRoot.setTextContent(newName);
      
-        removeEmptyLines();
+        modifyDocument(doc, path);
+        
+    }
+
+    private void changeCropType(Crop oldCrop, String newName) {
+
+        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
+        
+        Node nodeGobiiCropType = evaluateXPathExpression("//gobiiCropType[text() = '" + oldCrop.getName() + "']/..", doc).item(0);
+        nodeGobiiCropType.setTextContent(newName);
+
+        modifyDocument(doc, path);
+        
+    }
+
+    private void changeWarName(Crop oldCrop, String newName) {
+        // TODO Auto-generated method stub
+
+        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
+        
+        String path = "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
+        Node nodeWarName = evaluateXPathExpression(path, doc).item(0);
+        nodeWarName.setTextContent("/gobii-"+newName);
+
+        modifyDocument(doc, path);
+        
+    }
+
+    private void changeDatabaseName(Crop oldCrop, String newName) {
+        // TODO Auto-generated method stub
+
+        Document doc = XmlModifier.retrieveFile(XmlModifier.path);
+        
+        String postgresContextPathXPath =  "//gobiiCropType[text() = '" + oldCrop.getName() + "']/following-sibling::serversByServerType/entry/serverConfig/serverType[text() = 'GOBII_PGSQL']/following-sibling::contextPath";
+        Node nodeDbName = evaluateXPathExpression(postgresContextPathXPath, doc).item(0);
+        nodeDbName.setTextContent("gobii_"+newName);
+
         modifyDocument(doc, path);
     }
-    
+
     private void removeChildren(Node node){
         while (node.hasChildNodes())
             node.removeChild(node.getFirstChild());

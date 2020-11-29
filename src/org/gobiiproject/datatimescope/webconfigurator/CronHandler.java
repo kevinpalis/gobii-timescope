@@ -112,16 +112,21 @@ public class CronHandler {
             //Runtime.getRuntime().exec("/usr/local/tomcat/webapps/timescope/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + getServerinfo().getHost());
             writeToLog("CronHandler.modifyCron()", "Sending the CRONS for the crop " + currentCrop.getName() + " back to the server succeeded.", username);
             
-
-            String scriptPath2 = UtilityFunctions.getScriptPath("runCronJob.sh");
-            String makeExecutable2 = "chmod +x "+ scriptPath2;
-            Runtime.getRuntime().exec(makeExecutable2);
-            
-            List<String> runCrobJobSH = new ArrayList<>(Arrays.asList(getServerinfo().getHost(),currentCrop.getName(),"+2"));
-            if (!scriptExecutor("runCronJob.sh", runCrobJobSH)){
-                writeToLog("CronHandler.modifyCron()", "Runnung the runCronJob sh file failed.", username);
+            if(!modification.equalsIgnoreCase("delete")) {
+                String scriptPath2 = UtilityFunctions.getScriptPath("runCronJob.sh");
+                String makeExecutable2 = "chmod +x "+ scriptPath2;
+                Runtime.getRuntime().exec(makeExecutable2);
+                String cropname=currentCrop.getName();
+                
+                if(modification.equalsIgnoreCase("rename")) {
+                    cropname=currentCrop.getRename();
+                }
+                
+                List<String> runCrobJobSH = new ArrayList<>(Arrays.asList(getServerinfo().getHost(),cropname,"+2"));
+                if (!scriptExecutor("runCronJob.sh", runCrobJobSH)){
+                    writeToLog("CronHandler.modifyCron()", "Runnung the runCronJob sh file failed.", username);
+                }
             }
-            
             return true;
             //Runtime.getRuntime().exec("/home/fvgoldman/gobiidatatimescope/out/artifacts/gobiidatatimescope_war_exploded/WEB-INF/classes/org/gobiiproject/datatimescope/webconfigurator/scripts/dockerCopyCron.sh " + getServerinfo().getHost());
         } catch (IOException e){
