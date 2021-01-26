@@ -628,31 +628,43 @@ public class XmlModifier extends SelectorComposer<Component> {
 	}
 
 	//When adding to the xml need a different setting requires tab indenture setting, this is toggled be the boolean creation
-	protected void modifyDocument(Document doc, String path, boolean creation){
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		try {
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(path));
-			transformer.transform(source, result);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			writeToLog("xmlModifier.modifyDocument(with boolean)", "Modification of gobii-web.xml failed.", username);
-		}
-	}
+//	protected void modifyDocument(Document doc, String path, boolean creation){
+//		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+//		try {
+//			Transformer transformer = transformerFactory.newTransformer();
+//			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//			DOMSource source = new DOMSource(doc);
+//			StreamResult result = new StreamResult(new File(path));
+//			transformer.transform(source, result);
+//		} catch (TransformerException e) {
+//			e.printStackTrace();
+//			writeToLog("xmlModifier.modifyDocument(with boolean)", "Modification of gobii-web.xml failed.", username);
+//		}
+//	}
 
 	protected static void modifyDocument(Document doc, String path){
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		try {
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(path));
-			transformer.transform(source, result);
-		} catch (TransformerException e) {
-			e.printStackTrace();
-			writeToLog( "xmlModifier.modifyDocument()", "Modification of gobii-web.xml failed."+ e.getLocalizedMessage() +"\n"+e.getLocalizedMessage(), username);
-		}
+//		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+//		try {
+//			Transformer transformer = transformerFactory.newTransformer();
+//			DOMSource source = new DOMSource(doc);
+//			StreamResult result = new StreamResult(new File(path));
+//			transformer.transform(source, result);
+//		} catch (TransformerException e) {
+//			e.printStackTrace();
+//			writeToLog( "xmlModifier.modifyDocument()", "Modification of gobii-web.xml failed."+"\n"+e.getLocalizedMessage(), username);
+//		}
+	    
+	    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        try {
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(path));
+            transformer.transform(source, result);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+            writeToLog("xmlModifier.modifyDocument(with boolean)", "Modification of gobii-web.xml failed."+"\n"+e.getLocalizedMessage(), username);
+        }
 	}
 
 }

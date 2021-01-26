@@ -524,6 +524,8 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
      * @param binder
      */
     public void executeRemoval (@ContextParam(ContextType.BINDER) Binder binder){
+        writeToLog("xmlHandler.getWARName(currentCrop.getName())", "xmlHandler.getWARName(currentCrop.getName()) " + xmlHandler.getWARName(currentCrop.getName()) + ".", username);
+        
         if (!serverHandler.undeployFromTomcat(currentCrop)){
             alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ", undeploying forcibly instead.");
             writeToLog("WebConfigViewModel.executeRemoval()", "Undeployment of the war file failed.", username);
@@ -541,6 +543,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             return;
         }
         writeToLog("WebConfigViewModel.executeRemoval()", "The database for the crop " + currentCrop.getName() + " has been removed.", username);
+        
         xmlCropHandler.removeCrop(currentCrop);
         writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed from the XML.", username);
         List<String> removeBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "0", String.valueOf(xmlHandler.getCropList().get(0))));
@@ -549,13 +552,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             writeToLog("WebConfigViewModel.executeRemoval()", "Removing the crop files failed.", username);
             return;
         }
+        
         cronHandler.modifyCron("delete", xmlHandler.getHostForReload(), currentCrop);
         binder.sendCommand("disableEdit", null);
         
         //Remove crop from xml file
         List<String> updatePortal = new ArrayList<>(Arrays.asList(currentCrop.getName(), serverInfo.getHost()));
         if (!scriptExecutor("removeCropFromGobiiPortal.sh", updatePortal)){
-            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            writeToLog("WebConfigViewModel.removeCropFromDatabase()", "Updating the PORTAL xml file failed.", username);
             return;
         }
         writeToLog("WebConfigViewModel.executeRemoval()", "The crop " + currentCrop.getName() + " has been removed.", username);
@@ -574,8 +578,15 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             alert("Couldn't undeploy " + xmlHandler.getWebContextPath(currentCrop.getName()) + ".\nPlease make sure that there are no active sessions before trying again.");
             writeToLog("WebConfigViewModel.executeRename()", "Undeployment of the war file failed.", username);
             return;
-        } 
-        
+        }else {
+            List<String> renameWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "2", xmlHandler.getWARName(currentCrop.getName()), "gobii-" + currentCrop.getRename()));
+            if (!scriptExecutor("WARHandler.sh", renameWAR)) {
+                binder.sendCommand("disableEdit", null);
+                writeToLog("WebConfigViewModel.executeRename()", "Renaming of the .war file failed.", username);
+                return;
+            }
+            writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " .war file has been renamed.", username);
+        }
         
         if (!serverHandler.postgresRenameCropDb(currentCrop.getName(), currentCrop.getDatabaseName(), currentCrop.getRename())) {
             writeToLog("WebConfigViewModel.executeRename()", "Renaming of the database was unsuccessful.", username);
@@ -583,18 +594,13 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         }
         writeToLog("WebConfigViewModel.executeRename()", "The database for the crop " + currentCrop.getName() + " has been renamed.", username);
 
-        List<String> renameWAR = new ArrayList<>(Arrays.asList(xmlHandler.getHostForReload(), "2", xmlHandler.getWARName(currentCrop.getName()), "/gobii-" + currentCrop.getRename()));
-        if (!scriptExecutor("WARHandler.sh", renameWAR)) {
-            binder.sendCommand("disableEdit", null);
-            writeToLog("WebConfigViewModel.executeRename()", "Renaming of the .war file failed.", username);
+        if (!xmlCropHandler.renameCrop(currentCrop, currentCrop.getRename())){
+            writeToLog("WebConfigViewModel.executeRename()", "Renaming of the crop in the GOBII-WEB XML was unsuccessful.", username);
             return;
-        }        
-        writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " .war file has been renamed.", username);
-      
-        
-        xmlCropHandler.renameCrop(currentCrop, currentCrop.getRename());
+        }
         writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been renamed in the GOBII-WEB XML.", username);
-        
+   
+      
         List<String> renameBundle = new ArrayList<>(Arrays.asList(serverInfo.getHost(), currentCrop.getName(), "2", currentCrop.getRename()));
         if (!scriptExecutor("cropFileManagement.sh", renameBundle)) {
             binder.sendCommand("disableEdit", null);
@@ -607,14 +613,14 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         //Remove old crop name from xml file
         List<String> editPortal = new ArrayList<>(Arrays.asList(currentCrop.getName(), serverInfo.getHost()));
         if (!scriptExecutor("removeCropFromGobiiPortal.sh", editPortal)){
-            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            writeToLog("WebConfigViewModel.executeRename()", "Updating the PORTAL xml file failed.", username);
             return;
         }
         
         //Add new crop name to xml file
         List<String> updatePortal = new ArrayList<>(Arrays.asList(currentCrop.getRename(), serverInfo.getHost()));
         if (!scriptExecutor("updateGobiiPortal.sh", updatePortal)){
-            writeToLog("WebConfigViewModel.addCropToDatabase()", "Updating the PORTAL xml file failed.", username);
+            writeToLog("WebConfigViewModel.executeRename()", "Updating the PORTAL xml file failed.", username);
             return;
         }
         writeToLog("WebConfigViewModel.executeRename()", "The crop " + currentCrop.getName() + " has been renamed in the portal.", username);
@@ -729,6 +735,25 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     @Command("deleteCrop")
     public void deleteCrop () {
         if(!keygen()) {
+            //show error guide
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();
+            include.setSrc("/generate_key_guide.zul");
+           
+            isKeySet = false;
+            writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
+        }else {
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();   
+            include.setSrc("/deleteCrop.zul");
+            getPage().getDesktop().setBookmark("p_" + "deleteCrop");
+            writeToLog("WebConfigViewModel.deleteCrop()", "Navigated to deleteCrop.", username);
+        }
+    }
+
+    @Command("modifyCrop")
+    public void manageCrop () {
+        if(!keygen()) {
             
             //show error guide
             Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
@@ -738,21 +763,12 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
             isKeySet = false;
             writeToLog("WebConfigViewModel.keygen()", "The ssh Key hasn't been set", username);
         }else {
-        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
-                .iterator().next();
-        include.setSrc("/deleteCrop.zul");
-        getPage().getDesktop().setBookmark("p_" + "deleteCrop");
-        writeToLog("WebConfigViewModel.deleteCrop()", "Navigated to deleteCrop.", username);
+            Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
+                    .iterator().next();
+            include.setSrc("/editCrop.zul");
+            getPage().getDesktop().setBookmark("p_" + "modifyCrop");
+            writeToLog("WebConfigViewModel.manageCrop()", "Navigated to manageCrop.", username);
         }
-    }
-
-    @Command("modifyCrop")
-    public void manageCrop () {
-        Include include = (Include) Selectors.iterable(getPage(), "#mainContent")
-                .iterator().next();
-        include.setSrc("/editCrop.zul");
-        getPage().getDesktop().setBookmark("p_" + "modifyCrop");
-        writeToLog("WebConfigViewModel.manageCrop()", "Navigated to manageCrop.", username);
     }
 
     @Command("logSettings")

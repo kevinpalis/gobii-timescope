@@ -12,7 +12,8 @@ then
     cp /usr/local/tomcat/webapps$4.war /usr/local/tomcat/webapps/$3.war
 elif [[ $2 == ${y} ]]
 then
-    mv /usr/local/tomcat/webapps/$3.war /usr/local/tomcat/webapps/$4.war
+    cp /usr/local/tomcat/webapps/$3.war /usr/local/tomcat/webapps/$4.war
+	rm /usr/local/tomcat/webapps/$3.war
 else
     rm /usr/local/tomcat/webapps/$3.war
 fi
