@@ -90,7 +90,7 @@ public class CronHandler {
                     break;
                 }
                 case ("rename"): {
-                    renameCron(stdInput, currentCrop, currentCrop.getRename());
+                    renameCron(stdInput, currentCrop);
                     break;
                 }
                 case ("update"): {
@@ -166,6 +166,7 @@ public class CronHandler {
      * @param currentCrop The Crop for which we are changing the jobs
      */
     private void updateCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
+
         ArrayList<String> newJobs = new ArrayList<>();
         String line;
         while ((line = stdInput.readLine()) != null) {
@@ -193,26 +194,42 @@ public class CronHandler {
      * @param stdInput A buffer containing all the current CRONs
      * @param currentCrop The Crop for which we are changing the jobs
      */
-    private void renameCron(BufferedReader stdInput, Crop currentCrop, String newCropName) throws IOException {
+    private void renameCron(BufferedReader stdInput, Crop currentCrop) throws IOException {
+       
         ArrayList<String> newJobs = new ArrayList<>();
         String line;
         while ((line = stdInput.readLine()) != null) {
             if (line.equals("")){
                 break;
             }
-            String [] input = line.split(" ");
-            if (input[6].equals(currentCrop.getName())){
-                input[6]=newCropName;
-                newJobs.add(line);
-            } else {
-                newJobs.add(line);
-            }
+            newJobs.add(line);
         }
+        newJobs.add("*/2 * * * * /data/gobii_bundle/loaders/cronjob.sh " + currentCrop.getRename() + " +2");
+        newJobs.add("*/2 * * * * /data/gobii_bundle/extractors/cronjob.sh " + currentCrop.getRename() + " +2");
         FileWriter writer = new FileWriter("newCrons.txt");
         for(String str: newJobs) {
             writer.write(str + System.lineSeparator());
         }
         writer.close();
+//        ArrayList<String> newJobs = new ArrayList<>();
+//        String line;
+//        while ((line = stdInput.readLine()) != null) {
+//            if (line.equals("")){
+//                break;
+//            }
+//            String [] input = line.split(" ");
+//            if (input[6].equals(currentCrop.getName())){
+//                input[6]=newCropName;
+//                newJobs.add(line);
+//            } else {
+//                newJobs.add(line);
+//            }
+//        }
+//        FileWriter writer = new FileWriter("newCrons.txt");
+//        for(String str: newJobs) {
+//            writer.write(str + System.lineSeparator());
+//        }
+//        writer.close();
     }
 
     /**
