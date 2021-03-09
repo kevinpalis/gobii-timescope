@@ -75,7 +75,6 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
     private void instantiate(){
     	
         xmlHandler = new XmlModifier(username);
-        backupHandler = new BackupHandler(username);
         
         
         ServletContext context = (ServletContext)Executions.getCurrent().getDesktop().getWebApp().getServletContext();
@@ -84,6 +83,7 @@ public class WebConfigViewModel extends SelectorComposer<Component> {
         propertyHandler = new PropertyHandler(username, properties);
         serverHandler = new ServerHandler(xmlHandler, propertyHandler);
         serverInfo = serverHandler.getServerInfoFromCookies();
+        backupHandler = new BackupHandler(username, serverInfo);
         cronHandler = new CronHandler(username, serverInfo);
         xmlCropHandler = new XmlCropHandler(username);
         warningComposer = new WarningComposer(xmlHandler, username);
