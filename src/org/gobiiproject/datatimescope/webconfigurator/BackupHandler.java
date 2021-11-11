@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.gobiiproject.datatimescope.entity.ServerInfo;
+
 import static org.gobiiproject.datatimescope.webconfigurator.UtilityFunctions.writeToLog;
 
 /**
@@ -25,8 +27,9 @@ public class BackupHandler {
     /**
      * Sets up the weekday array for the dropdown menu of weekday selection
      * Reads in the current Crontabs, puts them into a temporary file, and reads that file to display the current information back to the user
+     * @param serverInfo 
      */
-    public BackupHandler(String name){
+    public BackupHandler(String name, ServerInfo serverInfo){
         weekdays.add("Monday");
         weekdays.add("Tuesday");
         weekdays.add("Wednesday");
@@ -37,7 +40,7 @@ public class BackupHandler {
         username = name;
         String[] read = {
                 "ssh",
-                "gadm@cbsugobiixvm14.biohpc.cornell.edu",
+                serverInfo.getHost(),
                 "docker exec gobii-compute-node bash -c 'crontab -u gadm -l'"
         };
         try {
